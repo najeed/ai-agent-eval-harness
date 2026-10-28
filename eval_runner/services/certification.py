@@ -266,6 +266,7 @@ class CertificationService:
         signing_backend: Any | None = None,
         run_store: Any = None,
         context: Mapping[str, Any] | None = None,
+        _certification_lock: PerRunCertificationLock | None = None,
     ) -> dict[str, Any]:
         """Atomically sign and seal provider-owned run evidence."""
         del artifact_store, status, score
@@ -285,18 +286,19 @@ class CertificationService:
         )
 
         scoped_context = dict(context) if context is not None else None
+        # Existence/scope validation is not evidence capture.  It prevents a
+        # provider lease from being created for a non-existent run while all
+        # trace, event, and manifest reads remain inside the fenced lease.
         run = run_store.get_run(run_id, context=scoped_context)
         if run is None:
             raise FileNotFoundError(f"Run vault not found for {run_id}")
-
-        provider_manifest = run_store.get_manifest(run_id, context=scoped_context) or {}
-        trace_bytes = run_store.get_trace_bytes(run_id, context=scoped_context)
-        provider_events = run_store.get_events(
-            run_id, offset=0, limit=10_000_000, context=scoped_context
-        )
-
         lifecycle = get_run_lifecycle_state(run_id, run_store=run_store, context=scoped_context)
         if lifecycle == RunLifecycleState.SEALED:
+            # A sealed run is immutable.  Its idempotent retry may read the
+            # certificate directly, but an unsealed run must take the lease
+            # before it reads any evidence that it will validate or sign.
+            provider_manifest = run_store.get_manifest(run_id, context=scoped_context) or {}
+            trace_bytes = run_store.get_trace_bytes(run_id, context=scoped_context)
             if not provider_manifest or not TraceVerifier.verify_trace(
                 bytes(trace_bytes) if trace_bytes is not None else b"",
                 provider_manifest,
@@ -324,6 +326,49 @@ class CertificationService:
             }
         if lifecycle in {RunLifecycleState.INVALID, RunLifecycleState.UNKNOWN}:
             raise ValueError(f"InvalidLifecycleState: {lifecycle.value}")
+
+        # Freeze the provider-owned evidence before reading it.  Acquiring the
+        # lease transitions the run to FINALIZING; compliant providers reject
+        # trace/manifest writes in that state and fence competing certifiers.
+        # The recursive call keeps the same lease through validation, signing,
+        # and commit without exposing a second, pre-lock snapshot.
+        if _certification_lock is None:
+            try:
+                with PerRunCertificationLock(
+                    run_id, run_store=run_store, context=scoped_context
+                ) as certification_lock:
+                    return cls.execute_industrial_certification(
+                        run_id,
+                        identity_id=identity_id,
+                        policy_ref=policy_ref,
+                        ttl=ttl,
+                        behavioral_fingerprint_id=behavioral_fingerprint_id,
+                        scenario_data=scenario_data,
+                        signing_backend=signing_backend,
+                        run_store=run_store,
+                        context=scoped_context,
+                        _certification_lock=certification_lock,
+                    )
+            except Exception:
+                # Validation occurs under the lease too.  Restore an
+                # unsealed run if it failed before the atomic commit.
+                state = get_run_lifecycle_state(run_id, run_store=run_store, context=scoped_context)
+                if state != RunLifecycleState.SEALED:
+                    rollback_run_lifecycle_to_open(
+                        run_id, run_store=run_store, context=scoped_context
+                    )
+                raise
+
+        lock = _certification_lock
+        lock.verify_active()
+        run = run_store.get_run(run_id, context=scoped_context)
+        if run is None:
+            raise FileNotFoundError(f"Run vault not found for {run_id}")
+        provider_manifest = run_store.get_manifest(run_id, context=scoped_context) or {}
+        trace_bytes = run_store.get_trace_bytes(run_id, context=scoped_context)
+        provider_events = run_store.get_events(
+            run_id, offset=0, limit=10_000_000, context=scoped_context
+        )
 
         if trace_bytes is None:
             raise ValueError(
@@ -709,44 +754,41 @@ class CertificationService:
                 if model:
                     metadata["model"] = model
 
-        with PerRunCertificationLock(run_id, run_store=run_store, context=scoped_context) as lock:
-            try:
-                manifest = TraceVerifier.sign_trace_bytes(
-                    bytes(trace_bytes),
-                    run_id=run_id,
-                    run_store=run_store,
-                    context=scoped_context,
-                    identity_id=identity_id,
-                    compliance_status="pass" if finalization.outcome.lower() == "pass" else "fail",
-                    compliance_score=float(finalization.score),
-                    policy_ref=policy_ref,
-                    ttl_days=ttl or config.GOVERNANCE_TTL_DAYS,
-                    metadata=metadata,
-                    behavioral_fingerprint_id=behavioral_fingerprint_id,
-                    execution_mode=mode,
-                    provisional=False,
-                    scenario_data=effective_scenario,
-                    execution_manifest=execution_manifest_dict,
-                    signing_backend=signing_backend,
-                    evidence_root_hash=finalization.evidence_root_hash,
-                )
-                lock.verify_active()
-                committed = run_store.commit_certification(
-                    run_id,
-                    manifest,
-                    owner_id=lock.owner_id,
-                    fencing_token=lock.fencing_token,
-                    context=scoped_context,
-                )
-                if not committed:
-                    raise RuntimeError("RunStorageProvider rejected atomic certification commit")
-            except Exception:
-                state = get_run_lifecycle_state(run_id, run_store=run_store, context=scoped_context)
-                if state != RunLifecycleState.SEALED:
-                    rollback_run_lifecycle_to_open(
-                        run_id, run_store=run_store, context=scoped_context
-                    )
-                raise
+        try:
+            manifest = TraceVerifier.sign_trace_bytes(
+                bytes(trace_bytes),
+                run_id=run_id,
+                run_store=run_store,
+                context=scoped_context,
+                identity_id=identity_id,
+                compliance_status="pass" if finalization.outcome.lower() == "pass" else "fail",
+                compliance_score=float(finalization.score),
+                policy_ref=policy_ref,
+                ttl_days=ttl or config.GOVERNANCE_TTL_DAYS,
+                metadata=metadata,
+                behavioral_fingerprint_id=behavioral_fingerprint_id,
+                execution_mode=mode,
+                provisional=False,
+                scenario_data=effective_scenario,
+                execution_manifest=execution_manifest_dict,
+                signing_backend=signing_backend,
+                evidence_root_hash=finalization.evidence_root_hash,
+            )
+            lock.verify_active()
+            committed = run_store.commit_certification(
+                run_id,
+                manifest,
+                owner_id=lock.owner_id,
+                fencing_token=lock.fencing_token,
+                context=scoped_context,
+            )
+            if not committed:
+                raise RuntimeError("RunStorageProvider rejected atomic certification commit")
+        except Exception:
+            state = get_run_lifecycle_state(run_id, run_store=run_store, context=scoped_context)
+            if state != RunLifecycleState.SEALED:
+                rollback_run_lifecycle_to_open(run_id, run_store=run_store, context=scoped_context)
+            raise
 
         from eval_runner.flight_recorder import FlightRecorderPlugin
 

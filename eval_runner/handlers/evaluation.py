@@ -377,7 +377,7 @@ async def handle_verify(args):
         store = resolve_run_store()
         run = store.get_run(run_id)
         if run is None and store.get_trace_bytes(run_id) is None:
-            print(f"      [CRITICAL] FAILED: Trace file for {run_id} missing after vault lookup.")
+            print(f"      [CRITICAL] FAILED: Provider-owned trace for {run_id} is unavailable.")
             return 1
 
         result = verifier.TraceVerifier.verify_run(run_id, run_store=store)

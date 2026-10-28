@@ -3,6 +3,8 @@ import pytest
 from eval_runner.engine import AgentAdapterRegistry
 from eval_runner.events import CoreEvents
 from eval_runner.plugins import BaseEvalPlugin, manager
+from eval_runner.reference.local_artifact import LocalFileArtifactStore
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.session import SessionManager
 
 
@@ -12,6 +14,18 @@ class MockDiscoveryPlugin(BaseEvalPlugin):
 
     async def mock_adapter(self, payload, endpoint=None, **kwargs):
         return {"action": "final_answer", "content": "Mock discovery works!"}
+
+
+def _session(tmp_path, run_id, scenario):
+    run_store = LocalFileRunStore(tmp_path / "run-store")
+    run_store.create_run(run_id, scenario["id"])
+    return SessionManager(
+        run_id,
+        scenario,
+        workspace_root=tmp_path / "workspace",
+        run_store=run_store,
+        artifact_store=LocalFileArtifactStore(tmp_path / "artifact-store"),
+    )
 
 
 @pytest.mark.asyncio
@@ -30,7 +44,7 @@ async def test_advanced_adapter_discovery():
 
 
 @pytest.mark.asyncio
-async def test_hitl_pause_resume(monkeypatch):
+async def test_hitl_pause_resume(monkeypatch, tmp_path):
     """Verify HITL pause and resume logic in SessionManager."""
     scenario = {
         "aes_version": 1.4,
@@ -91,7 +105,7 @@ async def test_hitl_pause_resume(monkeypatch):
         events.append(event.name)
 
     # Note: SessionManager uses an isolated bus; tests must subscribe to the instance
-    session = SessionManager("hitl_test_run", scenario)
+    session = _session(tmp_path, "hitl_test_run", scenario)
     session.event_bus.subscribe(event_listener)
 
     results = await session.execute_tasks(1)
@@ -105,7 +119,7 @@ async def test_hitl_pause_resume(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_hitl_ci_mode_fail_closed(monkeypatch):
+async def test_hitl_ci_mode_fail_closed(monkeypatch, tmp_path):
     """[P0-9] CI/automation contract: a hitl_pause under CI=true NEVER emits
     HITL_RESUME (no fabricated human decision). The run fails closed with an
     explicit HITL_UNRESOLVED triage after exactly one agent call."""
@@ -156,7 +170,7 @@ async def test_hitl_ci_mode_fail_closed(monkeypatch):
     def event_listener(event):
         events.append(event.name)
 
-    session = SessionManager("hitl_ci_test_run", scenario)
+    session = _session(tmp_path, "hitl_ci_test_run", scenario)
     session.event_bus.subscribe(event_listener)
 
     results = await session.execute_tasks(1)
@@ -173,7 +187,7 @@ async def test_hitl_ci_mode_fail_closed(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_trajectory_branching(monkeypatch):
+async def test_trajectory_branching(monkeypatch, tmp_path):
     """Verify non-linear branching logic."""
     scenario = {
         "aes_version": 1.4,
@@ -209,7 +223,7 @@ async def test_trajectory_branching(monkeypatch):
 
     monkeypatch.setattr(AgentAdapterRegistry, "call_agent", mock_call_agent)
 
-    session = SessionManager("branch_test_run", scenario)
+    session = _session(tmp_path, "branch_test_run", scenario)
     # This just verifies it doesn't crash and handles the action
     results = await session.execute_tasks(1)
     assert results is not None

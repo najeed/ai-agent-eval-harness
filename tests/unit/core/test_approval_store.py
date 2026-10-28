@@ -13,7 +13,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-import eval_runner.hitl.pending as hitl_pending
 from agentv_runtime.interfaces import ApprovalRequest
 from eval_runner.handlers.evaluation import handle_hitl_resume
 from eval_runner.reference.approval_store import (
@@ -539,43 +538,48 @@ class TestSessionApprovalManagerDurable:
 
 
 class TestSessionApprovalManagerLegacyAndGates:
-    def test_request_and_resolve_approval(self):
-        registry = hitl_pending.PendingApprovalRegistry()
+    def test_request_and_resolve_approval(self, tmp_path):
         unique_run_id = "run_isolated_leg_01"
         mock_checkpoint_mgr = MagicMock()
         mock_checkpoint_mgr.create_checkpoint.return_value = "chk_leg_01"
+        store = FileApprovalStore(tmp_path / "approvals")
+        run_store = LocalFileRunStore(tmp_path / "runs")
+        context = {"tenant_id": "test", "workspace_id": "test", "active_environment": "test"}
+        run_store.create_run(unique_run_id, "scenario", context=context)
 
         mgr = SessionApprovalManager(
             run_id=unique_run_id,
-            registry=registry,
+            approval_store=store,
+            run_store=run_store,
             checkpoint_manager=mock_checkpoint_mgr,
             state_provider=lambda: {"counter": 42},
         )
 
-        pending = mgr.request_approval(
-            task_id="task_audit",
-            tool_name="grant_access",
-            params={"user": "bob"},
+        pending = mgr.create_durable_request(
+            turn_index=1,
+            metadata={"task_id": "task_audit", "runtime_context": context},
+            action_payload={"user": "bob"},
+            prompt="grant_access",
         )
         assert pending.run_id == unique_run_id
-        assert pending.task_id == "task_audit"
+        assert pending.metadata["task_id"] == "task_audit"
         mock_checkpoint_mgr.create_checkpoint.assert_called_once()
 
         # List pending
-        p_list = mgr.list_pending_approvals()
+        p_list = store.list_pending(run_id=unique_run_id)
         assert len(p_list) == 1
-        assert p_list[0].task_id == "task_audit"
+        assert p_list[0].metadata["task_id"] == "task_audit"
 
         # Resolve
-        ok = mgr.resolve_approval(
-            approval_id=pending.id,
-            action="approve",
-            response="Access granted",
-            resolved_by="admin",
+        approved = mgr.resolve_durable_request(
+            pending.approval_token,
+            "APPROVED",
+            decided_by="admin",
+            decision_reason="Access granted",
         )
-        assert ok is True
+        assert approved.status == "APPROVED"
 
-    def test_request_approval_state_provider_exception(self):
+    def test_request_approval_state_provider_exception(self, tmp_path):
         mock_checkpoint_mgr = MagicMock()
 
         def bad_state():
@@ -585,33 +589,29 @@ class TestSessionApprovalManagerLegacyAndGates:
             run_id="run_bad_state",
             checkpoint_manager=mock_checkpoint_mgr,
             state_provider=bad_state,
+            approval_store=FileApprovalStore(tmp_path / "approvals"),
+            run_store=LocalFileRunStore(tmp_path / "runs"),
         )
-        pending = mgr.request_approval(
-            task_id="t_err",
-            tool_name="tool_err",
-            params={"x": 1},
-        )
+        mgr.run_store.create_run("run_bad_state", "scenario")
+        pending = mgr.create_durable_request(turn_index=1, metadata={"task_id": "t_err"})
         assert pending is not None
         mock_checkpoint_mgr.create_checkpoint.assert_called_once()
 
-    def test_plugin_interceptor_rejection(self):
-        registry = hitl_pending.PendingApprovalRegistry()
+    def test_plugin_interceptor_rejection(self, tmp_path):
         mock_plugin_mgr = MagicMock()
         mock_plugin_mgr.trigger_interceptor.return_value = False
         mock_plugin_mgr.last_rejection_reason = "Forbidden tool call"
 
         mgr = SessionApprovalManager(
             run_id="run_intercept_01",
-            registry=registry,
             plugin_manager=mock_plugin_mgr,
+            approval_store=FileApprovalStore(tmp_path / "approvals"),
+            run_store=LocalFileRunStore(tmp_path / "runs"),
         )
+        mgr.run_store.create_run("run_intercept_01", "scenario")
 
         with pytest.raises(PermissionError, match="Forbidden tool call"):
-            mgr.request_approval(
-                task_id="t1",
-                tool_name="exec_rm",
-                params={"path": "/"},
-            )
+            mgr.create_durable_request(1, metadata={"task_id": "t1"})
 
         # Dictionary rejection format
         mock_plugin_mgr.trigger_interceptor.return_value = {
@@ -620,11 +620,7 @@ class TestSessionApprovalManagerLegacyAndGates:
         }
         mock_plugin_mgr.last_rejection_reason = None
         with pytest.raises(PermissionError, match="Blocked by security rule"):
-            mgr.request_approval(
-                task_id="t2",
-                tool_name="exec_rm",
-                params={"path": "/"},
-            )
+            mgr.create_durable_request(1, metadata={"task_id": "t2"})
 
     def test_durable_approval_uses_interceptor_before_persistence(self):
         plugin_manager = MagicMock()

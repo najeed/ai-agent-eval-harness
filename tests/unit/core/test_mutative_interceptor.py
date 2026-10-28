@@ -6,6 +6,8 @@ import pytest
 
 from eval_runner.mutator_plugin import RuntimeMutationPlugin
 from eval_runner.plugins import BaseEvalPlugin, PluginManager
+from eval_runner.reference.local_artifact import LocalFileArtifactStore
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.session import SessionManager
 
 
@@ -27,6 +29,18 @@ class ShortCircuitPlugin(BaseEvalPlugin):
         return True
 
 
+def _session(tmp_path, run_id):
+    run_store = LocalFileRunStore(tmp_path / "run-store")
+    run_store.create_run(run_id, "test")
+    return SessionManager(
+        run_id=run_id,
+        scenario={"id": "test"},
+        workspace_root=tmp_path / "workspace",
+        run_store=run_store,
+        artifact_store=LocalFileArtifactStore(tmp_path / "artifact-store"),
+    )
+
+
 def test_required_interceptor_failure_is_not_silently_bypassed():
     class RequiredFailingPlugin(BaseEvalPlugin):
         is_mandatory = True
@@ -42,7 +56,7 @@ def test_required_interceptor_failure_is_not_silently_bypassed():
 
 
 @pytest.mark.asyncio
-async def test_mutative_tool_redirection():
+async def test_mutative_tool_redirection(tmp_path):
     # Setup
     pm = PluginManager()
     pm.plugins = [MutativeRedirectionPlugin()]
@@ -52,7 +66,7 @@ async def test_mutative_tool_redirection():
     sandbox.state = {}
     sandbox.execute = AsyncMock(return_value={"status": "success", "rows": []})
 
-    session = SessionManager(run_id="run_1", scenario={"id": "test"})
+    session = _session(tmp_path, "run_1")
     session.plugin_manager = pm
 
     agent_response = {"action": "call_tool", "tool_name": "old_tool", "tool_params": {}}
@@ -71,7 +85,7 @@ async def test_mutative_tool_redirection():
 
 
 @pytest.mark.asyncio
-async def test_tool_short_circuit():
+async def test_tool_short_circuit(tmp_path):
     # Setup
     pm = PluginManager()
     pm.plugins = [ShortCircuitPlugin()]
@@ -80,7 +94,7 @@ async def test_tool_short_circuit():
     sandbox = AsyncMock()
     sandbox.execute = AsyncMock()  # Should NOT be called
 
-    session = SessionManager(run_id="run_1", scenario={"id": "test"})
+    session = _session(tmp_path, "run_1")
     session.plugin_manager = pm
 
     agent_response = {"action": "call_tool", "tool_name": "identity_check", "tool_params": {}}
@@ -99,7 +113,7 @@ async def test_tool_short_circuit():
 
 
 @pytest.mark.asyncio
-async def test_runtime_response_mutation_records_delivery_evidence():
+async def test_runtime_response_mutation_records_delivery_evidence(tmp_path):
     plugin = RuntimeMutationPlugin()
     plugin.on_step_start(None, "node_1", {"tool_response_corrupted": True})
     manager = PluginManager()
@@ -107,7 +121,7 @@ async def test_runtime_response_mutation_records_delivery_evidence():
     sandbox = AsyncMock()
     sandbox.state = {}
     sandbox.execute = AsyncMock(return_value={"status": "success", "amount": 500})
-    session = SessionManager(run_id="run_response_fault", scenario={"id": "test"})
+    session = _session(tmp_path, "run_response_fault")
     session.plugin_manager = manager
     events = []
     session.event_bus.subscribe(lambda event: events.append(event.to_dict()))

@@ -376,6 +376,37 @@ class RunStorageProvider(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def reserve_submission(
+        self,
+        run_id: str,
+        scenario_id: str,
+        agent_id: str | None,
+        metadata: dict[str, Any],
+        context: dict[str, Any],
+        idempotency_key: str,
+    ) -> dict[str, Any]:
+        """Atomically reserves a scoped submission before dispatch."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_submission(
+        self, run_id: str, context: dict[str, Any] | None = None
+    ) -> dict[str, Any] | None:
+        """Returns the scoped admission record for a submitted run."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def transition_submission(
+        self,
+        run_id: str,
+        expected_state: str | tuple[str, ...],
+        state: str,
+        context: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Compare-and-swap a submission lifecycle transition."""
+        raise NotImplementedError
+
+    @abstractmethod
     def get_run(self, run_id: str, context: dict[str, Any] | None = None) -> dict[str, Any] | None:
         """Retrieves a run summary by ID."""
         raise NotImplementedError
@@ -419,7 +450,13 @@ class RunStorageProvider(ABC):
     def append_events(
         self, run_id: str, events: list[dict[str, Any]], context: dict[str, Any] | None = None
     ) -> int:
-        """Appends a batch of trace events."""
+        """Appends a batch of trace events.
+
+        Providers must reject writes while a run is ``FINALIZING`` or
+        ``SEALED``.  Certification acquires its fenced lease before reading
+        provider evidence, so accepting a write in either state would permit
+        an unsigned mutation after the certification snapshot.
+        """
         raise NotImplementedError
 
     @abstractmethod
@@ -526,7 +563,10 @@ class RunStorageProvider(ABC):
         certification lease.  This is deliberately an opt-in compatibility
         gate: a provider that has not implemented an atomic certification
         transaction must fail closed rather than emulate one with independent
-        ``save_run_manifest`` and ``update_run_status`` calls.
+        ``save_run_manifest`` and ``update_run_status`` calls.  Lease
+        acquisition must fence trace and manifest mutation before Core reads
+        evidence; the committed manifest must therefore bind the exact frozen
+        trace bytes read under that lease.
         """
         raise NotImplementedError("Provider does not implement atomic certification commits")
 

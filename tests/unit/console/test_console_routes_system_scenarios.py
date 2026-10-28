@@ -149,10 +149,31 @@ def test_async_evaluation_registration_does_not_reserve_evidence_vault(client, c
     executed = threading.Event()
 
     class ActiveRunStore:
-        # The run routes fall back to the index for this deliberately minimal
-        # provider.  The assertion below covers the dispatch ownership handoff.
+        # Minimal provider contract for asynchronous admission and dispatch.
+        submissions = {}
+
         def get_run(self, *_args, **_kwargs):
             return None
+
+        def reserve_submission(
+            self, run_id, scenario_id, agent_id, metadata, context, idempotency_key
+        ):
+            record = {
+                "run_id": run_id,
+                "scenario_id": scenario_id,
+                "state": "RESERVED",
+                "idempotency_key": idempotency_key,
+            }
+            self.submissions[run_id] = record
+            return record
+
+        def get_submission(self, run_id, context=None):
+            return self.submissions.get(run_id)
+
+        def transition_submission(self, run_id, expected_state, state, context):
+            record = self.submissions[run_id]
+            record["state"] = state
+            return record
 
     active_store = ActiveRunStore()
 

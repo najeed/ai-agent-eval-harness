@@ -217,12 +217,12 @@ def test_verify_run_anomalies_and_exceptions():
 
     mock_store.get_run.return_value = {"run_id": "target-run-id"}
     mock_store.get_manifest.return_value = {"run_id": "target-run-id"}
-    mock_store.get_events.return_value = None
+    mock_store.get_trace_bytes.return_value = None
     res = TraceVerifier.verify_run("target-run-id", run_store=mock_store)
     assert res["verification_status"] == "FAILED_VERIFICATION"
-    assert "Provider did not return scoped run events" in res["failure_reason"]
+    assert "Trace bytes not returned by storage provider" in res["failure_reason"]
 
-    mock_store.get_events.return_value = []
+    mock_store.get_trace_bytes.return_value = b'{"event":"run_end"}\n'
     with patch.object(
         TraceVerifier,
         "verify_trace_bytes",

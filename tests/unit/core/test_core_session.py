@@ -11,9 +11,25 @@ from eval_runner.execution_ir import (
     CompiledOracle,
     ExecutionIdentity,
 )
+from eval_runner.reference.local_artifact import LocalFileArtifactStore
 from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.session import ExecutionMode, NodeVerdict, SessionManager, _InterpreterEventBridge
 from eval_runner.workflow_interpreter import WorkflowOutcome, WorkflowStatus
+
+
+def _session_with_local_providers(tmp_path, run_id, scenario, **kwargs):
+    """Construct a session with test-owned provider implementations."""
+    run_store = LocalFileRunStore(tmp_path / "run-store")
+    scenario_id = scenario.get("id") or scenario.get("metadata", {}).get("id", "unknown")
+    run_store.create_run(run_id, scenario_id)
+    return SessionManager(
+        run_id,
+        scenario,
+        workspace_root=tmp_path / "workspace",
+        run_store=run_store,
+        artifact_store=LocalFileArtifactStore(tmp_path / "artifact-store"),
+        **kwargs,
+    )
 
 
 @pytest.fixture
@@ -45,28 +61,54 @@ def base_scenario():
 
 
 def test_session_manager_initialization(base_scenario, tmp_path):
-    session = SessionManager("test_run_456", base_scenario, log_root=tmp_path)
+    run_store = LocalFileRunStore(tmp_path / "run-store")
+    run_store.create_run("test_run_456", base_scenario["id"])
+    artifact_store = LocalFileArtifactStore(base_dir=tmp_path / "artifact-store")
+    session = SessionManager(
+        "test_run_456",
+        base_scenario,
+        workspace_root=tmp_path / "workspace",
+        run_store=run_store,
+        artifact_store=artifact_store,
+    )
 
     assert session.run_id == "test_run_456"
     assert session.identifier == "session_test"
     assert session.session_metadata["protocol"] == "http"
     assert session.session_metadata["agent"] == "mock://test"
 
-    # Check persistence
-    assert session.run_vault == tmp_path / "test_run_456"
-    assert (session.run_vault / "scenario_original.json").exists()
-    assert (session.run_vault / "scenario_resolved.json").exists()
+    # Scenario persistence is owned by the explicitly bound artifact provider.
+    assert (
+        json.loads(artifact_store.get_artifact("test_run_456", "scenario_original.json"))["id"]
+        == "session_test"
+    )
+    assert (
+        json.loads(artifact_store.get_artifact("test_run_456", "scenario_resolved.json"))["id"]
+        == "session_test"
+    )
 
 
 def test_session_rejects_conflicting_frozen_scenario_snapshot(base_scenario, tmp_path):
-    run_vault = tmp_path / "test_run_456"
-    run_vault.mkdir()
+    run_store = LocalFileRunStore(tmp_path / "run-store")
+    run_store.create_run("test_run_456", base_scenario["id"])
+    artifact_store = LocalFileArtifactStore(base_dir=tmp_path / "artifact-store")
     frozen = dict(base_scenario)
     frozen["description"] = "the runner-frozen contract"
-    (run_vault / "scenario_resolved.json").write_text(json.dumps(frozen), encoding="utf-8")
+    artifact_store.store_artifact(
+        "test_run_456",
+        "scenario_resolved.json",
+        json.dumps(frozen),
+        content_type="application/json",
+    )
 
     with pytest.raises(RuntimeError, match="ScenarioSnapshotHashMismatch"):
-        SessionManager("test_run_456", base_scenario, log_root=tmp_path)
+        SessionManager(
+            "test_run_456",
+            base_scenario,
+            workspace_root=tmp_path / "workspace",
+            run_store=run_store,
+            artifact_store=artifact_store,
+        )
 
 
 def test_session_manager_routing_discovery(base_scenario, tmp_path):
@@ -1723,22 +1765,23 @@ async def test_session_hitl_non_interactive_approval_and_rejection(
     monkeypatch.setenv("FORCE_HITL_SUSPEND", "1")
     monkeypatch.delenv("CI", raising=False)
 
-    class MockApproval:
-        def __init__(self, action, response):
-            self.action = action
-            self.response = response
-
-        async def wait(self):
-            pass
-
     turn_ctx = MagicMock(task_id="task_1")
+
+    durable_request = MagicMock(approval_token="approval-1", timeout_seconds=0, created_at=0)
+    approved = MagicMock(status="APPROVED", decision_reason="Approved by reviewer")
+    rejected = MagicMock(status="REJECTED", decision_reason="Violates policy")
 
     with (
         patch("sys.stdin.isatty", return_value=False),
         patch.object(
             session.approval_manager,
-            "request_approval",
-            return_value=MockApproval("approve", "Approved by reviewer"),
+            "create_durable_request",
+            return_value=durable_request,
+        ),
+        patch.object(
+            session.approval_manager,
+            "wait_for_durable_resolution",
+            return_value=approved,
         ),
     ):
         res = await session._handle_hitl(1, {"prompt": "Please confirm transfer"}, [], {}, turn_ctx)
@@ -1748,8 +1791,13 @@ async def test_session_hitl_non_interactive_approval_and_rejection(
         patch("sys.stdin.isatty", return_value=False),
         patch.object(
             session.approval_manager,
-            "request_approval",
-            return_value=MockApproval("reject", "Violates policy"),
+            "create_durable_request",
+            return_value=durable_request,
+        ),
+        patch.object(
+            session.approval_manager,
+            "wait_for_durable_resolution",
+            return_value=rejected,
         ),
     ):
         with pytest.raises(InterruptedError, match="Human reviewer rejected"):
@@ -2512,15 +2560,17 @@ def test_session_psutil_import_error():
 
 def test_session_init_execution_mode_and_isolate_events(tmp_path):
     with pytest.raises(ValueError, match="Invalid execution_mode 'unsupported_mode'"):
-        SessionManager(
-            "run_inv", {}, metadata={"execution_mode": "unsupported_mode"}, log_root=tmp_path
+        _session_with_local_providers(
+            tmp_path, "run_inv", {}, metadata={"execution_mode": "unsupported_mode"}
         )
 
-    sess_iso = SessionManager("run_iso", {}, metadata={"isolate_events": True}, log_root=tmp_path)
+    sess_iso = _session_with_local_providers(
+        tmp_path, "run_iso", {}, metadata={"isolate_events": True}
+    )
     assert sess_iso.metadata.get("isolate_events") is True
 
     chk = {"turn": 2, "metadata": {"resumed": True}}
-    sess_chk = SessionManager("run_chk", {}, resumption_checkpoint=chk, log_root=tmp_path)
+    sess_chk = _session_with_local_providers(tmp_path, "run_chk", {}, resumption_checkpoint=chk)
     assert sess_chk.turn_number == 2
 
 
@@ -2534,7 +2584,7 @@ def test_session_init_workflow_list_and_mutations(tmp_path):
             }
         ],
     }
-    sess = SessionManager("run_mut_list", scen, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_mut_list", scen)
     assert hasattr(sess, "mutation_plugin")
 
 
@@ -2546,11 +2596,11 @@ def test_session_routing_capabilities_and_socket(tmp_path, monkeypatch):
         "resolve",
         return_value={"protocol": "ws", "endpoint": "ws://resolved", "metadata": {"deep_sync": 1}},
     ):
-        sess = SessionManager(
+        sess = _session_with_local_providers(
+            tmp_path,
             "run_sticky",
             {"id": "scen_sticky", "capabilities": ["cap_test"]},
             metadata={"protocol": "grpc", "agent": "http://sticky.local"},
-            log_root=tmp_path,
         )
         assert sess.session_metadata["protocol"] == "grpc"
         assert sess.session_metadata["agent"] == "http://sticky.local"
@@ -2565,7 +2615,7 @@ def test_session_routing_capabilities_and_socket(tmp_path, monkeypatch):
         "resolve",
         return_value={"protocol": "ws", "endpoint": "ws://resolved"},
     ):
-        sess_dyn = SessionManager("run_dyn", scen_non_sticky, log_root=tmp_path)
+        sess_dyn = _session_with_local_providers(tmp_path, "run_dyn", scen_non_sticky)
         assert sess_dyn.session_metadata["protocol"] == "ws"
         assert sess_dyn.session_metadata["agent"] == "ws://resolved"
         assert "deep_sync" not in sess_dyn.session_metadata
@@ -2575,28 +2625,28 @@ def test_session_routing_capabilities_and_socket(tmp_path, monkeypatch):
         "resolve",
         return_value=None,
     ):
-        sess_none = SessionManager("run_none", scen_non_sticky, log_root=tmp_path)
+        sess_none = _session_with_local_providers(tmp_path, "run_none", scen_non_sticky)
         assert sess_none.session_metadata["protocol"] == "http"
 
     monkeypatch.setenv("AGENT_SOCKET_ADDR", "ipc:///tmp/agent.sock")
     scen_socket = {"id": "scen_socket", "metadata": {"agent": {"protocol": "socket"}}}
-    sess_sock = SessionManager("run_sock", scen_socket, log_root=tmp_path)
+    sess_sock = _session_with_local_providers(tmp_path, "run_sock", scen_socket)
     assert sess_sock.metadata["agent"] == "ipc:///tmp/agent.sock"
 
     monkeypatch.setenv("AGENT_LOCAL_CMD", "python -m agent")
     scen_local = {"id": "scen_local", "metadata": {"agent": {"protocol": "local"}}}
-    sess_local = SessionManager("run_local", scen_local, log_root=tmp_path)
+    sess_local = _session_with_local_providers(tmp_path, "run_local", scen_local)
     assert sess_local.metadata["agent"] == "python -m agent"
 
     scen_non_str = {"id": "scen_proto"}
-    sess_non_str = SessionManager(
-        "run_non_str", scen_non_str, metadata={"protocol": 123}, log_root=tmp_path
+    sess_non_str = _session_with_local_providers(
+        tmp_path, "run_non_str", scen_non_str, metadata={"protocol": 123}
     )
     assert sess_non_str.metadata["protocol"] == 123
 
     scen_custom = {"id": "scen_cust"}
-    sess_custom = SessionManager(
-        "run_cust", scen_custom, metadata={"protocol": "custom_proto"}, log_root=tmp_path
+    sess_custom = _session_with_local_providers(
+        tmp_path, "run_cust", scen_custom, metadata={"protocol": "custom_proto"}
     )
     assert sess_custom.metadata["agent"] is None
 
@@ -2613,7 +2663,7 @@ async def test_session_batch_complete_and_executor_cancellation(tmp_path):
             "edges": [],
         },
     }
-    sess = SessionManager("run_batch", scen, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_batch", scen)
 
     cancel_evt = threading.Event()
     sess.cancellation_event = cancel_evt
@@ -2632,7 +2682,7 @@ async def test_session_batch_complete_and_executor_cancellation(tmp_path):
 
 @pytest.mark.asyncio
 async def test_session_evaluate_consensus_comprehensive(tmp_path):
-    sess = SessionManager("run_cons_comp", {"id": "s_c"}, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_cons_comp", {"id": "s_c"})
 
     sess._last_transition_expectations = []
     res_no_exp = await sess._evaluate_consensus({"consensus": {"judge_panel": ["j1"]}}, [])
@@ -2797,7 +2847,7 @@ async def test_session_evaluate_consensus_comprehensive(tmp_path):
 
 
 def test_session_build_verification_decision_branches(tmp_path):
-    sess = SessionManager("run_vd_branches", {"id": "s_vd"}, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_vd_branches", {"id": "s_vd"})
     identity = ExecutionIdentity(
         evaluation_run_id="run_vd_branches",
         scenario_version_id="1.0.0",
@@ -2835,7 +2885,7 @@ async def test_session_turn_loop_cancellation_and_hitl_unresolved(tmp_path):
             "edges": [],
         },
     }
-    sess = SessionManager("run_tl", scen, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_tl", scen)
     sess.max_turns = 3
 
     mock_sandbox = AsyncMock()
@@ -2857,7 +2907,7 @@ async def test_session_turn_loop_cancellation_and_hitl_unresolved(tmp_path):
         )
         assert res_cancel is not None
 
-    sess_zero = SessionManager("run_zero", scen, log_root=tmp_path)
+    sess_zero = _session_with_local_providers(tmp_path, "run_zero", scen)
     sess_zero.max_turns = 0
     res_zero = await sess_zero._execute_node(
         scen["workflow"]["nodes"][0], 1, 0, mock_sandbox, [], {}
@@ -2877,7 +2927,7 @@ async def test_session_turn_loop_cancellation_and_hitl_unresolved(tmp_path):
             "edges": [],
         },
     }
-    sess_hitl = SessionManager("run_hitl_unres", scen_hitl, log_root=tmp_path)
+    sess_hitl = _session_with_local_providers(tmp_path, "run_hitl_unres", scen_hitl)
     mock_sandbox_hitl = AsyncMock()
     mock_sandbox_hitl.state = {"k": "v"}
     mock_sandbox_hitl.get_full_state.return_value = {"k": "v"}
@@ -2901,7 +2951,7 @@ async def test_session_turn_loop_cancellation_and_hitl_unresolved(tmp_path):
 
 @pytest.mark.asyncio
 async def test_session_node_verdict_and_reporting_branches(tmp_path):
-    sess = SessionManager("run_nv", {"id": "s_nv"}, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_nv", {"id": "s_nv"})
     mock_sandbox = MagicMock()
     mock_sandbox.get_bounded_state = AsyncMock(return_value={"k": "v"})
     mock_sandbox.get_full_state = AsyncMock(return_value={"k": "v"})
@@ -3184,7 +3234,7 @@ async def test_session_node_verdict_and_reporting_branches(tmp_path):
 
 @pytest.mark.asyncio
 async def test_session_teardown_and_external_receipts_edge_cases(tmp_path):
-    sess = SessionManager("run_td", {"id": "s_td"}, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_td", {"id": "s_td"})
 
     mock_sb = AsyncMock()
     jail_dir = tmp_path / "mock_jail"
@@ -3218,7 +3268,7 @@ async def test_session_teardown_and_external_receipts_edge_cases(tmp_path):
     rec_no_rec = sess._ingest_external_tool_receipts(resp_steps, 1, node, "http", None)
     assert len(rec_no_rec) == 1
 
-    sess_no_forensics = SessionManager("run_nf", {"id": "s_nf"}, log_root=tmp_path)
+    sess_no_forensics = _session_with_local_providers(tmp_path, "run_nf", {"id": "s_nf"})
     del sess_no_forensics.forensics
     rec_nf = sess_no_forensics._ingest_external_tool_receipts(resp_steps, 1, node, "http", None)
     assert len(rec_nf) == 1
@@ -3226,33 +3276,27 @@ async def test_session_teardown_and_external_receipts_edge_cases(tmp_path):
 
 @pytest.mark.asyncio
 async def test_session_hitl_cli_suspension_and_empty_response(tmp_path, monkeypatch):
-    sess = SessionManager("run_hitl_cli", {"id": "s_h"}, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_hitl_cli", {"id": "s_h"})
 
     monkeypatch.setenv("FORCE_HITL_SUSPEND", "1")
     monkeypatch.delenv("CI", raising=False)
     turn_ctx = MagicMock(task_id="task_1")
-
-    class MockApprove:
-        def __init__(self):
-            self.action = "approve"
-            self.response = "OK"
-
-        async def wait(self):
-            pass
 
     with (
         patch("sys.stdin.isatty", return_value=False),
         patch.object(
             sess.approval_manager,
             "create_durable_request",
-            return_value=MagicMock(approval_token="tok_1"),
+            return_value=MagicMock(approval_token="tok_1", timeout_seconds=0, created_at=0),
         ),
-        patch.object(sess.approval_manager, "resolve_durable_request") as mock_resolve,
-        patch.object(sess.approval_manager, "request_approval", return_value=MockApprove()),
+        patch.object(
+            sess.approval_manager,
+            "wait_for_durable_resolution",
+            return_value=MagicMock(status="APPROVED", decision_reason="OK"),
+        ),
     ):
         res = await sess._handle_hitl(1, {}, [], {}, turn_ctx)
         assert res == "OK"
-        mock_resolve.assert_called_once()
 
     monkeypatch.setenv("AGENTV_CLI_HITL_SUSPEND", "1")
     with patch.object(
@@ -3279,7 +3323,7 @@ async def test_session_executor_cancellation(tmp_path):
             "edges": [],
         },
     }
-    sess = SessionManager("run_ce", scen, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_ce", scen)
     cancel_evt = threading.Event()
     sess.cancellation_event = cancel_evt
 
@@ -3328,7 +3372,7 @@ async def test_session_consensus_pass_and_model_only(tmp_path):
             ]
         },
     }
-    sess = SessionManager("run_cp", scen, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_cp", scen)
     pass_consensus = {"status": "PASS", "evaluated": True, "agreement": 1.0}
     with (
         patch(
@@ -3346,7 +3390,7 @@ async def test_session_consensus_pass_and_model_only(tmp_path):
         )
         assert verdict_target["verification_decision"]["consensus"]["status"] == "PASS"
 
-    sess_model = SessionManager("run_ms", {"id": "s_ms"}, log_root=tmp_path)
+    sess_model = _session_with_local_providers(tmp_path, "run_ms", {"id": "s_ms"})
     sess_model._last_transition_expectations = ["Expected Output"]
     with (
         patch("eval_runner.llm_providers.LLMProviderFactory.create", return_value=MagicMock()),
@@ -3362,7 +3406,7 @@ async def test_session_consensus_pass_and_model_only(tmp_path):
 @pytest.mark.asyncio
 async def test_session_restore_checkpoint_completed_nodes_and_tokens(tmp_path):
     """Verify restore_checkpoint restores completed_node_results and resumption tokens."""
-    sess = SessionManager("run_restore", {"id": "scen_res"}, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_restore", {"id": "scen_res"})
 
     # 1. Restore completed_node_results and resumption_token argument
     data1 = {"turn": 3, "completed_node_results": {"n1": {"status": "success"}}}
@@ -3373,7 +3417,7 @@ async def test_session_restore_checkpoint_completed_nodes_and_tokens(tmp_path):
 
     # 2. Restore approval_token from checkpoint data without resumption_token arg
     data2 = {"turn": 1, "approval_token": "app_tok_2"}
-    sess2 = SessionManager("run_restore2", {"id": "scen_res2"}, log_root=tmp_path)
+    sess2 = _session_with_local_providers(tmp_path, "run_restore2", {"id": "scen_res2"})
     sess2.restore_from_checkpoint(data2)
     assert sess2.resumption_token == "app_tok_2"
 
@@ -3393,7 +3437,7 @@ async def test_session_execute_tasks_replays_cached_nodes(tmp_path):
             ]
         },
     }
-    sess = SessionManager("run_cached", scen, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_cached", scen)
     sess._completed_node_results = {
         "n_cached": {
             "task_id": "n_cached",
@@ -3425,7 +3469,7 @@ async def test_session_run_suspended_for_approval_propagation(tmp_path):
             ]
         },
     }
-    sess = SessionManager("run_susp", scen, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_susp", scen)
 
     with patch.object(
         sess,
@@ -3453,7 +3497,7 @@ async def test_session_hitl_gate_before_approval_and_unresolved(tmp_path):
             ]
         },
     }
-    sess = SessionManager("run_gate", scen, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_gate", scen)
 
     # 1. Successful gate approval via _handle_hitl
     with (
@@ -3469,7 +3513,7 @@ async def test_session_hitl_gate_before_approval_and_unresolved(tmp_path):
         assert "n_gate" in getattr(sess, "_approved_gates", set())
 
     # 2. Gate unresolved in CI mode
-    sess2 = SessionManager("run_gate_unres", scen, log_root=tmp_path)
+    sess2 = _session_with_local_providers(tmp_path, "run_gate_unres", scen)
 
     async def mock_unres(*args, **kwargs):
         sess2._hitl_unresolved = True
@@ -3491,7 +3535,7 @@ async def test_session_hitl_gate_before_approval_and_unresolved(tmp_path):
 async def test_session_oracle_deduplication_and_parity_binding_hash(tmp_path):
     """Verify oracle ID deduplication and authority observation binding hash generation."""
     scen = {"id": "scen_dedup", "workflow": {"nodes": [{"id": "n1"}]}}
-    sess = SessionManager("run_dedup", scen, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_dedup", scen)
 
     node_def = {
         "id": "n1",
@@ -3570,7 +3614,7 @@ async def test_session_pending_durable_approval_and_lifecycle(tmp_path):
     """Verify _raise_if_pending_durable_approval handles single and multiple pending approvals."""
     from eval_runner.run_lifecycle import RunSuspendedForApproval
 
-    sess = SessionManager("run_pend", {"id": "scen_pend"}, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_pend", {"id": "scen_pend"})
 
     # 1. Multiple pending requests raises RuntimeError
     req1 = MagicMock(
@@ -3606,7 +3650,7 @@ async def test_session_pending_durable_approval_and_lifecycle(tmp_path):
 @pytest.mark.asyncio
 async def test_session_handle_hitl_resumption_token_and_durations(tmp_path):
     """Verify _handle_hitl handles resumed approval tokens, wait durations, and exceptions."""
-    sess = SessionManager("run_hitl_res", {"id": "scen_hitl_res"}, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_hitl_res", {"id": "scen_hitl_res"})
     sess.resumption_token = "valid_approved_token"
 
     # 1. Resumption request approved with decided_at >= created_at
@@ -3659,7 +3703,7 @@ async def test_session_handle_hitl_resumption_token_and_durations(tmp_path):
 @pytest.mark.asyncio
 async def test_session_should_enforce_hitl_gate_branches(tmp_path):
     """Verify _should_enforce_hitl_gate checks pre-approved gates and timing configurations."""
-    sess = SessionManager("run_gate_branches", {"id": "scen_gb"}, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_gate_branches", {"id": "scen_gb"})
 
     # 1. Gate already in _approved_gates
     sess._approved_gates = {"node_approved"}
@@ -3690,7 +3734,7 @@ async def test_session_acquire_bounded_state_validation(tmp_path):
     """
     Verify _acquire_bounded_state raises appropriate errors for invalid or non-dict state getters.
     """
-    sess = SessionManager("run_bound", {"id": "scen_bound"}, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_bound", {"id": "scen_bound"})
 
     # 1. Missing or non-coroutine get_bounded_state raises BoundedStateAcquisitionUnavailable
     bad_sandbox1 = MagicMock()
@@ -3728,7 +3772,7 @@ async def test_session_cached_result_with_original_duration_branch(tmp_path):
             ]
         },
     }
-    sess = SessionManager("run_cached_orig", scen, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_cached_orig", scen)
     sess._completed_node_results = {
         "n_cached_orig": {
             "task_id": "n_cached_orig",
@@ -3759,7 +3803,7 @@ async def test_session_completed_node_results_lazy_init_on_success(tmp_path):
             ]
         },
     }
-    sess = SessionManager("run_lazy_init", scen, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_lazy_init", scen)
     if hasattr(sess, "_completed_node_results"):
         delattr(sess, "_completed_node_results")
 
@@ -3782,7 +3826,7 @@ async def test_session_execute_node_re_raises_run_suspended_for_approval(tmp_pat
     """Verify _execute_node re-raises RunSuspendedForApproval when raised during turn execution."""
     from eval_runner.run_lifecycle import RunSuspendedForApproval
 
-    sess = SessionManager("run_turn_susp", {"id": "scen_turn_susp"}, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_turn_susp", {"id": "scen_turn_susp"})
     node_def = {
         "id": "n_susp_turn",
         "task_description": "Susp turn node",
@@ -3802,7 +3846,7 @@ async def test_session_execute_node_re_raises_run_suspended_for_approval(tmp_pat
 async def test_session_oracle_deduplication_hygiene_same_path(tmp_path):
     """Verify oracle ID deduplication when multiple state hygiene rules share the same path."""
     scen = {"id": "scen_sh_dup", "workflow": {"nodes": [{"id": "n_sh"}]}}
-    sess = SessionManager("run_sh_dup", scen, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_sh_dup", scen)
     node_def = {
         "id": "n_sh",
         "task_description": "SH dup node",
@@ -3844,7 +3888,7 @@ async def test_session_tool_intercept_rejection_and_mutation_receipt(tmp_path):
     """
     from eval_runner.context import TurnContext
 
-    sess = SessionManager("run_tool_int", {"id": "scen_tool_int"}, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_tool_int", {"id": "scen_tool_int"})
     sandbox = MagicMock()
     sandbox.execute = AsyncMock(return_value="executed_ok")
     turn_ctx = TurnContext(task_id="t1", turn_number=1, current_message="msg", history=[])
@@ -3906,7 +3950,7 @@ async def test_session_hitl_resumption_token_mismatched_task_and_duration_fallba
     Verify resumption token non-approval, mismatched task IDs,
     created_at duration fallback, and null context.
     """
-    sess = SessionManager("run_hitl_misc", {"id": "scen_hm"}, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_hitl_misc", {"id": "scen_hm"})
     sess.resumption_token = "tok_misc"
 
     # 1. res_req is not approved (PENDING)
@@ -3987,7 +4031,7 @@ async def test_session_hitl_resumption_token_mismatched_task_and_duration_fallba
 async def test_session_hitl_durable_request_org_id_and_tenancy_metadata(tmp_path, monkeypatch):
     """Verify org_id and tenancy metadata propagation when creating durable approval requests."""
     monkeypatch.setenv("AGENTV_CLI_HITL_SUSPEND", "1")
-    sess = SessionManager("run_tenancy", {"id": "scen_tenancy"}, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_tenancy", {"id": "scen_tenancy"})
     sess.metadata["org_id"] = "org_enterprise"
     sess.metadata["tenant_id"] = "tenant_xyz"
     sess.metadata["correlation_id"] = "corr_abc"
@@ -4022,7 +4066,7 @@ async def test_session_gate_check_resumption_token_branches_and_lazy_approved_ga
     Verify _should_enforce_hitl_gate token non-approval, node mismatch,
     and lazy _approved_gates creation.
     """
-    sess = SessionManager("run_gate_extra", {"id": "scen_ge"}, log_root=tmp_path)
+    sess = _session_with_local_providers(tmp_path, "run_gate_extra", {"id": "scen_ge"})
     sess.resumption_token = "tok_gate_check"
 
     # 1. Resumption request status is PENDING
@@ -4050,7 +4094,7 @@ async def test_session_gate_check_resumption_token_branches_and_lazy_approved_ga
         assert sess._should_enforce_hitl_gate(node_cfg2) is True
 
     # 3. Fresh session lazy _approved_gates initialization
-    sess_fresh = SessionManager("run_fresh_gate", {"id": "scen_fg"}, log_root=tmp_path)
+    sess_fresh = _session_with_local_providers(tmp_path, "run_fresh_gate", {"id": "scen_fg"})
     if hasattr(sess_fresh, "_approved_gates"):
         delattr(sess_fresh, "_approved_gates")
     sess_fresh._mark_gate_approved("fresh_gate_node")

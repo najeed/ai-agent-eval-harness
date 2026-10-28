@@ -293,7 +293,7 @@ async def test_resumption_oracle_inventory_mismatch(tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# Scoped Configuration Adoption and Index Fallback
+# Scoped Configuration Adoption and Provider Submission Fallback
 # ---------------------------------------------------------------------------
 
 
@@ -376,12 +376,12 @@ async def test_scoped_configuration_adoption_failure(tmp_path):
 
 
 @pytest.mark.asyncio
-async def test_runtime_context_loaded_from_run_index(tmp_path):
+async def test_runtime_context_loaded_from_provider_submission(tmp_path):
     runner = DefaultRunner()
-    run_id = "run-index-context-fallback"
+    run_id = "run-submission-context-fallback"
     scenario = {"id": "scen-idx", "version": "1.0.0"}
 
-    indexed_context = {
+    submission_context = {
         "org_id": "org_idx",
         "tenant_id": "tenant_idx",
         "workspace_id": "ws_idx",
@@ -393,7 +393,11 @@ async def test_runtime_context_loaded_from_run_index(tmp_path):
     runner.run_store = mock_run_store
 
     with (
-        patch("eval_runner.run_index.read_run_index", return_value={"context": indexed_context}),
+        patch.object(
+            mock_run_store,
+            "get_submission",
+            return_value={"context": submission_context},
+        ),
         patch("eval_runner.services.config_revision.ConfigurationRevisionService") as mock_rev_cls,
         patch("eval_runner.session.SessionManager") as mock_session_cls,
     ):
@@ -599,7 +603,11 @@ async def test_signing_error_persists_scoped_failed_manifest():
 
     with (
         patch("agentv_runtime.config.RuntimeWorkerConfigConsumer", return_value=mock_consumer),
-        patch("eval_runner.run_index.read_run_index", return_value={"context": scoped_context}),
+        patch.object(
+            mock_run_store,
+            "get_submission",
+            return_value={"context": scoped_context},
+        ),
         patch("eval_runner.session.SessionManager") as mock_session_cls,
         patch(
             "eval_runner.identity.IdentityService.get_private_key",

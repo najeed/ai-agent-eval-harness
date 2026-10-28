@@ -24,6 +24,7 @@ from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
 from agentv_runtime.package import VerificationPackage
 from eval_runner import config
 from eval_runner.identity import IdentityService
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.verifier import (
     CertificationFailedError,
     CoreTraceSigner,
@@ -2828,14 +2829,12 @@ def test_verification_authority_verify_package_incomplete_provenance_and_sig_exc
         assert any("SignatureVerificationFailed" in f for f in res2["failures"])
 
 
-def test_locate_certificate_file_boundary_cases():
-    """Verifies boundary cases in locate_certificate_file helper."""
-    from eval_runner.reference.legacy_verifier_paths import locate_certificate_file
-
-    assert locate_certificate_file("") is None
-    assert locate_certificate_file(None) is None  # type: ignore
-    assert locate_certificate_file("../escape/run_1") is None
-    assert locate_certificate_file("nonexistent_run_99999") is None
+def test_provider_certificate_manifest_boundary_cases(tmp_path):
+    """Provider reads reject invalid ids and do not invent certificates."""
+    store = LocalFileRunStore(tmp_path / "runs")
+    assert store.get_manifest("") is None
+    assert store.get_manifest("../escape/run_1") is None
+    assert store.get_manifest("nonexistent_run_99999") is None
 
 
 def test_verifier_certificate_embedded_pk_corrupted_parse_err(tmp_path):
@@ -4240,7 +4239,6 @@ async def test_verifier_signer_and_utilities_full_coverage(clean_vault_setup):
     import json
     from collections.abc import Callable
 
-    from eval_runner.reference.legacy_verifier_paths import locate_certificate_file
     from eval_runner.verifier import (
         CertificationFailedError,
         CoreTraceSigner,
@@ -4453,15 +4451,10 @@ async def test_verifier_signer_and_utilities_full_coverage(clean_vault_setup):
     )
     assert isinstance(is_v, bool)
 
-    # 10. locate_certificate_file candidate match
-    cand_cert = clean_vault_setup["project_root"] / "reports" / "certificates" / f"{run_id}_vc.json"
-    cand_cert.parent.mkdir(parents=True, exist_ok=True)
-    cand_cert.write_text("{}", encoding="utf-8")
-    resolved_loc = locate_certificate_file(run_id)
-    assert resolved_loc == cand_cert.resolve()
-    assert locate_certificate_file("") is None
-    assert locate_certificate_file("../outside") is None
-    assert locate_certificate_file(None) is None
+    # 10. Certificate discovery is provider-owned.
+    store = LocalFileRunStore(clean_vault_setup["project_root"] / "runs")
+    assert store.get_manifest(run_id) == cert
+    assert store.get_manifest("../outside") is None
 
 
 def test_verify_trace_extended_branch_matrix(clean_vault_setup):

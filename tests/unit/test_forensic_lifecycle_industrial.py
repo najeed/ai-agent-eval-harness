@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from eval_runner.forensics import ForensicCollector
+from eval_runner.reference.local_artifact import LocalFileArtifactStore
 from eval_runner.tool_sandbox import ToolSandbox
 from eval_runner.verifier import TraceVerifier
 
@@ -126,23 +127,28 @@ def test_forensic_telemetry_lifecycle(vault_setup):
     Ensures O(1) initialization and per-turn capture.
     """
     run_id, vault_dir, trace_path = vault_setup
-    forensics = ForensicCollector(run_id, vault_dir)
+    artifact_store = LocalFileArtifactStore(base_dir=vault_dir.parent)
+    forensics = ForensicCollector(run_id, artifact_store=artifact_store)
 
     # 1. Initialization
     headers = ["ts", "cpu", "mem"]
     forensics.init_telemetry(headers)
 
-    telemetry_path = vault_dir / "forensics" / "telemetry.csv"
-    assert telemetry_path.exists()
-    assert telemetry_path.read_text().startswith("ts,cpu,mem")
+    assert (
+        artifact_store.get_artifact(run_id, "forensics/telemetry.csv")
+        .decode()
+        .startswith("ts,cpu,mem")
+    )
 
     # 2. Append (Simulate turn)
-    with open(telemetry_path, "a") as f:
-        f.write("1,10,100\n")
+    forensics.record_telemetry({"ts": 1, "cpu": 10, "mem": 100})
 
     # Re-init should NOT append another header if implemented correctly in Session
     # (Checking that the header logic is now one-time)
-    assert len(telemetry_path.read_text().splitlines()) == 2
+    assert (
+        len(artifact_store.get_artifact(run_id, "forensics/telemetry.csv").decode().splitlines())
+        == 2
+    )
 
 
 @pytest.mark.asyncio
@@ -152,23 +158,25 @@ async def test_forensic_shim_state_differential(vault_setup):
     Ensures full state capture and differential encoding.
     """
     run_id, vault_dir, trace_path = vault_setup
-    forensics = ForensicCollector(run_id, vault_dir)
+    artifact_store = LocalFileArtifactStore(base_dir=vault_dir.parent)
+    forensics = ForensicCollector(run_id, artifact_store=artifact_store)
 
     # Turn 0: Full Snapshot
     state_0 = {"shim_1": {"data": "A"}, "shim_2": {"data": "B"}}
     forensics.snapshot_state(state_0, turn=0)
 
-    snapshot_0 = vault_dir / "forensics" / "state_turn_000_full.json"
-    assert snapshot_0.exists()
-    assert json.loads(snapshot_0.read_text()) == state_0
+    assert (
+        json.loads(artifact_store.get_artifact(run_id, "forensics/state_turn_000_full.json"))
+        == state_0
+    )
 
     # Turn 1: Differential Snapshot
     state_1 = {"shim_1": {"data": "A_mod"}, "shim_2": {"data": "B"}}  # shim_2 unchanged
     forensics.snapshot_state(state_1, turn=1)
 
-    snapshot_1 = vault_dir / "forensics" / "state_turn_001_diff.json"
-    assert snapshot_1.exists()
-    content_1 = json.loads(snapshot_1.read_text())
+    content_1 = json.loads(
+        artifact_store.get_artifact(run_id, "forensics/state_turn_001_diff.json")
+    )
 
     # Should only contain the changed key
     assert "shim_1" in content_1

@@ -2,7 +2,7 @@
 aggregator.py
 
 Statistical aggregator for the Advanced Publication Suite.
-Processes run.jsonl files from a batch and computes publication metrics.
+Processes provider-owned batch runs and computes publication metrics.
 """
 
 import json
@@ -22,11 +22,12 @@ except ImportError:
 
 
 class Aggregator:
-    def __init__(self, manifest_path: str):
+    def __init__(self, manifest_path: str, *, run_store: Any | None = None):
         self.manifest_path = Path(manifest_path)
         with open(self.manifest_path) as f:
             self.manifest = json.load(f)
         self.config = self._load_config()
+        self.run_store = run_store
 
     def _load_config(self):
         suite_dir = Path(__file__).parent.absolute()
@@ -73,15 +74,20 @@ class Aggregator:
             if not run["success"]:
                 continue
 
-            log_path = Path(run["log_path"])
-            if not log_path.exists():
-                continue
+            run_store = self.run_store
+            if run_store is None:
+                provider_dir = run.get("provider_log_dir")
+                if not isinstance(provider_dir, str):
+                    continue
+                from eval_runner.runtime_services import compose_local_run_store
 
-            events = []
-            with open(log_path) as f:
-                for line in f:
-                    if line.strip():
-                        events.append(json.loads(line))
+                run_store = compose_local_run_store(provider_dir)
+            run_id = run.get("run_id")
+            if not isinstance(run_id, str):
+                continue
+            events = run_store.get_events(run_id, offset=0, limit=10_000_000)
+            if not events:
+                continue
 
             s_id = run["scenario"]
             if s_id not in scenario_results:

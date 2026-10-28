@@ -459,6 +459,91 @@ class LocalFileRunStore(RunStore):
         self._write_json(record_path, record)
         return record
 
+    def reserve_submission(
+        self,
+        run_id: str,
+        scenario_id: str,
+        agent_id: str | None,
+        metadata: dict[str, Any],
+        context: dict[str, Any],
+        idempotency_key: str,
+    ) -> dict[str, Any]:
+        """Create or idempotently return a scope-bound admission record."""
+        if not context or not idempotency_key:
+            raise ValueError("Scoped submission reservation requires context and idempotency_key")
+        vault = self._get_run_vault(run_id, create=True)
+        path = self._record_path(vault)
+        immutable = {
+            "scenario_id": scenario_id,
+            "agent_id": agent_id,
+            "metadata": metadata,
+            "context": context,
+            "idempotency_key": idempotency_key,
+        }
+        existing = self._read_json(path)
+        if existing is not None:
+            submission = existing.get("submission") or {}
+            existing_identity = {key: submission.get(key) for key in immutable}
+            if existing_identity != immutable:
+                raise FileExistsError(
+                    f"RunIdCollision: provider already owns incompatible submission '{run_id}'"
+                )
+            return dict(submission)
+        submission = {
+            **immutable,
+            "run_id": run_id,
+            "state": "RESERVED",
+            "created_at": datetime.now().astimezone().isoformat(),
+        }
+        record = {
+            "run_id": run_id,
+            "scenario_id": scenario_id,
+            "scenario": scenario_id,
+            "agent_id": agent_id,
+            "metadata": metadata,
+            "context": context,
+            "status": "RESERVED",
+            "lifecycle": "RESERVED",
+            "submission": submission,
+            "created_at": submission["created_at"],
+        }
+        self._write_json(path, record)
+        return dict(submission)
+
+    def get_submission(
+        self, run_id: str, context: dict[str, Any] | None = None
+    ) -> dict[str, Any] | None:
+        run = self.get_run(run_id, context=context)
+        if not run:
+            return None
+        submission = run.get("submission")
+        return dict(submission) if isinstance(submission, dict) else None
+
+    def transition_submission(
+        self,
+        run_id: str,
+        expected_state: str | tuple[str, ...],
+        state: str,
+        context: dict[str, Any],
+    ) -> dict[str, Any]:
+        allowed = (expected_state,) if isinstance(expected_state, str) else expected_state
+        submission = self.get_submission(run_id, context=context)
+        if submission is None:
+            raise KeyError(f"Submission '{run_id}' not found")
+        if submission.get("state") not in allowed:
+            raise RuntimeError(
+                f"SubmissionTransitionConflict: expected {allowed}, found {submission.get('state')}"
+            )
+        vault = self._get_run_vault(run_id)
+        record = self._read_json(self._record_path(vault)) or {}
+        submission["state"] = state
+        submission["updated_at"] = datetime.now().astimezone().isoformat()
+        record["submission"] = submission
+        record["status"] = state
+        record["lifecycle"] = state
+        self._write_json(self._record_path(vault), record)
+        return dict(submission)
+
     @staticmethod
     def _is_sealed(run_vault: Path) -> bool:
         return (run_vault / ".sealed").exists() or (run_vault / "trace_seal.json").exists()
@@ -664,26 +749,6 @@ class LocalFileRunStore(RunStore):
                 "sealed": self._is_sealed(run_vault),
             }
 
-        # Check durable run index: .index/<run_id>.json
-        index_file = self.log_dir / ".index" / f"{run_id}.json"
-        if index_file.exists():
-            index_data = self._read_json(index_file)
-            if index_data is not None:
-                if context and not context_allows_record(index_data, context):
-                    return None
-                return {
-                    "run_id": run_id,
-                    "scenario": index_data.get("scenario_id") or index_data.get("scenario"),
-                    "scenario_id": index_data.get("scenario_id"),
-                    "status": index_data.get("status", "PENDING"),
-                    "lifecycle": "OPEN",
-                    "created_at": index_data.get("created_at"),
-                    "timestamp": index_data.get("created_at"),
-                    "context": index_data.get("context", {}),
-                    "provisional": True,
-                    "verification_status": "NOT_EXECUTED",
-                }
-
         # Check direct fragment: <run_id>.jsonl
         frag_file = self.log_dir / f"{run_id}.jsonl"
         candidates = (
@@ -734,8 +799,6 @@ class LocalFileRunStore(RunStore):
     def list_runs(
         self, limit: int = 100, offset: int = 0, context: dict[str, Any] | None = None
     ) -> list[dict[str, Any]]:
-        from eval_runner.console.auth_manager import context_allows_record
-
         if not self.log_dir.exists():
             return []
 
@@ -750,65 +813,13 @@ class LocalFileRunStore(RunStore):
             if info:
                 runs_map[info["run_id"]] = info
 
-        # 2. Durable index (.index/*.json)
-        index_dir = self.log_dir / ".index"
-        if index_dir.is_dir():
-            for idx_file in index_dir.glob("*.json"):
-                rid = idx_file.stem
-                if rid not in runs_map:
-                    info = self.get_run(rid, context=context)
-                    if info:
-                        runs_map[rid] = info
-
-        # 3. Vault folders (subdirs)
+        # 2. Provider-owned per-run records (local reference implementation).
         for d in self.log_dir.iterdir():
             if d.is_dir() and not d.name.startswith("."):
                 rid = d.name
                 info = self.get_run(rid, context=context)
                 if info:
                     runs_map[rid] = info
-
-        # 4. Master log file (run.jsonl directly under log_dir)
-        master_log = self.log_dir / "run.jsonl"
-        if master_log.exists():
-            try:
-                with master_log.open(encoding="utf-8") as f:
-                    for line in f:
-                        line = line.strip()
-                        if not line:
-                            continue
-                        ev = self._read_event(line)
-                        if ev and isinstance(ev, dict):
-                            data_obj = ev.get("data") if isinstance(ev.get("data"), dict) else {}
-                            rid = ev.get("run_id") or data_obj.get("run_id")
-                            if rid and rid != "unknown" and rid not in runs_map:
-                                if context and not context_allows_record(ev, context):
-                                    continue
-                                scen = (
-                                    ev.get("scenario")
-                                    or ev.get("scenario_id")
-                                    or data_obj.get("scenario")
-                                    or ""
-                                )
-                                ts = (
-                                    ev.get("timestamp")
-                                    or ev.get("_ts_iso")
-                                    or data_obj.get("timestamp")
-                                    or ""
-                                )
-                                runs_map[rid] = {
-                                    "run_id": rid,
-                                    "scenario": scen,
-                                    "scenario_id": scen,
-                                    "timestamp": ts,
-                                    "created_at": ts,
-                                    "has_trace": True,
-                                    "status": ev.get("status") or data_obj.get("status") or "OPEN",
-                                    "lifecycle": "OPEN",
-                                    "provisional": True,
-                                }
-            except (OSError, UnicodeDecodeError):
-                pass
 
         sorted_runs = sorted(
             runs_map.values(),

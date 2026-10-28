@@ -253,7 +253,13 @@ async def handle_ci_generate(args):
 async def handle_cleanup_runs(args):
     """Handler for 'cleanup-runs' command."""
     try:
-        cleaner.cleanup_traces(days=args.days, force=getattr(args, "force", False))
+        from eval_runner.runtime_services import resolve_run_store
+
+        cleaner.cleanup_traces(
+            run_store=resolve_run_store(),
+            days=args.days,
+            force=getattr(args, "force", False),
+        )
         return 0
     except Exception as e:
         print(f"❌ [ERROR] Cleanup FAILED: {e}")
@@ -273,7 +279,9 @@ async def handle_export(args):
 async def handle_failures_search(args):
     """Handler for 'failures search' command."""
     try:
-        failure_corpus.search(args.query)
+        from eval_runner.runtime_services import resolve_run_store
+
+        failure_corpus.search(args.query, run_store=resolve_run_store())
         return 0
     except Exception as e:
         print(f"❌ [ERROR] Failures search FAILED: {e}")

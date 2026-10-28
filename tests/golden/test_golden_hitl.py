@@ -1,52 +1,35 @@
-"""
-tests/golden/test_golden_hitl.py
-Golden Verification Corpus: HITL Restart Durability & Resumption Token Validation
-"""
+"""Golden HITL restart durability contract through ApprovalStore."""
 
-import pytest
-
-from eval_runner.hitl.pending import PendingApprovalRegistry
+from agentv_runtime.interfaces import ApprovalRequest
+from eval_runner.reference.approval_store import FileApprovalStore
 
 
-@pytest.mark.asyncio
-async def test_golden_hitl_restart_durability_and_token(tmp_path, monkeypatch):
-    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
-
-    # 1. First session creates approval
-    registry1 = PendingApprovalRegistry()
-    registry1.db_path = tmp_path / "hitl.db"
-    registry1._init_db()
-
-    app1 = registry1.create(
-        task_id="task_1",
-        run_id="run_100",
-        prompt="Authorize transfer of $5000?",
-        timeout_seconds=300,
+def test_golden_hitl_restart_durability_and_token(tmp_path):
+    store1 = FileApprovalStore(tmp_path / "approvals")
+    request = store1.create_request(
+        ApprovalRequest(
+            approval_token="tok_restart_durable",
+            run_id="run_100",
+            turn_index=1,
+            outbound_payload_hash="sha3_256:payload",
+            prompt="Authorize transfer of $5000?",
+        )
     )
-    token = app1.resumption_token
-    assert token.startswith("tok_")
-    assert not app1.resumed_from_db
+    assert request.approval_token.startswith("tok_")
 
-    # 2. Simulate process restart by instantiating new registry
-    registry2 = PendingApprovalRegistry()
-    registry2.db_path = tmp_path / "hitl.db"
-    registry2._load_from_db()
+    # A new provider instance is the process-restart proof.
+    store2 = FileApprovalStore(tmp_path / "approvals")
+    restored = store2.get_request(request.approval_token)
+    assert restored is not None
+    assert restored.run_id == request.run_id
+    assert restored.prompt == "Authorize transfer of $5000?"
+    assert [item.approval_token for item in store2.list_pending()] == [request.approval_token]
 
-    # Verify restored state
-    app_restored = registry2.get_by_resumption_token(token)
-    assert app_restored is not None
-    assert app_restored.id == app1.id
-    assert app_restored.resumed_from_db is True
-    assert app_restored.prompt == "Authorize transfer of $5000?"
-
-    # Check pending_resumed
-    resumed_list = registry2.pending_resumed()
-    assert any(a.id == app1.id for a in resumed_list)
-
-    # 3. Resolve approval in new session
-    success = registry2.resolve(
-        app1.id, action="approve", response="Approved by security officer", resolved_by="admin@org"
+    resolved = store2.resolve_request(
+        request.approval_token,
+        "APPROVED",
+        decided_by="admin@org",
+        decision_reason="Approved by security officer",
     )
-    assert success is True
-    assert app_restored.action == "approve"
-    assert app_restored.response == "Approved by security officer"
+    assert resolved.status == "APPROVED"
+    assert resolved.decision_reason == "Approved by security officer"

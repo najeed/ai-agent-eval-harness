@@ -328,11 +328,16 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
 
   // [P0-2, P0-4] Authoritative failed assertions for "What failed" / RCA
   const crypto = evidencePackage?.cryptographic_verification;
-  const failedAssertions: any[] = (
-    evidencePackage?.verdict?.assertions ??
-    evidencePackage?.assertions ??
-    assertions
-  ).filter((a: any) => a && a.passed === false);
+  const certifiedAssertions = evidencePackage?.verdict?.assertions;
+  const diagnosticAssertions = evidencePackage?.observed_assertions;
+  const assertionEvidence: any[] = Array.isArray(certifiedAssertions) && certifiedAssertions.length > 0
+    ? certifiedAssertions
+    : Array.isArray(diagnosticAssertions) && diagnosticAssertions.length > 0
+      ? diagnosticAssertions
+      : Array.isArray(evidencePackage?.assertions) && evidencePackage.assertions.length > 0
+        ? evidencePackage.assertions
+        : assertions;
+  const failedAssertions = assertionEvidence.filter((a: any) => a && a.passed === false);
 
   // Hydrated Duration (fallback to streamEvents timestamps if run.duration is not recorded)
   const derivedDuration = React.useMemo(() => {

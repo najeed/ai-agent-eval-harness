@@ -9,7 +9,6 @@ identify the failing assertion, causal node, and expected vs actual values.
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
 
@@ -28,10 +27,6 @@ def run_with_failed_assertion(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
     monkeypatch.setattr(config, "REPORTS_DIR", tmp_path / "reports")
 
     run_id = "run-rca-contract-failed-001"
-    run_dir = runs_dir / run_id
-    run_dir.mkdir(parents=True, exist_ok=True)
-
-    run_dir / "run.jsonl"
     events: list[dict[str, Any]] = [
         {
             "_seq": 1,
@@ -89,8 +84,6 @@ def run_with_failed_assertion(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
         "execution_mode_declared": True,
         "runtime_config": {"execution_mode": "live"},
     }
-    (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
-
     from eval_runner.reference.local_run_store import LocalFileRunStore
 
     run_store = LocalFileRunStore(runs_dir)

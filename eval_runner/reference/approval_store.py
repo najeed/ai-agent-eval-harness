@@ -667,14 +667,14 @@ def migrate_unscoped_approval(
     store: ApprovalStore | None = None,
     operator: str | None = None,
     reason: str = "Audited scope backfill",
-    run_index_root: Path | None = None,
+    run_store: Any | None = None,
 ) -> ApprovalRequest:
     """
     Audited migration utility to bind an UNSCOPED_LEGACY approval to a verified scope.
 
     Strict invariants:
     1. The approval must exist and be currently UNSCOPED_LEGACY.
-    2. A verified run manifest or run index with the exact run_id must exist.
+    2. A provider-owned submission or manifest with the exact run_id must exist.
     3. The verified run must have an unambiguous, non-empty scope.
     4. Migration records an audit record in the approval metadata.
     5. Fails closed with ValueError if provenance is ambiguous or missing.
@@ -694,27 +694,22 @@ def migrate_unscoped_approval(
             f"Run ID mismatch: approval belongs to '{req.run_id}', requested '{target_run_id}'."
         )
 
-    # 1. Look up verified run in run_index
-    from eval_runner.run_index import read_run_index
-
     verified_context: dict[str, Any] | None = None
     verified_scope_digest: str = ""
     verified_manifest_id: str | None = req.manifest_id
 
-    idx_entry = read_run_index(target_run_id, root=run_index_root)
-    if (
-        idx_entry
-        and isinstance(idx_entry.get("context"), Mapping)
-        and idx_entry.get("scope_digest")
-    ):
-        verified_context = dict(idx_entry["context"])
-        verified_scope_digest = str(idx_entry["scope_digest"])
+    if run_store is None:
+        from eval_runner.runtime_services import resolve_run_store
 
-    # 2. Look up run manifest if run_index wasn't present or missing scope
+        run_store = resolve_run_store()
+    submission = run_store.get_submission(target_run_id)
+    if submission and isinstance(submission.get("context"), Mapping):
+        verified_context = dict(submission["context"])
+        verified_scope_digest = ScopeToken.from_tags(verified_context).digest
+
+    # Fall back to the provider manifest only when the provider submission did
+    # not carry the scope (for records created before admission was introduced).
     if not verified_context or not verified_scope_digest:
-        from eval_runner.reference.local_run_store import LocalFileRunStore
-
-        run_store = LocalFileRunStore()
         manifest_getter = getattr(
             run_store, "get_run_manifest", getattr(run_store, "get_manifest", None)
         )

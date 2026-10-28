@@ -26,7 +26,6 @@ from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
 from agentv_runtime.package import VerificationPackage
 from eval_runner import config
 from eval_runner.identity import IdentityService
-from eval_runner.reference.legacy_verifier_paths import locate_certificate_file
 from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.verifier import (
     BaseVerifier,
@@ -1380,21 +1379,15 @@ def test_core_trace_signer_raises_certification_failed_on_signing_error():
             signer.sign(manifest, lambda m: m)
 
 
-def test_locate_certificate_file_candidate_resolution(vault_context):
-    """locate_certificate_file resolves candidate certificates and handles invalid inputs."""
-    assert locate_certificate_file("") is None
-    assert locate_certificate_file("../escape") is None
-    assert locate_certificate_file(12345) is None
-    assert locate_certificate_file("non_existent_run_id") is None
-
+def test_provider_certificate_manifest_visibility(vault_context):
+    """Certificate visibility is provider-owned, never discovered by paths."""
     run_id = "located_candidate_run"
-    cert_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
-    cert_path.parent.mkdir(parents=True, exist_ok=True)
-    cert_path.write_text("{}", encoding="utf-8")
-
-    resolved = locate_certificate_file(run_id)
-    assert resolved is not None
-    assert resolved == cert_path.resolve()
+    store = LocalFileRunStore(config.RUN_LOG_DIR)
+    store.create_run(run_id, "scenario")
+    assert store.get_manifest(run_id) is None
+    store.save_run_manifest(run_id, {"vc_version": "3.0.0", "run_id": run_id})
+    assert store.get_manifest(run_id) == {"vc_version": "3.0.0", "run_id": run_id}
+    assert store.get_manifest("../escape") is None
 
 
 def test_verify_trace_provenance_and_scenario_and_outcome_checks():
@@ -3119,50 +3112,8 @@ def test_verify_certification_artifact_successful_authoritative_certification():
     assert res_obj["status"] == "CERTIFIED"
 
 
-def test_is_plain_execution_manifest_and_uncertified_run_handling(tmp_path, monkeypatch):
-    """Execution manifests must be rejected as certificates and report UNVERIFIED."""
-    from eval_runner.reference.legacy_verifier_paths import (
-        is_plain_execution_manifest as _is_plain_execution_manifest,
-    )
-
-    # 1. Non-existent file
-    assert _is_plain_execution_manifest(tmp_path / "missing.json") is False
-
-    # 2. Non-dict JSON
-    list_file = tmp_path / "list.json"
-    list_file.write_text("[1, 2, 3]", encoding="utf-8")
-    assert _is_plain_execution_manifest(list_file) is False
-
-    # 3. Corrupt JSON
-    corrupt_file = tmp_path / "corrupt.json"
-    corrupt_file.write_text("{broken", encoding="utf-8")
-    assert _is_plain_execution_manifest(corrupt_file) is False
-
-    # 4. Certificate manifest (contains trace_hash)
-    cert_file = tmp_path / "cert.json"
-    cert_file.write_text(
-        json.dumps({"manifest_id": "man_1", "trace_hash": "th_1"}), encoding="utf-8"
-    )
-    assert _is_plain_execution_manifest(cert_file) is False
-
-    # 5. Plain execution manifest (man_ prefix)
-    exec_file_1 = tmp_path / "exec1.json"
-    exec_file_1.write_text(
-        json.dumps({"manifest_id": "man_test_run", "scenario_id": "s1"}), encoding="utf-8"
-    )
-    assert _is_plain_execution_manifest(exec_file_1) is True
-
-    # 6. Plain execution manifest (agent_config)
-    exec_file_2 = tmp_path / "exec2.json"
-    exec_file_2.write_text(json.dumps({"agent_config": {"model": "test"}}), encoding="utf-8")
-    assert _is_plain_execution_manifest(exec_file_2) is True
-
-    # 7. Plain execution manifest (pass_at_k)
-    exec_file_3 = tmp_path / "exec3.json"
-    exec_file_3.write_text(json.dumps({"pass_at_k": 1.0, "results": []}), encoding="utf-8")
-    assert _is_plain_execution_manifest(exec_file_3) is True
-
-    # 8. locate_certificate_file rejects plain run_manifest.json
+def test_uncertified_provider_run_handling(tmp_path, monkeypatch):
+    """An execution manifest is not a certificate unless the provider exposes one."""
     runs_dir = tmp_path / "runs"
     reports_dir = tmp_path / "reports"
     runs_dir.mkdir(parents=True, exist_ok=True)
@@ -3189,9 +3140,6 @@ def test_is_plain_execution_manifest_and_uncertified_run_handling(tmp_path, monk
         '{"event": "run_start"}\n{"event": "run_end"}\n', encoding="utf-8"
     )
 
-    # Plain execution manifest is not discovered as a certificate
-    assert locate_certificate_file(run_id) is None
-
     # verify_run reports UNVERIFIED when certification manifest is not returned
     store = LocalFileRunStore(runs_dir)
     uncert_id = "uncertified_run_no_manifest"
@@ -3202,8 +3150,3 @@ def test_is_plain_execution_manifest_and_uncertified_run_handling(tmp_path, monk
     assert res["has_certificate"] is False
     assert res["has_signature"] is False
     assert res["failure_reason"] == "Certification manifest not returned by storage provider."
-
-    # When fallback legacy certificate is present, locate_certificate_file discovers it
-    legacy_cert = run_vault / f"{run_id}_certificate.json"
-    legacy_cert.write_text(json.dumps({"vc_version": "3.0.0"}), encoding="utf-8")
-    assert locate_certificate_file(run_id) == legacy_cert.resolve()

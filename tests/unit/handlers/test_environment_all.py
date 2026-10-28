@@ -186,11 +186,14 @@ class TestEnvironmentHandlers:
 
     @pytest.mark.asyncio
     async def test_handle_cleanup_runs(self, clean_args):
-        with patch("eval_runner.cleaner.cleanup_traces") as mock_clean:
+        with (
+            patch("eval_runner.cleaner.cleanup_traces") as mock_clean,
+            patch("eval_runner.runtime_services.resolve_run_store") as mock_store,
+        ):
             clean_args.days = 7
             clean_args.force = False
             await handlers.handle_cleanup_runs(clean_args)
-            mock_clean.assert_called_with(days=7, force=False)
+            mock_clean.assert_called_with(run_store=mock_store.return_value, days=7, force=False)
 
     @pytest.mark.asyncio
     async def test_handle_export(self, clean_args):
@@ -202,10 +205,13 @@ class TestEnvironmentHandlers:
 
     @pytest.mark.asyncio
     async def test_handle_failures_search(self, clean_args):
-        with patch("eval_runner.failure_corpus.search") as mock_search:
+        with (
+            patch("eval_runner.failure_corpus.search") as mock_search,
+            patch("eval_runner.runtime_services.resolve_run_store") as mock_store,
+        ):
             clean_args.query = "q"
             await handlers.handle_failures_search(clean_args)
-            mock_search.assert_called_with("q")
+            mock_search.assert_called_with("q", run_store=mock_store.return_value)
 
     @pytest.mark.asyncio
     async def test_handle_auto_translate(self, tmp_dir):

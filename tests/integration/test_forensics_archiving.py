@@ -1,11 +1,10 @@
 from eval_runner.forensics import ForensicCollector
+from eval_runner.reference.local_artifact import LocalFileArtifactStore
 
 
 def test_forensic_plugin_archiving(tmp_path):
-    run_log_dir = tmp_path / "runs" / "test-run"
-    run_log_dir.mkdir(parents=True)
-
-    collector = ForensicCollector("test-run", run_log_dir)
+    store = LocalFileArtifactStore(base_dir=tmp_path / "artifact-store")
+    collector = ForensicCollector("test-run", artifact_store=store)
 
     # Create a dummy plugin
     plugin_path = tmp_path / "my_plugin.py"
@@ -16,21 +15,12 @@ def test_forensic_plugin_archiving(tmp_path):
     file_hash = collector.archive_plugin(plugin_path)
 
     # Verify file exists in forensics/plugins
-    archived_dir = run_log_dir / "forensics" / "plugins"
-    assert archived_dir.exists()
-
-    # Find the file (it has the hash in the name)
-    archived_files = list(archived_dir.glob("*.py"))
-    assert len(archived_files) == 1
-    assert file_hash[:12] in archived_files[0].name
-
-    # Verify content
-    assert archived_files[0].read_text() == plugin_content
+    archived_name = f"plugins/{plugin_path.stem}.{file_hash[:12]}.py"
+    assert store.get_artifact("test-run", f"forensics/{archived_name}") == plugin_content.encode()
 
     # Verify it was registered as an artifact
     ledger = collector.collect()
     # Path in ledger should be relative to forensics target_dir?
     # Current collect() returns ledger with alias as key
-    alias = f"plugins/{archived_files[0].name}"
-    assert alias in ledger
-    assert ledger[alias] == file_hash
+    assert archived_name in ledger
+    assert ledger[archived_name] == file_hash

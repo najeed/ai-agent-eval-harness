@@ -15,6 +15,15 @@ from unittest.mock import MagicMock, patch
 from eval_runner import cli, config, discovery, failure_corpus, loader, utils
 from eval_runner.utils import PathResolver
 
+
+class _FailureRunStore:
+    def list_runs(self, *, limit, context=None):
+        return [{"run_id": "run-1"}]
+
+    def get_events(self, run_id, *, offset, limit, context=None):
+        return [{"triage_tag": "API_FAIL", "run_id": run_id}]
+
+
 # --- 1. Loader & Validation ---
 
 
@@ -103,8 +112,8 @@ def test_failure_corpus_smoke(tmp_path, monkeypatch):
     (tmp_path / "runs").mkdir()
     (tmp_path / "runs" / "run.jsonl").write_text(json.dumps({"triage_tag": "API_FAIL"}) + "\n")
     with patch("builtins.print") as mock_print:
-        failure_corpus.search("api_fail")
-        mock_print.assert_any_call("✅ Found 1 matching failure events:")
+        failure_corpus.search("api_fail", run_store=_FailureRunStore())
+        assert any("Found 1 matching" in str(call) for call in mock_print.call_args_list)
 
 
 # --- 6. Extended Coverage ---

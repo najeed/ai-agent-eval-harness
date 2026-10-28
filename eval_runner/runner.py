@@ -708,11 +708,9 @@ class DefaultRunner(BaseRunner):
             ctx.metadata.get("runtime_context") if isinstance(ctx.metadata, Mapping) else None
         )
         if not runtime_context:
-            from eval_runner.run_index import read_run_index
-
-            idx_rec = read_run_index(effective_run_id)
-            if idx_rec and isinstance(idx_rec.get("context"), Mapping):
-                runtime_context = idx_rec["context"]
+            submission = self.run_store.get_submission(effective_run_id)
+            if submission and isinstance(submission.get("context"), Mapping):
+                runtime_context = submission["context"]
 
         if isinstance(runtime_context, Mapping) and all(
             bool(runtime_context.get(k))
@@ -1502,11 +1500,9 @@ class DefaultRunner(BaseRunner):
                             else None
                         )
                         if not runtime_context:
-                            from eval_runner.run_index import read_run_index
-
-                            idx_rec = read_run_index(effective_run_id)
-                            if idx_rec and isinstance(idx_rec.get("context"), Mapping):
-                                runtime_context = idx_rec["context"]
+                            submission = self.run_store.get_submission(effective_run_id)
+                            if submission and isinstance(submission.get("context"), Mapping):
+                                runtime_context = submission["context"]
                         if isinstance(runtime_context, Mapping):
                             from agentv_runtime.scope import ScopeToken
 
@@ -1586,11 +1582,9 @@ class DefaultRunner(BaseRunner):
                         else None
                     )
                     if not runtime_context:
-                        from eval_runner.run_index import read_run_index
-
-                        idx_rec = read_run_index(effective_run_id)
-                        if idx_rec and isinstance(idx_rec.get("context"), Mapping):
-                            runtime_context = idx_rec["context"]
+                        submission = self.run_store.get_submission(effective_run_id)
+                        if submission and isinstance(submission.get("context"), Mapping):
+                            runtime_context = submission["context"]
 
                     if isinstance(runtime_context, Mapping):
                         from agentv_runtime.scope import ScopeToken

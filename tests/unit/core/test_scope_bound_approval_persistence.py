@@ -7,7 +7,7 @@ Validates:
 2. Four-way identical scope_digest binding across:
    - Persisted Approval Record
    - Checkpoint state and metadata
-   - Run Index record
+   - Provider submission record
    - Execution Manifest
 3. Cross-scope isolation on reads and resolution (ScopeMismatchError).
 4. Atomic persistence of first-class scope fields in File and SQLite stores.
@@ -25,7 +25,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-import eval_runner.hitl.pending as hitl_pending
 from agentv_runtime.interfaces import (
     ApprovalLedger,
     ApprovalRequest,
@@ -363,25 +362,23 @@ def test_legacy_unscoped_approvals_hidden_and_migratable(
     pending_tenant = list(store.list_pending(run_id=run_id, scope=tenant_scope))
     assert len(pending_tenant) == 0
 
-    # 2. Migration fails closed if run identity has no verified provenance
+    # 2. Migration fails closed if the provider has no verified submission.
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    run_store = LocalFileRunStore(tmp_path / "runs")
     with pytest.raises(ValueError) as val_err:
         migrate_unscoped_approval(
             approval_token="tok_legacy_001",
             store=store,
             operator="secops_admin",
             reason="Backfill tenant scope",
-            run_index_root=tmp_path / "runs",
+            run_store=run_store,
         )
     assert "no verified run or unambiguous scope" in str(val_err.value)
 
-    # 3. Create verified run provenance in run index
-    from eval_runner.run_index import create_run_index
-
-    create_run_index(
-        run_id=run_id,
-        context=tenant_scope.tags,
-        scenario_id="scen_migrated",
-        root=tmp_path / "runs",
+    # 3. Create verified provider submission provenance.
+    run_store.reserve_submission(
+        run_id, "scen_migrated", None, {}, tenant_scope.tags, "idem-migrated"
     )
 
     # 4. Privileged migration succeeds with audit trail
@@ -389,8 +386,8 @@ def test_legacy_unscoped_approvals_hidden_and_migratable(
         approval_token="tok_legacy_001",
         store=store,
         operator="secops_admin",
-        reason="Backfilled verified scope from run_index",
-        run_index_root=tmp_path / "runs",
+        reason="Backfilled verified scope from provider submission",
+        run_store=run_store,
     )
 
     assert migrated.scope_digest == tenant_scope.digest
@@ -399,7 +396,10 @@ def test_legacy_unscoped_approvals_hidden_and_migratable(
     assert migrated.is_legacy_unscoped is False
     assert "migration" in migrated.metadata
     assert migrated.metadata["migration"]["operator"] == "secops_admin"
-    assert migrated.metadata["migration"]["reason"] == "Backfilled verified scope from run_index"
+    assert (
+        migrated.metadata["migration"]["reason"]
+        == "Backfilled verified scope from provider submission"
+    )
 
     # 5. Approval now appears in tenant queue
     pending_now = list(store.list_pending(run_id=run_id, scope=tenant_scope))
@@ -418,7 +418,6 @@ def test_core_retains_no_enterprise_imports():
         "agentv_runtime.scope",
         "eval_runner.reference.approval_store",
         "eval_runner.session_components.approval_manager",
-        "eval_runner.run_index",
     ]
 
     for mod_name in target_modules:
@@ -442,29 +441,38 @@ def test_session_approval_manager_property_and_list_pending(tmp_path: Path):
         assert mgr.approval_store is store
 
 
-def test_request_approval_plugin_interceptor_rejections_and_state_failure(tmp_path: Path):
-    registry = hitl_pending.PendingApprovalRegistry()
+def test_durable_approval_plugin_interceptor_rejections_and_state_failure(tmp_path: Path):
     mock_plugin = MagicMock()
+    context = {
+        "org_id": "org_1",
+        "tenant_id": "t1",
+        "workspace_id": "ws_1",
+        "active_environment": "staging",
+    }
+    store = FileApprovalStore(base_dir=tmp_path / "approvals")
 
     # 1. Interceptor returns False
     mock_plugin.trigger_interceptor.return_value = False
     mock_plugin.last_rejection_reason = "Policy violation"
     mgr = SessionApprovalManager(
-        run_id="run_plug_01", registry=registry, plugin_manager=mock_plugin
+        run_id="run_plug_01",
+        approval_store=store,
+        run_store=_provider(tmp_path, "run_plug_01", context=context),
+        plugin_manager=mock_plugin,
     )
     with pytest.raises(PermissionError, match="Policy violation"):
-        mgr.request_approval("t1", "tool_x", {})
+        mgr.create_durable_request(1, metadata={"runtime_context": context})
 
     # 2. Interceptor returns allowed: False with error string
     mock_plugin.trigger_interceptor.return_value = {"allowed": False, "error": "Custom rule fail"}
     mock_plugin.last_rejection_reason = None
     with pytest.raises(PermissionError, match="Custom rule fail"):
-        mgr.request_approval("t1", "tool_x", {})
+        mgr.create_durable_request(1, metadata={"runtime_context": context})
 
     # 3. Interceptor returns allowed: False with default message
     mock_plugin.trigger_interceptor.return_value = {"allowed": False}
-    with pytest.raises(PermissionError, match="Approval rejected by security policy"):
-        mgr.request_approval("t1", "tool_x", {})
+    with pytest.raises(PermissionError, match="Durable approval rejected by security policy"):
+        mgr.create_durable_request(1, metadata={"runtime_context": context})
 
     # 4. State provider raises exception -> checkpoint still created
     mock_plugin.trigger_interceptor.return_value = True
@@ -475,19 +483,25 @@ def test_request_approval_plugin_interceptor_rejections_and_state_failure(tmp_pa
 
     mgr_state = SessionApprovalManager(
         run_id="run_state_01",
-        registry=registry,
+        approval_store=store,
+        run_store=_provider(tmp_path, "run_state_01", context=context),
         checkpoint_manager=chk,
         state_provider=fail_state,
         plugin_manager=mock_plugin,
     )
-    appr = mgr_state.request_approval("t1", "tool_x", {"param": 1})
+    appr = mgr_state.create_durable_request(1, metadata={"runtime_context": context})
     assert appr.run_id == "run_state_01"
     assert len(chk.checkpoints) == 1
 
-    # 5. List and resolve pending approvals
-    assert len(mgr_state.list_pending_approvals()) == 1
-    assert mgr_state.resolve_approval(appr.id, "approve", response="OK", resolved_by="admin")
-    assert len(mgr_state.list_pending_approvals()) == 0
+    # 5. List and resolve through the durable provider.
+    assert len(store.list_pending(run_id="run_state_01")) == 1
+    store.resolve_request(
+        appr.approval_token,
+        "APPROVED",
+        decided_by="admin",
+        scope=ScopeToken.from_tags(context),
+    )
+    assert store.list_pending(run_id="run_state_01") == []
 
 
 def test_create_durable_request_scope_sources(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
@@ -588,7 +602,7 @@ def test_create_durable_request_plugin_interceptor_rejection(tmp_path: Path):
         mgr.create_durable_request(turn_index=1)
 
 
-def test_create_durable_request_manifest_and_run_index_mismatch(
+def test_create_durable_request_provider_manifest_and_submission_mismatch(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ):
     store = FileApprovalStore(base_dir=tmp_path / "approvals")
@@ -788,18 +802,24 @@ def test_approval_manager_uncovered_branches(tmp_path: Path, monkeypatch: pytest
     }
     scope_token = ScopeToken.from_tags(valid_context)
 
-    # 1. request_approval without plugin_manager, without checkpoint_manager (67->84, 84->105)
-    registry = hitl_pending.PendingApprovalRegistry()
-    mgr_basic = SessionApprovalManager(run_id="run_basic_01", registry=registry)
-    appr1 = mgr_basic.request_approval("task_1", "my_tool", {"a": 1})
+    # 1. Durable request without plugin_manager or checkpoint_manager.
+    mgr_basic = SessionApprovalManager(
+        run_id="run_basic_01",
+        approval_store=store,
+        run_store=_provider(tmp_path, "run_basic_01", context=valid_context),
+    )
+    appr1 = mgr_basic.create_durable_request(1, metadata={"runtime_context": valid_context})
     assert appr1.run_id == "run_basic_01"
 
-    # 2. request_approval with checkpoint_manager but state_provider is None (91->96)
+    # 2. Durable request with checkpoint_manager but state_provider is None.
     chk = DummyCheckpointManager()
     mgr_chk_only = SessionApprovalManager(
-        run_id="run_chk_only", registry=registry, checkpoint_manager=chk
+        run_id="run_chk_only",
+        approval_store=store,
+        run_store=_provider(tmp_path, "run_chk_only", context=valid_context),
+        checkpoint_manager=chk,
     )
-    appr2 = mgr_chk_only.request_approval("task_2", "my_tool", {"b": 2})
+    appr2 = mgr_chk_only.create_durable_request(1, metadata={"runtime_context": valid_context})
     assert appr2.run_id == "run_chk_only"
 
     # 3. state_provider raises exception during scope extraction (174->185)
@@ -883,7 +903,7 @@ def test_approval_manager_uncovered_branches(tmp_path: Path, monkeypatch: pytest
     req_corrupt = mgr_corrupt.create_durable_request(turn_index=1)
     assert req_corrupt.status == "PENDING"
 
-    # 8. state_provider returns non-dict and create_run_index raises
+    # 8. A non-dict state-provider result is tolerated by provider-backed approval creation.
     def non_dict_st():
         return "not-a-dict"
 

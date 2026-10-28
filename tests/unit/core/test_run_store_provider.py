@@ -476,42 +476,24 @@ def test_local_file_run_store_provisional_index_and_fragments(tmp_path):
     """Verify provisional index resolution, fragment parsing, and list_runs aggregation."""
     store = LocalFileRunStore(tmp_path)
 
-    # 1. Provisional index file: .index/<run_id>.json
-    index_dir = tmp_path / ".index"
-    index_dir.mkdir(parents=True)
-    (index_dir / "run-provisional.json").write_text(
-        json.dumps(
-            {
-                "run_id": "run-provisional",
-                "scenario_id": "scen-prov",
-                "status": "QUEUED",
-                "created_at": "2026-10-16T03:00:00Z",
-                "context": {"org_id": "eng"},
-            }
-        ),
-        encoding="utf-8",
-    )
+    # 1. Provider-created provisional record, scoped by its runtime context.
+    store.create_run("run-provisional", "scen-prov", status="QUEUED", context={"org_id": "eng"})
     prov_run = store.get_run("run-provisional", context={"org_id": "eng"})
     assert prov_run is not None
     assert prov_run["status"] == "QUEUED"
-    assert prov_run["provisional"] is True
+    assert prov_run["status"] == "QUEUED"
     # Context mismatch returns None
     assert store.get_run("run-provisional", context={"org_id": "sales"}) is None
 
-    # 2. Fragment log file: <run_id>.jsonl
-    frag_data = {
-        "run_id": "run-fragment-test-1",
-        "scenario": "scen-frag",
-        "timestamp": "2026-10-16T04:00:00Z",
-    }
-    (tmp_path / "run-fragment-test-1.jsonl").write_text(
-        json.dumps(frag_data) + "\n",
-        encoding="utf-8",
+    # 2. Event ownership is provider-backed, not a loose JSONL fragment.
+    store.create_run("run-fragment-test-1", "scen-frag")
+    store.append_events(
+        "run-fragment-test-1", [{"event": "run_start", "timestamp": "2026-10-16T04:00:00Z"}]
     )
     frag_run = store.get_run("run-fragment-test-1")
     assert frag_run is not None
     assert frag_run["scenario"] == "scen-frag"
-    assert frag_run["_fragment_path"] == "run-fragment-test-1.jsonl"
+    assert store.get_events("run-fragment-test-1")[0]["event"] == "run_start"
 
     # Fragment with context check
     (tmp_path / "run-frag-ctx.jsonl").write_text(
@@ -643,7 +625,7 @@ def test_local_file_run_store_search_and_edge_branches(tmp_path):
     assert non_existent_store.list_runs() == []
 
 
-def test_local_file_run_store_lifecycle_marker_and_master_log_branches(tmp_path, monkeypatch):
+def test_local_file_run_store_lifecycle_marker_and_no_master_log_discovery(tmp_path, monkeypatch):
     from eval_runner import config
 
     # log_dir property resolution with string config and Path config
@@ -718,7 +700,7 @@ def test_local_file_run_store_lifecycle_marker_and_master_log_branches(tmp_path,
     # get_events with context denial
     assert store.get_events("run-context-denied", context={"org_id": "corp_b"}) == []
 
-    # list_runs reading master log
+    # A shared master log is not a run authority and is never discovered.
     master_log = tmp_path / "run.jsonl"
     master_log.write_text(
         json.dumps(
@@ -733,7 +715,7 @@ def test_local_file_run_store_lifecycle_marker_and_master_log_branches(tmp_path,
         encoding="utf-8",
     )
     runs = store.list_runs()
-    assert any(r["run_id"] == "run-from-master" for r in runs)
+    assert all(r["run_id"] != "run-from-master" for r in runs)
 
     # get_manifest with context denial
     assert store.get_manifest("run-context-denied", context={"org_id": "corp_b"}) is None

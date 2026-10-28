@@ -8,7 +8,6 @@ Orchestrates eval-harness CLI runs and captures Flight Recorder logs.
 import argparse
 import json
 import os
-import shutil
 import subprocess
 from datetime import datetime
 from multiprocessing import Pool
@@ -21,7 +20,8 @@ def run_worker(task):
     """Subprocess worker to run a single evaluation."""
     scenario_path, agent_name, protocol, agent_url, seed, output_dir, run_id = task
 
-    # Use a dedicated sub-folder for this specific worker run to capture its log accurately
+    # Compose an isolated local reference provider for this worker.  The
+    # conductor subsequently queries that provider; it never discovers traces.
     worker_log_dir = output_dir / f"tmp_{run_id}"
     worker_log_dir.mkdir(parents=True, exist_ok=True)
 
@@ -44,7 +44,7 @@ def run_worker(task):
         env = os.environ.copy()
         env["RUN_LOG_DIR"] = str(worker_log_dir)
         env["RUN_LOG_PER_RUN"] = "true"
-        env["RUN_LOG_MASTER"] = "false"  # Only per-run logs for aggregation
+        env["RUN_LOG_MASTER"] = "false"
         env["PYTHONIOENCODING"] = "utf-8"
         env["PYTHONUTF8"] = "1"
 
@@ -53,37 +53,24 @@ def run_worker(task):
 
         result = subprocess.run(cmd, env=env, capture_output=True, text=True, encoding="utf-8")
 
-        # Deterministically locate the exact log file for run_id
-        exact_log = worker_log_dir / f"{run_id}.jsonl"
-        vault_log = worker_log_dir / run_id / "run.jsonl"
-        source_log = None
-        if exact_log.exists():
-            source_log = exact_log
-        elif vault_log.exists():
-            source_log = vault_log
-        else:
-            log_files = list(worker_log_dir.glob("*.jsonl"))
-            if log_files:
-                source_log = log_files[0]
+        from eval_runner.runtime_services import compose_local_run_store
 
-        if source_log and source_log.exists():
-            target_log = output_dir / f"{run_id}.jsonl"
-            shutil.move(str(source_log), str(target_log))
-            shutil.rmtree(worker_log_dir, ignore_errors=True)
-
+        run_store = compose_local_run_store(worker_log_dir)
+        records = run_store.list_runs(limit=2)
+        if len(records) == 1:
+            provider_run_id = records[0]["run_id"]
             return {
-                "run_id": run_id,
+                "run_id": provider_run_id,
                 "success": result.returncode == 0,
-                "log_path": str(target_log),
+                "provider_log_dir": str(worker_log_dir),
                 "scenario": scenario_path.name,
                 "seed": seed,
             }
-        else:
-            return {
-                "run_id": run_id,
-                "success": False,
-                "error": "No log file generated",
-            }
+        return {
+            "run_id": run_id,
+            "success": False,
+            "error": "No log file generated: provider did not publish exactly one run",
+        }
 
     except Exception as e:
         return {"run_id": run_id, "success": False, "error": str(e)}

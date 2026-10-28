@@ -11,7 +11,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-import eval_runner.hitl.pending as hitl_pending
+from eval_runner.reference.approval_store import FileApprovalStore
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.reference.sqlite_checkpoint import SQLiteCheckpointStore
 from eval_runner.session_components import (
     SessionApprovalManager,
@@ -159,41 +160,49 @@ def test_session_checkpoint_manager_full(tmp_path):
     assert isinstance(default_mgr.store, SQLiteCheckpointStore)
 
 
-def test_session_approval_manager_full():
-    registry = hitl_pending.PendingApprovalRegistry()
-    appr_mgr = SessionApprovalManager(run_id="run_decomp_01", registry=registry)
+def test_session_approval_manager_full(tmp_path):
+    store = FileApprovalStore(tmp_path / "approvals")
+    runs = LocalFileRunStore(tmp_path / "runs")
+    context = {"tenant_id": "test", "workspace_id": "test", "active_environment": "test"}
+    runs.create_run("run_decomp_01", "scenario", context=context)
+    runs.create_run("run_other_02", "scenario", context=context)
+    appr_mgr = SessionApprovalManager(run_id="run_decomp_01", approval_store=store, run_store=runs)
 
     # Request approval
-    req1 = appr_mgr.request_approval(
-        "task_01", "delete_account", {"user_id": "u123"}, timeout_seconds=45
+    req1 = appr_mgr.create_durable_request(
+        1,
+        metadata={"task_id": "task_01", "runtime_context": context},
+        action_payload={"user_id": "u123"},
+        prompt="delete_account",
     )
     assert req1.run_id == "run_decomp_01"
-    assert req1.task_id == "task_01"
+    assert req1.metadata["task_id"] == "task_01"
     assert "delete_account" in req1.prompt
 
     # Request approval for a different run in same registry
-    appr_mgr2 = SessionApprovalManager(run_id="run_other_02", registry=registry)
-    req2 = appr_mgr2.request_approval("task_02", "restart_node", {"node_id": "n1"})
+    appr_mgr2 = SessionApprovalManager(run_id="run_other_02", approval_store=store, run_store=runs)
+    req2 = appr_mgr2.create_durable_request(
+        1,
+        metadata={"task_id": "task_02", "runtime_context": context},
+        action_payload={"node_id": "n1"},
+        prompt="restart_node",
+    )
 
     # Test list_pending_approvals filters by run_id
-    pending_01 = appr_mgr.list_pending_approvals()
+    pending_01 = store.list_pending(run_id="run_decomp_01")
     assert len(pending_01) == 1
-    assert pending_01[0].id == req1.id
+    assert pending_01[0].approval_token == req1.approval_token
 
-    pending_02 = appr_mgr2.list_pending_approvals()
+    pending_02 = store.list_pending(run_id="run_other_02")
     assert len(pending_02) == 1
-    assert pending_02[0].id == req2.id
+    assert pending_02[0].approval_token == req2.approval_token
 
     # Resolve approval with custom response and resolved_by
-    resolved = appr_mgr.resolve_approval(
-        req1.id, "approve", response="Approved by audit", resolved_by="auditor_1"
+    resolved = appr_mgr.resolve_durable_request(
+        req1.approval_token, "APPROVED", "auditor_1", "Approved by audit"
     )
-    assert resolved is True
+    assert resolved.status == "APPROVED"
 
     # Resolve approval with defaults (response=None, resolved_by=None)
-    resolved2 = appr_mgr2.resolve_approval(req2.id, "reject")
-    assert resolved2 is True
-
-    # Default constructor registry initialization
-    default_appr = SessionApprovalManager(run_id="run_default_reg")
-    assert default_appr.registry is hitl_pending.global_registry
+    resolved2 = appr_mgr2.resolve_durable_request(req2.approval_token, "REJECTED")
+    assert resolved2.status == "REJECTED"

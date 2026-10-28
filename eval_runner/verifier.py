@@ -1067,7 +1067,6 @@ class TraceVerifier:
         try:
             run = run_store.get_run(run_id, context=context)
             manifest = run_store.get_manifest(run_id, context=context)
-            events = run_store.get_events(run_id, offset=0, limit=10_000_000, context=context)
             trace_bytes = run_store.get_trace_bytes(run_id, context=context)
         except Exception as e:
             return {
@@ -1107,15 +1106,6 @@ class TraceVerifier:
                 "has_certificate": bool(manifest),
                 "has_signature": False,
                 "failure_reason": "Provider scope returned artifacts for a different run.",
-            }
-        if events is None:
-            return {
-                "run_id": run_id,
-                "verification_status": "FAILED_VERIFICATION",
-                "is_valid": False,
-                "has_certificate": bool(manifest),
-                "has_signature": False,
-                "failure_reason": "Provider did not return scoped run events.",
             }
         if trace_bytes is None:
             return {

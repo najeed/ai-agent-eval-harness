@@ -32,6 +32,47 @@ def compute_sha3_digest(content: bytes | str) -> str:
     return f"sha3_256:{hashlib.sha3_256(content).hexdigest()}"
 
 
+def _certification_graph(
+    events_with_lines: list[tuple[dict[str, Any], str]],
+    *,
+    expected_root: str | None,
+    required_oracle_ids: list[str] | None = None,
+) -> tuple[dict[str, Any], bool]:
+    """Rebuild the certification graph and require its committed root."""
+    from agentv_runtime.evidence_graph import build_evidence_graph_from_events
+
+    graph = build_evidence_graph_from_events(
+        events_with_lines, required_oracle_ids=required_oracle_ids or []
+    )
+    if expected_root and graph.get("evidence_root_hash") == expected_root:
+        return graph, True
+    filtered = [
+        (event, line)
+        for event, line in events_with_lines
+        if not (
+            event.get("event") == "evaluator_finalization"
+            or (
+                event.get("event") in ("run_end", "verification_decision", "session_decision")
+                and isinstance(
+                    event.get("finalization")
+                    or (
+                        event.get("data", {}).get("finalization")
+                        if isinstance(event.get("data"), dict)
+                        else None
+                    ),
+                    dict,
+                )
+            )
+        )
+    ]
+    filtered_graph = build_evidence_graph_from_events(
+        filtered, required_oracle_ids=required_oracle_ids or []
+    )
+    return filtered_graph, bool(
+        expected_root and filtered_graph.get("evidence_root_hash") == expected_root
+    )
+
+
 def build_verification_package(
     run_id: str, *, run_store: Any, context: dict[str, Any] | None = None
 ) -> dict[str, Any] | None:
@@ -67,7 +108,11 @@ def build_verification_package(
     for raw_line in raw_trace_bytes.split(b"\n"):
         line_start_offset = offset
         offset += len(raw_line) + 1  # account for the split newline
-        text = raw_line.decode("utf-8", errors="replace").strip()
+        try:
+            text = raw_line.decode("utf-8").strip()
+        except UnicodeDecodeError:
+            corrupt_line_offsets.append(line_start_offset)
+            continue
         if not text:
             continue
         try:
@@ -93,12 +138,6 @@ def build_verification_package(
         }
     else:
         integrity_corruption = None
-
-    # Extract verdicts and run status
-    run_end_event = next((e for e in reversed(events) if e.get("event") == "run_end"), {})
-    data_block = run_end_event.get("data", {})
-
-    execution_status = data_block.get("status", "EXECUTION_COMPLETED")
 
     # Load certificate and signature chain
     cert_data = manifest_data
@@ -142,106 +181,116 @@ def build_verification_package(
 
     # Authoritative Verdict — determined by real verification and finalization,
     # not artifact presence.
+    # Trace assertions are provider-owned observations for RCA.  They cannot
+    # determine a verdict, score, or certification state.
+    observed_assertions: list[dict[str, Any]] = []
+    for ev in reversed(events):
+        ev_data = ev.get("data", {}) if isinstance(ev.get("data"), dict) else {}
+        ev_asserts = ev_data.get("assertions") or ev.get("assertions")
+        if isinstance(ev_asserts, list) and ev_asserts:
+            observed_assertions = [item for item in ev_asserts if isinstance(item, dict)]
+            break
+
+    # The trace is never an independent certification authority.  A package
+    # can report a certified outcome only when the provider has sealed a
+    # transactional certificate, its signature verifies, and the graph rebuilt
+    # from the exact provider bytes has the root committed in that certificate.
+    certification = manifest_data.get("certification") or {}
+    signed_package = manifest_data.get("verification_package") or {}
+    if not isinstance(certification, dict):
+        certification = {}
+    if not isinstance(signed_package, dict):
+        signed_package = {}
     compliance = manifest_data.get("compliance") or {}
-    cert = manifest_data.get("certification") or {}
-    cert_outcome = str(cert.get("outcome") or "").lower()
-    computed_status = str(
-        cert_outcome or compliance.get("status") or manifest_data.get("status") or execution_status
-    ).lower()
-    computed_score = compliance.get("score", manifest_data.get("score"))
-    if cert_outcome == "attested_fail":
-        is_eval_pass = False
-    elif data_block.get("passed") is True or computed_status in {"pass", "passed", "certified"}:
-        is_eval_pass = True
-    elif data_block.get("passed") is False or computed_status in {
-        "fail",
-        "failed",
-        "execution_failed",
-        "attested_fail",
-        "attested_failed",
-    }:
-        is_eval_pass = False
-    elif (
+    certification_outcome = str(certification.get("outcome") or "").upper()
+    is_sealed = str(run.get("lifecycle") or run.get("status") or "").upper() == "SEALED"
+    expected_root = (
+        str(
+            signed_package.get("evidence_root_hash")
+            or manifest_data.get("evidence_root_hash")
+            or ""
+        )
+        or None
+    )
+    required_oracles = (
+        signed_package.get("required_oracle_ids")
+        or manifest_data.get("metadata", {}).get("required_oracle_ids")
+        or []
+    )
+    evidence_graph, graph_matches_certificate = _certification_graph(
+        events_with_lines,
+        expected_root=expected_root,
+        required_oracle_ids=list(required_oracles),
+    )
+    evidence_graph["authority"] = (
+        "certification_root_equivalent"
+        if graph_matches_certificate
+        else "preliminary_reconstructed"
+    )
+    signed_certificate = bool(
+        is_sealed
+        and certification.get("transactional") is True
+        and certification_outcome in {"CERTIFIED_PASS", "ATTESTED_FAIL"}
+        and isinstance(signed_package, dict)
+    )
+    cryptographically_verified = bool(
         crypto_verification.get("verified") is True
         and crypto_verification.get("manifest_hash_match") is True
-        and computed_status
-        not in {"fail", "failed", "execution_failed", "attested_fail", "attested_failed"}
-    ):
-        is_eval_pass = True
-    else:
-        is_eval_pass = None
-
-    # Priority: evidence_invalid > policy_violation > crypto-verified >
-    # unverified > not-verified / inconclusive
+    )
+    evidence_chain_valid = bool(
+        signed_certificate
+        and cryptographically_verified
+        and graph_matches_certificate
+        and not corrupt_line_offsets
+    )
     if corrupt_line_offsets:
-        verified_outcome = "EVIDENCE_INVALID"
-    elif any(e.get("event") == "policy_violation" for e in events):
-        verified_outcome = "POLICY_BREACH"
-    elif (
-        is_eval_pass is True
-        and crypto_verification.get("verified") is True
-        and crypto_verification.get("manifest_hash_match") is True
-    ):
-        verified_outcome = "VERIFIED"
-    elif (
-        is_eval_pass is False
-        and crypto_verification.get("verified") is True
-        and crypto_verification.get("manifest_hash_match") is True
-    ):
-        verified_outcome = "ATTESTED_FAIL"
-    elif is_eval_pass is True:
-        # Execution passed but signature did not verify — report truthfully
-        verified_outcome = "UNVERIFIED"
-    elif is_eval_pass is False:
-        verified_outcome = "NOT_VERIFIED"
+        verified_outcome, execution_status, score, assertions = (
+            "EVIDENCE_INVALID",
+            "EVIDENCE_INVALID",
+            None,
+            [],
+        )
+        # Do not project the parseable subset as a usable evidence graph.
+        # The exact trace hash and corruption offsets remain available for
+        # investigation, but no presentation node can be mistaken for
+        # certified evidence after a malformed byte sequence.
+        evidence_graph = {
+            "graph_version": evidence_graph.get("graph_version"),
+            "authority": "invalid_trace",
+            "evidence_root_hash": None,
+            "total_nodes": 0,
+            "nodes": [],
+        }
+    elif signed_certificate and not graph_matches_certificate:
+        verified_outcome, execution_status, score, assertions = (
+            "EVIDENCE_INVALID",
+            "EVIDENCE_ROOT_MISMATCH",
+            None,
+            [],
+        )
+    elif evidence_chain_valid:
+        is_pass = certification_outcome == "CERTIFIED_PASS"
+        verified_outcome = "VERIFIED" if is_pass else "ATTESTED_FAIL"
+        execution_status = certification_outcome
+        score = compliance.get("score")
+        assertions = list(signed_package.get("executed_oracle_results") or [])
+    elif not is_sealed:
+        # Provider-trace assertions remain useful RCA observations, but the
+        # PRELIMINARY state and null score make clear that they are not a
+        # certification verdict.
+        verified_outcome, execution_status, score, assertions = (
+            "PRELIMINARY",
+            "PRELIMINARY",
+            None,
+            observed_assertions,
+        )
     else:
-        # Authoritative finalization/computed outcomes unavailable
-        verified_outcome = "INCONCLUSIVE"
-
-    evidence_chain_valid: bool = (
-        verified_outcome in {"VERIFIED", "ATTESTED_FAIL"} and not corrupt_line_offsets
-    )
-
-    assertions = data_block.get("assertions", [])
-    if not assertions:
-        for ev in reversed(events):
-            ev_data = ev.get("data", {}) if isinstance(ev.get("data"), dict) else {}
-            ev_asserts = ev_data.get("assertions") or ev.get("assertions")
-            if isinstance(ev_asserts, list) and ev_asserts:
-                assertions = ev_asserts
-                break
-    # Score calculation strictly from authoritative finalization or computed outcome
-    if computed_status not in (None, "inconclusive") and computed_score is not None:
-        score = float(computed_score)
-    else:
-        if assertions:
-            passed_count = sum(1 for a in assertions if a.get("passed", False))
-            score = passed_count / len(assertions)
-        elif "score" in data_block:
-            score = float(data_block["score"])
-        elif verified_outcome == "VERIFIED":
-            score = 1.0
-        else:
-            score = 0.0
-
-    # Evidence Graph v1: every assertion linked to its source event
-    # (by _seq + exact-line content hash) or reported UNRESOLVED.
-    from agentv_runtime.evidence_graph import build_evidence_graph
-
-    carrier_seq = next(
-        (
-            e.get("_seq")
-            for e in reversed(events)
-            if e.get("event") == "run_end" and isinstance(e.get("_seq"), int)
-        ),
-        None,
-    )
-    evidence_graph = build_evidence_graph(
-        events_with_lines,
-        assertions,
-        carrier_seq=carrier_seq,
-        artifact_hashes={"run.jsonl": trace_hash},
-    )
+        verified_outcome, execution_status, score, assertions = (
+            "UNVERIFIED",
+            certification_outcome or "SEALED",
+            None,
+            [],
+        )
 
     # [Chain header] Run → Scenario(revision) → Config → Target → Mode → Run.
     # Five immutable bindings an auditor must have WITHOUT reconstructing
@@ -307,10 +356,13 @@ def build_verification_package(
         "verdict": {
             "execution_status": execution_status,
             "verified_outcome": verified_outcome,
-            "duration_seconds": data_block.get("duration", 0),
+            "duration_seconds": 0,
             "score": score,
             "assertions": assertions,
         },
+        # Provider-trace observations support RCA, but are deliberately
+        # separate from the certification verdict for unverified sealed runs.
+        "observed_assertions": observed_assertions,
         "evidence_chain_valid": evidence_chain_valid,
         "cryptographic_verification": crypto_verification,
         "evidence_manifest": {
@@ -388,14 +440,8 @@ def list_verification_packages():
     return jsonify({"packages": packages_summary})
 
 
-@evidence_bp.route("/v1/evidence/verify", methods=["POST"])
-@require_permission("runs:read")
-def verify_verification_package():
-    """
-    Independently verifies an .agentv-package.json verification package.
-    Validates trace byte parity, manifest binding, evidence graph root,
-    decision verdict conformance, required oracle inventory, and signature.
-    """
+def _verify_package_request(*, authoritative: bool):
+    """Verify a package without allowing diagnostic options to imply authority."""
     from eval_runner.verifier import VerificationAuthority
 
     data = request.get_json(silent=True)
@@ -416,13 +462,38 @@ def verify_verification_package():
         except Exception as b64_err:
             return jsonify({"error": f"Invalid base64 trace payload: {b64_err}"}), 400
 
-    raw_trace_events = data.get("raw_trace_events")
-    public_key_pem = data.get("public_key_pem")
-    require_signature = bool(data.get("require_signature", True))
-    scenario_data = data.get("scenario_data")
-    require_scenario = bool(data.get("require_scenario", True) or scenario_data is not None)
+    if authoritative and data.get("require_signature") is False:
+        return jsonify(
+            {
+                "error": (
+                    "AuthoritativeVerificationRequiresSignature: use "
+                    "/v1/evidence/verify-diagnostic for unsigned analysis"
+                )
+            }
+        ), 400
+    if authoritative and (data.get("public_key_pem") or data.get("raw_trace_events") is not None):
+        return jsonify(
+            {
+                "error": (
+                    "AuthoritativeVerificationRequiresTrustedProviderInputs: "
+                    "caller-supplied keys and reconstructed event streams are diagnostic-only"
+                )
+            }
+        ), 400
 
-    # Fail closed if raw_trace_bytes missing in production verification
+    raw_trace_events = None if authoritative else data.get("raw_trace_events")
+    public_key_pem = None if authoritative else data.get("public_key_pem")
+    require_signature = True if authoritative else bool(data.get("require_signature", False))
+    scenario_data = data.get("scenario_data")
+    require_scenario = (
+        True
+        if authoritative
+        else bool(data.get("require_scenario", False) or scenario_data is not None)
+    )
+
+    # Authoritative verification always consumes exact bytes and an anchored
+    # signature.  Diagnostic verification may be used for offline triage but
+    # cannot certify a package.
     if raw_trace_bytes is None and require_signature:
         return (
             jsonify(
@@ -450,5 +521,24 @@ def verify_verification_package():
         require_signature=require_signature,
         require_scenario_binding=require_scenario,
     )
+    res["verification_mode"] = "AUTHORITATIVE" if authoritative else "DIAGNOSTIC"
+    res["authoritative"] = authoritative
+    res["certified"] = bool(authoritative and res.get("verified"))
+    if not authoritative and res.get("verified"):
+        res["status"] = "DIAGNOSTIC_VALID"
     status_code = 200 if res.get("verified") else 422
     return jsonify(res), status_code
+
+
+@evidence_bp.route("/v1/evidence/verify", methods=["POST"])
+@require_permission("runs:read")
+def verify_verification_package():
+    """Perform authoritative, signature-required package verification."""
+    return _verify_package_request(authoritative=True)
+
+
+@evidence_bp.route("/v1/evidence/verify-diagnostic", methods=["POST"])
+@require_permission("runs:read")
+def verify_verification_package_diagnostic():
+    """Perform explicitly non-authoritative offline package diagnostics."""
+    return _verify_package_request(authoritative=False)

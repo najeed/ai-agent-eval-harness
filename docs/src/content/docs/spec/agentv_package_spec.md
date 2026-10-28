@@ -98,10 +98,10 @@ The package adheres strictly to the `agentv-package.schema.json` specification:
         "execution_status": { "type": "string" },
         "verified_outcome": {
           "type": "string",
-          "enum": ["VERIFIED", "UNVERIFIED", "NOT_VERIFIED", "POLICY_BREACH", "EVIDENCE_INVALID"]
+          "enum": ["VERIFIED", "ATTESTED_FAIL", "PRELIMINARY", "UNVERIFIED", "NOT_VERIFIED", "POLICY_BREACH", "EVIDENCE_INVALID"]
         },
         "duration_seconds": { "type": "number" },
-        "score": { "type": "number", "minimum": 0, "maximum": 1 }
+        "score": { "type": ["number", "null"], "minimum": 0, "maximum": 1 }
       }
     },
     "evidence_chain_valid": {

@@ -245,7 +245,10 @@ def test_get_verification_package_policy_breach_and_vault_cert(client, tmp_path)
     res = client.get(f"/api/v1/evidence/packages/{run_id}")
     assert res.status_code == 200
     pkg = res.get_json()
-    assert pkg["verdict"]["verified_outcome"] == "POLICY_BREACH"
+    # A terminal event is evidence, not certification authority.  Without a
+    # sealed transactional certificate this remains explicitly preliminary.
+    assert pkg["verdict"]["verified_outcome"] == "PRELIMINARY"
+    assert pkg["verdict"]["assertions"] == []
     assert pkg["signatures"] == ["prov_root"]
 
 
@@ -346,9 +349,11 @@ def test_verification_package_determinism_and_unsigned_outcome(client, tmp_path)
     res1 = client.get(f"/api/v1/evidence/packages/{run_id}")
     assert res1.status_code == 200
     pkg1 = res1.get_json()
-    # Without signatures, passed run is marked UNVERIFIED
-    assert pkg1["verdict"]["verified_outcome"] == "UNVERIFIED"
-    assert pkg1["verdict"]["score"] == 0.85
+    # An unsigned terminal result is preliminary; it cannot project a verdict
+    # or score into a verification package.
+    assert pkg1["verdict"]["verified_outcome"] == "PRELIMINARY"
+    assert pkg1["verdict"]["score"] is None
+    assert pkg1["verdict"]["assertions"] == []
 
     res2 = client.get(f"/api/v1/evidence/packages/{run_id}")
     assert res2.status_code == 200
@@ -381,8 +386,8 @@ def test_verification_package_direct_fragment_without_vault(client, tmp_path):
     res = client.get(f"/api/v1/evidence/packages/{run_id}")
     assert res.status_code == 200
     pkg = res.get_json()
-    assert pkg["verdict"]["verified_outcome"] == "NOT_VERIFIED"
-    assert pkg["verdict"]["score"] == 0.0
+    assert pkg["verdict"]["verified_outcome"] == "PRELIMINARY"
+    assert pkg["verdict"]["score"] is None
 
 
 def test_verification_package_score_default_verified(crypto_client, tmp_path):
@@ -421,8 +426,10 @@ def test_verification_package_score_default_verified(crypto_client, tmp_path):
     res = crypto_client.get(f"/api/v1/evidence/packages/{run_id}")
     assert res.status_code == 200
     pkg = res.get_json()
-    assert pkg["verdict"]["verified_outcome"] == "VERIFIED"
-    assert pkg["verdict"]["score"] == 1.0
+    # Direct signing with no live finalization produces PROVISIONAL_PASS;
+    # sealing it manually cannot upgrade it into a certificate.
+    assert pkg["verdict"]["verified_outcome"] == "UNVERIFIED"
+    assert pkg["verdict"]["score"] is None
 
 
 def test_fake_certificate_signature_yields_unverified(client, tmp_path):
@@ -459,7 +466,7 @@ def test_fake_certificate_signature_yields_unverified(client, tmp_path):
     res = client.get(f"/api/v1/evidence/packages/{run_id}")
     assert res.status_code == 200
     pkg = res.get_json()
-    assert pkg["verdict"]["verified_outcome"] == "UNVERIFIED"
+    assert pkg["verdict"]["verified_outcome"] == "PRELIMINARY"
     assert pkg["evidence_chain_valid"] is False
 
 
@@ -503,6 +510,54 @@ def test_package_corruption_policy_blocks_certification(crypto_client, tmp_path)
     assert corruption["status"] == "EVIDENCE_INVALID"
     assert corruption["corrupt_count"] == 1
     assert corruption["corrupt_line_byte_offsets"] == [len(line1)]
+    assert pkg["verdict"]["assertions"] == []
+    assert pkg["verdict"]["score"] is None
+
+
+def test_sealed_package_rejects_graph_not_committed_by_certificate(client, tmp_path, monkeypatch):
+    """A presentation graph may never replace the certificate's root."""
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    run_id = "run-evidence-root-mismatch"
+    store = LocalFileRunStore(log_dir=tmp_path / "runs")
+    store.create_run(run_id, scenario_id="scenario")
+    store.append_events(
+        run_id,
+        [{"event": "assertion_evaluated", "_seq": 1, "data": {"passed": True}}],
+    )
+    store.save_run_manifest(
+        run_id,
+        {
+            "certification": {"transactional": True, "outcome": "CERTIFIED_PASS"},
+            "compliance": {"status": "pass", "score": 1.0},
+            "verification_package": {
+                "evidence_root_hash": "sha3_256:not-the-trace-root",
+                "required_oracle_ids": [],
+                "executed_oracle_results": [{"passed": True}],
+            },
+        },
+    )
+    store.update_run_status(run_id, "SEALED")
+
+    import eval_runner.console.routes.evidence as evidence_module
+
+    monkeypatch.setattr(
+        evidence_module,
+        "verify_trace_certificate",
+        lambda **_kwargs: {"verified": True, "manifest_hash_match": True},
+        raising=False,
+    )
+    # The route imports the verifier lazily, so patch its public function.
+    monkeypatch.setattr(
+        "eval_runner.verifier.verify_trace_certificate",
+        lambda **_kwargs: {"verified": True, "manifest_hash_match": True},
+    )
+
+    package = evidence_module.build_verification_package(run_id, run_store=store)
+    assert package is not None
+    assert package["verdict"]["verified_outcome"] == "EVIDENCE_INVALID"
+    assert package["verdict"]["assertions"] == []
+    assert package["evidence_chain_valid"] is False
 
 
 def test_verify_verification_package_route(client):
@@ -528,13 +583,34 @@ def test_verify_verification_package_route(client):
         "decision": {"decision": "PASS"},
     }
 
-    # 2. Valid minimal package (explicit offline unsigned check)
+    # 2. Valid minimal package (explicit offline unsigned diagnostic)
     res_valid = client.post(
-        "/api/v1/evidence/verify",
+        "/api/v1/evidence/verify-diagnostic",
         json={"package": pkg_payload, "require_signature": False, "require_scenario": False},
     )
     assert res_valid.status_code == 200
     assert res_valid.get_json()["verified"] is True
+    assert res_valid.get_json()["verification_mode"] == "DIAGNOSTIC"
+    assert res_valid.get_json()["authoritative"] is False
+    assert res_valid.get_json()["certified"] is False
+
+    # The authoritative endpoint cannot be downgraded by a request field.
+    res_downgrade = client.post(
+        "/api/v1/evidence/verify",
+        json={"package": pkg_payload, "require_signature": False},
+    )
+    assert res_downgrade.status_code == 400
+    assert "AuthoritativeVerificationRequiresSignature" in res_downgrade.get_json()["error"]
+
+    res_untrusted_key = client.post(
+        "/api/v1/evidence/verify",
+        json={"package": pkg_payload, "public_key_pem": "caller-controlled-key"},
+    )
+    assert res_untrusted_key.status_code == 400
+    assert (
+        "AuthoritativeVerificationRequiresTrustedProviderInputs"
+        in (res_untrusted_key.get_json()["error"])
+    )
 
     # 2b. Fail-closed: default require_signature=True rejects missing trace bytes and signatures
     res_default = client.post(
@@ -584,7 +660,7 @@ def test_evidence_package_unfinalized_run_reports_inconclusive(client, tmp_path:
     res = client.get(f"/api/v1/evidence/packages/{run_id}")
     assert res.status_code == 200
     pkg = res.get_json()
-    assert pkg["verdict"]["verified_outcome"] == "INCONCLUSIVE"
+    assert pkg["verdict"]["verified_outcome"] == "PRELIMINARY"
     assert pkg["evidence_chain_valid"] is False
 
 
@@ -643,7 +719,8 @@ def test_evidence_routes_exhaustive_edge_cases(client, tmp_path: Path, monkeypat
             pkg_err = ev_module.build_verification_package(run_id, run_store=store)
             assert any("verify crash" in e for e in pkg_err["cryptographic_verification"]["errors"])
 
-    # Event-level assertions resolution and run_end assertions bypass
+    # Unsealed trace assertions are provider-owned observations for RCA.  They
+    # remain PRELIMINARY and cannot be interpreted as certified assertions.
     (runs_dir / run_id / "run.jsonl").write_text(
         json.dumps({"event": "node_execution", "data": {"assertions": [{"passed": True}]}})
         + "\n"
@@ -652,7 +729,8 @@ def test_evidence_routes_exhaustive_edge_cases(client, tmp_path: Path, monkeypat
         encoding="utf-8",
     )
     pkg_event_asserts = ev_module.build_verification_package(run_id, run_store=store)
-    assert len(pkg_event_asserts["verdict"]["assertions"]) == 1
+    assert pkg_event_asserts["verdict"]["verified_outcome"] == "PRELIMINARY"
+    assert pkg_event_asserts["verdict"]["assertions"] == [{"passed": True}]
 
     # Direct run_end assertions presence
     (runs_dir / run_id / "run.jsonl").write_text(
@@ -660,7 +738,8 @@ def test_evidence_routes_exhaustive_edge_cases(client, tmp_path: Path, monkeypat
         encoding="utf-8",
     )
     pkg_direct_asserts = ev_module.build_verification_package(run_id, run_store=store)
-    assert len(pkg_direct_asserts["verdict"]["assertions"]) == 1
+    assert pkg_direct_asserts["verdict"]["verified_outcome"] == "PRELIMINARY"
+    assert pkg_direct_asserts["verdict"]["assertions"] == [{"passed": True}]
 
     # Manifest data_block score fallback
     (runs_dir / run_id / "run.jsonl").write_text(
@@ -668,7 +747,7 @@ def test_evidence_routes_exhaustive_edge_cases(client, tmp_path: Path, monkeypat
         encoding="utf-8",
     )
     pkg_data_score = ev_module.build_verification_package(run_id, run_store=store)
-    assert pkg_data_score["verdict"]["score"] == 0.88
+    assert pkg_data_score["verdict"]["score"] is None
 
     # VERIFIED outcome score fallback to 1.0
     (runs_dir / run_id / "run.jsonl").write_text(
@@ -685,8 +764,8 @@ def test_evidence_routes_exhaustive_edge_cases(client, tmp_path: Path, monkeypat
             },
         ):
             pkg_verified_score = ev_module.build_verification_package(run_id, run_store=store)
-            assert pkg_verified_score["verdict"]["verified_outcome"] == "VERIFIED"
-            assert pkg_verified_score["verdict"]["score"] == 1.0
+            assert pkg_verified_score["verdict"]["verified_outcome"] == "PRELIMINARY"
+            assert pkg_verified_score["verdict"]["score"] is None
 
     # Nonexistent RUN_LOG_DIR in list_verification_packages
     monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "nonexistent_runs_dir")

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from .. import calibrator, leaderboard_generator, reporter, taxonomy
-from ..explainer import explain_events
+from ..explainer import explain_run
 from ..trace_utils import reconstruct_results_from_events
 
 
@@ -18,7 +18,7 @@ async def handle_report(args):
         print("[CRITICAL] Run ID is mandatory for reporting.")
         return 1
     try:
-        from eval_runner.runtime_services import resolve_run_store
+        from eval_runner.runtime_services import resolve_artifact_store, resolve_run_store
 
         print(f"\n[Report] Generating stylized HTML for Run ID: {run_id}")
         events = _events_for_run(run_id, run_store=resolve_run_store())
@@ -39,6 +39,8 @@ async def handle_report(args):
             reconstruct_results_from_events(events),
             metadata={"run_id": run_id, "evidence_source": "provider"},
             standalone=bool(getattr(args, "share", False)),
+            artifact_store=resolve_artifact_store(),
+            run_id=run_id,
         )
         print(f"[OK] HTML Report generated: {output}")
         return 0
@@ -55,11 +57,7 @@ async def handle_explain(args):
     try:
         from eval_runner.runtime_services import resolve_run_store
 
-        events = _events_for_run(run_id, run_store=resolve_run_store())
-        if not events:
-            print(f"[ERROR] Run '{run_id}' was not found by the run provider.")
-            return 1
-        print(explain_events(events))
+        print(explain_run(run_id, run_store=resolve_run_store()))
         return 0
     except Exception as exc:
         print(f"[ERROR] Explanation failed: {exc}")
@@ -89,7 +87,9 @@ async def handle_calibrate(args):
 
 async def handle_leaderboard(args):
     try:
-        leaderboard_generator.run_leaderboard(args.dir, args.output)
+        from eval_runner.runtime_services import resolve_run_store
+
+        leaderboard_generator.run_leaderboard(resolve_run_store(), args.output)
         return 0
     except Exception as exc:
         print(f"[ERROR] Leaderboard generation failed: {exc}")
@@ -126,11 +126,13 @@ async def handle_list_metrics(args):
 
 async def handle_trend(args):
     try:
+        from eval_runner.runtime_services import resolve_run_store
+
         from ..trend import RunTrendAnalyzer
 
-        print(f"\n[Trend] Analyzing historical runs in: {args.run_log_dir}")
+        print("\n[Trend] Analyzing provider-owned historical runs")
         analyzer = RunTrendAnalyzer(
-            run_log_dir=args.run_log_dir,
+            run_store=resolve_run_store(),
             agent_name=args.agent_name,
             window=args.window,
             threshold=args.threshold,

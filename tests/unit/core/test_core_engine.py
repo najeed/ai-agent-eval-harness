@@ -14,6 +14,18 @@ from eval_runner.engine import AgentAdapterRegistry, run_evaluation
 from eval_runner.routing import RoutingRegistry
 from eval_runner.runner import DefaultRunner
 
+
+class _FailureRunStore:
+    def __init__(self, events_by_run):
+        self.events_by_run = events_by_run
+
+    def list_runs(self, *, limit, context=None):
+        return [{"run_id": run_id} for run_id in self.events_by_run]
+
+    def get_events(self, run_id, *, offset, limit, context=None):
+        return self.events_by_run[run_id]
+
+
 # --- 1. Core Execution & Protocols ---
 
 
@@ -613,10 +625,8 @@ def test_failure_corpus_no_log(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     (tmp_path / "runs").mkdir()
     with patch("builtins.print") as mock_print:
-        failure_corpus.search("test")
-        mock_print.assert_any_call(
-            "ℹ️  No master log found at runs/run.jsonl. Try running an evaluation first."
-        )
+        failure_corpus.search("test", run_store=_FailureRunStore({}))
+        assert any("No matching failures" in str(call) for call in mock_print.call_args_list)
 
 
 def test_failure_corpus_comprehensive(tmp_path, monkeypatch):
@@ -652,23 +662,28 @@ def test_failure_corpus_comprehensive(tmp_path, monkeypatch):
             f.write((json.dumps(e) if isinstance(e, dict) else e) + "\n")
 
     with patch("builtins.print") as mock_print:
-        failure_corpus.search("api failure")
-        mock_print.assert_any_call("✅ Found 1 matching failure events:")
-        failure_corpus.search("limit")
+        failure_corpus.search("api failure", run_store=_FailureRunStore({"r1": [events[0]]}))
+        assert any("Found 1 matching" in str(call) for call in mock_print.call_args_list)
+        failure_corpus.search(
+            "limit",
+            run_store=_FailureRunStore({f"L{i}": [event] for i, event in enumerate(events[4:])}),
+        )
         all_calls = "".join(str(c) for c in mock_print.call_args_list)
         assert "more" in all_calls
-        failure_corpus.search("nothing")
-        mock_print.assert_any_call("❌ No matching failures found for 'nothing'.")
+        failure_corpus.search("nothing", run_store=_FailureRunStore({"r1": [events[0]]}))
+        assert any("No matching failures" in str(call) for call in mock_print.call_args_list)
 
 
 def test_failure_corpus_error_handling():
-    with (
-        patch("eval_runner.failure_corpus.Path.exists", return_value=True),
-        patch("builtins.open", side_effect=Exception("Read error")),
-        patch("builtins.print") as mock_print,
-    ):
-        failure_corpus.search("test")
-        mock_print.assert_any_call("❌ Error searching corpus: Read error")
+    class BrokenStore:
+        def list_runs(self, **kwargs):
+            raise Exception("Read error")
+
+    with patch("builtins.print") as mock_print:
+        failure_corpus.search("test", run_store=BrokenStore())
+        assert any(
+            "Error searching corpus: Read error" in str(call) for call in mock_print.call_args_list
+        )
 
 
 # --- Coverage booster for runner.py and engine.py ---

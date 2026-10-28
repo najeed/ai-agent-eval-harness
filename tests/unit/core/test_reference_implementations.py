@@ -1310,7 +1310,8 @@ class TestLeaderboardStoreReferenceImplementation:
             )
         )
 
-        lb_store = LocalLeaderboardStore(runs_dir=runs_dir)
+        run_store = LocalFileRunStore(log_dir=runs_dir)
+        lb_store = LocalLeaderboardStore(run_store)
         leaderboard = lb_store.get_leaderboard()
 
         assert len(leaderboard) == 2
@@ -1827,15 +1828,17 @@ class TestAuthAndCatalogExtraBranches:
     def test_local_leaderboard_store_persistence(self, tmp_path):
         from eval_runner.reference.local_leaderboard import LocalLeaderboardStore
 
-        store = LocalLeaderboardStore(runs_dir=tmp_path)
+        run_store = LocalFileRunStore(log_dir=tmp_path)
+        run_store.create_run("run-lead-001", "scenario")
+        store = LocalLeaderboardStore(run_store)
         run_id = "run-lead-001"
         store.record_run_summary(run_id, {"run_id": run_id, "pass_rate": 0.95})
-        summary_path = tmp_path / run_id / "run_summary.json"
-        assert summary_path.exists()
-        assert json.loads(summary_path.read_text(encoding="utf-8"))["pass_rate"] == 0.95
+        manifest = run_store.get_manifest(run_id)
+        assert manifest["leaderboard_summary"]["pass_rate"] == 0.95
 
-        # Invalid run_id safe handling
-        store.record_run_summary("../invalid_run", {"pass_rate": 0})
+        # Provider path validation rejects traversal rather than writing outside its scope.
+        with pytest.raises(PermissionError, match="Directory traversal"):
+            store.record_run_summary("../invalid_run", {"pass_rate": 0})
 
     def test_local_catalog_store_edge_cases(self, tmp_path):
         from eval_runner.reference.local_catalog import LocalFileCatalogStore
@@ -1907,7 +1910,8 @@ class TestAuthAndCatalogExtraBranches:
             assert backend.verify_signature(b"data", "sig", "mock_key_str") is False
             assert backend.verify_signature(b"data", "sig", Path("mock_key_path")) is False
 
-    def test_approval_manager_state_provider_exception(self):
+    def test_approval_manager_state_provider_exception(self, tmp_path):
+        from eval_runner.reference.local_run_store import LocalFileRunStore
         from eval_runner.session_components.approval_manager import SessionApprovalManager
 
         mock_chk = MagicMock()
@@ -1915,12 +1919,19 @@ class TestAuthAndCatalogExtraBranches:
         def broken_state():
             raise RuntimeError("State provider crash")
 
+        run_store = LocalFileRunStore(tmp_path / "approval-provider")
+        run_store.create_run("run-appr-err-001", "approval-test")
         mgr = SessionApprovalManager(
             run_id="run-appr-err-001",
             checkpoint_manager=mock_chk,
             state_provider=broken_state,
+            run_store=run_store,
         )
-        approval = mgr.request_approval("task_1", "tool_x", {"a": 1})
+        approval = mgr.create_durable_request(
+            turn_index=1,
+            action_payload={"tool_name": "tool_x", "a": 1},
+            metadata={"task_id": "task_1"},
+        )
         assert approval is not None
         assert mock_chk.create_checkpoint.called
 

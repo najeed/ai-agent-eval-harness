@@ -1,10 +1,6 @@
-import datetime
-import json
 import logging
 from dataclasses import dataclass
-from pathlib import Path
-
-from .trace_utils import load_events
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +9,7 @@ logger = logging.getLogger(__name__)
 class RunPoint:
     run_id: str
     timestamp: str
-    pass_rate: float  # successful_tasks / total_tasks
+    pass_rate: float
 
 
 @dataclass
@@ -21,23 +17,28 @@ class RunTrendReport:
     agent_name: str
     window: int
     run_points: list[RunPoint]
-    slope: float  # OLS slope (negative = regression)
-    direction: str  # "improving" | "stable" | "degrading"
-    any_regression: bool  # True if slope < -threshold
+    slope: float
+    direction: str
+    any_regression: bool
 
 
 class RunTrendAnalyzer:
+    """Compute trends from the authoritative run provider, not a run directory."""
+
     def __init__(
         self,
-        run_log_dir: str,
+        *,
+        run_store: Any,
         agent_name: str | None = None,
         window: int = 10,
         threshold: float = 0.0,
+        context: dict[str, Any] | None = None,
     ):
-        self.run_log_dir = Path(run_log_dir)
+        self.run_store = run_store
         self.agent_name = agent_name
         self.window = window
         self.threshold = threshold
+        self.context = context
 
     def _ols_slope(self, y_values: list[float]) -> float:
         if len(y_values) < 2:
@@ -48,135 +49,79 @@ class RunTrendAnalyzer:
 
             slope, _ = linear_regression(x_values, y_values)
             return float(slope)
-        except Exception as _e:
-            logger.debug("Linear regression fallback activated: %s", _e, exc_info=True)
-            # Fallback manual OLS slope calculation (e.g. if statistics.linear_regression fails)
-            n = len(x_values)
-            mean_x = sum(x_values) / n
-            mean_y = sum(y_values) / n
-            num = sum((x - mean_x) * (y - mean_y) for x, y in zip(x_values, y_values, strict=True))
-            den = sum((x - mean_x) ** 2 for x in x_values)
-            if den == 0:
-                return 0.0
-            return float(num / den)
+        except Exception as exc:
+            logger.debug("Linear regression fallback activated: %s", exc, exc_info=True)
+            mean_x = sum(x_values) / len(x_values)
+            mean_y = sum(y_values) / len(y_values)
+            numerator = sum(
+                (x - mean_x) * (y - mean_y) for x, y in zip(x_values, y_values, strict=True)
+            )
+            denominator = sum((x - mean_x) ** 2 for x in x_values)
+            return float(numerator / denominator) if denominator else 0.0
 
     def analyze(self) -> list[RunTrendReport]:
-        if not self.run_log_dir.exists():
-            raise FileNotFoundError(f"Run log directory does not exist: {self.run_log_dir}")
-
-        # Scan for run traces: supports both vault-style (runs/*/run.jsonl) and flat-style
-        vault_traces = list(self.run_log_dir.glob("*/run.jsonl"))
-        flat_traces = list(self.run_log_dir.glob("*.jsonl"))
-
-        # De-duplicate paths
-        seen = set()
-        all_traces = []
-        for tp in vault_traces + flat_traces:
-            resolved = tp.resolve()
-            if resolved not in seen:
-                seen.add(resolved)
-                all_traces.append(tp)
-
-        # Parse and gather points
-        agent_runs = {}
-
-        for tp in all_traces:
-            try:
-                events = load_events(tp)
-                if not events:
-                    continue
-
-                run_start = next((e for e in events if e.get("event") == "run_start"), {})
-                meta = run_start.get("metadata", {})
-
-                # Attributing agent name: Manifest > Event Metadata > Directory/Filename
-                manifest_path = tp.parent / "run_manifest.json"
-                manifest_data = {}
-                if manifest_path.exists():
-                    try:
-                        with open(manifest_path, encoding="utf-8") as f:
-                            manifest_data = json.load(f)
-                    except Exception as _e:
-                        logger.debug("Manifest parse skipped: %s", _e, exc_info=True)
-
-                resolved_agent = (
-                    manifest_data.get("metadata", {}).get("agent_name")
-                    or meta.get("agent_name")
-                    or meta.get("agent")
-                    or run_start.get("agent")
-                )
-
-                if not resolved_agent:
-                    resolved_agent = tp.parent.name if tp.name == "run.jsonl" else tp.stem
-
-                # Filter by agent name if specified
-                if self.agent_name and resolved_agent != self.agent_name:
-                    continue
-
-                # Run ID
-                run_id = (
-                    manifest_data.get("run_id") or run_start.get("run_id") or tp.parent.name
-                    if tp.name == "run.jsonl"
-                    else tp.stem
-                )
-
-                # Timestamp
-                ts = run_start.get("timestamp") or run_start.get("_ts_iso")
-                if not ts:
-                    ts = datetime.datetime.fromtimestamp(tp.stat().st_mtime).isoformat()
-
-                # Pass rate
-                evals = [e for e in events if e.get("event") == "evaluation"]
-                if not evals:
-                    pass_rate = 0.0
-                else:
-                    total_tasks = len(set(e.get("task_id") for e in evals))
-                    task_metrics = {}
-                    for e in evals:
-                        tid = e.get("task_id")
-                        if tid not in task_metrics:
-                            task_metrics[tid] = []
-                        task_metrics[tid].append(e.get("success", False))
-
-                    successful_tasks = 0
-                    for _tid, results in task_metrics.items():
-                        if all(results):
-                            successful_tasks += 1
-
-                    pass_rate = (successful_tasks / total_tasks) if total_tasks > 0 else 0.0
-
-                point = RunPoint(run_id=run_id, timestamp=ts, pass_rate=pass_rate)
-                if resolved_agent not in agent_runs:
-                    agent_runs[resolved_agent] = []
-                agent_runs[resolved_agent].append(point)
-
-            except Exception as e:
-                logger.error(f"[TrendAnalyzer] Skip trace {tp} due to parse error: {e}")
+        agent_runs: dict[str, list[RunPoint]] = {}
+        for run in self.run_store.list_runs(limit=10_000, context=self.context):
+            run_id = run.get("run_id")
+            if not isinstance(run_id, str):
                 continue
+            try:
+                events = self.run_store.get_events(
+                    run_id, offset=0, limit=10_000_000, context=self.context
+                )
+                manifest = self.run_store.get_manifest(run_id, context=self.context) or {}
+            except Exception as exc:
+                logger.warning("Skipping provider run %s: %s", run_id, exc)
+                continue
+            run_start = next((event for event in events if event.get("event") == "run_start"), {})
+            metadata = (
+                run_start.get("metadata") if isinstance(run_start.get("metadata"), dict) else {}
+            )
+            manifest_meta = (
+                manifest.get("metadata") if isinstance(manifest.get("metadata"), dict) else {}
+            )
+            resolved_agent = (
+                manifest_meta.get("agent_name")
+                or manifest.get("agent_name")
+                or metadata.get("agent_name")
+                or metadata.get("agent")
+                or run_start.get("agent")
+                or run.get("agent_id")
+                or "unknown"
+            )
+            if self.agent_name and resolved_agent != self.agent_name:
+                continue
+            evaluations = [event for event in events if event.get("event") == "evaluation"]
+            grouped: dict[str, list[bool]] = {}
+            for event in evaluations:
+                task_id = str(event.get("task_id") or len(grouped))
+                grouped.setdefault(task_id, []).append(bool(event.get("success", False)))
+            pass_rate = (
+                sum(all(results) for results in grouped.values()) / len(grouped) if grouped else 0.0
+            )
+            timestamp = (
+                run_start.get("timestamp")
+                or run_start.get("_ts_iso")
+                or run.get("created_at")
+                or run.get("timestamp")
+                or ""
+            )
+            agent_runs.setdefault(str(resolved_agent), []).append(
+                RunPoint(run_id=run_id, timestamp=str(timestamp), pass_rate=pass_rate)
+            )
 
-        reports = []
+        reports: list[RunTrendReport] = []
         for name, points in agent_runs.items():
-            # Sort chronologically by timestamp
-            points.sort(key=lambda p: p.timestamp)
-
-            # Get the recent window of points
+            points.sort(key=lambda point: point.timestamp)
             window_points = points[-self.window :]
-
-            # Compute slope
-            slope = self._ols_slope([p.pass_rate for p in window_points])
-
-            # Determine direction and regression status
-            # slope threshold check
-            if slope < -self.threshold:
-                direction = "degrading"
-                any_regression = True
-            elif slope > self.threshold:
-                direction = "improving"
-                any_regression = False
-            else:
-                direction = "stable"
-                any_regression = False
-
+            slope = self._ols_slope([point.pass_rate for point in window_points])
+            direction = (
+                "degrading"
+                if slope < -self.threshold
+                else "improving"
+                if slope > self.threshold
+                else "stable"
+            )
             reports.append(
                 RunTrendReport(
                     agent_name=name,
@@ -184,8 +129,7 @@ class RunTrendAnalyzer:
                     run_points=window_points,
                     slope=slope,
                     direction=direction,
-                    any_regression=any_regression,
+                    any_regression=direction == "degrading",
                 )
             )
-
         return reports

@@ -4,8 +4,23 @@ import pytest
 
 from eval_runner import config
 from eval_runner.events import CoreEvents
+from eval_runner.reference.local_artifact import LocalFileArtifactStore
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.routing import RoutingRegistry
 from eval_runner.session import SessionManager
+
+
+def _session(tmp_path, run_id, scenario, **kwargs):
+    run_store = LocalFileRunStore(tmp_path / "run-store")
+    run_store.create_run(run_id, scenario["id"])
+    return SessionManager(
+        run_id=run_id,
+        scenario=scenario,
+        workspace_root=tmp_path / "workspace",
+        run_store=run_store,
+        artifact_store=LocalFileArtifactStore(tmp_path / "artifact-store"),
+        **kwargs,
+    )
 
 
 @pytest.fixture
@@ -46,7 +61,7 @@ def isolated_routing(tmp_path):
     RoutingRegistry.reload()
 
 
-def test_session_resolves_capability_on_init(isolated_routing):
+def test_session_resolves_capability_on_init(isolated_routing, tmp_path):
     """Verify that SessionManager resolves capabilities and emits the routing event."""
     scenario = {
         "id": "test_routing_id",
@@ -62,7 +77,7 @@ def test_session_resolves_capability_on_init(isolated_routing):
             captured_events.append(event)
 
     # Initialize session
-    session = SessionManager(run_id="run-rc-01", scenario=scenario)
+    session = _session(tmp_path, "run-rc-01", scenario)
     session.event_bus.subscribe(listener)
 
     # SessionManager.__init__ already performed the resolution and emission
@@ -75,7 +90,7 @@ def test_session_resolves_capability_on_init(isolated_routing):
     assert session.session_metadata["agent"] == "http://loan-agent-prod:8080"
 
 
-def test_session_routing_cli_override(isolated_routing):
+def test_session_routing_cli_override(isolated_routing, tmp_path):
     """Verify that CLI overrides (passed via metadata) win over capability routing."""
     scenario = {
         "id": "test_routing_id",
@@ -86,13 +101,13 @@ def test_session_routing_cli_override(isolated_routing):
     # Manual override from CLI/metadata
     metadata = {"agent": "http://cli-override:9000", "protocol": "local"}
 
-    session = SessionManager(run_id="run-rc-02", scenario=scenario, metadata=metadata)
+    session = _session(tmp_path, "run-rc-02", scenario, metadata=metadata)
 
     assert session.session_metadata["protocol"] == "local"
     assert session.session_metadata["agent"] == "http://cli-override:9000"
 
 
-def test_session_fallback_to_default(isolated_routing):
+def test_session_fallback_to_default(isolated_routing, tmp_path):
     """Verify that routing falls back to the 'default' mapping if capability is unknown."""
     # Add default to manifest
     with open(isolated_routing["manifest_path"]) as f:
@@ -111,6 +126,6 @@ def test_session_fallback_to_default(isolated_routing):
         "workflow": {"nodes": [], "edges": []},
     }
 
-    session = SessionManager(run_id="run-rc-03", scenario=scenario)
+    session = _session(tmp_path, "run-rc-03", scenario)
 
     assert session.session_metadata["agent"] == "http://fallback-agent:5000"

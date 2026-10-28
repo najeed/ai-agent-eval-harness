@@ -18,15 +18,24 @@ from eval_runner.publication_suite import aggregator
 from eval_runner.publication_suite.aggregator import Aggregator
 
 
+class FakeRunStore:
+    """Explicit provider fixture; publication tests never seed JSONL traces."""
+
+    def __init__(self):
+        self.events: dict[str, list[dict]] = {}
+
+    def get_events(self, run_id, *, offset=0, limit=1000, context=None):
+        return list(self.events.get(run_id, []))[offset : offset + limit]
+
+
 @pytest.fixture
 def mock_manifest_and_logs(tmp_path):
-    """Creates a temporary manifest and log file for testing."""
+    """Creates a batch manifest and explicit provider-owned event fixture."""
     ts_start = datetime.now()
     # Ensure ISO format without Z for simpler testing if needed, though we handle Z now
     ts_start_str = ts_start.isoformat()
     ts_end_str = (ts_start + timedelta(seconds=15)).isoformat()
 
-    log_file = tmp_path / "run_test.jsonl"
     events = [
         {"event": "run_start", "timestamp": ts_start_str},
         {
@@ -38,28 +47,27 @@ def mock_manifest_and_logs(tmp_path):
         {"event": "evaluation", "success": True, "timestamp": ts_end_str},
     ]
 
-    with open(log_file, "w") as f:
-        for e in events:
-            f.write(json.dumps(e) + "\n")
+    run_store = FakeRunStore()
+    run_store.events["run_test"] = events
 
     manifest_file = tmp_path / "manifest.json"
     manifest = {
         "fingerprint": "test_batch",
         "agent_name": "test",
         "base_dir": str(tmp_path),
-        "runs": [{"success": True, "log_path": str(log_file), "scenario": "scen_1"}],
+        "runs": [{"success": True, "run_id": "run_test", "scenario": "scen_1"}],
     }
 
     with open(manifest_file, "w") as f:
         json.dump(manifest, f)
 
-    return manifest_file, tmp_path
+    return manifest_file, tmp_path, run_store
 
 
 def test_latency_calculation(mock_manifest_and_logs):
     """Verify that latency is calculated as a delta between start and end events."""
-    manifest_path, base_dir = mock_manifest_and_logs
-    agg = Aggregator(str(manifest_path))
+    manifest_path, base_dir, run_store = mock_manifest_and_logs
+    agg = Aggregator(str(manifest_path), run_store=run_store)
     output_path = agg.process()
 
     with open(output_path) as f:
@@ -77,8 +85,8 @@ def test_latency_calculation(mock_manifest_and_logs):
 
 def test_cost_heuristic(mock_manifest_and_logs):
     """Verify character-based cost heuristic."""
-    manifest_path, base_dir = mock_manifest_and_logs
-    agg = Aggregator(str(manifest_path))
+    manifest_path, base_dir, run_store = mock_manifest_and_logs
+    agg = Aggregator(str(manifest_path), run_store=run_store)
     events = [{"event": "agent_response", "content": "12345678"}]  # 8 chars = 2 tokens
 
     # Mock pricing directly for testing.
@@ -91,22 +99,20 @@ def test_cost_heuristic(mock_manifest_and_logs):
 
 def test_missing_timestamp_fallback(mock_manifest_and_logs):
     """Verify fallback to 2.5s if timestamps are missing or malformed."""
-    manifest_path, base_dir = mock_manifest_and_logs
-
-    # Create a log with bad timestamps
-    bad_log = base_dir / "bad_run.jsonl"
-    with open(bad_log, "w") as f:
-        f.write(json.dumps({"event": "run_start", "timestamp": "invalid"}) + "\n")
-        f.write(json.dumps({"event": "evaluation", "success": True}) + "\n")
-        f.write(json.dumps({"event": "run_end", "timestamp": "invalid"}) + "\n")
+    manifest_path, base_dir, run_store = mock_manifest_and_logs
+    run_store.events["bad_run"] = [
+        {"event": "run_start", "timestamp": "invalid"},
+        {"event": "evaluation", "success": True},
+        {"event": "run_end", "timestamp": "invalid"},
+    ]
 
     with open(manifest_path) as f:
         man = json.load(f)
-    man["runs"][0]["log_path"] = str(bad_log)
+    man["runs"][0]["run_id"] = "bad_run"
     with open(manifest_path, "w") as f:
         json.dump(man, f)
 
-    agg = Aggregator(str(manifest_path))
+    agg = Aggregator(str(manifest_path), run_store=run_store)
     agg.process()
 
     with open(base_dir / "aggregated_results.json") as f:
@@ -119,8 +125,8 @@ def test_missing_timestamp_fallback(mock_manifest_and_logs):
 
 def test_wilson_score_interval_math(mock_manifest_and_logs):
     """Verify Wilson Score interval calculation logic."""
-    manifest_path, _ = mock_manifest_and_logs
-    agg = Aggregator(str(manifest_path))
+    manifest_path, _, run_store = mock_manifest_and_logs
+    agg = Aggregator(str(manifest_path), run_store=run_store)
 
     # n=0 case
     assert agg._wilson_score_interval(0.8, 0) == 0.0
@@ -132,8 +138,8 @@ def test_wilson_score_interval_math(mock_manifest_and_logs):
 
 def test_cost_calculation_variants(mock_manifest_and_logs):
     """Verify cost calculation with different agent names and pricing."""
-    manifest_path, _ = mock_manifest_and_logs
-    agg = Aggregator(str(manifest_path))
+    manifest_path, _, run_store = mock_manifest_and_logs
+    agg = Aggregator(str(manifest_path), run_store=run_store)
 
     agg.config["pricing"] = {"gpt-4": 10.0, "claude": 5.0}
 
@@ -156,19 +162,19 @@ def test_cost_calculation_variants(mock_manifest_and_logs):
 
 def test_process_failed_runs(mock_manifest_and_logs):
     """Verify that failed runs or missing logs are skipped gracefully."""
-    manifest_path, base_dir = mock_manifest_and_logs
+    manifest_path, base_dir, run_store = mock_manifest_and_logs
 
     with open(manifest_path) as f:
         man = json.load(f)
 
     # Add a failed run and a missing log run
-    man["runs"].append({"success": False, "log_path": "none", "scenario": "scen_1"})
-    man["runs"].append({"success": True, "log_path": "non_existent.jsonl", "scenario": "scen_1"})
+    man["runs"].append({"success": False, "run_id": "failed", "scenario": "scen_1"})
+    man["runs"].append({"success": True, "run_id": "missing", "scenario": "scen_1"})
 
     with open(manifest_path, "w") as f:
         json.dump(man, f)
 
-    agg = Aggregator(str(manifest_path))
+    agg = Aggregator(str(manifest_path), run_store=run_store)
     output_path = agg.process()
 
     with open(output_path) as f:
@@ -180,7 +186,7 @@ def test_process_failed_runs(mock_manifest_and_logs):
 
 def test_robust_timestamp_parsing(mock_manifest_and_logs):
     """Verify the internal parse_ts logic with various formats."""
-    manifest_path, base_dir = mock_manifest_and_logs
+    manifest_path, base_dir, run_store = mock_manifest_and_logs
 
     # We test this by injecting different formats into the log
     formats = [
@@ -193,19 +199,20 @@ def test_robust_timestamp_parsing(mock_manifest_and_logs):
     ]
 
     for fmt in formats:
-        log_file = base_dir / f"fmt_{formats.index(fmt)}.jsonl"
-        with open(log_file, "w") as f:
-            f.write(json.dumps({"event": "run_start", "timestamp": "2023-05-10T19:00:00"}) + "\n")
-            f.write(json.dumps({"event": "run_end", "timestamp": fmt}) + "\n")
-            f.write(json.dumps({"event": "evaluation", "success": True}) + "\n")
+        run_id = f"fmt_{formats.index(fmt)}"
+        run_store.events[run_id] = [
+            {"event": "run_start", "timestamp": "2023-05-10T19:00:00"},
+            {"event": "run_end", "timestamp": fmt},
+            {"event": "evaluation", "success": True},
+        ]
 
         with open(manifest_path) as f:
             man = json.load(f)
-        man["runs"] = [{"success": True, "log_path": str(log_file), "scenario": "scen_fmt"}]
+        man["runs"] = [{"success": True, "run_id": run_id, "scenario": "scen_fmt"}]
         with open(manifest_path, "w") as f:
             json.dump(man, f)
 
-        agg = Aggregator(str(manifest_path))
+        agg = Aggregator(str(manifest_path), run_store=run_store)
         agg.process()
         with open(base_dir / "aggregated_results.json") as f:
             res = json.load(f)
@@ -220,26 +227,20 @@ def test_robust_timestamp_parsing(mock_manifest_and_logs):
 
 def test_failure_taxonomy_integration(mock_manifest_and_logs):
     """Verify that failures are classified via FailureTaxonomy."""
-    manifest_path, base_dir = mock_manifest_and_logs
-    log_file = base_dir / "fail_run.jsonl"
-
-    with open(log_file, "w") as f:
-        f.write(json.dumps({"event": "run_start", "timestamp": "2023-01-01T00:00:00"}) + "\n")
-        f.write(
-            json.dumps(
-                {"event": "evaluation", "success": False, "message": "hallucination detected"}
-            )
-            + "\n"
-        )
-        f.write(json.dumps({"event": "run_end", "timestamp": "2023-01-01T00:00:10"}) + "\n")
+    manifest_path, base_dir, run_store = mock_manifest_and_logs
+    run_store.events["fail_run"] = [
+        {"event": "run_start", "timestamp": "2023-01-01T00:00:00"},
+        {"event": "evaluation", "success": False, "message": "hallucination detected"},
+        {"event": "run_end", "timestamp": "2023-01-01T00:00:10"},
+    ]
 
     with open(manifest_path) as f:
         man = json.load(f)
-    man["runs"] = [{"success": True, "log_path": str(log_file), "scenario": "scen_fail"}]
+    man["runs"] = [{"success": True, "run_id": "fail_run", "scenario": "scen_fail"}]
     with open(manifest_path, "w") as f:
         json.dump(man, f)
 
-    agg = Aggregator(str(manifest_path))
+    agg = Aggregator(str(manifest_path), run_store=run_store)
     agg.process()
 
     with open(base_dir / "aggregated_results.json") as f:
@@ -299,7 +300,7 @@ def test_aggregator_duration_edge_cases(tmp_path):
             {
                 "success": True,
                 "scenario": "scenario_1",
-                "log_path": str(tmp_path / "run1.jsonl"),
+                "run_id": "run1",
             }
         ],
     }
@@ -307,16 +308,14 @@ def test_aggregator_duration_edge_cases(tmp_path):
     manifest_file.write_text(json.dumps(manifest_data), encoding="utf-8")
 
     # 1. Test negative duration (clock drift) and empty line stripping
-    log_content = (
-        '{"event": "run_start", "timestamp": "2026-06-13T02:00:00.000000Z"}\n'
-        "\n"  # Empty line to cover line.strip() check
-        '{"event": "agent_response", "content": "hello world"}\n'
-        '{"event": "run_end", "timestamp": "2026-06-13T01:59:00.000000Z"}\n'  # Negative duration
-    )
-    run_log = tmp_path / "run1.jsonl"
-    run_log.write_text(log_content, encoding="utf-8")
+    run_store = FakeRunStore()
+    run_store.events["run1"] = [
+        {"event": "run_start", "timestamp": "2026-06-13T02:00:00.000000Z"},
+        {"event": "agent_response", "content": "hello world"},
+        {"event": "run_end", "timestamp": "2026-06-13T01:59:00.000000Z"},
+    ]
 
-    agg = Aggregator(str(manifest_file))
+    agg = Aggregator(str(manifest_file), run_store=run_store)
     agg.process()
 
     # Verify duration fell back to 2.5
@@ -326,34 +325,31 @@ def test_aggregator_duration_edge_cases(tmp_path):
     assert report["scenarios"]["scenario_1"]["avg_latency"] == 2.5
 
     # 2. Test parsing formats: date-only, time-only, space-separated, invalid format, and exception
-    log_content_formats = (
-        '{"event": "run_start", "timestamp": "2026-06-13 02:00:00"}\n'
-        '{"event": "run_end", "timestamp": "2026-06-13 02:00:10"}\n'
-    )
-    run_log.write_text(log_content_formats, encoding="utf-8")
-    agg = Aggregator(str(manifest_file))
+    run_store.events["run1"] = [
+        {"event": "run_start", "timestamp": "2026-06-13 02:00:00"},
+        {"event": "run_end", "timestamp": "2026-06-13 02:00:10"},
+    ]
+    agg = Aggregator(str(manifest_file), run_store=run_store)
     agg.process()
     report = json.loads(aggregated_file.read_text(encoding="utf-8"))
     assert report["scenarios"]["scenario_1"]["avg_latency"] == 10.0
 
     # Date-only and Time-only formats
-    log_content_date_time = (
-        '{"event": "run_start", "timestamp": "2026-06-13"}\n'
-        '{"event": "run_end", "timestamp": "2026-06-14"}\n'
-    )
-    run_log.write_text(log_content_date_time, encoding="utf-8")
-    agg = Aggregator(str(manifest_file))
+    run_store.events["run1"] = [
+        {"event": "run_start", "timestamp": "2026-06-13"},
+        {"event": "run_end", "timestamp": "2026-06-14"},
+    ]
+    agg = Aggregator(str(manifest_file), run_store=run_store)
     agg.process()
     report = json.loads(aggregated_file.read_text(encoding="utf-8"))
     assert report["scenarios"]["scenario_1"]["avg_latency"] == 86400.0
 
     # Invalid timestamp format (returns None)
-    log_content_invalid = (
-        '{"event": "run_start", "timestamp": "invalid-ts"}\n'
-        '{"event": "run_end", "timestamp": "invalid-ts"}\n'
-    )
-    run_log.write_text(log_content_invalid, encoding="utf-8")
-    agg = Aggregator(str(manifest_file))
+    run_store.events["run1"] = [
+        {"event": "run_start", "timestamp": "invalid-ts"},
+        {"event": "run_end", "timestamp": "invalid-ts"},
+    ]
+    agg = Aggregator(str(manifest_file), run_store=run_store)
     agg.process()
     report = json.loads(aggregated_file.read_text(encoding="utf-8"))
     assert report["scenarios"]["scenario_1"]["avg_latency"] == 2.5
@@ -363,11 +359,10 @@ def test_aggregator_duration_edge_cases(tmp_path):
         def __str__(self):
             raise TypeError("Forced string conversion failure")
 
-    log_content_err = (
-        '{"event": "run_start", "timestamp": "2026-06-13T02:00:00"}\n'
-        '{"event": "run_end", "timestamp": "2026-06-13T02:00:10"}\n'
-    )
-    run_log.write_text(log_content_err, encoding="utf-8")
+    run_store.events["run1"] = [
+        {"event": "run_start", "timestamp": "2026-06-13T02:00:00"},
+        {"event": "run_end", "timestamp": "2026-06-13T02:00:10"},
+    ]
 
     orig_next = builtins.next
 
@@ -378,7 +373,7 @@ def test_aggregator_duration_edge_cases(tmp_path):
         return item
 
     with patch("builtins.next", mock_next):
-        agg = Aggregator(str(manifest_file))
+        agg = Aggregator(str(manifest_file), run_store=run_store)
         agg.process()
         report = json.loads(aggregated_file.read_text(encoding="utf-8"))
         assert report["scenarios"]["scenario_1"]["avg_latency"] == 2.5

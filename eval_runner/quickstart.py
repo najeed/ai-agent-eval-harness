@@ -80,7 +80,15 @@ async def run_quickstart():
 
         # Also try to generate an HTML report if implemented
         if hasattr(reporter, "generate_html_report"):
-            html_path = reporter.generate_html_report(scenario, results, metadata=report_metadata)
+            from .runtime_services import resolve_artifact_store
+
+            html_path = reporter.generate_html_report(
+                scenario,
+                results,
+                metadata=report_metadata,
+                artifact_store=resolve_artifact_store(),
+                run_id=run_id,
+            )
             print(f"🎨 Visual Report: {html_path}")
 
     finally:

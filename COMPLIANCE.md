@@ -19,13 +19,13 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **aiohttp** | 3.14.5 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **Authlib** | 1.9.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **certifi** | 2026.10.23 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **cryptography** | 48.0.1,<49 | Apache 2.0 / BSD | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **cryptography** | 50,<51 | Apache 2.0 / BSD | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **Flask** | 3.1.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **flask-cors** | 6.0.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **httpx** | 0.28.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **idna** | 3.20 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **jsonschema** | 4.26.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **numpy** | 2.4.6 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **numpy** | 2.4.6,<2.5.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **opentelemetry-api** | 1.45.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **opentelemetry-sdk** | 1.45.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **Pillow** | 13.0.0 | HPND | [HPND.txt](LICENSES/HPND.txt) |
@@ -35,7 +35,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **python-dotenv** | 1.2.4 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **PyYAML** | 6.0.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **requests** | 2.34.2 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **sqlalchemy** | 2.1.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **sqlalchemy** | 2.1.6 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **urllib3** | 2.8.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **Werkzeug** | 3.1.9 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 
@@ -94,12 +94,12 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **langchain-openai** | 1.7.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langgraph** | 1.2.18 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langserve** | 0.3.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langsmith** | 0.14.12 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langsmith** | 0.14.13 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **lxml** | 6.1.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **pypdf** | 6.21.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **pypdf** | 6.21.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **python-docx** | 1.2.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **reportlab** | 5.1.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **sentence-transformers** | 6.1.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **sentence-transformers** | 6.2.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **transformers** | 5.21.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **weasyprint** | 70.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 

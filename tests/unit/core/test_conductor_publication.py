@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from eval_runner.publication_suite.conductor import Conductor, run_worker
+from eval_runner.reference.local_run_store import LocalFileRunStore
 
 
 @pytest.fixture
@@ -90,18 +91,21 @@ def test_run_worker_success(tmp_path):
 
     task = (scenario_path, "agent", "http", "url", 42, output_dir, "run_0")
 
-    # Mock subprocess.run to succeed and create a log file
+    # Mock subprocess.run to publish one provider-owned run.
     def mock_run(cmd, env, capture_output, text, **kwargs):
         log_dir = Path(env["RUN_LOG_DIR"])
-        log_dir.mkdir(parents=True, exist_ok=True)
-        (log_dir / "log.jsonl").write_text('{"event": "test"}')
+        store = LocalFileRunStore(log_dir)
+        store.create_run("provider-run", "scenario")
+        store.append_events("provider-run", [{"event": "test"}])
         return MagicMock(returncode=0)
 
     with patch("subprocess.run", side_effect=mock_run):
         result = run_worker(task)
         assert result["success"] is True
-        assert result["run_id"] == "run_0"
-        assert Path(result["log_path"]).exists()
+        assert result["run_id"] == "provider-run"
+        assert Path(result["provider_log_dir"]).exists()
+        store = LocalFileRunStore(result["provider_log_dir"])
+        assert store.get_events(result["run_id"]) == [{"event": "test"}]
 
 
 def test_run_worker_no_log(tmp_path):

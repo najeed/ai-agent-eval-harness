@@ -168,15 +168,14 @@ async def test_trust_protocols_pure(mock_config):
 async def test_analysis_coverage_pure(mock_config):
     tmp_path = mock_config
     run_id = "a1"
-    vault = tmp_path / run_id
-    vault.mkdir()
-    (vault / "run.jsonl").write_text(json.dumps({"event": "run_start", "run_id": run_id}) + "\n")
-
     # 1. Report/Explain/Calibrate
     with (
         patch("eval_runner.reporter.generate_html_report"),
-        patch("eval_runner.explainer.explain_trace"),
-        patch("eval_runner.calibrator.run_calibration"),
+        patch(
+            "eval_runner.handlers.analysis._events_for_run", return_value=[{"event": "run_start"}]
+        ),
+        patch("eval_runner.handlers.analysis.explain_run"),
+        patch("eval_runner.calibrator.run_calibration_events", return_value=0),
     ):
         assert await analysis.handle_report(MockArgs(tmp_path, run_id=run_id)) == 0
         assert await analysis.handle_explain(MockArgs(tmp_path, run_id=run_id)) == 0

@@ -20,12 +20,7 @@ from agentv_runtime.config import (
     redact_sensitive_value,
 )
 from eval_runner.config import RegistryManager
-from eval_runner.run_index import (
-    create_run_index,
-    read_run_index,
-    run_index_path,
-    update_run_index_status,
-)
+from eval_runner.reference.local_run_store import LocalFileRunStore
 
 # ---------------------------------------------------------------------------
 # Section 1: agentv_runtime.config Diagnostics Contract & Resolution
@@ -276,8 +271,8 @@ def test_providers_remain_distinct_and_independent():
 # ---------------------------------------------------------------------------
 
 
-def test_atomic_scoped_run_index_creation_and_update(tmp_path):
-    """create_run_index creates durable record and preserves scope on update."""
+def test_atomic_scoped_submission_reservation_and_transition(tmp_path):
+    """Provider admission is scoped, durable, and transition-checked."""
     run_id = "test-run-scoped-123"
     context = {
         "org_id": "test-org",
@@ -286,102 +281,49 @@ def test_atomic_scoped_run_index_creation_and_update(tmp_path):
         "active_environment": "staging",
     }
 
-    # Verify atomic path is in .index/ outside the run vault
-    idx_path = run_index_path(run_id, root=tmp_path)
-    assert ".index" in str(idx_path)
-    assert not (tmp_path / run_id).exists()
-
-    record = create_run_index(
-        run_id=run_id,
-        context=context,
-        scenario_id="scenario-sample",
-        root=tmp_path,
+    store = LocalFileRunStore(tmp_path)
+    reservation = store.reserve_submission(
+        run_id, "scenario-sample", "agent", {}, context, "idem-1"
     )
-    assert record["status"] == "PENDING"
-    assert record["context"] == context
-
-    # Read back
-    read_rec = read_run_index(run_id, root=tmp_path)
-    assert read_rec is not None
-    assert read_rec["context"] == context
-
-    # Update lifecycle state preserves immutable context
-    updated = update_run_index_status(run_id, "RUNNING", root=tmp_path)
-    assert updated["status"] == "RUNNING"
-    assert updated["context"] == context
-
-    updated_completed = update_run_index_status(run_id, "COMPLETED", root=tmp_path)
-    assert updated_completed["status"] == "COMPLETED"
-    assert updated_completed["context"] == context
+    assert reservation["state"] == "RESERVED"
+    assert store.get_submission(run_id, context=context)["context"] == context
+    dispatched = store.transition_submission(run_id, "RESERVED", "DISPATCHED", context)
+    assert dispatched["state"] == "DISPATCHED"
+    running = store.transition_submission(run_id, "DISPATCHED", "RUNNING", context)
+    assert running["state"] == "RUNNING"
 
 
-def test_atomic_scoped_run_index_invalid_context_fails(tmp_path):
-    """create_run_index rejects incomplete context tuples."""
-    with pytest.raises(ValueError, match="run context must contain the complete"):
-        create_run_index(
-            run_id="invalid-run",
-            context={"org_id": "org-only"},
-            scenario_id="scen-1",
-            root=tmp_path,
-        )
+def test_submission_reservation_idempotency_and_collision(tmp_path):
+    store = LocalFileRunStore(tmp_path)
+    context = {
+        "org_id": "org",
+        "tenant_id": "tenant",
+        "workspace_id": "ws",
+        "active_environment": "prod",
+    }
+    first = store.reserve_submission("run", "scen", "agent", {}, context, "idem")
+    assert store.reserve_submission("run", "scen", "agent", {}, context, "idem") == first
+    with pytest.raises(FileExistsError, match="RunIdCollision"):
+        store.reserve_submission("run", "other", "agent", {}, context, "idem")
 
 
-def test_atomic_scoped_run_index_exhaustive_edge_cases(tmp_path):
-    """Exhaustively tests all error paths, fallback conditions, and invariants in run_index.py."""
-    from unittest.mock import patch
-
-    # 1. Invalid run_id (empty or path traversal)
-    with pytest.raises(ValueError, match="run_id must be a single safe identifier"):
-        run_index_path("")
-    with pytest.raises(ValueError, match="run_id must be a single safe identifier"):
-        run_index_path("../escape_run")
-    with pytest.raises(ValueError, match="run_id must be a single safe identifier"):
-        run_index_path("sub/folder")
-
-    # 2. read_run_index when file does not exist
-    assert read_run_index("nonexistent_run", root=tmp_path) is None
-
-    # 3. read_run_index when file is malformed JSON or non-dict
-    idx_dir = tmp_path / ".index"
-    idx_dir.mkdir(parents=True, exist_ok=True)
-    (idx_dir / "corrupt.json").write_text("NOT_VALID_JSON", encoding="utf-8")
-    assert read_run_index("corrupt", root=tmp_path) is None
-
-    (idx_dir / "non_dict.json").write_text(json.dumps(["a", "b"]), encoding="utf-8")
-    assert read_run_index("non_dict", root=tmp_path) is None
-
-    # 4. update_run_index_status when run does not exist
-    assert update_run_index_status("missing_run", "RUNNING", root=tmp_path) is None
-
-    # 5. create_run_index duplicate fails closed
+def test_scoped_submission_exhaustive_edge_cases(tmp_path):
+    """Provider admission rejects missing records and invalid CAS transitions."""
+    store = LocalFileRunStore(tmp_path)
     valid_context = {
         "org_id": "org_1",
         "tenant_id": "tenant_1",
         "workspace_id": "ws_1",
         "active_environment": "prod",
     }
-    create_run_index(run_id="dup_run", context=valid_context, scenario_id="scen_1", root=tmp_path)
-    with pytest.raises(ValueError, match="run index already exists for dup_run"):
-        create_run_index(
-            run_id="dup_run", context=valid_context, scenario_id="scen_1", root=tmp_path
-        )
-
-    # 6. _write_atomic cleanup if replace raises exception
-    with patch("os.replace", side_effect=OSError("Disk full")):
-        with pytest.raises(OSError, match="Disk full"):
-            create_run_index(
-                run_id="disk_fail_run",
-                context=valid_context,
-                scenario_id="scen_1",
-                root=tmp_path,
-            )
-    # Ensure temporary file was unlinked
-    tmp_files = list(idx_dir.glob("*.tmp"))
-    assert tmp_files == []
+    assert store.get_submission("missing", context=valid_context) is None
+    store.reserve_submission("dup_run", "scen_1", "agent", {}, valid_context, "idem")
+    with pytest.raises(RuntimeError, match="SubmissionTransitionConflict"):
+        store.transition_submission("dup_run", "RUNNING", "COMPLETED", valid_context)
 
 
 def test_inprocess_backend_lifecycle_writes_and_failed_manifest(tmp_path, monkeypatch):
-    """InProcessExecutionBackend updates run index and persists failed manifest with scope."""
+    """InProcessExecutionBackend updates the provider submission and manifest."""
     from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
 
     monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
@@ -393,17 +335,14 @@ def test_inprocess_backend_lifecycle_writes_and_failed_manifest(tmp_path, monkey
         "workspace_id": "workspace-fail",
         "active_environment": "prod",
     }
-    create_run_index(
-        run_id=run_id,
-        context=context,
-        scenario_id="fail-scenario",
-        root=tmp_path,
-    )
+    run_store = LocalFileRunStore(tmp_path)
+    run_store.reserve_submission(run_id, "fail-scenario", None, {}, context, "idem-failure")
+    run_store.transition_submission(run_id, "RESERVED", "RUNNING", context)
 
     def failing_runner(*args, **kwargs):
         raise RuntimeError("Simulated execution failure")
 
-    backend = InProcessExecutionBackend(runner_callable=failing_runner)
+    backend = InProcessExecutionBackend(runner_callable=failing_runner, run_store=run_store)
     with pytest.raises(RuntimeError, match="Simulated execution failure"):
         backend.submit(
             run_id=run_id,
@@ -411,15 +350,14 @@ def test_inprocess_backend_lifecycle_writes_and_failed_manifest(tmp_path, monkey
             background=False,
         )
 
-    # 1. Run index status must be FAILED with scope preserved
-    idx = read_run_index(run_id, root=tmp_path)
-    assert idx["status"] == "FAILED"
-    assert idx["context"] == context
+    # 1. Provider submission status must be FAILED with scope preserved.
+    submission = run_store.get_submission(run_id, context=context)
+    assert submission["state"] == "FAILED"
+    assert submission["context"] == context
 
     # 2. Failed run manifest must be persisted with verified scope tuple
-    manifest_file = tmp_path / run_id / "run_manifest.json"
-    assert manifest_file.exists()
-    manifest_data = json.loads(manifest_file.read_text(encoding="utf-8"))
+    manifest_data = run_store.get_manifest(run_id, context=context)
+    assert manifest_data is not None
     assert manifest_data["status"] == "FAILED"
     assert manifest_data["context"] == context
     assert "Simulated execution failure" in manifest_data["error"]
@@ -442,25 +380,16 @@ def test_async_evaluation_scoped_execution_and_authorized_reads(tmp_path, monkey
         "active_environment": "production",
     }
 
-    # 1. Accept run: create scoped run index immediately
-    created_idx = create_run_index(
-        run_id=run_id,
-        context=context,
-        scenario_id="async-scen-1",
-        root=tmp_path,
+    run_store = LocalFileRunStore(tmp_path)
+    reservation = run_store.reserve_submission(
+        run_id, "async-scen-1", None, {}, context, "idem-async"
     )
-    assert created_idx["status"] == "PENDING"
-
-    # 2. Immediate status check: authorized and returns PENDING (never 404)
-    pre_read = read_run_index(run_id, root=tmp_path)
-    assert pre_read is not None
-    assert pre_read["status"] == "PENDING"
-    assert pre_read["context"] == context
+    assert reservation["state"] == "RESERVED"
+    assert run_store.get_submission(run_id, context=context)["context"] == context
+    run_store.transition_submission(run_id, "RESERVED", "RUNNING", context)
 
     # 3. Simulate asynchronous runner execution
     def successful_async_runner(*args, **kwargs):
-        # Runner transitions to RUNNING
-        update_run_index_status(run_id, "RUNNING", root=tmp_path)
         # Publish terminal evidence through the same explicit provider that
         # owns the asynchronous execution.
         manifest_payload = {
@@ -473,8 +402,6 @@ def test_async_evaluation_scoped_execution_and_authorized_reads(tmp_path, monkey
         run_store.save_run_manifest(run_id, manifest_payload, context=context)
         return {"status": "SUCCESS"}
 
-    run_store = LocalFileRunStore(tmp_path)
-    run_store.create_run(run_id, "async-scen-1", context=context)
     backend = InProcessExecutionBackend(
         runner_callable=successful_async_runner,
         run_store=run_store,
@@ -487,9 +414,7 @@ def test_async_evaluation_scoped_execution_and_authorized_reads(tmp_path, monkey
         context=context,
     )
 
-    # 4. Wait for provider-owned terminal state.  The queue index records
-    # asynchronous acceptance only; it is not an authority for run lifecycle
-    # or console reads.
+    # 4. Wait for the provider-owned terminal run record.
     max_wait = 15.0
     start = time.time()
     final_read = None

@@ -152,6 +152,41 @@ def isolate_run_log_dir(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
 
 
 @pytest.fixture(autouse=True)
+def bind_legacy_session_test_calls(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    """Migrate legacy SessionManager tests to explicit local providers.
+
+    Production ``SessionManager`` intentionally has no resolver or filesystem
+    fallback.  Older tests constructed it with only ``log_root``; this fixture
+    supplies isolated reference providers and interprets that old test-only
+    argument as an ephemeral workspace root.  New tests should pass providers
+    explicitly at their construction site.
+    """
+    from eval_runner.reference.local_artifact import LocalFileArtifactStore
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+    from eval_runner.session import SessionManager
+
+    original_init = SessionManager.__init__
+
+    def provider_bound_init(self, run_id, scenario, *args, **kwargs):
+        legacy_workspace = kwargs.pop("log_root", None)
+        workspace_root = (
+            kwargs.get("workspace_root") or legacy_workspace or (tmp_path / "workspace")
+        )
+        kwargs["workspace_root"] = workspace_root
+        run_store = kwargs.get("run_store")
+        if run_store is None:
+            run_store = LocalFileRunStore(tmp_path / "run-provider")
+            scenario_id = scenario.get("id", "unknown") if isinstance(scenario, dict) else "unknown"
+            run_store.create_run(run_id, scenario_id)
+            kwargs["run_store"] = run_store
+        if kwargs.get("artifact_store") is None:
+            kwargs["artifact_store"] = LocalFileArtifactStore(tmp_path / "artifact-provider")
+        return original_init(self, run_id, scenario, *args, **kwargs)
+
+    monkeypatch.setattr(SessionManager, "__init__", provider_bound_init)
+
+
+@pytest.fixture(autouse=True)
 def shutdown_tracer():
     """Explicitly shuts down the OpenTelemetry tracer provider at the end of each test."""
     yield

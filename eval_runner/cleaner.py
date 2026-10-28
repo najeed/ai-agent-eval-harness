@@ -1,27 +1,36 @@
-"""
-cleaner.py
+"""Provider-owned retention utilities for evaluation runs."""
 
-Utility for cleaning up old trace files and logs.
-"""
+from __future__ import annotations
 
-import time
-from pathlib import Path
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 
-def cleanup_traces(dir_path: str = "runs", days: int = 7, force: bool = False):
-    """
-    Removes run traces older than the specified number of days.
-    """
-    path = Path(dir_path)
-    if not path.exists():
-        return
+def _created_at(record: dict[str, Any]) -> datetime | None:
+    value = record.get("created_at") or record.get("started_at") or record.get("timestamp")
+    if not isinstance(value, str):
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return parsed if parsed.tzinfo else parsed.replace(tzinfo=UTC)
+    except ValueError:
+        return None
 
-    now = time.time()
-    cutoff = now - (days * 86400)
 
-    for f in path.glob("*.jsonl"):
-        if f.stat().st_mtime < cutoff:
-            if force:
-                f.unlink()
-            else:
-                print(f"[CLEANUP] Would remove old trace: {f.name}")
+def cleanup_traces(
+    *, run_store: Any, days: int = 7, force: bool = False, context: dict[str, Any] | None = None
+) -> list[str]:
+    """Delete expired provider-owned runs; callers never enumerate trace files."""
+    cutoff = datetime.now(UTC) - timedelta(days=days)
+    affected: list[str] = []
+    for record in run_store.list_runs(limit=100_000, context=context):
+        run_id = record.get("run_id") or record.get("id")
+        created = _created_at(record)
+        if not isinstance(run_id, str) or created is None or created >= cutoff:
+            continue
+        affected.append(run_id)
+        if force:
+            run_store.delete_run(run_id, context=context)
+        else:
+            print(f"[CLEANUP] Would remove expired provider run: {run_id}")
+    return affected

@@ -210,6 +210,36 @@ class EnterpriseRunStore(RunStore):
         self.events = {}
         self.manifest_count = 0
         self._certification_leases: dict[str, tuple[str, str]] = {}
+        self._submissions: dict[str, dict[str, Any]] = {}
+
+    def reserve_submission(self, run_id, scenario_id, agent_id, metadata, context, idempotency_key):
+        record = self._submissions.setdefault(
+            run_id,
+            {
+                "run_id": run_id,
+                "scenario_id": scenario_id,
+                "agent_id": agent_id,
+                "metadata": dict(metadata),
+                "context": dict(context),
+                "idempotency_key": idempotency_key,
+                "state": "RESERVED",
+            },
+        )
+        return dict(record)
+
+    def get_submission(self, run_id, context=None):
+        record = self._submissions.get(run_id)
+        return dict(record) if self._in_scope(record, context) else None
+
+    def transition_submission(self, run_id, expected_state, state, context):
+        record = self.get_submission(run_id, context=context)
+        if record is None:
+            raise KeyError(run_id)
+        expected = {expected_state} if isinstance(expected_state, str) else set(expected_state)
+        if record["state"] not in expected:
+            raise ValueError("submission state conflict")
+        self._submissions[run_id]["state"] = state
+        return dict(self._submissions[run_id])
 
     @staticmethod
     def _in_scope(run: dict[str, Any] | None, context: dict[str, Any] | None) -> bool:

@@ -171,13 +171,20 @@ def test_list_runs_with_query(client, tmp_path):
             + "\n"
         )
 
-    # Patch central config to point to isolated directory
-    with patch("eval_runner.console.routes.config.RUN_LOG_DIR", runs_dir):
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    run_store = LocalFileRunStore(runs_dir)
+    run_store.create_run("test-123", "scen-A")
+    run_store.create_run("other-456", "scen-B")
+    original_store = client.application.extensions.get("agentv_run_store")
+    client.application.extensions["agentv_run_store"] = run_store
+    try:
         response = client.get("/api/runs?q=test")
         data = response.get_json()
-        # Verify the fix in routes.py also correctly filtered demo traces
         assert len(data["runs"]) == 1
         assert data["runs"][0]["run_id"] == "test-123"
+    finally:
+        client.application.extensions["agentv_run_store"] = original_store
 
 
 def test_evaluate_error_cases(client):

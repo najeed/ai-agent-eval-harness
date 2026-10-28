@@ -124,7 +124,9 @@ def resolve_checkpoint_store(*, explicit: CheckpointStore | None = None) -> Chec
 
 def resolve_leaderboard_store(*, explicit: LeaderboardStore | None = None) -> LeaderboardStore:
     return resolve_extension(
-        "leaderboard_stores", explicit=explicit, default_factory=LocalLeaderboardStore
+        "leaderboard_stores",
+        explicit=explicit,
+        default_factory=lambda: LocalLeaderboardStore(resolve_run_store()),
     )
 
 

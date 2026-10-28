@@ -1,6 +1,8 @@
 import pytest
 from aiohttp import web
 
+from eval_runner.reference.local_artifact import LocalFileArtifactStore
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.session import SessionManager
 
 
@@ -15,7 +17,7 @@ async def mock_sse_agent_endpoint(request):
 
 
 @pytest.mark.asyncio
-async def test_sse_session_flow(aiohttp_server):
+async def test_sse_session_flow(aiohttp_server, tmp_path):
     app = web.Application()
     app.router.add_post("/agent", mock_sse_agent_endpoint)
     server = await aiohttp_server(app)
@@ -36,7 +38,15 @@ async def test_sse_session_flow(aiohttp_server):
         "metadata": {"agent": {"protocol": "sse", "endpoint": endpoint}},
     }
 
-    session = SessionManager(run_id="test_run_sse", scenario=scenario)
+    run_store = LocalFileRunStore(tmp_path / "run-store")
+    run_store.create_run("test_run_sse", scenario["id"])
+    session = SessionManager(
+        run_id="test_run_sse",
+        scenario=scenario,
+        workspace_root=tmp_path / "workspace",
+        run_store=run_store,
+        artifact_store=LocalFileArtifactStore(tmp_path / "artifact-store"),
+    )
     results = await session.execute_tasks(attempt_number=1)
 
     assert len(results) > 0

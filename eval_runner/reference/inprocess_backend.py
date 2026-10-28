@@ -322,11 +322,18 @@ class InProcessExecutionBackend(ExecutionBackend):
                         self._active_runs[run_id]["results"] = results
                 self._update_durable_status(run_id, terminal_status)
                 try:
-                    from eval_runner.run_index import update_run_index_status
-
-                    update_run_index_status(run_id, terminal_status)
-                except Exception as idx_err:
-                    logger.debug("Failed updating run index on completion: %s", idx_err)
+                    submission = run_store.get_submission(run_id, context=context or None)
+                    if submission:
+                        run_store.transition_submission(
+                            run_id,
+                            ("RUNNING", "DISPATCHED"),
+                            terminal_status,
+                            context=submission["context"],
+                        )
+                except Exception as admission_err:
+                    logger.debug(
+                        "Failed updating provider submission on completion: %s", admission_err
+                    )
                 return results
             except RunSuspendedForApproval as susp:
                 logger.info("Run %s entered durable suspension: %s", run_id, susp)
@@ -337,11 +344,18 @@ class InProcessExecutionBackend(ExecutionBackend):
                         self._active_runs[run_id]["checkpoint_id"] = susp.checkpoint_id
                         self._active_runs[run_id]["resumption_checkpoint"] = susp.checkpoint
                 try:
-                    from eval_runner.run_index import update_run_index_status
-
-                    update_run_index_status(run_id, "PAUSED_FOR_APPROVAL")
-                except Exception as idx_err:
-                    logger.debug("Failed updating run index on suspension: %s", idx_err)
+                    submission = run_store.get_submission(run_id, context=context or None)
+                    if submission:
+                        run_store.transition_submission(
+                            run_id,
+                            "RUNNING",
+                            "PAUSED_FOR_APPROVAL",
+                            context=submission["context"],
+                        )
+                except Exception as admission_err:
+                    logger.debug(
+                        "Failed updating provider submission on suspension: %s", admission_err
+                    )
                 return {
                     "status": "PAUSED_FOR_APPROVAL",
                     "run_id": run_id,
@@ -356,12 +370,16 @@ class InProcessExecutionBackend(ExecutionBackend):
                         self._active_runs[run_id]["error"] = str(e)
                 self._update_durable_status(run_id, "FAILED")
                 try:
-                    from eval_runner.run_index import read_run_index, update_run_index_status
-
-                    update_run_index_status(run_id, "FAILED")
+                    submission = run_store.get_submission(run_id, context=context or None)
+                    if submission:
+                        run_store.transition_submission(
+                            run_id,
+                            ("RUNNING", "DISPATCHED", "PAUSED_FOR_APPROVAL"),
+                            "FAILED",
+                            context=submission["context"],
+                        )
                     existing_manifest = run_store.get_manifest(run_id, context=context or None)
                     if not existing_manifest:
-                        idx_rec = read_run_index(run_id) or {}
                         failed_manifest = {
                             "run_id": run_id,
                             "scenario_id": str(
@@ -374,7 +392,7 @@ class InProcessExecutionBackend(ExecutionBackend):
                             "attempts": kwargs.get("attempts", 1),
                             "pass_at_k": 0.0,
                             "results": [],
-                            "context": context or idx_rec.get("context", {}),
+                            "context": context or (submission or {}).get("context", {}),
                         }
                         if hasattr(run_store, "save_run_manifest"):
                             run_store.save_run_manifest(
@@ -417,11 +435,17 @@ class InProcessExecutionBackend(ExecutionBackend):
                 self._active_runs[run_id]["status"] = "ABORTED"
                 self._active_runs[run_id]["cancel_reason"] = reason or "Cancelled by user"
                 try:
-                    from eval_runner.run_index import update_run_index_status
-
-                    update_run_index_status(run_id, "ABORTED")
-                except Exception as idx_err:
-                    logger.debug("Failed updating run index on cancel: %s", idx_err)
+                    run_store = self._run_store
+                    submission = run_store.get_submission(run_id)
+                    if submission:
+                        run_store.transition_submission(
+                            run_id,
+                            ("RUNNING", "DISPATCHED", "PAUSED_FOR_APPROVAL"),
+                            "ABORTED",
+                            context=submission["context"],
+                        )
+                except Exception as admission_err:
+                    logger.debug("Failed updating provider submission on cancel: %s", admission_err)
                 return True
             return False
 

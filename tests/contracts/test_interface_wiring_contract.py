@@ -531,7 +531,7 @@ def test_verifier_artifact_store_wiring(tmp_path, monkeypatch):
 # ==============================================================================
 
 
-def test_hitl_approval_triggers_durable_checkpoint():
+def test_hitl_approval_triggers_durable_checkpoint(tmp_path):
     """
     Contract Test: SessionApprovalManager.request_approval automatically triggers
     checkpoint_manager.create_checkpoint with turn snapshot.
@@ -539,25 +539,27 @@ def test_hitl_approval_triggers_durable_checkpoint():
     mock_chk_mgr = MagicMock(spec=SessionCheckpointManager)
     mock_state_provider = MagicMock(return_value={"current_turn": 5, "tokens": 120})
 
+    run_store = LocalFileRunStore(tmp_path / "run-provider")
+    run_store.create_run("run-hitl-auto-chk-001", "hitl-contract")
     approval_mgr = SessionApprovalManager(
         run_id="run-hitl-auto-chk-001",
         checkpoint_manager=mock_chk_mgr,
         state_provider=mock_state_provider,
+        run_store=run_store,
     )
 
-    approval = approval_mgr.request_approval(
-        task_id="task_critical_tx",
-        tool_name="wire_transfer",
-        params={"amount": 50000},
-        timeout_seconds=30,
+    approval = approval_mgr.create_durable_request(
+        turn_index=5,
+        action_payload={"tool_name": "wire_transfer", "amount": 50000},
+        metadata={"task_id": "task_critical_tx"},
     )
     assert approval is not None
     assert mock_chk_mgr.create_checkpoint.called
     checkpoint_call = mock_chk_mgr.create_checkpoint.call_args
     state = checkpoint_call[0][0]
-    assert state["status"] == "AWAITING_APPROVAL"
+    assert state["status"] == "PAUSED_FOR_APPROVAL"
     assert state["current_turn"] == 5
-    assert state["tool_name"] == "wire_transfer"
+    assert state["action_payload"]["tool_name"] == "wire_transfer"
 
 
 @pytest.mark.asyncio
@@ -580,15 +582,6 @@ async def test_session_hitl_checkpoint_and_approval_wiring(tmp_path):
     }
 
     mock_appr_mgr = MagicMock(spec=SessionApprovalManager)
-    mock_approval = MagicMock()
-    mock_approval.action = "approve"
-    mock_approval.response = "Human Approved Action"
-
-    async def _mock_wait():
-        return None
-
-    mock_approval.wait = _mock_wait
-    mock_appr_mgr.request_approval.return_value = mock_approval
 
     session = Session(run_id="run-hitl-wire-001", scenario=scenario, log_root=tmp_path)
     session.checkpoint_manager = mock_chk_mgr
@@ -737,7 +730,7 @@ def test_phase1_storage_interfaces(tmp_path):
     assert r_info["run_id"] == "run-test-999"
 
     # 3. LeaderboardStore
-    lb_store = LocalLeaderboardStore(runs_dir=tmp_path / "runs")
+    lb_store = LocalLeaderboardStore(run_store)
     lb_store.record_run_summary("run-test-999", {"pass_rate": 1.0})
     lb_data = lb_store.get_leaderboard()
     assert isinstance(lb_data, list)
@@ -763,6 +756,7 @@ async def test_all_extension_families_exclusive_injection_contract(tmp_path):
     mock_artifact_store = MagicMock(spec=ArtifactStore)
     mock_artifact_store.is_sealed.return_value = False
     mock_artifact_store.store_artifact.return_value = "mock://artifacts/file"
+    mock_artifact_store.get_artifact.return_value = None
 
     # 2. Custom CheckpointStore Spy
     mock_checkpoint_store = MagicMock(spec=CheckpointStore)
@@ -854,6 +848,7 @@ def test_inprocess_backend_executes_injected_dependency_graph():
 
     mock_art = MagicMock(spec=ArtifactStore)
     mock_art.is_sealed.return_value = False
+    mock_art.get_artifact.return_value = None
     mock_policy = MagicMock(spec=PolicyEvaluator)
     mock_policy.evaluate_policy.return_value = PolicyEvaluationResult(
         allowed=True, policy_id="injected_pol"

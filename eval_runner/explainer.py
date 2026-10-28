@@ -1,20 +1,19 @@
-from pathlib import Path
-
-from . import trace_utils, triage
+from . import triage
 
 
-def explain_trace(trace_path: Path) -> dict:
-    """
-    Parses a run.jsonl file and identifies failure patterns.
-    """
-    try:
-        events = trace_utils.load_events(trace_path)
-    except Exception as e:
-        return {
-            "root_cause": f"Error reading trace: {e}",
-            "suggestion": "Check file permissions or JSON format.",
-        }
-
+def explain_run(
+    run_id: str,
+    *,
+    run_store: object,
+    context: dict | None = None,
+) -> dict:
+    """Explain the authoritative event stream owned by ``run_store``."""
+    get_events = getattr(run_store, "get_events", None)
+    if not callable(get_events):
+        raise TypeError("explain_run requires a RunStorageProvider")
+    events = get_events(run_id, offset=0, limit=10_000_000, context=context)
+    if not events:
+        raise LookupError(f"Run '{run_id}' has no provider-owned events")
     return explain_events(events)
 
 

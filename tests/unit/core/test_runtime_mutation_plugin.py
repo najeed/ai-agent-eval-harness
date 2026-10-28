@@ -214,19 +214,31 @@ def test_approval_interceptions_and_manager_integration(sample_node, tmp_path):
     # 1. Stale Token
     plugin.on_step_start(None, "node_1", {"approval_token": "EXPIRED_SIG_1970"})
     with pytest.raises(PermissionError, match="InvalidSignature"):
-        approval_mgr.request_approval("task_1", "wire_tool", {"amount": 100})
+        approval_mgr.create_durable_request(
+            turn_index=1,
+            action_payload={"tool_name": "wire_tool", "amount": 100},
+            metadata={"task_id": "task_1"},
+        )
 
     # 2. Transaction Mismatch
     plugin.on_step_start(
         None, "node_1", {"approval_transaction_id": "TX_MISMATCH_DIFFERENT_PAYMENT"}
     )
     with pytest.raises(PermissionError, match="ApprovalMismatch"):
-        approval_mgr.request_approval("task_1", "wire_tool", {"amount": 100})
+        approval_mgr.create_durable_request(
+            turn_index=1,
+            action_payload={"tool_name": "wire_tool", "amount": 100},
+            metadata={"task_id": "task_1"},
+        )
 
     # 3. Revocation
     plugin.on_step_start(None, "node_1", {"approval_revocation": True})
     with pytest.raises(PermissionError, match="ApprovalRevoked"):
-        approval_mgr.request_approval("task_1", "wire_tool", {"amount": 100})
+        approval_mgr.create_durable_request(
+            turn_index=1,
+            action_payload={"tool_name": "wire_tool", "amount": 100},
+            metadata={"task_id": "task_1"},
+        )
 
     # A fault introduced after the durable request exists must also prevent
     # the persisted decision from being resolved and resuming the workflow.
@@ -240,7 +252,11 @@ def test_approval_interceptions_and_manager_integration(sample_node, tmp_path):
     # 5. Approval Race
     plugin.on_step_start(None, "node_1", {"approval_race": True})
     with pytest.raises(PermissionError, match="ApprovalRaceCondition"):
-        approval_mgr.request_approval("task_1", "wire_tool", {"amount": 100})
+        approval_mgr.create_durable_request(
+            turn_index=1,
+            action_payload={"tool_name": "wire_tool", "amount": 100},
+            metadata={"task_id": "task_1"},
+        )
 
 
 def test_runtime_mutation_before_evaluation_and_clean_fallbacks():

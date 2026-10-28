@@ -106,7 +106,7 @@ class SessionManager:
         scenario: dict,
         metadata: dict | None = None,
         seed: int | None = None,
-        log_root: Path | None = None,
+        workspace_root: Path | None = None,
         cancellation_event: Any | None = None,
         resumption_checkpoint: dict | None = None,
         resumption_token: str | None = None,
@@ -123,14 +123,18 @@ class SessionManager:
         self.run_id = run_id
         self.cancellation_event = cancellation_event
         self.resolved_config = resolved_config
+        if run_store is None:
+            raise RuntimeError(
+                "RunStorageProviderBindingRequired: SessionManager requires run_store"
+            )
+        if artifact_store is None:
+            raise RuntimeError(
+                "ArtifactStoreBindingRequired: SessionManager requires artifact_store"
+            )
         self.artifact_store = artifact_store
         self.checkpoint_store = checkpoint_store
         self.policy_evaluator = policy_evaluator
         self.signing_backend = signing_backend
-        if run_store is None:
-            from eval_runner.runtime_services import compose_local_run_store
-
-            run_store = compose_local_run_store(log_root or config.RUN_LOG_DIR)
         self.run_store = run_store
         # Binding the process-global recorder is part of execution setup.  The
         # context must exist before that binding so normal runner construction
@@ -254,14 +258,28 @@ class SessionManager:
         self.plugin_manager = (
             registry.clone_for_session() if hasattr(registry, "clone_for_session") else registry
         )
-        self.log_root = log_root or config.RUN_LOG_DIR
-        self.run_vault = self.log_root / run_id
-        self.forensics = ForensicCollector(run_id, self.run_vault)
+        # Workspaces are transient execution scratch space.  Evidence never
+        # uses this path: ForensicCollector persists exclusively through the
+        # explicitly-bound ArtifactStore.
+        self.workspace_root = (workspace_root or config.PROJECT_ROOT / "workspace").resolve()
+        self.forensics = ForensicCollector(
+            run_id,
+            artifact_store=self.artifact_store,
+            context=self.metadata.get("runtime_context"),
+        )
 
-        # [Industrial Persistence] Save ORIGINAL scenario baseline
-        self.run_vault.mkdir(parents=True, exist_ok=True)
-        with open(self.run_vault / "scenario_original.json", "w", encoding="utf-8") as f:
-            json.dump(self.scenario, f, indent=2)
+        # The immutable original scenario is a derived artifact, not a run-vault
+        # sidecar.  The ArtifactStore owns any local filesystem implementation.
+        self.artifact_store.store_artifact(
+            self.run_id,
+            "scenario_original.json",
+            json.dumps(self.scenario, indent=2),
+            content_type="application/json",
+            metadata={
+                "kind": "scenario_original",
+                "context": dict(self.metadata.get("runtime_context") or {}),
+            },
+        )
 
         # Decomposed Session Subsystems
         self.turn_state_manager = TurnStateManager(max_turns=self.max_turns)
@@ -476,11 +494,12 @@ class SessionManager:
         # finalization and subsequent certification to bind different
         # scenario documents.  A pre-existing snapshot is accepted only when
         # it is cryptographically the same contract.
-        scenario_snapshot_path = self.run_vault / "scenario_resolved.json"
-        if scenario_snapshot_path.exists():
+        scenario_snapshot_bytes = self.artifact_store.get_artifact(
+            self.run_id, "scenario_resolved.json"
+        )
+        if scenario_snapshot_bytes is not None:
             try:
-                with open(scenario_snapshot_path, encoding="utf-8") as f:
-                    stored_contract = json.load(f)
+                stored_contract = json.loads(scenario_snapshot_bytes.decode("utf-8"))
                 if not isinstance(stored_contract, dict):
                     raise ValueError("snapshot is not a JSON object")
 
@@ -501,8 +520,13 @@ class SessionManager:
                     "be validated against the immutable scenario contract."
                 ) from exc
         else:
-            with open(self.run_vault / "scenario_resolved.json", "w", encoding="utf-8") as f:
-                json.dump(self._scenario_contract, f, indent=2)
+            self.artifact_store.store_artifact(
+                self.run_id,
+                "scenario_resolved.json",
+                json.dumps(self._scenario_contract, indent=2),
+                content_type="application/json",
+                metadata={"kind": "scenario_resolved"},
+            )
 
         # 🚀 [Forensic Hardening] Protocol Trace capture
         self.protocol_sequence: list[str] = []
@@ -595,7 +619,8 @@ class SessionManager:
             event_bus=self.event_bus,
             forensics=self.forensics,
             plugin_manager=self.plugin_manager,
-            jail_root=(self.log_root / self.run_id / "terminal_jail").resolve(),
+            workspace_root=self.workspace_root,
+            jail_root=(self.workspace_root / self.run_id / "terminal_jail").resolve(),
             policy_evaluator=self.policy_evaluator,
         )
         self.sandbox = sandbox
@@ -2770,7 +2795,7 @@ class SessionManager:
                 "sandbox_state": getattr(getattr(self, "sandbox", None), "state", {}),
             }
 
-            chk_id = self.checkpoint_manager.create_checkpoint(
+            self.checkpoint_manager.create_checkpoint(
                 state=chk_state,
                 metadata={
                     "task_id": task_id,
@@ -2779,27 +2804,14 @@ class SessionManager:
                 },
             )
 
-            # 2. Use self.approval_manager to coordinate approval gate
-            approval = self.approval_manager.request_approval(
-                task_id=task_id,
-                tool_name="human_intervention",
-                params={
-                    "prompt": prompt,
-                    "checkpoint_id": chk_id,
-                    "approval_token": durable_req.approval_token,
-                },
+            # 2. ApprovalStore is the sole durable authority for the wait.
+            approval = await self.approval_manager.wait_for_durable_resolution(
+                durable_req.approval_token,
+                timeout_seconds=float(getattr(durable_req, "timeout_seconds", 1800)),
             )
+            approval_response = approval.decision_reason or "Resolved"
 
-            # Await the approvals queue wait loop (which runs in an executor thread)
-            await approval.wait()
-
-            if approval.action == "reject":
-                self.approval_manager.resolve_durable_request(
-                    approval_token=durable_req.approval_token,
-                    decision="REJECTED",
-                    decided_by="human_reviewer",
-                    decision_reason=approval.response,
-                )
+            if str(approval.status).upper() != "APPROVED":
                 now_ts = time.time()
                 p_start = (
                     durable_req.created_at.timestamp()
@@ -2820,15 +2832,8 @@ class SessionManager:
                     },
                 )
                 raise InterruptedError(
-                    f"Human reviewer rejected task '{task_id}': {approval.response}"
+                    f"Human reviewer rejected task '{task_id}': {approval_response}"
                 )
-
-            self.approval_manager.resolve_durable_request(
-                approval_token=durable_req.approval_token,
-                decision="APPROVED",
-                decided_by="human_reviewer",
-                decision_reason=approval.response,
-            )
             now_ts = time.time()
             p_start = (
                 durable_req.created_at.timestamp()
@@ -2840,7 +2845,7 @@ class SessionManager:
                 CoreEvents.HITL_RESUME,
                 {
                     "task_id": task_id,
-                    "response": approval.response,
+                    "response": approval_response,
                     "approval_token": durable_req.approval_token,
                     "resume_ts": now_ts,
                     "pause_start_ts": p_start,
@@ -2848,7 +2853,7 @@ class SessionManager:
                     "pre_pause_duration_ms": pre_pause_duration_ms,
                 },
             )
-            return approval.response
+            return approval_response
 
         # Non-interactive without GUI (e.g. piped stdin in test): return informative message
         response = f"Skipped (non-interactive, no TTY): {prompt}"
@@ -2990,8 +2995,13 @@ class SessionManager:
             # mutable execution copy, so it must not become a competing snapshot.
             scenario_contract=copy.deepcopy(self._scenario_contract),
             metadata=copy.deepcopy(self.metadata),
-            log_root=self.log_root,
+            workspace_root=self.workspace_root,
             resumption_checkpoint=copy.deepcopy(sandbox_state) if sandbox_state else None,
+            artifact_store=self.artifact_store,
+            checkpoint_store=self.checkpoint_store,
+            policy_evaluator=self.policy_evaluator,
+            signing_backend=self.signing_backend,
+            run_store=self.run_store,
         )
         new_session.metadata["execution_mode_declared"] = self.metadata.get(
             "execution_mode_declared", False
@@ -3059,9 +3069,7 @@ class SessionManager:
 
             # [Forensic Sidecar] Export to CSV for industrial audit
             # Standard: Appends current turn telemetry to the pre-initialized CSV.
-            telemetry_path = self.forensics.target_dir / "telemetry.csv"
-            with open(telemetry_path, "a", encoding="utf-8") as f:
-                f.write(",".join(str(v) for v in metrics.values()) + "\n")
+            self.forensics.record_telemetry(metrics)
         except Exception as e:
             logger.warning(f"   [Session] Telemetry capture failed: {e}")
 

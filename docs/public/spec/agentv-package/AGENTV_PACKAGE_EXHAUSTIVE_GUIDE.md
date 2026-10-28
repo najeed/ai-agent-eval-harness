@@ -71,6 +71,8 @@ Trust invariants:
 | Literal | Meaning |
 |---|---|
 | `VERIFIED` | Signature chain proved; manifest+scenario hashes match; no corruption. |
+| `ATTESTED_FAIL` | A sealed, verified certificate attests that the run failed its evaluation. |
+| `PRELIMINARY` | Provider-owned observations only; no sealed authoritative certificate exists. Score is `null`. |
 | `UNVERIFIED` | Execution passed but signature/hash proof failed. Never upgrade. |
 | `NOT_VERIFIED` | Execution failed (or produced failure assertions). |
 | `POLICY_BREACH` | Authoritative `policy_violation` event present — overrides all. |

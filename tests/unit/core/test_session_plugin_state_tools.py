@@ -330,23 +330,24 @@ async def test_session_hitl_non_interactive_approval_and_rejection(
     monkeypatch.setenv("FORCE_HITL_SUSPEND", "1")
     monkeypatch.delenv("CI", raising=False)
 
-    class MockApproval:
-        def __init__(self, action, response):
-            self.action = action
-            self.response = response
-
-        async def wait(self):
-            pass
-
     turn_ctx = MagicMock(task_id="task_1")
+
+    durable_request = MagicMock(approval_token="approval-1", timeout_seconds=0, created_at=0)
+    approved = MagicMock(status="APPROVED", decision_reason="Approved by reviewer")
+    rejected = MagicMock(status="REJECTED", decision_reason="Violates policy")
 
     # 1. Non-interactive approve
     with (
         patch("sys.stdin.isatty", return_value=False),
         patch.object(
             session.approval_manager,
-            "request_approval",
-            return_value=MockApproval("approve", "Approved by reviewer"),
+            "create_durable_request",
+            return_value=durable_request,
+        ),
+        patch.object(
+            session.approval_manager,
+            "wait_for_durable_resolution",
+            return_value=approved,
         ),
     ):
         res = await session._handle_hitl(1, {"prompt": "Please confirm transfer"}, [], {}, turn_ctx)
@@ -357,8 +358,13 @@ async def test_session_hitl_non_interactive_approval_and_rejection(
         patch("sys.stdin.isatty", return_value=False),
         patch.object(
             session.approval_manager,
-            "request_approval",
-            return_value=MockApproval("reject", "Violates policy"),
+            "create_durable_request",
+            return_value=durable_request,
+        ),
+        patch.object(
+            session.approval_manager,
+            "wait_for_durable_resolution",
+            return_value=rejected,
         ),
     ):
         with pytest.raises(InterruptedError, match="Human reviewer rejected"):

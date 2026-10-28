@@ -37,7 +37,7 @@ def violations() -> list[str]:
             r"resolve_trace_path|tail_file_generator)\b"
         ),
         ROOT / "eval_runner" / "session_components" / "approval_manager.py": re.compile(
-            r"\b(?:RUN_LOG_DIR|execution_manifest\.json|create_run_index|"
+            r"\b(?:RUN_LOG_DIR|execution_manifest\.json|run_index|create_run_index|"
             r"read_run_index|update_run_index_status)\b"
         ),
         ROOT / "eval_runner" / "services" / "certification.py": re.compile(

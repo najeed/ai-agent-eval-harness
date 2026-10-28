@@ -167,13 +167,12 @@ async def test_handle_explain_basic(tmp_path, monkeypatch):
     args = parse_args(["explain", "--run-id", "ghost"])
     await handle_explain(args)
 
-    real_file = tmp_path / "real.jsonl"
-    real_file.write_text("{}", encoding="utf-8")
-
     args = parse_args(["explain", "--run-id", "real"])
-    with patch(
-        "eval_runner.explainer.explain_trace",
-        return_value={"confidence": 0.9, "root_cause": "cpu", "suggestion": "fix"},
+    with (
+        patch(
+            "eval_runner.handlers.analysis.explain_run",
+            return_value={"confidence": 0.9, "root_cause": "cpu", "suggestion": "fix"},
+        ),
     ):
         await handle_explain(args)
 

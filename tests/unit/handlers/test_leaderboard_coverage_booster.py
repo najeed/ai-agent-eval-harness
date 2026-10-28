@@ -1,89 +1,66 @@
-import json
-from unittest.mock import patch
+from unittest.mock import mock_open, patch
 
 from eval_runner.leaderboard_generator import LeaderboardGenerator, run_leaderboard
 
 
-def test_run_leaderboard(tmp_path):
-    """Exercises the run_leaderboard CLI helper."""
-    runs_dir = tmp_path / "runs"
-    runs_dir.mkdir()
-    output_file = tmp_path / "LEADERBOARD.md"
+class FakeRunStore:
+    """Provider fixture preserving leaderboard edge-case coverage."""
 
-    # Create a dummy trace
-    run_dir = runs_dir / "run_1"
-    run_dir.mkdir()
-    trace_file = run_dir / "run.jsonl"
-    trace_file.write_text(
-        json.dumps({"event": "run_start", "metadata": {"agent": "test-agent"}})
-        + "\n"
-        + json.dumps({"event": "evaluation", "task_id": "1", "success": True})
-        + "\n"
+    def __init__(self, runs, events, manifests=None):
+        self.runs = runs
+        self.events = events
+        self.manifests = manifests or {}
+
+    def list_runs(self, *, limit):
+        return self.runs
+
+    def get_events(self, run_id, *, offset, limit):
+        return self.events[run_id]
+
+    def get_manifest(self, run_id):
+        return self.manifests.get(run_id)
+
+
+def _events(agent, *, evaluation=True):
+    events = [{"event": "run_start", "metadata": {"agent_name": agent}}]
+    if evaluation:
+        events.append({"event": "evaluation", "task_id": "1", "success": True})
+    return events
+
+
+def test_run_leaderboard():
+    """The CLI helper writes markdown derived from the supplied provider."""
+    store = FakeRunStore([{"run_id": "run-1"}], {"run-1": _events("test-agent")})
+    output = mock_open()
+    with patch("builtins.open", output), patch("builtins.print") as mock_print:
+        run_leaderboard(store, "LEADERBOARD.md")
+    output.assert_called_once_with("LEADERBOARD.md", "w", encoding="utf-8")
+    assert "test-agent" in output().write.call_args.args[0]
+    mock_print.assert_any_call("[OK] Leaderboard generated: LEADERBOARD.md")
+
+
+def test_leaderboard_missing_manifest_uses_run_start_metadata():
+    """Missing/unavailable manifests do not discard otherwise valid run events."""
+    store = FakeRunStore([{"run_id": "run-1"}], {"run-1": _events("agent-1")})
+    content = LeaderboardGenerator.generate_markdown(store)
+    assert "agent-1" in content
+
+
+def test_leaderboard_certified_badge():
+    """Provider manifests control the certified display badge."""
+    store = FakeRunStore(
+        [{"run_id": "run-certified"}],
+        {"run-certified": _events("pro-agent")},
+        {"run-certified": {"metadata": {"agent_name": "pro-agent"}, "certification": {"id": "c"}}},
     )
-
-    with patch("builtins.print") as mock_print:
-        run_leaderboard(str(runs_dir), str(output_file))
-        assert output_file.exists()
-        mock_print.assert_any_call(f"[OK] Leaderboard generated: {output_file}")
-
-
-def test_leaderboard_corrupted_manifest(tmp_path):
-    """Exercises manifest read failure."""
-    runs_dir = tmp_path / "runs"
-    runs_dir.mkdir()
-
-    run_dir = runs_dir / "run_corrupt"
-    run_dir.mkdir()
-    trace_file = run_dir / "run.jsonl"
-    trace_file.write_text(
-        json.dumps({"event": "run_start", "metadata": {"agent": "agent-1"}})
-        + "\n"
-        + json.dumps({"event": "evaluation", "task_id": "1", "success": True})
-        + "\n"
-    )
-
-    manifest_file = run_dir / "run_manifest.json"
-    manifest_file.write_text("{corrupted-json")
-
-    # Should log error and continue
-    with patch("logging.error") as mock_log:
-        LeaderboardGenerator.generate_markdown(str(runs_dir))
-        mock_log.assert_called()
-
-
-def test_leaderboard_certified_badge(tmp_path):
-    """Exercises certified badge logic."""
-    runs_dir = tmp_path / "runs"
-    runs_dir.mkdir()
-
-    run_dir = runs_dir / "run_certified"
-    run_dir.mkdir()
-    trace_file = run_dir / "run.jsonl"
-    trace_file.write_text(
-        json.dumps({"event": "run_start", "metadata": {"agent": "pro-agent"}})
-        + "\n"
-        + json.dumps({"event": "evaluation", "task_id": "1", "success": True})
-        + "\n"
-    )
-
-    manifest_file = run_dir / "run_manifest.json"
-    manifest_file.write_text(json.dumps({"metadata": {"agent_name": "pro-agent"}}))
-
-    content = LeaderboardGenerator.generate_markdown(str(runs_dir))
+    content = LeaderboardGenerator.generate_markdown(store)
     assert "🏅 pro-agent" in content
 
 
-def test_leaderboard_no_evals(tmp_path):
-    """Exercises continue when no evals found."""
-    runs_dir = tmp_path / "runs"
-    runs_dir.mkdir()
-
-    run_dir = runs_dir / "run_empty"
-    run_dir.mkdir()
-    trace_file = run_dir / "run.jsonl"
-    trace_file.write_text(
-        json.dumps({"event": "run_start", "metadata": {"agent": "lazy-agent"}}) + "\n"
+def test_leaderboard_no_evals():
+    """Runs without evaluation events remain excluded from leaderboard rows."""
+    store = FakeRunStore(
+        [{"run_id": "run-empty"}], {"run-empty": _events("lazy-agent", evaluation=False)}
     )
-
-    content = LeaderboardGenerator.generate_markdown(str(runs_dir))
-    assert "No agents have achieved the minimum quality threshold" in content
+    content = LeaderboardGenerator.generate_markdown(store)
+    assert "No qualifying provider-owned runs found" in content

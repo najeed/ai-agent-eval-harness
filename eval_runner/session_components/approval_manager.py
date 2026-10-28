@@ -1,3 +1,4 @@
+import asyncio
 import hashlib
 import logging
 import secrets
@@ -5,7 +6,6 @@ from collections.abc import Mapping
 from datetime import UTC, datetime
 from typing import Any
 
-import eval_runner.hitl.pending as hitl_pending
 from agentv_runtime.interfaces import (
     ApprovalRequest,
     ApprovalStore,
@@ -53,7 +53,6 @@ class SessionApprovalManager:
     def __init__(
         self,
         run_id: str,
-        registry: hitl_pending.PendingApprovalRegistry | None = None,
         checkpoint_manager: Any | None = None,
         state_provider: Any | None = None,
         plugin_manager: Any | None = None,
@@ -63,7 +62,6 @@ class SessionApprovalManager:
         run_store: Any | None = None,
     ):
         self.run_id = run_id
-        self.registry = registry or hitl_pending.global_registry
         self.checkpoint_manager = checkpoint_manager
         self.state_provider = state_provider
         self.plugin_manager = plugin_manager
@@ -77,87 +75,6 @@ class SessionApprovalManager:
         if self._approval_store is None:
             self._approval_store = resolve_approval_store()
         return self._approval_store
-
-    def request_approval(
-        self,
-        task_id: str,
-        tool_name: str,
-        params: dict[str, Any],
-        timeout_seconds: int = 60,
-    ) -> hitl_pending.PendingApproval:
-        """
-        Submits an approval request to the persistent approval registry
-        with durable state snapshotting.
-        """
-        # Trigger on_approval_request interceptor hook
-        if self.plugin_manager:
-            intercept = self.plugin_manager.trigger_interceptor(
-                "on_approval_request",
-                self,
-                {"task_id": task_id, "tool_name": tool_name, "params": params},
-            )
-            if intercept is False or (
-                isinstance(intercept, dict) and intercept.get("allowed") is False
-            ):
-                plugin_reason = getattr(self.plugin_manager, "last_rejection_reason", None)
-                err_msg = (
-                    (plugin_reason if isinstance(plugin_reason, str) and plugin_reason else None)
-                    or (intercept.get("error") if isinstance(intercept, dict) else None)
-                    or "Approval rejected by security policy"
-                )
-                raise ApprovalBoundaryRejected(
-                    err_msg,
-                    phase="request",
-                    details=getattr(self.plugin_manager, "last_rejection_details", None),
-                )
-        # Durable HITL snapshotting: persist state checkpoint before entering approval wait
-        if self.checkpoint_manager:
-            checkpoint_state = {
-                "task_id": task_id,
-                "tool_name": tool_name,
-                "params": params,
-                "status": "AWAITING_APPROVAL",
-            }
-            if callable(self.state_provider):
-                try:
-                    checkpoint_state.update(self.state_provider())
-                except Exception as e:
-                    logger.debug("Failed to extract full state snapshot for approval: %s", e)
-            self.checkpoint_manager.create_checkpoint(
-                checkpoint_state,
-                metadata={
-                    "hitl_gate": True,
-                    "tool": tool_name,
-                    "task_id": task_id,
-                },
-            )
-
-        prompt = f"Approval required for tool '{tool_name}' with parameters: {params}"
-        return self.registry.create(
-            task_id=task_id,
-            run_id=self.run_id,
-            prompt=prompt,
-            timeout_seconds=timeout_seconds,
-        )
-
-    def resolve_approval(
-        self,
-        approval_id: str,
-        action: str,
-        response: str | None = None,
-        resolved_by: str | None = None,
-    ) -> bool:
-        """Resolves an approval (approve/reject)."""
-        return self.registry.resolve(
-            approval_id=approval_id,
-            action=action,
-            response=response or "Resolved",
-            resolved_by=resolved_by or "system",
-        )
-
-    def list_pending_approvals(self) -> list[hitl_pending.PendingApproval]:
-        """Lists active pending approvals for this run."""
-        return [i for i in self.registry.pending() if i.run_id == self.run_id]
 
     def create_durable_request(
         self,
@@ -536,3 +453,32 @@ class SessionApprovalManager:
     def list_durable_pending(self, scope: ScopeToken | None = None) -> list[ApprovalRequest]:
         """Lists active pending approval requests for this run, optionally filtering by scope."""
         return self.approval_store.list_pending(self.run_id, scope=scope or self.scope)
+
+    async def wait_for_durable_resolution(
+        self,
+        approval_token: str,
+        *,
+        timeout_seconds: float,
+        poll_seconds: float = 0.25,
+    ) -> ApprovalRequest:
+        """Wait for the authoritative ApprovalStore record to leave PENDING.
+
+        The store remains the durable authority across process restarts.  A
+        provider may later override this bounded polling implementation with a
+        native stream without changing session semantics.
+        """
+        deadline = asyncio.get_running_loop().time() + timeout_seconds
+        while True:
+            request = self.get_durable_request(approval_token)
+            if request is None:
+                raise LookupError(f"Approval request '{approval_token}' is unavailable")
+            if str(request.status).upper() != "PENDING":
+                return request
+            if asyncio.get_running_loop().time() >= deadline:
+                return self.resolve_durable_request(
+                    approval_token,
+                    "REJECTED",
+                    decided_by="system_timeout",
+                    decision_reason="Approval window expired",
+                )
+            await asyncio.sleep(poll_seconds)

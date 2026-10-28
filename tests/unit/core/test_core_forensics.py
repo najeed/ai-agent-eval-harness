@@ -12,8 +12,15 @@ import pytest
 from eval_runner import config
 from eval_runner.artifact_plugin import ArtifactPlugin
 from eval_runner.forensics import ForensicCollector, ForensicRelevanceEngine, dict_diff, list_diff
+from eval_runner.reference.local_artifact import LocalFileArtifactStore
 from eval_runner.taxonomy import CausalChain, FailureCategory
 from eval_runner.triage import Confidence, TriageEngine
+
+
+def _collector(tmp_path, run_id="r1"):
+    store = LocalFileArtifactStore(base_dir=tmp_path / "artifact-store")
+    return ForensicCollector(run_id, artifact_store=store), store
+
 
 # --- 1. State Diffing Mechanics ---
 
@@ -45,7 +52,7 @@ def test_forensic_relevance(tmp_path):
 
 
 def test_forensic_collection(tmp_path):
-    collector = ForensicCollector("run-1", tmp_path)
+    collector, store = _collector(tmp_path, "run-1")
     # Snapshots (uses 'index' parameter)
     collector.snapshot_state({"a": 1}, 1)
     assert 1 in collector._state_snapshots
@@ -53,7 +60,7 @@ def test_forensic_collection(tmp_path):
     f = tmp_path / "artifact.log"
     f.write_text("data")
     # Bypass relevance check for raw test
-    collector._artifacts.append({"path": f, "alias": "a.log"})
+    collector.register_artifact(f, "a.log")
     res = collector.collect()
     assert "a.log" in res
 
@@ -141,7 +148,7 @@ def test_dict_diff_deleted_key():
 
 def test_collector_telemetry_failure(tmp_path):
     # resource_telemetry failure
-    c = ForensicCollector("r1", tmp_path)
+    c, _ = _collector(tmp_path)
     with patch("psutil.Process", side_effect=Exception("PSUtil missing")):
         res = c.resource_telemetry
         assert res["status"] == "telemetry_unavailable"
@@ -149,7 +156,7 @@ def test_collector_telemetry_failure(tmp_path):
 
 def test_collector_init_telemetry_failure(tmp_path):
     # init_telemetry failure
-    c = ForensicCollector("r1", tmp_path)
+    c, _ = _collector(tmp_path)
     # Make dir read-only or similar to trigger exception
     with patch("builtins.open", side_effect=OSError("Permission Denied")):
         with patch("eval_runner.forensics.logger.error") as mock_log:
@@ -159,9 +166,9 @@ def test_collector_init_telemetry_failure(tmp_path):
 
 def test_collector_raw_interaction_failure(tmp_path):
     # register_raw_interaction success/fail
-    c = ForensicCollector("r1", tmp_path)
+    c, store = _collector(tmp_path)
     c.register_raw_interaction({"p": 1}, {"r": 1})
-    assert (tmp_path / "forensics" / "adapter_trace.jsonl").exists()
+    assert store.get_artifact("r1", "forensics/adapter_trace.jsonl")
 
     with patch("builtins.open", side_effect=OSError("Write failed")):
         with patch("eval_runner.forensics.logger.error") as mock_log:
@@ -179,7 +186,7 @@ def test_forensics_more_relevance(tmp_path):
 
 
 def test_collector_full_suite(tmp_path):
-    c = ForensicCollector("r1", tmp_path)
+    c, store = _collector(tmp_path)
     # Success telemetry
     assert "memory_mb" in c.resource_telemetry
 
@@ -194,16 +201,16 @@ def test_collector_full_suite(tmp_path):
     p.write_text("print(1)")
     h = c.archive_plugin(p)
     assert h is not None
-    assert (tmp_path / "forensics" / "plugins").exists()
+    assert store.get_artifact("r1", f"forensics/plugins/{p.stem}.{h[:12]}.py")
 
     # Snapshot diff
     c.snapshot_state({"a": 1}, 0)
     c.snapshot_state({"a": 2}, 1)
-    assert (tmp_path / "forensics" / "state_turn_001_diff.json").exists()
+    assert store.get_artifact("r1", "forensics/state_turn_001_diff.json")
 
     # Init telemetry success
     c.init_telemetry(["h1", "h2"])
-    assert (tmp_path / "forensics" / "telemetry.csv").exists()
+    assert store.get_artifact("r1", "forensics/telemetry.csv")
 
 
 def test_dict_diff_list_nested():
@@ -225,7 +232,7 @@ def test_list_diff_final_edges():
 
 
 def test_snapshot_zero_change(tmp_path):
-    c = ForensicCollector("r1", tmp_path)
+    c, _ = _collector(tmp_path)
     c.snapshot_state({"a": 1}, 0)
     # Turn 1 with same state should return early
     c.snapshot_state({"a": 1}, 1)
@@ -322,7 +329,7 @@ def test_ledger_hash_failure(tmp_path):
 
 
 def test_collector_registration_edges(tmp_path):
-    c = ForensicCollector("r1", tmp_path)
+    c, _ = _collector(tmp_path)
     # Non-existent
     c.register_artifact(tmp_path / "missing.txt", "m.txt")
     assert len(c._artifacts) == 0
@@ -336,28 +343,28 @@ def test_collector_registration_edges(tmp_path):
 
 
 def test_collector_archive_missing(tmp_path):
-    c = ForensicCollector("r1", tmp_path)
+    c, _ = _collector(tmp_path)
     # raise FileNotFoundError
     with pytest.raises(FileNotFoundError):
         c.archive_plugin(tmp_path / "nonexistent.py")
 
 
 def test_collector_collect_empty(tmp_path):
-    c = ForensicCollector("r1", tmp_path)
+    c, _ = _collector(tmp_path)
     # Empty collect
     assert c.collect() == {}
 
 
 def test_collector_collect_failure(tmp_path):
-    c = ForensicCollector("r1", tmp_path)
+    c, _ = _collector(tmp_path)
     f = tmp_path / "ok.txt"
     f.write_text("data")
     c.register_artifact(f, "ok.txt")
 
-    # Copy failure
+    # Collection is provider-backed; it has no filesystem copy step.
     with patch("shutil.copy2", side_effect=Exception("Copy failed")):
         ledger = c.collect()
-        assert "ok.txt" not in ledger
+        assert "ok.txt" in ledger
 
 
 def test_relevance_exclusion_patterns(tmp_path):
@@ -378,7 +385,7 @@ def test_ledger_exclude_files(tmp_path):
 
 
 def test_snapshot_failure(tmp_path):
-    c = ForensicCollector("r1", tmp_path)
+    c, _ = _collector(tmp_path)
     # Mock open to fail
     with patch("builtins.open", side_effect=OSError("Disk Full")):
         with patch("eval_runner.forensics.logger.error") as mock_log:
@@ -483,9 +490,9 @@ def test_forensics_extended_coverage_matrix(tmp_path):
     assert "k" not in res_ld
 
     # 14. ForensicCollector.snapshot_state with branch_id
-    collector = ForensicCollector("test_run_branch", tmp_path)
+    collector, store = _collector(tmp_path, "test_run_branch")
     collector.snapshot_state({"branch_key": "v1"}, turn=1, branch_id="sub_branch_42")
-    assert (tmp_path / "forensics" / "state_turn_001_sub_branch_42_full.json").exists()
+    assert store.get_artifact("test_run_branch", "forensics/state_turn_001_sub_branch_42_full.json")
 
     # 15. ForensicCollector.snapshot_state: oversized snapshot with canonical fallback
     big_state = {f"k_{i}": "v" * 10000 for i in range(60)}
@@ -493,17 +500,15 @@ def test_forensics_extended_coverage_matrix(tmp_path):
         "agentv_runtime.canonical.canonical_json_encode", side_effect=Exception("Encode err")
     ):
         collector.snapshot_state(big_state, turn=2)
-        diff_file = tmp_path / "forensics" / "state_turn_002_diff.json"
-        assert diff_file.exists()
+        assert store.get_artifact("test_run_branch", "forensics/state_turn_002_diff.json")
 
     # 16. ForensicCollector.collect: snapshot path does not exist on disk
-    collector._state_snapshots[99] = tmp_path / "forensics" / "nonexistent_turn_099.json"
+    collector._state_snapshots[99] = "nonexistent_turn_099.json"
     ledger = collector.collect()
     assert "forensics/nonexistent_turn_099.json" not in ledger
 
     # 17. ForensicCollector.collect: src.resolve() == dest.resolve()
-    dest_path = tmp_path / "forensics" / "in_place.log"
-    dest_path.parent.mkdir(parents=True, exist_ok=True)
+    dest_path = tmp_path / "in_place.log"
     dest_path.write_text("in place data")
     collector.register_artifact(dest_path, "in_place.log")
     ledger_in_place = collector.collect()
@@ -520,8 +525,9 @@ def test_forensics_extended_coverage_matrix(tmp_path):
     collector.record_external_receipts(receipts, turn=1, node_id="node_search")
     assert hasattr(collector, "_external_receipts")
     assert len(collector._external_receipts) == 1
-    receipt_file = tmp_path / "forensics" / "external_receipts_turn_001_node_search.json"
-    assert receipt_file.exists()
+    assert store.get_artifact(
+        "test_run_branch", "forensics/receipts/external_receipts_turn_001_node_search.json"
+    )
 
     # Empty receipts test (early return)
     collector.record_external_receipts([], turn=2, node_id="node_empty")

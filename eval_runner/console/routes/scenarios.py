@@ -21,7 +21,6 @@ from agentv_runtime.manifest import (
 )
 from eval_runner import config, engine, loader, mutator, spec_parser, taxonomy  # noqa: F401
 from eval_runner.catalog import ScenarioCatalog
-from eval_runner.run_index import create_run_index, update_run_index_status
 
 from ..auth_manager import Permission, active_runtime_context, require_permission
 from ..providers import get_run_store
@@ -1566,30 +1565,21 @@ def evaluate_scenario():
     # Dispatching before this succeeds lets a HITL pause be acknowledged with
     # no durable record to transition.
     run_store = get_run_store()
-    materialize_submission = getattr(run_store, "materialize_submission", None)
-    if callable(materialize_submission):
-        materialize_submission(
-            run_id=run_id,
-            scenario_id=str(scen.get("id") or identifier),
-            agent_id=str(agent_config.get("agent_name") or "default_agent"),
-            metadata={
-                "agent_name": str(agent_config.get("agent_name") or "default_agent"),
-                "protocol": agent_config.get("protocol"),
-                "model": agent_config.get("model"),
-                "execution_mode": exec_mode,
-                "runtime_context": dict(scope),
-            },
-            context=scope,
-        )
-
-    # Publish durable verified scope before returning or dispatching. Every
-    # run-facing route can now authorize an accepted asynchronous run even
-    # before the runner writes its full execution artifacts.
-    create_run_index(
+    run_store.reserve_submission(
         run_id=run_id,
-        context=scope,
         scenario_id=str(scen.get("id") or identifier),
+        agent_id=str(agent_config.get("agent_name") or "default_agent"),
+        metadata={
+            "agent_name": str(agent_config.get("agent_name") or "default_agent"),
+            "protocol": agent_config.get("protocol"),
+            "model": agent_config.get("model"),
+            "execution_mode": exec_mode,
+            "runtime_context": dict(scope),
+        },
+        context=dict(scope),
+        idempotency_key=manifest.manifest_id,
     )
+
     backend = resolve_execution_backend()
     # The accepted-run projection and the executing runner must use the same
     # authoritative provider.  Leaving this injection out permits the backend
@@ -1598,6 +1588,7 @@ def evaluate_scenario():
     set_dependency_graph = getattr(backend, "set_dependency_graph", None)
     if callable(set_dependency_graph):
         set_dependency_graph(run_store=run_store)
+    run_store.transition_submission(run_id, "RESERVED", "DISPATCHED", context=dict(scope))
     backend.submit(
         run_id=run_id,
         scenario_data=scen,
@@ -1624,7 +1615,7 @@ def evaluate_scenario():
             "runtime_context": dict(scope),
         },
     )
-    update_run_index_status(run_id, "RUNNING")
+    run_store.transition_submission(run_id, "DISPATCHED", "RUNNING", context=dict(scope))
 
     return jsonify(
         {

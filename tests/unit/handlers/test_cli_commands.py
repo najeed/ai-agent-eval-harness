@@ -124,31 +124,14 @@ async def test_handle_mutate_all_types(tmp_path, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_handle_cleanup_runs(tmp_path, monkeypatch):
-    """Test 'cleanup-runs' with force using mocking."""
-    monkeypatch.chdir(tmp_path)
-    old_file = Path("old.jsonl")
-    old_file.write_text("old")
-
-    mock_stat = MagicMock()
-    mock_stat.st_mtime = 0
-
-    # Cleanup logic moved to eval_runner.cleaner
+    """The command delegates cleanup to the resolved run provider."""
+    args = MagicMock(days=7, force=True)
     with (
-        patch("eval_runner.cleaner.time.time", return_value=1700000000),
-        patch("eval_runner.cleaner.Path") as mock_path_class,
+        patch("eval_runner.cleaner.cleanup_traces") as mock_clean,
+        patch("eval_runner.runtime_services.resolve_run_store") as mock_store,
     ):
-        mock_path_inst = mock_path_class.return_value
-        # mock_path_inst.exists.return_value = True
-
-        mock_file = MagicMock()
-        mock_file.stat.return_value.st_mtime = 0
-        mock_path_inst.glob.return_value = [mock_file]
-
-        args = MagicMock(dir=".", days=7, force=True)
-        await environment.handle_cleanup_runs(args)
-
-        # Verify unlink was called on the mock file
-        mock_file.unlink.assert_called_once()
+        assert await environment.handle_cleanup_runs(args) == 0
+    mock_clean.assert_called_once_with(run_store=mock_store.return_value, days=7, force=True)
 
 
 @pytest.mark.asyncio
@@ -174,8 +157,9 @@ async def test_handle_aes_validate_error_paths(tmp_path, capsys, monkeypatch):
     assert result == 1
     captured = capsys.readouterr()
     assert (
-        "[CRITICAL] FAILED: Trace file for missing_coverage missing after vault lookup."
-    ) in captured.out
+        "[CRITICAL] FAILED: Provider-owned trace for missing_coverage is unavailable."
+        in captured.out
+    )
 
 
 def test_main_generic_exception():

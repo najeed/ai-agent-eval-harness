@@ -30,6 +30,7 @@ from eval_runner.reference.approval_store import (
     reset_default_approval_store,
 )
 from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+from eval_runner.reference.local_artifact import LocalFileArtifactStore
 from eval_runner.reference.local_run_store import (
     LocalFileRunStore,
     TraceCorruptionError,
@@ -146,7 +147,13 @@ async def test_p0_1_session_durable_suspension_emits_and_preserves_state(
         ],
     }
 
-    session = SessionManager(run_id=run_id, scenario=scenario, log_root=runs_dir)
+    session = SessionManager(
+        run_id=run_id,
+        scenario=scenario,
+        workspace_root=tmp_path / "workspace",
+        run_store=store,
+        artifact_store=LocalFileArtifactStore(tmp_path / "artifacts"),
+    )
     session.resumption_token = None
 
     emitted_events = []

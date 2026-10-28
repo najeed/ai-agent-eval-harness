@@ -18,7 +18,7 @@ from eval_runner import config
 from eval_runner.console.app import create_app
 from eval_runner.console.auth_manager import Permission
 from eval_runner.flight_recorder import FlightRecorderPlugin
-from eval_runner.reference.legacy_verifier_paths import locate_certificate_file
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.reference.signing import NullSigningBackend
 
 
@@ -194,39 +194,19 @@ def test_preflight_truthful_probe_failing_closed_on_http_error(auth_client, monk
     assert "HTTP 500" in agent_check["message"]
 
 
-def test_locate_certificate_file_canonical_parity(tmp_path, monkeypatch):
-    """Test that locate_certificate_file discovers certificates across reports and vault."""
+def test_provider_certificate_manifest_canonical_parity(tmp_path, monkeypatch):
+    """Certificate discovery is a run-provider operation, not a path scan."""
     runs_dir = tmp_path / "runs"
-    reports_dir = tmp_path / "reports"
     runs_dir.mkdir(parents=True, exist_ok=True)
-    reports_dir.mkdir(parents=True, exist_ok=True)
 
     monkeypatch.setattr(config, "RUN_LOG_DIR", runs_dir)
-    monkeypatch.setattr(config, "REPORTS_DIR", reports_dir)
 
     run_id = "run-parity-cert-99"
-    assert locate_certificate_file(run_id) is None
-
-    # Write to reports/certificates
-    cert_dir = reports_dir / "certificates"
-    cert_dir.mkdir(parents=True, exist_ok=True)
-    vc_file = cert_dir / f"{run_id}_vc.json"
-    vc_file.write_text("{}", encoding="utf-8")
-
-    located = locate_certificate_file(run_id)
-    assert located is not None
-    assert located.resolve() == vc_file.resolve()
-
-    # If removed from reports and placed in vault
-    vc_file.unlink()
-    vault_dir = runs_dir / run_id
-    vault_dir.mkdir(parents=True, exist_ok=True)
-    manifest_file = vault_dir / "run_manifest.json"
-    manifest_file.write_text("{}", encoding="utf-8")
-
-    located_vault = locate_certificate_file(run_id)
-    assert located_vault is not None
-    assert located_vault.resolve() == manifest_file.resolve()
+    store = LocalFileRunStore(runs_dir)
+    store.create_run(run_id, "scenario")
+    assert store.get_manifest(run_id) is None
+    store.save_run_manifest(run_id, {"vc_version": "3.0.0", "run_id": run_id})
+    assert store.get_manifest(run_id) == {"vc_version": "3.0.0", "run_id": run_id}
 
 
 def test_flight_recorder_fail_closed_under_aes_certification_mode(tmp_path, monkeypatch):

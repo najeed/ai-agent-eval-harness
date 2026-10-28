@@ -142,9 +142,7 @@ async def test_handle_verify_missing(capsys, physical_env, monkeypatch):
     result = await evaluation.handle_verify(args)
     assert result == 1
     captured = capsys.readouterr()
-    assert (
-        "[CRITICAL] FAILED: Trace file for missing_run missing after vault lookup."
-    ) in captured.out
+    assert "[CRITICAL] FAILED: Provider-owned trace for missing_run is unavailable." in captured.out
 
 
 @pytest.mark.asyncio

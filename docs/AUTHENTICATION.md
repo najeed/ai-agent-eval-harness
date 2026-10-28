@@ -275,11 +275,11 @@ visibility; presentation metadata never grants access or changes scope.
 
 ### Asynchronous run registration
 
-When Runtime accepts an evaluation, it atomically writes a durable
-`run_index.json` before dispatching asynchronous execution. The record contains
-the run ID, pending/running lifecycle state, and the complete verified Runtime
-context tuple. Run status, stream, and list authorization read that same record
-until richer execution artifacts exist, so an in-scope caller can poll
+When Runtime accepts an evaluation, it atomically reserves a provider-owned
+submission before dispatching asynchronous execution. The reservation binds the
+run ID, immutable submission identity, idempotency key, lifecycle state, and
+complete verified Runtime context tuple. Run status, stream, and list
+authorization read that provider record, so an in-scope caller can poll
 immediately and after a restart. The runner carries the tuple into subsequent
 run manifests; callers in another context, and unknown run IDs, continue to
 receive a non-enumerating `404`.

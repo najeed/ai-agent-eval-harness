@@ -2,7 +2,6 @@ import json
 import logging
 import os
 import re
-import shutil
 from pathlib import Path
 from typing import Any
 
@@ -358,14 +357,38 @@ class ForensicCollector:
     Ensures O(N) memory scaling by offloading heavy state data to sidecar JSON files.
     """
 
-    def __init__(self, run_id: str, run_log_dir: Path):
+    def __init__(self, run_id: str, *, artifact_store: Any, context: dict[str, Any] | None = None):
+        if artifact_store is None:
+            raise RuntimeError(
+                "ArtifactStoreBindingRequired: ForensicCollector requires artifact_store"
+            )
         self.run_id = run_id
-        self.target_dir = run_log_dir / "forensics"
-        self._artifacts: list[dict[str, Any]] = []
-        self._state_snapshots: dict[int, Path] = {}
+        self.artifact_store = artifact_store
+        self.context = dict(context or {})
+        self._artifacts: dict[str, str] = {}
+        self._state_snapshots: dict[int, str] = {}
         self._last_state: dict[str, Any] = {}
         self._branch_states: dict[str, dict[str, Any]] = {}
         self.evidence_incomplete: bool = False
+
+    @staticmethod
+    def _artifact_name(alias: str) -> str:
+        return f"forensics/{alias.lstrip('/')}"
+
+    def _store(self, alias: str, content: bytes | str, content_type: str) -> str:
+        name = self._artifact_name(alias)
+        self.artifact_store.store_artifact(
+            self.run_id,
+            name,
+            content,
+            content_type=content_type,
+            metadata={"kind": "forensic", "alias": alias, "context": self.context},
+        )
+        import hashlib
+
+        raw = content if isinstance(content, bytes) else content.encode("utf-8")
+        self._artifacts[alias] = hashlib.sha3_256(raw).hexdigest()
+        return name
 
     @property
     def resource_telemetry(self) -> dict[str, Any]:
@@ -400,7 +423,12 @@ class ForensicCollector:
             )
             return
 
-        self._artifacts.append({"path": path, "alias": alias})
+        try:
+            self._store(alias, path.read_bytes(), "application/octet-stream")
+        except OSError as err:
+            self.evidence_incomplete = True
+            logger.error("[Forensics] Failed to store artifact %s: %s", alias, err)
+            return
         logger.debug(f"[Forensics] Registered artifact: {alias} -> {path}")
 
     def archive_plugin(self, path: Path) -> str:
@@ -414,16 +442,7 @@ class ForensicCollector:
 
         file_hash = compute_file_hash(path)
         dest_filename = f"{path.stem}.{file_hash[:12]}.py"
-        target_path = self.target_dir / "plugins" / dest_filename
-
-        target_path.parent.mkdir(parents=True, exist_ok=True)
-        import shutil
-
-        shutil.copy2(path, target_path)
-
-        # Link artifact to the session lifecycle
-        # We use a specialized alias to facilitate automated replay discovery
-        self.register_artifact(target_path, f"plugins/{dest_filename}")
+        self._store(f"plugins/{dest_filename}", path.read_bytes(), "text/x-python")
 
         return file_hash
 
@@ -437,13 +456,14 @@ class ForensicCollector:
         if not hasattr(self, "_external_receipts"):
             self._external_receipts = []
         self._external_receipts.extend(receipts)
-        self.target_dir.mkdir(parents=True, exist_ok=True)
         receipt_filename = f"external_receipts_turn_{turn:03d}_{node_id}.json"
-        target_path = self.target_dir / receipt_filename
         try:
-            target_path.write_text(json.dumps(receipts, indent=2, default=str), encoding="utf-8")
-            self.register_artifact(target_path, f"receipts/{receipt_filename}")
-        except OSError as e:
+            self._store(
+                f"receipts/{receipt_filename}",
+                json.dumps(receipts, indent=2, default=str),
+                "application/json",
+            )
+        except Exception as e:
             logger.debug("Failed writing receipt artifact: %s", e)
 
     def snapshot_state(self, state: dict[str, Any], turn: int, branch_id: str | None = None):
@@ -451,7 +471,6 @@ class ForensicCollector:
         Saves a JSON snapshot of the world state to disk.
         Uses differential encoding (dict_diff) isolated per branch to prevent cross-contamination.
         """
-        self.target_dir.mkdir(parents=True, exist_ok=True)
         branch_key = branch_id or "default"
         prior_state = self._branch_states.get(branch_key, self._last_state)
         is_full = turn == 0 or not prior_state
@@ -461,10 +480,10 @@ class ForensicCollector:
             prefix += f"_{branch_id}"
 
         if is_full:
-            snapshot_path = self.target_dir / f"{prefix}_full.json"
+            snapshot_name = f"{prefix}_full.json"
             content = state
         else:
-            snapshot_path = self.target_dir / f"{prefix}_diff.json"
+            snapshot_name = f"{prefix}_diff.json"
             content = dict_diff(prior_state, state)
             if not content:
                 # Zero-Change optimization: Don't write empty diffs
@@ -498,14 +517,16 @@ class ForensicCollector:
             }
 
         try:
-            with open(snapshot_path, "w", encoding="utf-8") as f:
-                json.dump(content, f, indent=4, default=str)
-
-            self._state_snapshots[turn] = snapshot_path
+            self._store(
+                snapshot_name,
+                json.dumps(content, indent=4, default=str),
+                "application/json",
+            )
+            self._state_snapshots[turn] = snapshot_name
             self._branch_states[branch_key] = state
             self._last_state = state  # Update cache for next turn
             logger.debug(
-                f"[Forensics] {'Full' if is_full else 'Diff'} snapshot saved: {snapshot_path.name}"
+                f"[Forensics] {'Full' if is_full else 'Diff'} snapshot saved: {snapshot_name}"
             )
         except Exception as e:
             self.evidence_incomplete = True
@@ -516,13 +537,9 @@ class ForensicCollector:
         Initializes the telemetry CSV file with a header.
         Ensures O(1) header writing at session start.
         """
-        self.target_dir.mkdir(parents=True, exist_ok=True)
-        telemetry_path = self.target_dir / "telemetry.csv"
-
         try:
-            with open(telemetry_path, "w", encoding="utf-8") as f:
-                f.write(",".join(headers) + "\n")
-            logger.debug(f"[Forensics] Telemetry CSV initialized at {telemetry_path}")
+            self._store("telemetry.csv", ",".join(headers) + "\n", "text/csv")
+            logger.debug("[Forensics] Telemetry CSV initialized")
         except Exception as e:
             logger.error(f"[Forensics] Failed to initialize telemetry CSV: {e}")
 
@@ -532,9 +549,6 @@ class ForensicCollector:
         Ensures bit-for-bit auditability of agent-harness communication while
         enforcing the Evidence Boundedness Contract to prevent unbounded dumps.
         """
-        self.target_dir.mkdir(parents=True, exist_ok=True)
-        trace_path = self.target_dir / "adapter_trace.jsonl"
-
         import time
 
         bounded_payload = _bound_interaction_payload(payload)
@@ -547,8 +561,14 @@ class ForensicCollector:
         }
 
         try:
-            with open(trace_path, "a", encoding="utf-8") as f:
-                f.write(json.dumps(entry) + "\n")
+            self.artifact_store.store_artifact(
+                self.run_id,
+                self._artifact_name("adapter_trace.jsonl"),
+                json.dumps(entry) + "\n",
+                content_type="application/x-ndjson",
+                metadata={"kind": "forensic", "context": self.context},
+                append=True,
+            )
         except Exception as e:
             logger.error(f"[Forensics] Failed to log raw interaction: {e}")
 
@@ -557,31 +577,19 @@ class ForensicCollector:
         Physically gathers all registered artifacts and snapshots into the forensics directory.
         Returns a ledger (SHA3-256 map) for inclusion in the VC v4 manifest.
         """
-        if not self._artifacts and not self._state_snapshots:
-            return {}
+        return dict(self._artifacts)
 
-        self.target_dir.mkdir(parents=True, exist_ok=True)
-        ledger = {}
-
-        # 1. Collect registered artifacts
-        for art in self._artifacts:
-            src = art["path"]
-            alias = art["alias"]
-            dest = self.target_dir / alias
-
-            try:
-                dest.parent.mkdir(parents=True, exist_ok=True)
-                if src.resolve() != dest.resolve():
-                    shutil.copy2(src, dest)
-                ledger[alias] = compute_file_hash(dest)
-            except Exception as e:
-                self.evidence_incomplete = True
-                logger.error(f"[Forensics] Failed to collect artifact {alias}: {e}")
-
-        # 2. Add snapshots to ledger
-        for _, path in self._state_snapshots.items():
-            rel_path = f"forensics/{path.name}"
-            if path.exists():
-                ledger[rel_path] = compute_file_hash(path)
-
-        return ledger
+    def record_telemetry(self, metrics: dict[str, Any]) -> None:
+        """Append one provider-owned telemetry row."""
+        try:
+            self.artifact_store.store_artifact(
+                self.run_id,
+                self._artifact_name("telemetry.csv"),
+                ",".join(str(value) for value in metrics.values()) + "\n",
+                content_type="text/csv",
+                metadata={"kind": "forensic", "context": self.context},
+                append=True,
+            )
+        except Exception as err:
+            self.evidence_incomplete = True
+            logger.error("[Forensics] Failed to append telemetry: %s", err)

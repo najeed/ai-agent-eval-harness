@@ -147,20 +147,23 @@ def _task_succeeded(task_result: dict) -> bool:
 
 
 def generate_html_report(
-    scenario: dict, results: list, metadata: dict | None = None, standalone: bool = False
-) -> Path:
+    scenario: dict,
+    results: list,
+    metadata: dict | None = None,
+    standalone: bool = False,
+    *,
+    artifact_store: Any | None = None,
+    run_id: str | None = None,
+) -> Path | str:
     """
     Generates a premium HTML report for the evaluation results.
     """
-    report_dir = config.HTML_REPORTS_DIR
-    report_dir.mkdir(parents=True, exist_ok=True)
-
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     scenario_identifier = scenario.get("id", "unknown")
 
     prefix = "standalone_" if standalone else "report_"
     filename = f"{prefix}{scenario_identifier}_{timestamp}.html"
-    filepath = report_dir / filename
+    filepath = config.HTML_REPORTS_DIR / filename
 
     # Authoritative cryptographic verification check (Defect 6)
     # File existence must NEVER imply verification.
@@ -427,9 +430,21 @@ def generate_html_report(
 </body>
 </html>
     """
-    with open(filepath, "w", encoding="utf-8") as f:
-        f.write(html_content)
+    if artifact_store is not None:
+        if not run_id:
+            raise ValueError("run_id is required when storing a report through ArtifactStore")
+        return artifact_store.store_artifact(
+            run_id,
+            f"reports/{filename}",
+            html_content,
+            content_type="text/html",
+            metadata={"kind": "derived_report", "source": "provider"},
+        )
 
+    # Kept only for the standalone report-rendering library API.  Runtime
+    # callers must pass an ArtifactStore and never use this local projection.
+    filepath.parent.mkdir(parents=True, exist_ok=True)
+    filepath.write_text(html_content, encoding="utf-8")
     return filepath
 
 

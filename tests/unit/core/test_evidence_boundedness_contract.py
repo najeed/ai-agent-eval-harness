@@ -28,6 +28,7 @@ from agentv_runtime.contracts import (
 from agentv_runtime.evidence_graph import link_assertion
 from agentv_runtime.interfaces import BoundedStateProvider
 from eval_runner.forensics import ForensicCollector, list_diff
+from eval_runner.reference.local_artifact import LocalFileArtifactStore
 from eval_runner.simulators import DatabaseSimulator
 from eval_runner.tool_sandbox import ToolSandbox
 
@@ -198,7 +199,8 @@ def test_forensics_list_diff_boundedness():
 def test_forensics_snapshot_state_boundedness(tmp_path):
     """Verify Forensics caps oversized snapshots (>512 KB) and commits SHA3 digest."""
     run_id = "test_bound_snap_run"
-    forensics = ForensicCollector(run_id=run_id, run_log_dir=tmp_path)
+    artifact_store = LocalFileArtifactStore(base_dir=tmp_path / "artifact-store")
+    forensics = ForensicCollector(run_id=run_id, artifact_store=artifact_store)
 
     # Construct huge state exceeding MAX_SNAPSHOT_BYTES (512 KB)
     huge_state = {
@@ -211,9 +213,7 @@ def test_forensics_snapshot_state_boundedness(tmp_path):
     forensics.snapshot_state(huge_state, turn=0)
 
     # Read the snapshot file
-    snap_file = tmp_path / "forensics" / "state_turn_000_full.json"
-    assert snap_file.exists()
-    content = json.loads(snap_file.read_text(encoding="utf-8"))
+    content = json.loads(artifact_store.get_artifact(run_id, "forensics/state_turn_000_full.json"))
 
     assert "__BOUNDED_SNAPSHOT__" in content
     snap_info = content["__BOUNDED_SNAPSHOT__"]
@@ -226,16 +226,20 @@ def test_forensics_snapshot_state_boundedness(tmp_path):
 def test_forensics_register_raw_interaction_boundedness(tmp_path):
     """Verify Forensics register_raw_interaction bounds payloads > 64 KB with SHA3 digest."""
     run_id = "test_bound_interact_run"
-    forensics = ForensicCollector(run_id=run_id, run_log_dir=tmp_path)
+    artifact_store = LocalFileArtifactStore(base_dir=tmp_path / "artifact-store")
+    forensics = ForensicCollector(run_id=run_id, artifact_store=artifact_store)
 
     huge_payload = {"command": "SELECT_ALL", "bloat": "A" * 70000}
     huge_response = {"status": "SUCCESS", "records": "B" * 80000}
 
     forensics.register_raw_interaction(huge_payload, huge_response)
 
-    trace_file = tmp_path / "forensics" / "adapter_trace.jsonl"
-    assert trace_file.exists()
-    lines = trace_file.read_text(encoding="utf-8").strip().split("\n")
+    lines = (
+        artifact_store.get_artifact(run_id, "forensics/adapter_trace.jsonl")
+        .decode()
+        .strip()
+        .split("\n")
+    )
     assert len(lines) == 1
 
     entry = json.loads(lines[0])

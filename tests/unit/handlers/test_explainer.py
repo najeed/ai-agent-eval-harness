@@ -1,13 +1,9 @@
-from pathlib import Path
 from unittest.mock import MagicMock
 
-from eval_runner.explainer import explain_events, explain_trace
+from eval_runner.explainer import explain_events, explain_run
 
 
-def test_explain_trace_valid(tmp_path, monkeypatch):
-    trace_file = tmp_path / "run.jsonl"
-    trace_file.write_text('{"name": "test_event"}\n')
-
+def test_explain_events_returns_triage_diagnosis(monkeypatch):
     mock_engine = MagicMock()
     mock_engine.identify_root_cause.return_value = {
         "index": 5,
@@ -18,12 +14,7 @@ def test_explain_trace_valid(tmp_path, monkeypatch):
 
     # Patch the module-level reference in explainer
     monkeypatch.setattr("eval_runner.explainer.triage.TriageEngine", mock_engine)
-    monkeypatch.setattr(
-        "eval_runner.explainer.trace_utils.load_events",
-        MagicMock(return_value=[{"name": "test_event"}]),
-    )
-
-    result = explain_trace(trace_file)
+    result = explain_events([{"name": "test_event"}])
 
     assert result["index"] == 5
     assert result["confidence"] == 0.9
@@ -48,18 +39,22 @@ def test_explain_events_uses_authoritative_events(monkeypatch):
     mock_engine.identify_root_cause.assert_called_once_with(events)
 
 
-def test_explain_trace_load_error(tmp_path, monkeypatch):
-    trace_file = tmp_path / "broken.jsonl"
+def test_explain_run_reads_events_from_the_provider(monkeypatch):
+    mock_engine = MagicMock()
+    mock_engine.identify_root_cause.return_value = {"reason": "failure", "suggestion": "fix"}
+    monkeypatch.setattr("eval_runner.explainer.triage.TriageEngine", mock_engine)
+    provider = MagicMock()
+    provider.get_events.return_value = [{"event": "failure"}]
 
-    mock_load = MagicMock(side_effect=Exception("Read error"))
-    monkeypatch.setattr("eval_runner.explainer.trace_utils.load_events", mock_load)
+    result = explain_run("run-1", run_store=provider, context={"tenant_id": "tenant"})
 
-    result = explain_trace(trace_file)
-    assert "Error reading trace" in result["root_cause"]
-    assert "Check" in result["suggestion"]
+    assert result["root_cause"] == "failure"
+    provider.get_events.assert_called_once_with(
+        "run-1", offset=0, limit=10_000_000, context={"tenant_id": "tenant"}
+    )
 
 
-def test_explain_trace_no_suggestion_high_confidence(monkeypatch):
+def test_explain_events_no_suggestion_high_confidence(monkeypatch):
     mock_engine = MagicMock()
     mock_engine.identify_root_cause.return_value = {
         "index": 10,
@@ -69,14 +64,12 @@ def test_explain_trace_no_suggestion_high_confidence(monkeypatch):
     }
 
     monkeypatch.setattr("eval_runner.explainer.triage.TriageEngine", mock_engine)
-    monkeypatch.setattr("eval_runner.explainer.trace_utils.load_events", MagicMock(return_value=[]))
-
-    result = explain_trace(Path("fake.jsonl"))
+    result = explain_events([])
     # The suggestion should be overridden by explainer logic for "system" reason
     assert "Check the tool implementation" in result["suggestion"]
 
 
-def test_explain_trace_policy_suggestion(monkeypatch):
+def test_explain_events_policy_suggestion(monkeypatch):
     mock_engine = MagicMock()
     mock_engine.identify_root_cause.return_value = {
         "index": 2,
@@ -85,13 +78,11 @@ def test_explain_trace_policy_suggestion(monkeypatch):
         "suggestion": "No specific suggestion found.",
     }
     monkeypatch.setattr("eval_runner.explainer.triage.TriageEngine", mock_engine)
-    monkeypatch.setattr("eval_runner.explainer.trace_utils.load_events", MagicMock(return_value=[]))
-
-    result = explain_trace(Path("fake.jsonl"))
+    result = explain_events([])
     assert "safety policies" in result["suggestion"]
 
 
-def test_explain_trace_low_confidence_fallback(monkeypatch):
+def test_explain_events_low_confidence_fallback(monkeypatch):
     mock_engine = MagicMock()
     mock_engine.identify_root_cause.return_value = {
         "index": 0,
@@ -100,7 +91,5 @@ def test_explain_trace_low_confidence_fallback(monkeypatch):
         "suggestion": "No specific suggestion found.",
     }
     monkeypatch.setattr("eval_runner.explainer.triage.TriageEngine", mock_engine)
-    monkeypatch.setattr("eval_runner.explainer.trace_utils.load_events", MagicMock(return_value=[]))
-
-    result = explain_trace(Path("fake.jsonl"))
+    result = explain_events([])
     assert "Visual Debugger" in result["suggestion"]

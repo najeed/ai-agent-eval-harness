@@ -297,8 +297,11 @@ def journey_console_server(tmp_path_factory):
     )
     journey_run_store.append_events(RUN_ID, events)
     journey_run_store.save_run_manifest(RUN_ID, manifest)
-    # This is provider-owned lifecycle state; the test never creates a sentinel.
-    journey_run_store.update_run_status(RUN_ID, "SEALED")
+    # Public verification accepts only a provider-sealed evidence lifecycle.
+    from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
+
+    transition_run_lifecycle(RUN_ID, RunLifecycleState.FINALIZING, run_store=journey_run_store)
+    transition_run_lifecycle(RUN_ID, RunLifecycleState.SEALED, run_store=journey_run_store)
 
     # Launch server with patched config
     port = get_free_port()
@@ -671,8 +674,8 @@ def test_live_pass_certificate_verification_journey(journey_console_server):
 
 def test_evidence_package_contract_api(journey_console_server):
     """
-    Contract Test: Validates that /api/v1/evidence/packages/<run_id>
-    hydrates verdict assertions with causal_node, expected, and actual values.
+    A sealed run without a verifiable transactional certificate remains
+    unverified.  Trace assertions are not projected as certified verdict data.
     """
     _, port, _, _ = journey_console_server
     conn = http.client.HTTPConnection("127.0.0.1", port=port, timeout=5.0)
@@ -690,14 +693,12 @@ def test_evidence_package_contract_api(journey_console_server):
     assert data["chain"]["execution_mode"] == "live"
     assert data["chain"]["execution_mode_declared"] is True
 
-    assertions = data["verdict"]["assertions"]
-    assert len(assertions) > 0
-    assertion = assertions[0]
-    assert assertion["metric"] == "db_state_invariance"
-    assert assertion["node"] == "checkout_node"
-    assert assertion["expected"] == "100"
-    assert assertion["actual"] == "80"
-    assert assertion["passed"] is False
+    assert data["verdict"]["verified_outcome"] == "UNVERIFIED"
+    assert data["verdict"]["assertions"] == []
+    observed = data["observed_assertions"]
+    assert observed[0]["metric"] == "db_state_invariance"
+    assert observed[0]["passed"] is False
+    assert data["evidence_manifest"]["total_events"] > 0
 
 
 def test_public_verification_privacy_and_authenticated_manifest(journey_console_server):

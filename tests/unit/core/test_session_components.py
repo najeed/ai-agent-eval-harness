@@ -19,6 +19,7 @@ import pytest
 
 import eval_runner.metrics as metrics
 from eval_runner.events import EventEmitter
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.session_components import (
     SessionApprovalManager,
     SessionCheckpointManager,
@@ -380,15 +381,23 @@ async def test_checkpoint_and_turn_state_managers(tmp_path):
         run_id="run-mgr-001",
         checkpoint_manager=chk_mgr,
         state_provider=faulty_state,
+        run_store=LocalFileRunStore(tmp_path / "run-provider"),
     )
-    app = app_mgr.request_approval("t1", "transfer", {"amt": 100})
+    app_mgr.run_store.create_run("run-mgr-001", "checkpoint-test")
+    app = app_mgr.create_durable_request(
+        turn_index=1,
+        action_payload={"tool_name": "transfer", "amt": 100},
+        metadata={"task_id": "t1"},
+    )
     assert app is not None
 
-    pending = app_mgr.list_pending_approvals()
-    assert any(p.id == app.id for p in pending)
+    pending = app_mgr.list_durable_pending()
+    assert any(p.approval_token == app.approval_token for p in pending)
 
-    res = app_mgr.resolve_approval(app.id, "approve", response="OK", resolved_by="auditor")
-    assert res is True
+    res = app_mgr.resolve_durable_request(
+        app.approval_token, "APPROVED", decided_by="auditor", decision_reason="OK"
+    )
+    assert res.status == "APPROVED"
 
     # TurnStateManager restore with history and tokens
     tsm = TurnStateManager(max_turns=10)

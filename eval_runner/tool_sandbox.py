@@ -136,20 +136,15 @@ class AbstractSandbox(ABC):
         self.plugin_manager = plugin_manager
         self.run_id = self.scenario.get("run_id")
         if not self.run_id:
-            import tempfile
-
             from . import utils
 
             self.run_id = utils.generate_id(prefix="transient")
-            self.terminal_jail = (
-                jail_root or Path(tempfile.gettempdir()) / "agentv" / self.run_id / "terminal_jail"
-            )
-        else:
-            self.terminal_jail = (
-                jail_root or (config.RUN_LOG_DIR / self.run_id / "terminal_jail").resolve()
-            )
+        # Terminal output is transient scratch state, never run-vault evidence.
+        # The composition boundary supplies its parent explicitly; Core does not
+        # infer it from RUN_LOG_DIR or any evidence-storage configuration.
+        base_ws = Path(workspace_root or "workspace").resolve()
+        self.terminal_jail = (jail_root or base_ws / self.run_id / "terminal_jail").resolve()
         self.identifier = self.scenario.get("id", "default")
-        base_ws = workspace_root or Path("workspace")
         self.workspace_dir = base_ws / self.run_id
         self.grounding_hits: dict[str, dict[str, int]] = {"policies": {}, "tools": {}}
         # [A4] First-class policy decision ledger. Every sandbox policy
