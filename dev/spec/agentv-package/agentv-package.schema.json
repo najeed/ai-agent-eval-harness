@@ -119,6 +119,8 @@
           "type": "string",
           "enum": [
             "VERIFIED",
+            "ATTESTED_FAIL",
+            "PRELIMINARY",
             "UNVERIFIED",
             "NOT_VERIFIED",
             "POLICY_BREACH",
@@ -129,7 +131,7 @@
           "type": "number"
         },
         "score": {
-          "type": "number",
+          "type": ["number", "null"],
           "minimum": 0,
           "maximum": 1
         }
