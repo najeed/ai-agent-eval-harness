@@ -58,7 +58,7 @@ framework-langgraph = [
     "langgraph==1.2.18",
 ]
 framework-ag2 = [
-    "ag2==1.2.1",
+    "ag2==1.2.2",
 ]
 framework-crewai = [
 #    "crewai==1.15.29; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
@@ -69,7 +69,7 @@ langchain-openai = [
     "langchain-openai==1.7.3",
 ]
 langchain-anthropic = [
-    "langchain-anthropic>=1.7.6",
+    "langchain-anthropic>=1.7.7",
 ]
 langchain-gemini = [
     "langchain-google-genai>=4.4.2",
@@ -78,7 +78,7 @@ langchain-ollama = [
     "langchain-ollama>=1.1.0",
 ]
 langsmith = [
-    "langsmith==0.14.13",
+    "langsmith==0.14.14",
 ]
 
 # 4. Domain & Task Extras
@@ -107,17 +107,17 @@ frameworks = [
     "langchain-core>=1.7.0",
     "langserve>=0.3.3",
     "langgraph==1.2.18",
-    "ag2==1.2.1",
+    "ag2==1.2.2",
 #    "crewai==1.15.29; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
 ]
 langchain-all = [
     "langchain==1.4.7",
     "langchain-core>=1.7.0",
     "langchain-openai==1.7.3",
-    "langchain-anthropic>=1.7.6",
+    "langchain-anthropic>=1.7.7",
     "langchain-google-genai>=4.4.2",
     "langchain-ollama>=1.1.0",
-    "langsmith==0.14.13",
+    "langsmith==0.14.14",
 ]
 
 all = [
@@ -129,13 +129,13 @@ all = [
     "langchain-core>=1.7.0",
     "langserve>=0.3.3",
     "langgraph==1.2.18",
-    "ag2==1.2.1",
+    "ag2==1.2.2",
 #    "crewai==1.15.29; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
     "langchain-openai==1.7.3",
-    "langchain-anthropic>=1.7.6",
+    "langchain-anthropic>=1.7.7",
     "langchain-google-genai>=4.4.2",
     "langchain-ollama>=1.1.0",
-    "langsmith==0.14.13",
+    "langsmith==0.14.14",
     "pypdf==6.21.3",
     "python-docx==1.2.0",
     "lxml==6.1.3",
