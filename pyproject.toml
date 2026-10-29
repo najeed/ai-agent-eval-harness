@@ -43,13 +43,13 @@ dependencies = [
 # 1. Direct Native Provider SDKs
 # (OpenAI, Anthropic, Grok, Ollama connect directly via aiohttp; no external Python SDKs required)
 provider-gemini = [
-    "google-genai==2.33.0",
+    "google-genai==2.34.0",
 ]
 
 # 2. Framework Environments (Evaluated and verified agent architectures)
 framework-langchain = [
     "langchain==1.4.7",
-    "langchain-core>=1.7.0",
+    "langchain-core>=1.7.1",
 ]
 framework-langserve = [
     "langserve>=0.3.3",
@@ -84,11 +84,11 @@ langsmith = [
 # 4. Domain & Task Extras
 nlp = [
     "sentence-transformers==6.2.0",
-    "transformers==5.21.0",
+    "transformers==5.21.1",
     "datasets==5.1.0",
 ]
 docs = [
-    "pypdf==6.21.3",
+    "pypdf==6.21.4",
     "python-docx==1.2.0",
     "lxml==6.1.3",
     "weasyprint>=70.0",
@@ -104,7 +104,7 @@ vcs = [
 # 5. Composed Ecosystem Extras
 frameworks = [
     "langchain==1.4.7",
-    "langchain-core>=1.7.0",
+    "langchain-core>=1.7.1",
     "langserve>=0.3.3",
     "langgraph==1.2.18",
     "ag2==1.2.2",
@@ -112,7 +112,7 @@ frameworks = [
 ]
 langchain-all = [
     "langchain==1.4.7",
-    "langchain-core>=1.7.0",
+    "langchain-core>=1.7.1",
     "langchain-openai==1.7.3",
     "langchain-anthropic>=1.7.7",
     "langchain-google-genai>=4.4.2",
@@ -122,11 +122,11 @@ langchain-all = [
 
 all = [
     "sentence-transformers==6.2.0",
-    "transformers==5.21.0",
+    "transformers==5.21.1",
     "datasets==5.1.0",
-    "google-genai==2.33.0",
+    "google-genai==2.34.0",
     "langchain==1.4.7",
-    "langchain-core>=1.7.0",
+    "langchain-core>=1.7.1",
     "langserve>=0.3.3",
     "langgraph==1.2.18",
     "ag2==1.2.2",
@@ -136,7 +136,7 @@ all = [
     "langchain-google-genai>=4.4.2",
     "langchain-ollama>=1.1.0",
     "langsmith==0.14.14",
-    "pypdf==6.21.3",
+    "pypdf==6.21.4",
     "python-docx==1.2.0",
     "lxml==6.1.3",
     "weasyprint>=70.0",
