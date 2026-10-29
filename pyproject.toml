@@ -24,12 +24,12 @@ dependencies = [
     "Werkzeug==3.1.9",
     "jsonschema==4.26.0",
     "PyYAML==6.0.3",
-    "pydantic==2.14.1",
+    "pydantic==2.14.2",
     "numpy>=2.4.6,<2.5.0",
     "PyJWT==2.15.1",
     "cryptography>=50,<51",
-    "opentelemetry-api==1.45.1",
-    "opentelemetry-sdk==1.45.1",
+    "opentelemetry-api==1.45.2",
+    "opentelemetry-sdk==1.45.2",
     "psutil==7.2.2",
     "httpx==0.28.1",
     "sqlalchemy==2.1.6",
@@ -49,7 +49,7 @@ provider-gemini = [
 # 2. Framework Environments (Evaluated and verified agent architectures)
 framework-langchain = [
     "langchain==1.4.7",
-    "langchain-core>=1.7.1",
+    "langchain-core>=1.7.3",
 ]
 framework-langserve = [
     "langserve>=0.3.3",
@@ -78,7 +78,7 @@ langchain-ollama = [
     "langchain-ollama>=1.1.0",
 ]
 langsmith = [
-    "langsmith==0.14.14",
+    "langsmith==0.14.16",
 ]
 
 # 4. Domain & Task Extras
@@ -104,7 +104,7 @@ vcs = [
 # 5. Composed Ecosystem Extras
 frameworks = [
     "langchain==1.4.7",
-    "langchain-core>=1.7.1",
+    "langchain-core>=1.7.3",
     "langserve>=0.3.3",
     "langgraph==1.2.18",
     "ag2==1.2.2",
@@ -112,12 +112,12 @@ frameworks = [
 ]
 langchain-all = [
     "langchain==1.4.7",
-    "langchain-core>=1.7.1",
+    "langchain-core>=1.7.3",
     "langchain-openai==1.7.3",
     "langchain-anthropic>=1.7.7",
     "langchain-google-genai>=4.4.2",
     "langchain-ollama>=1.1.0",
-    "langsmith==0.14.14",
+    "langsmith==0.14.16",
 ]
 
 all = [
@@ -126,7 +126,7 @@ all = [
     "datasets==5.1.0",
     "google-genai==2.34.0",
     "langchain==1.4.7",
-    "langchain-core>=1.7.1",
+    "langchain-core>=1.7.3",
     "langserve>=0.3.3",
     "langgraph==1.2.18",
     "ag2==1.2.2",
@@ -135,7 +135,7 @@ all = [
     "langchain-anthropic>=1.7.7",
     "langchain-google-genai>=4.4.2",
     "langchain-ollama>=1.1.0",
-    "langsmith==0.14.14",
+    "langsmith==0.14.16",
     "pypdf==6.21.4",
     "python-docx==1.2.0",
     "lxml==6.1.3",

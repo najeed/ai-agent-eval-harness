@@ -12,12 +12,12 @@ urllib3==2.8.0
 Werkzeug==3.1.9
 jsonschema==4.26.0
 PyYAML==6.0.3
-pydantic==2.14.1
+pydantic==2.14.2
 numpy>=2.4.6,<2.5.0
 PyJWT==2.15.1
 cryptography>=50,<51
-opentelemetry-api==1.45.1
-opentelemetry-sdk==1.45.1
+opentelemetry-api==1.45.2
+opentelemetry-sdk==1.45.2
 psutil==7.2.2
 httpx==0.28.1
 sqlalchemy==2.1.6
