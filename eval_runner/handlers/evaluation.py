@@ -384,7 +384,8 @@ async def handle_verify(args):
         is_valid = bool(result["is_valid"])
 
         if is_valid:
-            print("      [OK] VERIFIED: Trace integrity matches manifest.")
+            verdict = result.get("verification_status", "VERIFIED")
+            print(f"      [OK] {verdict}: Trace integrity matches manifest.")
             return 0
         else:
             print("      [CRITICAL] FAILED: Trace integrity compromised!")
@@ -429,7 +430,15 @@ async def handle_verify_package(args):
         else:
             pub_key_pem = None
 
-        require_sig = getattr(args, "require_signature", False) is True
+        diagnostic = getattr(args, "diagnostic", False) is True
+        require_sig = not diagnostic
+        execution_manifest = None
+        manifest_path = getattr(args, "execution_manifest_path", None)
+        if isinstance(manifest_path, (str, Path)):
+            manifest_file = Path(manifest_path).resolve()
+            if not _ensure_path_safe(manifest_file, "Execution manifest"):
+                return 1
+            execution_manifest = json.loads(manifest_file.read_text(encoding="utf-8"))
 
         scenario_data = None
         scen_path = getattr(args, "scenario_path", None)
@@ -445,6 +454,7 @@ async def handle_verify_package(args):
 
         res = verifier.VerificationAuthority.verify_package(
             pkg_data,
+            canonical_manifest=execution_manifest,
             scenario_data=scenario_data,
             raw_trace_bytes=raw_trace_bytes,
             public_key_pem=pub_key_pem,
@@ -453,7 +463,8 @@ async def handle_verify_package(args):
         )
 
         if res.get("verified") and res.get("status") not in ("ATTESTED_FAIL", "FAIL", "UNVERIFIED"):
-            print(f"✅ VERIFIED: Verification package '{pkg_path.name}' is valid.")
+            status_desc = res.get("status", "VERIFIED")
+            print(f"[OK] {status_desc}: Verification package '{pkg_path.name}' is valid.")
             print(f"    - Package ID: {res.get('package_id')}")
             print(f"    - Scenario ID: {res.get('scenario_id')}")
             print(f"    - Package Hash: {res.get('package_hash')}")
@@ -499,7 +510,9 @@ async def handle_gate(args):
             print(f"[GATE] FAILURE: Manifest not found for run: {run_id}")
             return 1
 
-        if not is_valid:
+        if not is_valid or not result.get(
+            "verified", result.get("verification_status") != "ATTESTED_FAIL"
+        ):
             print(
                 "[GATE] FAILURE: Industrial Trust Verification failed "
                 "(Integrity, Ledger, or Signature)."

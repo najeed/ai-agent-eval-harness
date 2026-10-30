@@ -128,48 +128,8 @@ def public_verify_run(run_id):
                 400,
             )
 
-        canonical_m = manifest.get("execution_manifest") or manifest
-        scen_data = manifest.get("scenario_data") or manifest.get("scenario")
-
-        # 1. Authoritative verification check via provider-owned artifacts.
-        is_valid = TraceVerifier.verify_trace(
-            trace_bytes,
-            manifest,
-            run_store=run_store,
-            context=context,
-            scenario_data=scen_data,
-        )
-
-        # 2. Independent Package Artifacts Verification if package is present
-        if is_valid and manifest.get("verification_package"):
-            from eval_runner.verifier import VerificationAuthority
-
-            raw_bytes = trace_bytes
-            events_data: list[dict[str, Any]] = []
-            try:
-                for line in raw_bytes.decode("utf-8").splitlines():
-                    trimmed = line.strip()
-                    if trimmed:
-                        events_data.append(json.loads(trimmed))
-            except Exception as ev_err:
-                logger.debug("Failed parsing trace events in public_verify_run: %s", ev_err)
-
-            canonical_m = manifest.get("execution_manifest") or manifest
-            scen_data = manifest.get("scenario_data") or manifest.get("scenario")
-
-            pkg_res = VerificationAuthority.verify_package_artifacts(
-                package=manifest["verification_package"],
-                raw_trace_bytes=raw_bytes,
-                raw_trace_events=events_data,
-                canonical_manifest=canonical_m,
-                scenario_data=scen_data,
-            )
-            if not pkg_res.get("verified"):
-                logger.warning(
-                    "Public verify package artifact verification failed: %s",
-                    pkg_res.get("failures"),
-                )
-                is_valid = False
+        result = TraceVerifier.verify_run(run_id, run_store=run_store, context=context)
+        is_valid = result["is_valid"]
 
         method = "SHA3-256 integrity check"
         if manifest.get("provenance_chain"):
@@ -177,34 +137,22 @@ def public_verify_run(run_id):
 
         # 3. Disentangle raw integrity from authoritative certification
         compliance = manifest.get("compliance", {})
-        status = compliance.get("status") or manifest.get("compliance_status") or "UNKNOWN"
+        status = "pass" if result.get("verified") else "fail" if is_valid else "UNVERIFIED"
         score = compliance.get("score")
         if score is None:
             score = manifest.get("compliance_score")
 
-        is_compliant = str(status).lower() in ["certified", "pass", "passed"]
+        is_compliant = bool(result.get("verified"))
 
         # Mode-Aware Truth Level Enforcement (P0-07)
         clean_mode = str(manifest.get("execution_mode", "")).strip().lower()
-        is_authoritative = bool(not manifest.get("provisional", False) and clean_mode == "live")
-        verified = bool(
-            is_valid
-            and is_compliant
-            and is_authoritative
-            and lifecycle_state == RunLifecycleState.SEALED
-        )
-
-        if verified:
-            terminal_verdict = "CERTIFIED_PASS"
-        elif not is_authoritative:
-            terminal_verdict = "PROVISIONAL"
-        elif is_valid and not is_compliant and lifecycle_state == RunLifecycleState.SEALED:
-            terminal_verdict = "ATTESTED_FAIL"
-        else:
-            terminal_verdict = "UNVERIFIED"
+        is_authoritative = bool(is_valid)
+        verified = result.get("verified", False)
+        terminal_verdict = result.get("terminal_verdict", "UNVERIFIED")
 
         return jsonify(
             {
+                **result,
                 "run_id": run_id,
                 "verified": verified,
                 "terminal_verdict": terminal_verdict,

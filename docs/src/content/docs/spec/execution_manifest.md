@@ -33,7 +33,7 @@ graph TD
 
 ## 1. ExecutionManifest Contract Schema
 
-The manifest is defined in [`agentv_runtime.manifest`](file:///agentv_runtime/manifest.py) as an immutable dataclass (`@dataclass(frozen=True)`):
+The manifest is defined in [`agentv_runtime.manifest`](https://github.com/najeed/ai-agent-eval-harness/blob/b9e91fa0d20d4426d92527bd3672ac1139f3e7da/agentv_runtime/manifest.py) as an immutable dataclass (`@dataclass(frozen=True)`):
 
 ```python
 @dataclass(frozen=True)

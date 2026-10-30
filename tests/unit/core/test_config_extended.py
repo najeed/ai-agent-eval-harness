@@ -23,7 +23,7 @@ def test_get_safe_tmp_dir_fallback(tmp_path, monkeypatch):
 
     def mocked_mkdir(self, *args, **kwargs):
         # Fail ONLY for the project-local .tmp directory
-        if ".tmp" in str(self):
+        if self.name == ".tmp":
             raise PermissionError("Read only")
         return orig_mkdir(self, *args, **kwargs)
 

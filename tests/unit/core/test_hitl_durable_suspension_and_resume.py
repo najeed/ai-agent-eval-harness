@@ -197,8 +197,9 @@ def test_pending_durable_approval_suspends_before_state_parity(tmp_path: Path):
     session = SessionManager(
         run_id=run_id,
         scenario={"id": "pending_gate"},
-        log_root=runs_dir,
+        workspace_root=runs_dir,
         run_store=store,
+        artifact_store=LocalFileArtifactStore(tmp_path / "artifacts"),
     )
     request = session.approval_manager.create_durable_request(
         turn_index=1,
@@ -565,7 +566,13 @@ async def test_p0_5_session_enforces_scenario_declared_manual_approval_gate(
         ],
     }
 
-    session = SessionManager(run_id=run_id, scenario=scenario, log_root=runs_dir)
+    session = SessionManager(
+        run_id=run_id,
+        scenario=scenario,
+        workspace_root=runs_dir,
+        run_store=LocalFileRunStore(runs_dir),
+        artifact_store=LocalFileArtifactStore(tmp_path / "artifacts"),
+    )
 
     # Node has interaction_mode: Manual_Approval
     node = scenario["workflow"][0]
@@ -854,7 +861,13 @@ async def test_p0_session_hitl_resumption_and_gate_branches(tmp_path: Path):
         ],
     }
 
-    session = SessionManager(run_id=run_id, scenario=scenario, log_root=runs_dir)
+    session = SessionManager(
+        run_id=run_id,
+        scenario=scenario,
+        workspace_root=runs_dir,
+        run_store=LocalFileRunStore(runs_dir),
+        artifact_store=LocalFileArtifactStore(tmp_path / "artifacts"),
+    )
 
     node_before = scenario["workflow"][0]
     node_after = scenario["workflow"][1]

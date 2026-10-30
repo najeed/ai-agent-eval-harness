@@ -107,9 +107,19 @@ jobs:
           npm run build --prefix ui/visual-console
           python -m playwright install --with-deps chromium
 
+      - name: Require Core signing contract evidence (live KMS feature gate remains separate)
+        run: |
+          pytest tests/unit/core/test_digest_signature_contract.py tests/unit/core/test_signing_acceptance_matrix.py tests/unit/core/test_signing_input_policy_contract.py tests/acceptance/test_digest_signature_release_matrix.py -o junit_family=xunit1 --junitxml=reports/acceptance/signing-contract.xml
+          python tools/ci/verify_signing_contract_matrix.py reports/acceptance/signing-contract.xml --output reports/acceptance/signing-contract-summary.json
+
+      - name: Require the end-to-end evidence chain matrix
+        run: |
+          pytest -m acceptance_release tests/acceptance/test_release_evidence_chain_matrix.py -o junit_family=xunit1 --junitxml=reports/acceptance/evidence-chain-matrix.xml
+          python tools/ci/verify_evidence_chain_matrix.py reports/acceptance/evidence-chain-matrix.xml --output reports/acceptance/evidence-chain-matrix-summary.json
+
       - name: Run Complete Release Acceptance Suites (Corpus, Security, Evidence, UI)
         run: |
-          pytest -m acceptance_release tests/acceptance tests/ui --junitxml=reports/acceptance-release.xml
+          pytest -m acceptance_release tests/acceptance tests/ui --ignore=tests/acceptance/test_release_evidence_chain_matrix.py --ignore=tests/acceptance/test_digest_signature_release_matrix.py -o junit_family=xunit1 --junitxml=reports/acceptance-release.xml
         env:
           AGENTV_REQUIRE_EXTERNAL_ORACLE: '1'
           AGENTV_REQUIRE_BROWSER_ACCEPTANCE: '1'

@@ -5,7 +5,7 @@ import threading
 from pathlib import Path
 from typing import Any
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, current_app, jsonify, request
 
 from eval_runner import config
 from eval_runner.catalog import ScenarioCatalog
@@ -118,7 +118,12 @@ class DebuggerStateStore:
             elif name == CoreEvents.RUN_END and isinstance(data, dict):
                 last_state["message"] = f"Evaluation complete. Status: {data.get('status')}"
                 r_id = data.get("run_id") or effective_run_id
-                if r_id and str(r_id).startswith("run-loan"):
+                if (
+                    config.ENABLE_DEMO
+                    and current_app.debug
+                    and r_id
+                    and str(r_id).startswith("run-loan")
+                ):
                     last_state["message"] += " (Industrial Demo Narrative)"
             elif name == "world_state_change" and isinstance(data, dict):
                 last_state.update(data)
@@ -749,7 +754,8 @@ def debugger_state():
         try:
             from eval_runner.console.demo_traces import get_demo_trace
 
-            demo_trace = get_demo_trace(run_id)
+            if config.ENABLE_DEMO and current_app.debug:
+                demo_trace = get_demo_trace(run_id)
         except Exception:
             demo_trace = None
 
@@ -778,7 +784,7 @@ def debugger_state():
             for event in trace:
                 DebuggerStateStore.handle_event(event, run_id=run_id)
 
-            if run_id.startswith("run-loan"):
+            if demo_trace and config.ENABLE_DEMO and current_app.debug:
                 state = DebuggerStateStore.get_state(run_id=run_id)
                 state["summary"]["message"] = (
                     "Waiting for evaluation... (Industrial Demo Narrative)"

@@ -21,7 +21,7 @@ def _invoke(endpoint: str, task_description: str) -> dict:
         headers={"Content-Type": "application/json"},
         method="POST",
     )
-    with request.urlopen(req, timeout=90) as response:  # nosec B310 - CI target is explicit
+    with request.urlopen(req, timeout=90) as response:  # nosec B310
         return json.loads(response.read().decode("utf-8"))
 
 

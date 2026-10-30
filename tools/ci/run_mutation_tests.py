@@ -50,7 +50,7 @@ BASE_DIR = Path(__file__).parent.parent.parent
 REPORT_DIR = BASE_DIR / "reports"
 REPORT_PATH = REPORT_DIR / "mutation_scorecard.md"
 BASELINE_CACHE_PATH = REPORT_DIR / "mutation_baseline_cache.json"
-BASELINE_CACHE_VERSION = 1
+BASELINE_CACHE_VERSION = 2
 
 # Strips heavy, slow third-party plugins that add 3-5s of startup latency per mutant
 FAST_PYTEST_FLAGS = [
@@ -79,8 +79,18 @@ FAST_PYTEST_FLAGS = [
 
 # Per-module test corpora.
 #
-# Only fast, synchronous unit tests qualify — integration/chaos/security tests that
-# spawn subprocesses or do async I/O exceed the timeout budget.
+# Unit contracts provide focused failures; the credential-free positive acceptance
+# chain independently checks cryptographic wire formats across producer/consumer seams.
+EVIDENCE_CHAIN_POSITIVE = (
+    "tests/acceptance/test_release_evidence_chain_matrix.py"
+    "::test_release_evidence_chain_matrix[complete_chain]"
+)
+EVIDENCE_CHAIN_UNSEALED = (
+    "tests/acceptance/test_release_evidence_chain_matrix.py"
+    "::test_release_evidence_chain_matrix[unsealed_run]"
+)
+
+
 @dataclass(frozen=True)
 class CriticalMutationTarget:
     """An explicit Runtime trust boundary and its authoritative fast corpus."""
@@ -92,6 +102,7 @@ class CriticalMutationTarget:
     eligible_operator_families: frozenset[str] = frozenset()
     excluded_mutations: frozenset[tuple[str, int, str, str]] = frozenset()
     scope_test_names: Mapping[str, tuple[str, ...]] | None = None
+    exclusion_reasons: Mapping[tuple[str, int, str, str], str] | None = None
 
 
 @dataclass
@@ -124,28 +135,165 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
     CriticalMutationTarget(
         BASE_DIR / "eval_runner" / "verifier.py",
         (
-            "tests/unit/core/test_golden_verifier_matrix.py",
+            EVIDENCE_CHAIN_POSITIVE,
+            EVIDENCE_CHAIN_UNSEALED,
+            "tests/unit/core/test_provisional_authority_verdict_contract.py",
+            "tests/unit/core/test_provisional_package_verdict_contract.py",
+            "tests/unit/core/test_execution_mode_binding_contract.py",
+            "tests/unit/core/test_legacy_certificate_profile_contract.py",
+            "tests/unit/core/test_provider_native_verifier.py",
+            "tests/unit/core/test_verification_boundary_contracts.py",
+            "tests/unit/core/test_signing_finalization_contract.py",
+            "tests/unit/core/test_digest_signature_contract.py",
+            "tests/unit/core/test_oracle_carrier_reference_contract.py",
+            "tests/unit/core/test_signing_carrier_hash_contract.py",
+            "tests/unit/core/test_certificate_projection_contract.py",
+            "tests/unit/core/test_actual_artifact_hash_contract.py",
+            "tests/unit/core/test_signing_retention_contract.py",
+            "tests/unit/core/test_signing_outcome_contract.py",
+            "tests/unit/core/test_signing_snapshot_contract.py",
+            "tests/unit/core/test_signing_terminal_binding_contract.py",
+            "tests/unit/core/test_diagnostic_manifest_binding_contract.py",
+            "tests/unit/core/test_multi_attempt_evidence_contract.py",
+            "tests/unit/core/test_terminal_finalization_summary_contract.py",
+            "tests/unit/core/test_certification_service_and_trust_boundary.py",
             "tests/unit/core/test_hardened_audit_verification.py",
+            "tests/unit/core/test_golden_verifier_matrix.py",
         ),
         frozenset(
             {
-                "sign_trace",
+                "sign_trace_bytes",
                 "verify_trace",
                 "verify_trace_async",
-                "verify_run_directory",
+                "verify_run",
+                "verify_trace_bytes",
+                "verify_certification_artifact",
                 "verify_trace_certificate",
                 "verify_package",
                 "verify_package_artifacts",
                 "verify_package_signature_only",
             }
         ),
+        scope_test_names={
+            "sign_trace_bytes": (
+                "test_signing_requires_explicit_run_and_provider",
+                "test_signing_recovers_finalization_from_trace_without_metadata_hint",
+                "test_byte_signer_rejects_bytes_not_owned_by_the_scoped_provider",
+                "test_byte_signer_hashes_the_exact_provider_bytes",
+                "test_signing_retention_provider_capability",
+                "test_signing_outcome_tracks_execution_and_oracles",
+                "test_signing_preserves_explicit_snapshot_or_resolves_provider_fallback",
+                "test_invalid_provider_snapshot_fallback_cannot_authorize",
+                "test_detached_package_cannot_drop_issuer_provisional_restriction",
+                "test_signing_rejects_root_that_omits_terminal_evidence",
+            ),
+            "verify_trace_bytes": (
+                "test_byte_verification_requires_explicit_run_and_provider",
+                "test_release_evidence_chain_matrix",
+            ),
+            "verify_trace": (
+                "test_trace_verification_rejects_malformed_inputs_before_provider_access",
+            ),
+            "verify_run": (
+                "test_live_signed_certificate_honors_explicit_provisional_designation",
+                "test_verify_run_reads_only_the_supplied_provider",
+                "test_verify_run_does_not_recover_missing_provider_artifacts_from_disk",
+                "test_partial_provider_artifacts_are_not_reported_as_absent_or_verified",
+            ),
+            "verify_trace_certificate": (
+                "test_certificate_integrity_accepts_declared_scenario_hash_locations",
+                "test_terminal_summary_preserves_pre_finalization_evidence",
+            ),
+            "verify_package_artifacts": (
+                "test_legacy_manifest_projection_does_not_override_declared_binding",
+                "test_verify_package_artifacts_manifest_types_and_errors",
+                "test_verify_package_and_artifacts_cross_binding_matrix",
+                "test_verifier_remaining_branches_matrix",
+            ),
+            "verify_package": (
+                "test_legacy_signed_package_profile_is_explicitly_non_authoritative",
+                "test_legacy_manifest_projection_does_not_override_declared_binding",
+                "test_terminal_summary_preserves_pre_finalization_evidence",
+                "test_verify_package_manifest_and_scenario_branches",
+                "test_verify_package_and_artifacts_cross_binding_matrix",
+            ),
+            "verify_certification_artifact": (
+                "test_legacy_signed_package_profile_is_explicitly_non_authoritative",
+                "test_signed_execution_mode_claim_must_match_actual_manifest",
+                "test_detached_package_cannot_drop_issuer_provisional_restriction",
+                "test_certification_finalization_carrier_contract",
+                "test_authoritative_package_verification_uses_bytes_without_caller_events",
+            ),
+        },
+        excluded_mutations=frozenset(
+            {
+                ("sign_trace_bytes", 523, "or", "and"),
+                ("sign_trace_bytes", 585, "and", "or"),
+                ("sign_trace_bytes", 616, "and", "or"),
+                ("sign_trace_bytes", 616, "evidence_root_hash", "__mutation_missing_commitment__"),
+                ("sign_trace_bytes", 645, "evidence_root_hash", "__mutation_missing_commitment__"),
+                ("verify_trace_certificate", 1619, "and", "or"),
+                ("verify_trace_certificate", 1627, "and", "or"),
+                ("verify_package_artifacts", 2127, "and", "or"),
+            }
+        ),
+        exclusion_reasons={
+            ("sign_trace_bytes", 616, "evidence_root_hash", "__mutation_missing_commitment__"): (
+                "Equivalent extra-filter trigger: a missing lookup only runs the pure "
+                "fallback when the declared root already matches. The fallback adopts "
+                "only that same declared root, leaving the actual root comparison intact."
+            ),
+            ("sign_trace_bytes", 645, "evidence_root_hash", "__mutation_missing_commitment__"): (
+                "Non-binding diagnostic lookup used only to format an already-raised "
+                "EvidenceRootMismatchError. The root comparison, signed commitments, "
+                "and successful verification paths are unchanged."
+            ),
+            ("sign_trace_bytes", 585, "and", "or"): (
+                "Equivalent for supported provider manifest projections: a valid scenario "
+                "is selected either way; an absent key adds only a caught lookup error. "
+                "Empty/malformed scenario projections remain non-authoritative, covered "
+                "by positive and deliberately invalid snapshot-fallback contracts."
+            ),
+            ("sign_trace_bytes", 523, "or", "and"): (
+                "Equivalent for provider capability strings or None: the trailing != WORM "
+                "check subsumes both the logical-seal equality and missing-capability guards."
+            ),
+            ("sign_trace_bytes", 616, "and", "or"): (
+                "Equivalent for supported JSON evidence: extra graph filtering changes the "
+                "stored root only when the filtered root equals the declared root; an "
+                "already-matching root is unchanged, and an absent hint cannot match a hash."
+            ),
+            ("verify_trace_certificate", 1627, "and", "or"): (
+                "Equivalent for supported JSON evidence: filtering is an extra fallback; "
+                "its result is adopted only if it matches the expected root already verified."
+            ),
+            ("verify_trace_certificate", 1619, "and", "or"): (
+                "Equivalent for supported JSON evidence: the extra fallback only replaces "
+                "the graph when its root equals the expected, already-matched root."
+            ),
+            ("verify_package_artifacts", 2127, "and", "or"): (
+                "Equivalent for graph-builder outputs (dict or None): both branches yield "
+                "the same nodes; an empty dict has no nodes and defaults to []."
+            ),
+        },
     ),
     CriticalMutationTarget(
         BASE_DIR / "eval_runner" / "tool_sandbox.py",
-        ("tests/unit/core/test_tool_sandbox.py",),
+        (
+            "tests/unit/core/test_sandbox_policy_commit_contract.py",
+            "tests/unit/core/test_tool_sandbox.py",
+            "tests/unit/core/test_core_sandbox.py",
+            "tests/unit/core/test_tool_sandbox_coverage_extra.py",
+            "tests/unit/core/test_tool_sandbox_pipeline.py",
+        ),
         frozenset({"execute", "_execute_core", "get_bounded_state", "_sanitize_path", "fork"}),
         scope_test_names={
             "_execute_core": (
+                "test_policy_denial_without_detailed_violations_still_blocks_the_write",
+                "test_policy_input_commitment_supports_yaml_date_values",
+                "test_commit_interceptor_decision_controls_the_observed_state",
+                "test_malformed_intercepted_diff_is_rejected_before_any_state_write",
+                "test_write_veto_does_not_prevent_a_read_only_tool",
                 "test_sandbox_known_tool",
                 "test_sandbox_unknown_tool",
                 "test_sandbox_state_mutation",
@@ -158,10 +306,18 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
     ),
     CriticalMutationTarget(
         BASE_DIR / "eval_runner" / "flight_recorder.py",
-        ("tests/unit/core/test_flight_recorder_matrix.py",),
+        (
+            "tests/unit/core/test_recorder_provider_binding_contract.py",
+            "tests/unit/core/test_flight_recorder_matrix.py",
+            "tests/unit/core/test_flight_recorder_extra.py",
+            "tests/unit/core/test_flight_recorder_engine.py",
+            "tests/unit/test_flight_recorder_refresh.py",
+        ),
         frozenset(
             {
-                "_enforce_safety_floor",
+                "bind_run_provider",
+                "_provider_for_run",
+                "is_certification_mode",
                 "handle_event",
                 "finalize_run",
                 "freeze_run",
@@ -169,12 +325,30 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
             }
         ),
         scope_test_names={
-            "finalize_run": ("test_finalize_transitions_bound_provider",),
+            "finalize_run": (
+                "test_finalize_transitions_bound_provider",
+                "test_finalizing_unknown_identity_never_publishes_a_trace_seal",
+                "test_unsigned_diagnostic_trace_closure_is_persisted_without_claiming_a_signature",
+                "test_optional_key_identifier_is_emitted_only_when_nonempty",
+            ),
+            "_provider_for_run": (
+                "test_recorder_requires_explicit_run_binding_despite_an_ambient_provider",
+            ),
+            "freeze_run": (
+                "test_freezing_an_unassigned_identity_preserves_its_public_recorder_state",
+                "test_freeze_run_and_utility_hooks",
+            ),
         },
     ),
     CriticalMutationTarget(
         BASE_DIR / "eval_runner" / "run_lifecycle.py",
-        ("tests/unit/core/test_hitl_durable_suspension_and_resume.py",),
+        (
+            "tests/unit/core/test_placeholder_run_probe_contract.py",
+            "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
+            "tests/unit/core/test_trace_integrity_and_lifecycle_gates.py",
+            "tests/unit/core/test_hitl_suspension_to_certification_lifecycle.py",
+            "tests/unit/core/test_lifecycle_provider_status_contract.py",
+        ),
         frozenset(
             {
                 "get_run_lifecycle_state",
@@ -188,8 +362,11 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
     CriticalMutationTarget(
         BASE_DIR / "eval_runner" / "session.py",
         (
+            "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
             "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
             "tests/unit/core/test_core_session.py",
+            "tests/unit/core/test_session_plugin_state_tools.py",
+            "tests/unit/core/test_hitl_resumption_timing_contract.py",
         ),
         frozenset(
             {
@@ -201,6 +378,12 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
             }
         ),
         scope_test_names={
+            "_handle_hitl": (
+                "test_durable_approval_suspends_with_optional_checkpoint_handle",
+                "test_hitl_resumption_wait_uses_decision_time_only_when_available_and_ordered",
+                "test_session_hitl_non_interactive_approval_and_rejection",
+                "test_p0_session_hitl_resumption_and_gate_branches",
+            ),
             "restore_from_checkpoint": (
                 "test_session_turn_number_and_checkpoint_branches",
                 "test_session_restore_checkpoint_completed_nodes_and_tokens",
@@ -213,7 +396,11 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
     ),
     CriticalMutationTarget(
         BASE_DIR / "eval_runner" / "engine.py",
-        ("tests/unit/core/test_core_engine.py",),
+        (
+            "tests/unit/core/test_agent_wire_payload_contract.py",
+            "tests/unit/core/test_core_engine.py",
+            "tests/unit/adapters/test_engine_adapters.py",
+        ),
         frozenset({"render_outbound_payload", "call_agent"}),
     ),
     CriticalMutationTarget(
@@ -235,7 +422,7 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
     ),
     CriticalMutationTarget(
         BASE_DIR / "agentv_runtime" / "package.py",
-        ("tests/unit/core/test_verification_envelope.py",),
+        (EVIDENCE_CHAIN_POSITIVE, "tests/unit/core/test_verification_envelope.py"),
         frozenset(
             {
                 "compute_content_hash",
@@ -248,7 +435,7 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
     ),
     CriticalMutationTarget(
         BASE_DIR / "agentv_runtime" / "canonical.py",
-        ("tests/unit/core/test_rfc8785_canonicalization.py",),
+        (EVIDENCE_CHAIN_POSITIVE, "tests/unit/core/test_rfc8785_canonicalization.py"),
         frozenset(
             {
                 "_serialize_number",
@@ -261,6 +448,7 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
     CriticalMutationTarget(
         BASE_DIR / "agentv_runtime" / "manifest.py",
         (
+            EVIDENCE_CHAIN_POSITIVE,
             "tests/unit/test_execution_manifest.py",
             "tests/unit/core/test_resumption_manifest_integrity.py",
         ),
@@ -293,14 +481,6 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
         ),
         frozenset({"commitment"}),
         frozenset({"commitment", "guard", "comparison", "boolean"}),
-        frozenset(
-            {
-                ("build_evidence_graph", 271, "False", "True"),
-                ("build_evidence_graph_from_events", 379, "is not", "is"),
-                ("build_evidence_graph_from_events", 382, "is not", "is"),
-                ("build_evidence_graph_from_events", 383, "False", "True"),
-            }
-        ),
         scope_test_names={
             "_strict_result_value": ("test_strict_result_value_rejects_invalid_types",),
             "index_events_by_seq": ("test_index_events_by_seq_duplicate_raises",),
@@ -332,7 +512,12 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
     ),
     CriticalMutationTarget(
         BASE_DIR / "agentv_runtime" / "finalization.py",
-        ("tests/unit/core/test_finalization_record.py",),
+        (
+            "tests/unit/core/test_signed_finalization_object_contract.py",
+            EVIDENCE_CHAIN_POSITIVE,
+            "tests/unit/core/test_finalization_record.py",
+            "tests/unit/core/test_finalization_alias_contract.py",
+        ),
         frozenset(
             {
                 "parse_untrusted",
@@ -348,7 +533,11 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
     ),
     CriticalMutationTarget(
         BASE_DIR / "eval_runner" / "reference" / "approval_store.py",
-        ("tests/unit/core/test_approval_store.py",),
+        (
+            "tests/unit/core/test_approval_store.py",
+            "tests/unit/core/test_scope_bound_approval_persistence.py",
+            "tests/unit/core/test_approval_events_and_hooks.py",
+        ),
         frozenset(
             {
                 "create_request",
@@ -361,9 +550,6 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
         ),
         frozenset({"approval_gate"}),
         frozenset({"approval_gate", "boolean", "comparison", "guard"}),
-        # The primary token-file lookup has already failed before this fallback
-        # scan. Re-including that exact token index cannot change its result.
-        frozenset({("get_request", 90, "or", "and")}),
         scope_test_names={
             "create_request": ("test_lifecycle",),
             "get_request": (
@@ -382,6 +568,38 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_delete_request_reports_and_removes_both_durable_records",
                 "test_delete_request_reports_token_deletion_when_run_record_is_missing",
                 "test_delete_request_unlink_exceptions",
+            ),
+        },
+    ),
+)
+
+# The new signing protocol is an independent trust boundary, exercised without KMS.
+CRITICAL_MUTATION_TARGETS += (
+    CriticalMutationTarget(
+        BASE_DIR / "agentv_runtime" / "signatures.py",
+        (
+            "tests/unit/core/test_digest_signature_contract.py",
+            "tests/unit/core/test_signing_acceptance_matrix.py",
+            "tests/unit/core/test_signing_input_policy_contract.py",
+        ),
+        frozenset(
+            {
+                "certificate_payload_bytes",
+                "unsigned_envelope",
+                "verify_artifact_signature",
+                "resolve_policy",
+                "validate_signing_response",
+                "authorize",
+                "sign_payload",
+            }
+        ),
+        excluded_mutations=frozenset({("verify_artifact_signature", 258, "or", "and")}),
+        exclusion_reasons={
+            ("verify_artifact_signature", 258, "or", "and"): (
+                "Equivalent for JSON envelope values: the subsequent exact field-type and "
+                "canonical-byte equality checks still reject missing/extra fields. Non-object "
+                "JSON values fail those checks or the fail-closed exception boundary; no "
+                "additional envelope can verify. JSON shape regressions cover these cases."
             ),
         },
     ),
@@ -470,6 +688,17 @@ _APPROVAL_STATE_MUTATIONS = {
 # Replacing a commitment key simulates omitting the binding from emitted
 # evidence without generating syntactically invalid dictionary literals.
 _COMMITMENT_FIELD_MUTATIONS = {
+    "profile",
+    "payload_digest",
+    "payload_projection",
+    "signing_algorithm",
+    "signing_semantics",
+    "public_key_fingerprint",
+    "signature_encoding",
+    "key_id",
+    "certificate_profile",
+    "execution_mode",
+    "provisional",
     "signature",
     "trace_digest",
     "manifest_hash",
@@ -614,11 +843,18 @@ class _MutationProgress:
             flush=True,
         )
 
-    def report(self, status: str) -> None:
+    def report(self, status: str, description: str | None = None) -> None:
         token, color = self._TOKENS.get(status, ("!", "\033[31m"))
         self.completed += 1
         rendered = f"{color}{token}{self._RESET}" if self.color else token
         print(rendered, end="", file=self.stream, flush=True)
+        if description and status in {"survived", "timeout", "indeterminate"}:
+            print(
+                f"\n      [{status.upper()}] {description}\n      Progress: ",
+                end="",
+                file=self.stream,
+                flush=True,
+            )
         if self.completed % 40 == 0 and self.completed < self.total:
             print(
                 f" {self.completed}/{self.total}\n      Progress: ",
@@ -658,6 +894,7 @@ class _MutationVisitor(ast.NodeVisitor):
         self.points: list[MutationPoint] = []
         self.scope_stack: list[str] = []
         self.guard_depth = 0
+        self.display_label_positions: set[tuple[int, int]] = set()
         self.idx = 0
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
@@ -929,6 +1166,8 @@ class _MutationVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_Constant(self, node: ast.Constant) -> None:
+        if (node.lineno, node.col_offset) in self.display_label_positions:
+            return
         lineno, col = self._line_col(self._absolute_position(node.lineno, node.col_offset))
         in_annotation = lineno is not None and lineno in self.annotation_lines
         scope = self._current_scope()
@@ -980,6 +1219,64 @@ def discover_mutation_points(source: str, annotation_lines: set[int]) -> list[Mu
     """
     tree = ast.parse(source)
     visitor = _MutationVisitor(annotation_lines, source)
+    parents = {child: parent for parent in ast.walk(tree) for child in ast.iter_child_nodes(parent)}
+
+    def error_only_label(use: ast.Name) -> bool:
+        current = parents.get(use)
+        while isinstance(current, (ast.FormattedValue, ast.JoinedStr)):
+            current = parents.get(current)
+        return bool(
+            isinstance(current, ast.Call)
+            and isinstance(current.func, ast.Name)
+            and current.func.id in {"ValueError", "TypeError"}
+            and isinstance(parents.get(current), ast.Raise)
+        )
+
+    def owner(node: ast.AST) -> ast.AST:
+        while node in parents:
+            node = parents[node]
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
+                return node
+        return tree
+
+    error_label_scopes: set[ast.AST] = set()
+    for loop in ast.walk(tree):
+        if (
+            isinstance(loop, ast.For)
+            and isinstance(loop.iter, ast.Name)
+            and loop.iter.id == "mandatory_str_fields"
+            and isinstance(loop.target, ast.Tuple)
+            and len(loop.target.elts) == 2
+            and isinstance(loop.target.elts[1], ast.Name)
+        ):
+            name = loop.target.elts[1].id
+            uses = [
+                node
+                for node in ast.walk(tree)
+                if isinstance(node, ast.Name)
+                and isinstance(node.ctx, ast.Load)
+                and node.id == name
+                and owner(node) is owner(loop)
+            ]
+            if uses and all(error_only_label(use) for use in uses):
+                error_label_scopes.add(owner(loop))
+    # The second item in this validation specification is an error label,
+    # not a data key or a cryptographic commitment.
+    for assignment in ast.walk(tree):
+        if (
+            isinstance(assignment, ast.Assign)
+            and owner(assignment) in error_label_scopes
+            and any(
+                isinstance(target, ast.Name) and target.id == "mandatory_str_fields"
+                for target in assignment.targets
+            )
+            and isinstance(assignment.value, (ast.List, ast.Tuple))
+        ):
+            for entry in assignment.value.elts:
+                if isinstance(entry, ast.Tuple) and len(entry.elts) == 2:
+                    label = entry.elts[1]
+                    if isinstance(label, ast.Constant) and isinstance(label.value, str):
+                        visitor.display_label_positions.add((label.lineno, label.col_offset))
     visitor.visit(tree)
     return visitor.points
 
@@ -1071,6 +1368,10 @@ def _collected_no_tests(returncode: int) -> bool:
     return returncode == PYTEST_NO_TESTS_COLLECTED
 
 
+def _test_source_path(selector: str) -> Path:
+    return BASE_DIR / selector.split("::", 1)[0]
+
+
 def _declared_test_names(tests: list[str]) -> set[str]:
     """Return test function names without starting pytest just to probe ``-k``.
 
@@ -1081,7 +1382,7 @@ def _declared_test_names(tests: list[str]) -> set[str]:
     names: set[str] = set()
     for test_path in tests:
         try:
-            tree = ast.parse((BASE_DIR / test_path).read_text(encoding="utf-8"))
+            tree = ast.parse(_test_source_path(test_path).read_text(encoding="utf-8"))
         except (OSError, SyntaxError, UnicodeDecodeError) as err:
             raise RuntimeError(
                 f"Cannot inspect configured mutation test {test_path}: {err}"
@@ -1157,7 +1458,7 @@ def _baseline_cache_key(tests: tuple[str, ...], targets: tuple[Path, ...]) -> st
         "python_version": sys.version,
         "pytest_version": pytest.__version__,
         "pytest_flags": FAST_PYTEST_FLAGS,
-        "tests": [(path, _sha3_file(BASE_DIR / path)) for path in tests],
+        "tests": [(path, _sha3_file(_test_source_path(path))) for path in tests],
         "targets": [
             (path.relative_to(BASE_DIR).as_posix(), _sha3_file(path))
             for path in sorted(targets, key=lambda item: item.as_posix())
@@ -1219,36 +1520,28 @@ def format_sentinel_duration(duration_seconds: float) -> str:
 
 def _make_loader_code(mutant_source: str, orig_file: Path, module_name: str, args_str: str) -> str:
     """Build a subprocess loader that receives the mutant only through stdin."""
-    parts = module_name.rsplit(".", 1)
-    if len(parts) > 1:
-        pkg_name = parts[0]
-        sub_name = parts[1]
-    else:
-        pkg_name = ""
-        sub_name = module_name
     encoded_source = base64.b64encode(mutant_source.encode("utf-8")).decode("ascii")
 
     return f"""
-import base64, sys, importlib.util
+import base64, sys, importlib, importlib.abc, importlib.util
 sys.path.insert(0, r"{BASE_DIR}")
 source = base64.b64decode({encoded_source!r}).decode("utf-8")
 code = compile(source, r"{orig_file}", "exec")
-pkg_name = "{pkg_name}"
-sub_name = "{sub_name}"
-spec = importlib.util.spec_from_file_location("{module_name}", r"{orig_file}")
-mod = importlib.util.module_from_spec(spec)
-mod.__file__ = r"{orig_file}"
-if pkg_name:
-    mod.__package__ = pkg_name
-sys.modules["{module_name}"] = mod
-exec(code, mod.__dict__)
-if pkg_name:
-    __import__(pkg_name)
-    pkg = sys.modules[pkg_name]
-    setattr(pkg, sub_name, mod)
-    for k, v in mod.__dict__.items():
-        if hasattr(pkg, k):
-            setattr(pkg, k, v)
+class MutantModule(importlib.abc.MetaPathFinder, importlib.abc.Loader):
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname == "{module_name}":
+            return importlib.util.spec_from_file_location(fullname, r"{orig_file}", loader=self)
+
+    def create_module(self, spec):
+        return None
+
+    def exec_module(self, module):
+        exec(code, module.__dict__)
+
+# Install before importing the package. Its normal initialization and all
+# transitive imports must see the same mutant, including re-exported symbols.
+sys.meta_path.insert(0, MutantModule())
+importlib.import_module("{module_name}")
 import pytest
 sys.exit(pytest.main({args_str}))
 """
@@ -1325,7 +1618,7 @@ def evaluate_mutant(
                 capture_output=True,
                 input=loader_code,
                 text=True,
-                timeout=min(timeout_seconds, 15.0),
+                timeout=timeout_seconds,
                 env=env,
             )
             if _collected_no_tests(res.returncode):
@@ -1336,8 +1629,10 @@ def evaluate_mutant(
                         killer_cache.pop(cache_key, None)
                 else:
                     killer_cache.pop(cache_key, None)
-            elif res.returncode != 0:
+            elif res.returncode == 1:
                 return "killed"
+            elif res.returncode != 0:
+                return "indeterminate"
 
         # Phase 2: Scoped test filter.  The selector is vetted from the test
         # AST once per scope; never spawn an empty ``-k resolve_request`` probe.
@@ -1354,9 +1649,11 @@ def evaluate_mutant(
                 timeout=timeout_seconds,
                 env=env,
             )
-            if res.returncode != 0 and not _collected_no_tests(res.returncode):
+            if res.returncode == 1:
                 _extract_and_cache_killer(res.stdout)
                 return "killed"
+            if res.returncode != 0 and not _collected_no_tests(res.returncode):
+                return "indeterminate"
 
         # Phase 3: Fallback full module corpus
         if module_timing is not None:
@@ -1378,9 +1675,11 @@ def evaluate_mutant(
                 "      [Mutant] Full corpus collected no tests; mutation result is indeterminate.\n"
             )
             return "indeterminate"
-        if res.returncode != 0:
+        if res.returncode == 1:
             _extract_and_cache_killer(res.stdout)
             return "killed"
+        if res.returncode != 0:
+            return "indeterminate"
         return "survived"
     except subprocess.TimeoutExpired:
         return "timeout"
@@ -1391,6 +1690,8 @@ def evaluate_mutant(
 
 def verify_sentinel_preconditions(
     active_targets: list[Path] | None = None,
+    *,
+    workers: int = 1,
 ) -> tuple[dict[str, float], dict[Path, float]]:
     """
     Self-validating precondition checks executed before any mutation testing begins.
@@ -1432,6 +1733,22 @@ def verify_sentinel_preconditions(
             )
             if point.scope in MODULE_SCOPE_MAP[target]
         ]
+        configuration = next(item for item in CRITICAL_MUTATION_TARGETS if item.path == target)
+        excluded = MODULE_EXCLUDED_MUTATIONS[target]
+        reasons = configuration.exclusion_reasons or {}
+        available_points = {
+            (point.scope, point.lineno, point.original, point.mutated) for point in selected_points
+        }
+        if set(reasons) != excluded or excluded - available_points or not all(reasons.values()):
+            print(f"  [FAIL] Unreviewed or stale mutation exclusions for {target.name}")
+            sys.exit(1)
+        if excluded:
+            print(f"   [Reviewed exclusions] {target.name}: {len(excluded)} explicit exclusions")
+        selected_points = [
+            point
+            for point in selected_points
+            if (point.scope, point.lineno, point.original, point.mutated) not in excluded
+        ]
         present_families = {mutation_operator_family(point) for point in selected_points}
         missing_families = MODULE_REQUIRED_OPERATOR_FAMILIES[target] - present_families
         if missing_families:
@@ -1447,7 +1764,7 @@ def verify_sentinel_preconditions(
         all_test_paths.update(MODULE_TEST_MAP.get(target, ()))
 
     for test_path in all_test_paths:
-        full_path = BASE_DIR / test_path
+        full_path = _test_source_path(test_path)
         if not full_path.exists():
             print(f"  [FAIL] Configured test file missing: {test_path}")
             sys.exit(1)
@@ -1467,8 +1784,8 @@ def verify_sentinel_preconditions(
                 )
                 sys.exit(1)
 
-    # Verify each distinct baseline corpus once. A corpus proves the same
-    # un-mutated suite regardless of how many runtime targets reuse it.
+    # Prove each unmodified target through the same loader used for mutants.
+    # A native import baseline cannot detect loader-induced collection failures.
     # Deliberately serial: concurrent Python/pytest startup is slower and less
     # stable on Windows under import and disk contention.
     env = os.environ.copy()
@@ -1477,39 +1794,36 @@ def verify_sentinel_preconditions(
     module_timeouts: dict[str, float] = {}
     baseline_durations: dict[Path, float] = {}
     baseline_cache = _load_baseline_cache()
-    corpus_groups: dict[tuple[str, ...], list[Path]] = {}
-    for target in targets_to_check:
-        corpus_groups.setdefault(tuple(_tests_for_module(target)), []).append(target)
+    corpus_groups = [(tuple(_tests_for_module(target)), [target]) for target in targets_to_check]
 
-    for tests, targets in corpus_groups.items():
+    for tests, targets in corpus_groups:
         cache_key = _baseline_cache_key(tests, tuple(targets))
-        cached_entry = baseline_cache.get(cache_key)
-        if cached_entry is not None:
-            elapsed = float(cached_entry["duration_seconds"])
-            status = "cache hit"
-        else:
-            args_str = repr(list(tests) + FAST_PYTEST_FLAGS)
-            py_code = (
-                f"import sys; sys.path.insert(0, r'{BASE_DIR}'); "
-                f"import pytest; sys.exit(pytest.main({args_str}))"
-            )
-            cmd = [sys.executable, "-B", "-c", py_code]
-            t0 = time.monotonic()
-            res = subprocess.run(cmd, cwd=BASE_DIR, capture_output=True, text=True, env=env)
-            elapsed = time.monotonic() - t0
+        # Historical timings are artifacts, never substitutes for a live control.
+        args_str = repr(list(tests) + FAST_PYTEST_FLAGS)
+        target = targets[0]
+        module_name = ".".join(target.relative_to(BASE_DIR).with_suffix("").parts)
+        py_code = _make_loader_code(
+            target.read_text(encoding="utf-8"), target, module_name, args_str
+        )
+        cmd = [sys.executable, "-B", "-"]
+        t0 = time.monotonic()
+        res = subprocess.run(
+            cmd, input=py_code, cwd=BASE_DIR, capture_output=True, text=True, env=env
+        )
+        elapsed = time.monotonic() - t0
 
-            if res.returncode != 0:
-                names = ", ".join(target.name for target in targets)
-                print(f"  [FAIL] Baseline test suite for '{names}' failed or collected no tests!")
-                print(f"         Command output:\n{res.stdout}\n{res.stderr}")
-                sys.exit(1)
+        if res.returncode != 0:
+            names = ", ".join(target.name for target in targets)
+            print(f"  [FAIL] Baseline test suite for '{names}' failed or collected no tests!")
+            print(f"         Command output:\n{res.stdout}\n{res.stderr}")
+            sys.exit(1)
 
-            baseline_cache[cache_key] = {
-                "duration_seconds": elapsed,
-                "tests": list(tests),
-                "targets": [target.relative_to(BASE_DIR).as_posix() for target in targets],
-            }
-            status = "verified"
+        baseline_cache[cache_key] = {
+            "duration_seconds": elapsed,
+            "tests": list(tests),
+            "targets": [target.relative_to(BASE_DIR).as_posix() for target in targets],
+        }
+        status = "verified"
 
         print(
             f"   [Baseline {status}] corpus={', '.join(tests)} "
@@ -1517,7 +1831,7 @@ def verify_sentinel_preconditions(
         )
         for target in targets:
             module_name = target.name
-            dynamic_timeout = max(MUTANT_TIMEOUT_SECONDS, elapsed * 2.5)
+            dynamic_timeout = max(MUTANT_TIMEOUT_SECONDS, elapsed * max(2.5, max(1, workers) * 1.5))
             module_timeouts[module_name] = dynamic_timeout
             baseline_durations[target] = elapsed
             headroom = dynamic_timeout / elapsed if elapsed > 0 else 999.0
@@ -1648,7 +1962,7 @@ def _evaluate_target_module(
     for primer in primers:
         result = _eval_one(primer)
         evaluations.append(result)
-        progress.report(result[0])
+        progress.report(result[0], f"{result[2].scope}: {result[1]}")
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as pool:
         pending = {pool.submit(_eval_one, mp) for mp in remainder}
@@ -1664,7 +1978,7 @@ def _evaluate_target_module(
             for future in completed:
                 result = future.result()
                 evaluations.append(result)
-                progress.report(result[0])
+                progress.report(result[0], f"{result[2].scope}: {result[1]}")
     progress.close()
 
     # Timeout retries run only after every parallel worker has completed so
@@ -1699,6 +2013,22 @@ def _evaluate_target_module(
 
     timing.mutant_seconds = time.monotonic() - mutation_started_at
     return killed, survived, timeout, indeterminate, incompetent, records, timing
+
+
+def assert_sources_unchanged(sources: Mapping[Path, bytes]) -> None:
+    """Invalidate a run when its inputs change, preserving every workspace edit."""
+    changed = []
+    for path, expected in sources.items():
+        try:
+            if path.read_bytes() != expected:
+                changed.append(str(path))
+        except OSError:
+            changed.append(str(path))
+    if changed:
+        raise RuntimeError(
+            "MutationSourceChanged: validation inputs changed; workspace edits preserved: "
+            + ", ".join(changed)
+        )
 
 
 def run_mutation_sentinel() -> None:
@@ -1743,7 +2073,7 @@ def run_mutation_sentinel() -> None:
 
     print("=" * 80)
     print(f"=== INDUSTRIAL MUTATION TESTING SENTINEL & ASSURANCE PIPELINE ({mode_label}) ===")
-    # Enforce process singleton lock to guarantee no concurrent file mutation collisions
+    # Keep validation and its shared reports isolated from concurrent runners.
     lock_file = BASE_DIR / ".mutation_testing.lock"
     import os
 
@@ -1790,25 +2120,31 @@ def run_mutation_sentinel() -> None:
     import atexit
     import signal
 
-    pristine_sources = {target: target.read_bytes() for target in TARGET_MODULES}
+    validation_inputs = set(TARGET_MODULES)
+    validation_inputs.update(
+        _test_source_path(selector)
+        for target in TARGET_MODULES
+        for selector in _tests_for_module(target)
+    )
+    validation_inputs.update(
+        {Path(__file__).resolve(), BASE_DIR / "pyproject.toml", BASE_DIR / "tests" / "conftest.py"}
+    )
+    pristine_sources = {path: path.read_bytes() for path in validation_inputs if path.is_file()}
 
-    def emergency_restore(*args, **kwargs):
-        for target, data in pristine_sources.items():
-            try:
-                if target.exists() and target.read_bytes() != data:
-                    target.write_bytes(data)
-            except OSError as restore_err:
-                sys.stderr.write(f"  [CRITICAL] Failed to restore {target}: {restore_err}\n")
+    def cleanup_runner_lock():
         try:
-            lock_file.unlink(missing_ok=True)
+            if lock_file.exists() and lock_file.read_text(encoding="utf-8").strip() == str(
+                os.getpid()
+            ):
+                lock_file.unlink()
         except OSError as lock_err:
             sys.stderr.write(f"  [Warn] Failed to remove lock file on exit: {lock_err}\n")
 
     def signal_handler(signum, frame):
-        emergency_restore()
+        cleanup_runner_lock()
         sys.exit(128 + signum if isinstance(signum, int) else 1)
 
-    atexit.register(emergency_restore)
+    atexit.register(cleanup_runner_lock)
     for sig in (
         getattr(signal, "SIGINT", None),
         getattr(signal, "SIGTERM", None),
@@ -1821,9 +2157,6 @@ def run_mutation_sentinel() -> None:
                 sys.stderr.write(
                     f"  [Warn] Could not register signal handler for {sig}: {sig_err}\n"
                 )
-
-    # Ensure all target modules are pristine before starting
-    emergency_restore()
 
     if args.target:
         active_targets = [
@@ -1838,7 +2171,9 @@ def run_mutation_sentinel() -> None:
         active_targets = list(TARGET_MODULES)
 
     # 1. Self-Validating Precondition Verification
-    module_timeouts, baseline_durations = verify_sentinel_preconditions(active_targets)
+    module_timeouts, baseline_durations = verify_sentinel_preconditions(
+        active_targets, workers=args.workers
+    )
 
     # 2. Mutation Discovery & Testing
     total_killed = 0
@@ -1871,7 +2206,10 @@ def run_mutation_sentinel() -> None:
             mutant_records.extend(recs)
             module_timings.append((target, timing))
     finally:
-        emergency_restore()
+        try:
+            assert_sources_unchanged(pristine_sources)
+        finally:
+            cleanup_runner_lock()
 
     # 3. Calculate Refined Mutation Metrics
     # Denominator excludes incompetent mutants (annotation-only, no runtime effect).
@@ -1945,6 +2283,8 @@ Enterprise verification assurance scorecard generated by surgical AST mutation a
   - `Timeout Rate = Timeout / (Killed + Survived + Timeout + Indeterminate)`
   - A timeout is retried serially and remains non-passing if unresolved.
   - A no-tests-collected result is indeterminate; it is never kill evidence.
+  - Collection and pytest infrastructure errors are indeterminate, not kills.
+  - Each unmodified target must pass through the same injection loader first.
 
 ## Target Modules Evaluated
 
@@ -1962,6 +2302,18 @@ Enterprise verification assurance scorecard generated by surgical AST mutation a
             f"{format_sentinel_duration(timing.mutant_seconds)} | "
             f"{timing.full_corpus_fallbacks} | {timing.cache_hits} | {timing.timeout_retries} |\n"
         )
+
+    report_md += "\n## Reviewed equivalent and non-binding exclusions\n\n"
+    report_md += "| Module | Excluded mutation | Reason |\n| :--- | :--- | :--- |\n"
+    for configuration in CRITICAL_MUTATION_TARGETS:
+        if configuration.path not in active_targets:
+            continue
+        for point, reason in (configuration.exclusion_reasons or {}).items():
+            scope, line, original, replacement = point
+            report_md += (
+                f"| `{configuration.path.relative_to(BASE_DIR).as_posix()}` | "
+                f"`{scope}:{line} {original} -> {replacement}` | {reason} |\n"
+            )
 
     report_md += """
 

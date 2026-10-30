@@ -321,13 +321,15 @@ async def test_session_execute_tasks_cancellation_branch(base_scenario, tmp_path
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("terminal_attached", [False, True])
 async def test_session_hitl_non_interactive_approval_and_rejection(
-    base_scenario, tmp_path, monkeypatch
+    base_scenario, tmp_path, monkeypatch, terminal_attached
 ):
     run_store = LocalFileRunStore(tmp_path / "runs")
     run_store.create_run("test_run", base_scenario["id"])
     session = SessionManager("test_run", base_scenario, log_root=tmp_path, run_store=run_store)
     monkeypatch.setenv("FORCE_HITL_SUSPEND", "1")
+    monkeypatch.delenv("AGENTV_CLI_HITL_SUSPEND", raising=False)
     monkeypatch.delenv("CI", raising=False)
 
     turn_ctx = MagicMock(task_id="task_1")
@@ -338,7 +340,8 @@ async def test_session_hitl_non_interactive_approval_and_rejection(
 
     # 1. Non-interactive approve
     with (
-        patch("sys.stdin.isatty", return_value=False),
+        patch("sys.stdin.isatty", return_value=terminal_attached),
+        patch("builtins.input", side_effect=AssertionError("durable approval must not read stdin")),
         patch.object(
             session.approval_manager,
             "create_durable_request",
@@ -355,7 +358,8 @@ async def test_session_hitl_non_interactive_approval_and_rejection(
 
     # 2. Non-interactive reject
     with (
-        patch("sys.stdin.isatty", return_value=False),
+        patch("sys.stdin.isatty", return_value=terminal_attached),
+        patch("builtins.input", side_effect=AssertionError("durable approval must not read stdin")),
         patch.object(
             session.approval_manager,
             "create_durable_request",

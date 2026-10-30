@@ -134,11 +134,18 @@ def test_agentv_acceptance_case(case, isolated_acceptance_env, acceptance_aggreg
     # 3. If certification is expected, execute certify CLI
     expect_cfg = case["expect"]
     cert_res = None
-    if expect_cfg.get("evidence", {}).get("certificate_required", False):
+    if expect_cfg.get("evidence", {}).get("certificate_required", False) or expect_cfg.get(
+        "evidence", {}
+    ).get("certificate_forbidden", False):
         cert_res = runner.certify(run_id=run_id)
+    if expect_cfg.get("evidence", {}).get("certificate_forbidden", False):
+        assert cert_res is not None and cert_res.exit_code != 0, (
+            "Certification must reject a pending, unfinalized execution"
+        )
 
     # 4. Gate verification check
     gate_res = runner.gate(run_id=run_id, verify_ledger=True)
+    verify_res = runner.verify(run_id=run_id)
 
     # 5. Read Observable Artifacts
     artifacts = load_run_artifacts(
@@ -152,7 +159,7 @@ def test_agentv_acceptance_case(case, isolated_acceptance_env, acceptance_aggreg
     actual = normalize_actual_result(
         artifacts=artifacts,
         cli_gate_exit_code=gate_res.exit_code,
-        cli_verify_exit_code=0 if (cert_res and cert_res.exit_code == 0) else None,
+        cli_verify_exit_code=verify_res.exit_code,
     )
     oracle_url = expect_cfg.get("state", {}).get("oracle_url")
     if isinstance(oracle_url, str) and oracle_url.startswith("${") and oracle_url.endswith("}"):
@@ -191,8 +198,8 @@ def test_agentv_acceptance_case(case, isolated_acceptance_env, acceptance_aggreg
             .strip()
         ),
         evidence_verified=artifacts.has_trace,
-        certificate_verified=artifacts.has_certificate and gate_res.exit_code == 0,
-        ledger_verified=gate_res.exit_code == 0,
+        certificate_verified=artifacts.has_certificate and verify_res.exit_code == 0,
+        ledger_verified=verify_res.exit_code == 0,
     )
     acceptance_aggregator.add_result(result)
 
@@ -210,7 +217,9 @@ def test_agentv_acceptance_case(case, isolated_acceptance_env, acceptance_aggreg
             f"Oracle Discrepancies:\n"
             + "\n".join(f"  - {f.dimension}: {f.reason}" for f in oracle_failures)
             + f"\nRun CLI Output (exit={run_res.exit_code}):\n{run_res.stdout}\n{run_res.stderr}\n"
-            + f"{cert_out}\n{gate_out}"
+            + f"{cert_out}\n{gate_out}\n"
+            + f"Verify CLI Output (exit={verify_res.exit_code}):\n"
+            + f"{verify_res.stdout}\n{verify_res.stderr}"
         )
     else:
         assert not is_accepted, f"Acceptance case {case['id']} was expected to fail, but passed."

@@ -3,7 +3,6 @@ from argparse import Namespace
 import pytest
 
 from eval_runner.handlers import evaluation
-from eval_runner.verifier import TraceVerifier
 
 
 @pytest.fixture
@@ -36,23 +35,15 @@ def gate_env(tmp_path, monkeypatch):
 
     IdentityService._provision_local_identity("system_id")
 
-    # Authoritative Eval Artifact
+    from eval_runner.services.certification import execute_industrial_certification
+    from tests.acceptance.test_acceptance_provider_native_certification import _seed_provider_run
+
+    IdentityService._provision_local_identity("eval_kernel")
     store = LocalFileRunStore(log_dir=runs_dir)
     run_id = "test_gate_run"
-    store.create_run(run_id=run_id, scenario_id="gate-scenario", metadata={"git_hash": "abc"})
-    store.append_events(run_id, [{"event": "run_start", "run_id": run_id}])
-    trace_bytes = store.get_trace_bytes(run_id)
-    assert trace_bytes is not None
-
-    # Generate Physical Manifest using real logic
-    manifest = TraceVerifier.sign_trace_bytes(
-        trace_bytes,
-        run_id=run_id,
-        run_store=store,
-        metadata={"git_hash": "abc"},
-    )
-    manifest_path = store.save_run_manifest(run_id, manifest)
-    store.update_run_status(run_id, "SEALED")
+    scenario = _seed_provider_run(store, run_id)
+    execute_industrial_certification(run_id, run_store=store, scenario_data=scenario)
+    manifest_path = runs_dir / run_id / "run_manifest.json"
 
     return {
         "root": root,
@@ -131,22 +122,16 @@ async def test_handle_gate_asymmetric_success(gate_env, capsys, monkeypatch):
     IdentityService._provision_local_identity(identity_id)
     store = gate_env["store"]
     run_id_asym = "test_gate_asym_run"
-    store.create_run(
-        run_id=run_id_asym, scenario_id="gate-asym-scenario", metadata={"git_hash": "abc"}
-    )
-    store.append_events(run_id_asym, [{"event": "run_start", "run_id": run_id_asym}])
-    trace_bytes_asym = store.get_trace_bytes(run_id_asym)
-    assert trace_bytes_asym is not None
+    from eval_runner.services.certification import execute_industrial_certification
+    from tests.acceptance.test_acceptance_provider_native_certification import _seed_provider_run
 
-    manifest_asym = TraceVerifier.sign_trace_bytes(
-        trace_bytes_asym,
-        run_id=run_id_asym,
+    scenario = _seed_provider_run(store, run_id_asym)
+    execute_industrial_certification(
+        run_id_asym,
         run_store=store,
+        scenario_data=scenario,
         identity_id=identity_id,
-        metadata={"git_hash": "abc"},
     )
-    store.save_run_manifest(run_id_asym, manifest_asym)
-    store.update_run_status(run_id_asym, "SEALED")
 
     # 3. Handle gate with public key from IdentityService
     pub_key_path = trust_root / identity_id / "public_key.pem"

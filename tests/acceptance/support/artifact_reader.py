@@ -150,6 +150,9 @@ def normalize_actual_result(
     elif exec_status in ("success", "passed"):
         verification_success = True
 
+    if cli_gate_exit_code is not None:
+        verification_success = cli_gate_exit_code == 0
+
     return {
         "execution_status": exec_status,
         "verification_success": verification_success,
@@ -163,9 +166,7 @@ def normalize_actual_result(
             "required": artifacts.has_trace,
             "certificate_required": artifacts.has_certificate,
             "ledger_verification_required": (
-                (cli_gate_exit_code == 0)
-                if cli_gate_exit_code is not None
-                else (cli_verify_exit_code == 0 if cli_verify_exit_code is not None else False)
+                cli_verify_exit_code == 0 if cli_verify_exit_code is not None else False
             ),
             "sealed_required": artifacts.is_sealed,
         },
@@ -174,7 +175,7 @@ def normalize_actual_result(
 
 def read_external_state_oracle(oracle_url: str) -> dict[str, Any]:
     """Read a state receipt from a non-AgentV acceptance authority."""
-    with urlopen(oracle_url.rstrip("/") + "/state", timeout=5) as response:  # nosec B310 - test-controlled URL
+    with urlopen(oracle_url.rstrip("/") + "/state", timeout=5) as response:  # nosec B310
         observation = json.loads(response.read().decode("utf-8"))
     if (
         not isinstance(observation, dict)
@@ -226,7 +227,7 @@ def reset_external_state_oracle(oracle_url: str, balances: dict[str, int]) -> No
         headers={"Content-Type": "application/json"},
         method="POST",
     )
-    with urlopen(request, timeout=5) as response:  # nosec B310 - CI-pinned oracle URL
+    with urlopen(request, timeout=5) as response:  # nosec B310
         if response.status != 200:
             raise RuntimeError("independent state oracle reset failed")
 

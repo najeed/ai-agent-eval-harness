@@ -73,6 +73,10 @@ jobs:
           python -m playwright install --with-deps chromium
       - name: Run Release Acceptance Suite
         run: |
+          pytest tests/unit/core/test_digest_signature_contract.py tests/unit/core/test_signing_acceptance_matrix.py tests/unit/core/test_signing_input_policy_contract.py tests/acceptance/test_digest_signature_release_matrix.py -o junit_family=xunit1 --junitxml=reports/acceptance/signing-contract.xml
+          python tools/ci/verify_signing_contract_matrix.py reports/acceptance/signing-contract.xml --output reports/acceptance/signing-contract-summary.json
+          pytest -m acceptance_release tests/acceptance/test_release_evidence_chain_matrix.py -o junit_family=xunit1 --junitxml=reports/acceptance/evidence-chain-matrix.xml
+          python tools/ci/verify_evidence_chain_matrix.py reports/acceptance/evidence-chain-matrix.xml --output reports/acceptance/evidence-chain-matrix-summary.json
           pytest -m acceptance_release tests/acceptance/test_acceptance_corpus.py --junitxml=reports/acceptance-corpus.xml
           pytest -m acceptance_release tests/ui/test_visual_console_ui.py tests/ui/test_verification_workflow_journey.py --junitxml=reports/acceptance-release.xml
         env:

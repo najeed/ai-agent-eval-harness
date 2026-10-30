@@ -131,7 +131,7 @@ def test_certify_run_404(client):
     assert "vault not found" in res.get_json()["error"]
 
 
-def test_certify_run_success(client, console_jail):
+def test_certify_run_rejects_incomplete_signer_output(client, console_jail):
     run_id = "test_run_1"
     run_dir = console_jail["runs"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -164,9 +164,9 @@ def test_certify_run_success(client, console_jail):
             "/api/v1/certify",
             json={"run_id": run_id, "scenario_data": {"id": "scen_1", "version": "1.0.0"}},
         )
-        assert res.status_code == 200
-        assert res.get_json()["status"] == "certified"
-        assert (run_dir / "run_manifest.json").exists()
+        assert res.status_code == 400
+        assert "CertificateSelfVerificationFailed" in res.get_json()["error"]
+        assert not (run_dir / "run_manifest.json").exists()
 
 
 def test_certify_run_inconclusive_missing_terminal_fails_closed(client, console_jail):
@@ -225,7 +225,7 @@ def test_certify_run_fail_closed_computed_fail(client, console_jail):
                 "scenario_data": {"id": "scen_1", "version": "1.0.0"},
             },
         )
-        assert res.status_code == 200
+        assert res.status_code == 400
         # Assert that sign_trace_bytes received fail
         assert mock_sign.call_args[1]["compliance_status"] == "fail"
 
@@ -272,7 +272,7 @@ def test_verify_run_public_compliant(client, console_jail):
     }
     (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
 
-    with patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True):
+    with patch("eval_runner.verifier.TraceVerifier.verify_trace_bytes", return_value=True):
         res = client.get(f"/api/v1/verify/{run_id}")
         assert res.status_code == 200
         assert res.get_json()["verified"] is True
@@ -293,7 +293,7 @@ def test_verify_run_public_non_compliant_score(client, console_jail):
     }
     (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
 
-    with patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True):
+    with patch("eval_runner.verifier.TraceVerifier.verify_trace_bytes", return_value=True):
         res = client.get(f"/api/v1/verify/{run_id}")
         assert res.status_code == 200
         data = res.get_json()
@@ -302,6 +302,42 @@ def test_verify_run_public_non_compliant_score(client, console_jail):
         assert data["compliance_score"] == 0.5
         assert data["cryptographically_valid"] is True
         assert data["terminal_verdict"] == "ATTESTED_FAIL"
+
+
+@pytest.mark.parametrize(
+    ("integrity", "passed", "claimed_status"),
+    [(False, False, "pass"), (True, False, "pass"), (True, True, "fail")],
+)
+def test_trust_display_uses_shared_verdict_instead_of_manifest_claims(
+    client, console_jail, integrity, passed, claimed_status
+):
+    run_id = f"shared-verdict-{integrity}-{passed}"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "run.jsonl").write_text("trace", encoding="utf-8")
+    (run_dir / ".sealed").touch()
+    (run_dir / "run_manifest.json").write_text(
+        json.dumps({"execution_mode": "live", "compliance_status": claimed_status}),
+        encoding="utf-8",
+    )
+    terminal = "CERTIFIED_PASS" if passed else "ATTESTED_FAIL" if integrity else "UNVERIFIED"
+    result = {
+        "is_valid": integrity,
+        "verified": passed,
+        "terminal_verdict": terminal,
+        "verification_status": "VERIFIED" if passed else terminal,
+    }
+    with patch("eval_runner.verifier.TraceVerifier.verify_run", return_value=result):
+        response = client.get(f"/api/v1/verify/{run_id}")
+    assert response.status_code == 200
+    body = response.get_json()
+    assert body["verified"] is passed
+    assert body["evaluation_passed"] is passed
+    assert body["policy_compliant"] is passed
+    assert body["certificate_authoritative"] is integrity
+    assert body["evaluation_verdict"] == (
+        "pass" if passed else "fail" if integrity else "UNVERIFIED"
+    )
 
 
 def test_verify_run_exception(client, console_jail):
@@ -355,7 +391,7 @@ def test_verify_run_cryptographic_proof(client, console_jail):
     }
     (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
 
-    with patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True):
+    with patch("eval_runner.verifier.TraceVerifier.verify_trace_bytes", return_value=True):
         res = client.get(f"/api/v1/verify/{run_id}")
         assert res.status_code == 200
         assert res.get_json()["verified"] is True
@@ -583,7 +619,7 @@ def test_verify_run_trace_parse_error_fallback(client, console_jail):
     (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
 
     with (
-        patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True),
+        patch("eval_runner.verifier.TraceVerifier.verify_trace_bytes", return_value=False),
         patch(
             "eval_runner.verifier.VerificationAuthority.verify_package_artifacts",
             return_value={"verified": False, "failures": ["TraceEventsMissing: ..."]},
@@ -631,7 +667,7 @@ def test_verify_run_exec_manifest_read_error_fallback(client, console_jail):
     (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
 
     with (
-        patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True),
+        patch("eval_runner.verifier.TraceVerifier.verify_trace_bytes", return_value=True),
         patch(
             "eval_runner.verifier.VerificationAuthority.verify_package_artifacts",
             return_value={"verified": True, "failures": []},
@@ -678,7 +714,7 @@ def test_verify_run_scenario_resolved_read_error_fallback(client, console_jail):
     (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
 
     with (
-        patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True),
+        patch("eval_runner.verifier.TraceVerifier.verify_trace_bytes", return_value=True),
         patch(
             "eval_runner.verifier.VerificationAuthority.verify_package_artifacts",
             return_value={"verified": True, "failures": []},
@@ -723,7 +759,7 @@ def test_verify_run_pkg_artifacts_fail_marks_invalid(client, console_jail):
     (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
 
     with (
-        patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True),
+        patch("eval_runner.verifier.TraceVerifier.verify_trace_bytes", return_value=False),
         patch(
             "eval_runner.verifier.VerificationAuthority.verify_package_artifacts",
             return_value={
@@ -820,7 +856,7 @@ def test_public_verify_run_provisional_and_package_empty_line(client, console_ja
     (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
 
     with (
-        patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True),
+        patch("eval_runner.verifier.TraceVerifier.verify_trace_bytes", return_value=True),
         patch(
             "eval_runner.verifier.VerificationAuthority.verify_package_artifacts",
             return_value={"verified": True},
@@ -834,7 +870,7 @@ def test_public_verify_run_provisional_and_package_empty_line(client, console_ja
         assert res.status_code == 200
         body = res.get_json()
         assert body["verified"] is False
-        assert body["terminal_verdict"] == "PROVISIONAL"
+        assert body["terminal_verdict"] == "UNVERIFIED"
 
 
 def test_private_key_pem_bytes_production_and_dev_branches():

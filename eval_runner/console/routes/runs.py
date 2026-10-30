@@ -753,39 +753,9 @@ def verify_run(run_id):
     trace_bytes = store.get_trace_bytes(run_id, context=context)
     if not manifest or trace_bytes is None:
         return jsonify({"verification_status": "NOT_FOUND"}), 404
-    verified = TraceVerifier.verify_trace_bytes(
-        trace_bytes,
-        manifest,
-        run_store=store,
-        context=context,
-    )
-    if not verified:
-        verification_status = "FAILED_VERIFICATION"
-    else:
-        cert = manifest.get("certification") or {}
-        compliance = manifest.get("compliance") or {}
-        outcome = str(
-            cert.get("outcome")
-            or compliance.get("status")
-            or manifest.get("compliance_status")
-            or manifest.get("status")
-            or ""
-        ).lower()
-        is_attested_fail = outcome in {
-            "fail",
-            "failed",
-            "attested_fail",
-            "attested_failed",
-            "execution_failed",
-        }
-        mode = str(manifest.get("execution_mode") or "").lower()
-        provisional = bool(manifest.get("provisional") or mode == "simulated")
-        if is_attested_fail:
-            verification_status = "ATTESTED_FAIL"
-        elif provisional:
-            verification_status = "VERIFIED_PROVISIONAL"
-        else:
-            verification_status = "VERIFIED"
+    result = TraceVerifier.verify_run(run_id, run_store=store, context=context)
+    verified = result["is_valid"]
+    verification_status = result["verification_status"]
     provenance = manifest.get("provenance_chain") or manifest.get("signatures") or []
     if not isinstance(provenance, list):
         provenance = []
@@ -798,6 +768,7 @@ def verify_run(run_id):
     )
     return jsonify(
         {
+            **result,
             "verification_status": verification_status,
             "verdict": verification_status,
             "provisional": verification_status == "VERIFIED_PROVISIONAL",

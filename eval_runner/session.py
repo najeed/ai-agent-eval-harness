@@ -1822,6 +1822,15 @@ class SessionManager:
                     "expected", assertion_dict.get("expected", row.get("expected"))
                 ),
                 observed=row.get("actual", row.get("actual_after")),
+                evidence_refs=[
+                    row[key]
+                    for key in (
+                        "pre_snapshot_hash",
+                        "post_snapshot_hash",
+                        "authority_observation_binding_hash",
+                    )
+                    if row.get(key)
+                ],
                 error=row.get("error"),
             )
 

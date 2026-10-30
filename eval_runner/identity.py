@@ -25,6 +25,94 @@ class IdentityService:
 
     _pqc_client = None
 
+    @staticmethod
+    def get_signature_policy(identity_id: str, public_key=None, trust_root=None):
+        """Load purpose/profile/rotation policy from the external trusted identity directory.
+
+        Absent an explicit policy, the trusted public-key fingerprint is the key ID.
+        Existing raw Ed25519 evidence remains enabled by this explicit default policy.
+        KMS key ARN bindings require a separately provisioned signature_policy.json.
+        """
+        import json
+        from datetime import datetime
+        from pathlib import Path
+
+        from agentv_runtime.signatures import (
+            PROFILE,
+            PROJECTIONS,
+            SignatureContractError,
+            SignaturePolicy,
+            canonical_payload_from_json,
+            fingerprint,
+        )
+
+        root = Path(trust_root or config.TRUST_ROOT).resolve()
+        directory = (root / identity_id).resolve()
+        if not directory.is_relative_to(root):
+            raise SignatureContractError("Signature identity is outside the external trust root")
+        if public_key is None:
+            key_file = directory / "public_key.pem"
+            public_key = (
+                serialization.load_pem_public_key(key_file.read_bytes())
+                if key_file.is_file()
+                else IdentityService.get_public_key(identity_id, auto_provision=False)
+            )
+        path = directory / "signature_policy.json"
+        if not path.exists():
+            return SignaturePolicy(identity_id, "sha256:" + fingerprint(public_key), public_key)
+        policy = json.loads(canonical_payload_from_json(path.read_bytes()))
+        allowed = {
+            "version",
+            "key_id",
+            "permitted_profiles",
+            "permitted_purposes",
+            "allow_legacy_raw",
+            "revoked",
+            "not_before",
+            "not_after",
+        }
+        required = allowed - {"not_before", "not_after"}
+        if (
+            not isinstance(policy, dict)
+            or set(policy) - allowed
+            or required - set(policy)
+            or type(policy["version"]) is not int
+            or policy["version"] != 1
+            or not isinstance(policy["key_id"], str)
+            or type(policy["allow_legacy_raw"]) is not bool
+            or type(policy["revoked"]) is not bool
+        ):
+            raise SignatureContractError("Malformed external signature policy")
+        for name, supported in (
+            ("permitted_profiles", {PROFILE, "ed25519-raw"}),
+            ("permitted_purposes", set(PROJECTIONS)),
+        ):
+            values = policy[name]
+            if (
+                not isinstance(values, list)
+                or any(not isinstance(value, str) or value not in supported for value in values)
+                or len(set(values)) != len(values)
+            ):
+                raise SignatureContractError("Unknown or ambiguous external signature policy")
+        intervals = {}
+        for name in ("not_before", "not_after"):
+            value = policy.get(name)
+            if value is not None:
+                value = datetime.fromisoformat(value)
+                if value.tzinfo is None:
+                    raise SignatureContractError("Signature policy times require a timezone")
+            intervals[name] = value
+        return SignaturePolicy(
+            identity_id,
+            policy["key_id"],
+            public_key,
+            permitted_profiles=tuple(policy["permitted_profiles"]),
+            permitted_purposes=tuple(policy["permitted_purposes"]),
+            allow_legacy_raw=policy["allow_legacy_raw"],
+            revoked=policy["revoked"],
+            **intervals,
+        )
+
     @classmethod
     def get_pqc_client(cls):
         """

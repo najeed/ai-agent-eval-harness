@@ -154,6 +154,21 @@ def compare_expectations(
                 )
             )
 
+        for forbidden, observed in (
+            ("certificate_forbidden", "certificate_required"),
+            ("sealed_forbidden", "sealed_required"),
+            ("verification_forbidden", "ledger_verification_required"),
+        ):
+            if exp_ev.get(forbidden) and act_ev.get(observed):
+                failures.append(
+                    OracleFailure(
+                        dimension=f"evidence.{forbidden}",
+                        expected=False,
+                        actual=True,
+                        reason=f"Evidence contract forbids {observed} for this run",
+                    )
+                )
+
     return failures
 
 

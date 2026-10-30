@@ -47,12 +47,12 @@ class EvaluatorFinalizationRecord:
     finalized_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     terminal_seq: int = 0
     finalization_hash: str = ""
-    evaluator_signature: str = ""
+    evaluator_signature: str | dict[str, Any] = ""
     schema_version: str = FINALIZATION_SCHEMA_VERSION
     metadata: dict[str, Any] = field(default_factory=dict)
 
     @property
-    def signature(self) -> str:
+    def signature(self) -> str | dict[str, Any]:
         """Convenience alias for evaluator_signature."""
         return self.evaluator_signature
 
@@ -77,6 +77,22 @@ class EvaluatorFinalizationRecord:
         To verify cryptographic authenticity,
         call record.verify_authoritative(public_key, trust_root).
         """
+        raw_signature = data.get("evaluator_signature") or data.get("signature")
+        if isinstance(raw_signature, dict):
+            if set(data) - (set(cls.__dataclass_fields__) | {"manifest_hash", "signature"}):
+                raise ValueError("Unknown field outside finalization unsigned projection v1")
+            if (
+                data.get("signature")
+                and data.get("evaluator_signature")
+                and (data["signature"] != data["evaluator_signature"])
+            ):
+                raise ValueError("Ambiguous finalization signature aliases")
+            if (
+                data.get("manifest_hash")
+                and data.get("execution_manifest_hash")
+                and (data["manifest_hash"] != data["execution_manifest_hash"])
+            ):
+                raise ValueError("Ambiguous finalization manifest aliases")
         if strict:
             mandatory_str_fields = [
                 ("finalization_id", "finalization_id"),
@@ -142,7 +158,7 @@ class EvaluatorFinalizationRecord:
                 )
 
             claimed_sig = data.get("evaluator_signature") or data.get("signature")
-            if not claimed_sig or not isinstance(claimed_sig, str) or not str(claimed_sig).strip():
+            if not claimed_sig or not isinstance(claimed_sig, (str, dict)):
                 raise ValueError(
                     "Missing mandatory finalization trust field 'evaluator_signature' "
                     "in EvaluatorFinalizationRecord (must be signed by authoritative evaluator)."
@@ -165,7 +181,7 @@ class EvaluatorFinalizationRecord:
                 finalized_at=str(data.get("finalized_at") or datetime.now(UTC).isoformat()),
                 terminal_seq=int(term_seq),
                 finalization_hash=str(claimed_hash).strip(),
-                evaluator_signature=str(claimed_sig).strip(),
+                evaluator_signature=claimed_sig,
                 schema_version=str(data.get("schema_version") or FINALIZATION_SCHEMA_VERSION),
                 metadata=dict(data.get("metadata") or {}),
             )
@@ -198,7 +214,7 @@ class EvaluatorFinalizationRecord:
             finalized_at=str(data.get("finalized_at") or datetime.now(UTC).isoformat()),
             terminal_seq=int(data.get("terminal_seq") or 0),
             finalization_hash=str(data.get("finalization_hash") or ""),
-            evaluator_signature=str(data.get("evaluator_signature") or data.get("signature") or ""),
+            evaluator_signature=data.get("evaluator_signature") or data.get("signature") or "",
             schema_version=str(data.get("schema_version") or FINALIZATION_SCHEMA_VERSION),
             metadata=dict(data.get("metadata") or {}),
         )
@@ -251,6 +267,10 @@ class EvaluatorFinalizationRecord:
             "score": self.score,
             "terminal_seq": self.terminal_seq,
         }
+        from agentv_runtime.signatures import FINALIZATION_UNSIGNED_FIELDS
+
+        if set(data) != FINALIZATION_UNSIGNED_FIELDS:
+            raise ValueError("Finalization unsigned projection v1 field set changed")
         return canonical_json_encode(data)
 
     def compute_finalization_hash(self) -> str:
@@ -286,15 +306,22 @@ class EvaluatorFinalizationRecord:
             # Signing backends may hold non-exportable KMS/HSM key material.
             # Pass the evaluator identity as the opaque key selector rather
             # than resolving a PEM key in the runtime process.
-            sig_raw = signer.sign_payload(payload_bytes, self.evaluator_identity)
+            from agentv_runtime.signatures import FINALIZATION
+
+            sig_raw = signer.sign_payload(
+                payload_bytes, self.evaluator_identity, purpose=FINALIZATION
+            )
         else:
             raise ValueError(f"Invalid signer object: {type(signer)}")
 
-        if isinstance(sig_raw, dict):
-            sig_raw = sig_raw.get("signature") or sig_raw.get("sig")
-        sig_hex = sig_raw.hex() if isinstance(sig_raw, bytes) else str(sig_raw or "")
+        sig_hex = sig_raw.hex() if isinstance(sig_raw, bytes) else sig_raw
         if not sig_hex:
             raise ValueError("Signing backend returned an empty finalization signature")
+        from agentv_runtime.signatures import FINALIZATION, validate_signing_response
+
+        sig_hex = validate_signing_response(
+            payload_bytes, sig_hex, identity=self.evaluator_identity, purpose=FINALIZATION
+        )
         data = asdict(self)
         data["finalization_hash"] = self.compute_finalization_hash()
         data["evaluator_signature"] = sig_hex
@@ -306,11 +333,6 @@ class EvaluatorFinalizationRecord:
         Accepts an Ed25519PublicKey, PEM bytes/str, or resolves from IdentityService/trust_root.
         """
         if not self.evaluator_signature:
-            return False
-
-        try:
-            sig_bytes = bytes.fromhex(self.evaluator_signature)
-        except Exception:
             return False
 
         if public_key is None:
@@ -337,15 +359,16 @@ class EvaluatorFinalizationRecord:
 
         payload_bytes = self.canonical_payload_bytes()
         try:
-            if hasattr(public_key, "verify") and callable(public_key.verify):
-                public_key.verify(sig_bytes, payload_bytes)
-                return True
-            from cryptography.hazmat.primitives import serialization
+            from agentv_runtime.signatures import (
+                FINALIZATION,
+                resolve_policy,
+                verify_artifact_signature,
+            )
 
-            raw_pem = public_key.encode("utf-8") if isinstance(public_key, str) else public_key
-            pk = serialization.load_pem_public_key(raw_pem)
-            pk.verify(sig_bytes, payload_bytes)
-            return True
+            policy = resolve_policy(self.evaluator_identity, public_key, trust_root)
+            return verify_artifact_signature(
+                payload_bytes, self.evaluator_signature, policy, FINALIZATION
+            )
         except Exception:
             return False
 

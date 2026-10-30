@@ -79,10 +79,7 @@ export const Dashboard: React.FC = () => {
             timestamp: r.timestamp || 'N/A',
             status: r.execution_status || r.status || 'UNKNOWN',
             // Server verdict is authoritative; no client-side inference.
-            verdict:
-              r.verification_status === 'VERIFIED' || r.verification_status === 'VERIFIED_PROVISIONAL' || r.verification_status === 'FAILED_VERIFICATION'
-                ? r.verification_status
-                : 'UNKNOWN',
+            verdict: r.verification_status || 'UNKNOWN',
             provisional: isProv,
             execution_mode: r.execution_mode || null,
             has_certificate: !!r.has_certificate,

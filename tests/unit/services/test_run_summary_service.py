@@ -24,7 +24,12 @@ def test_verdict_is_not_executed_when_provider_has_no_run_or_trace():
 def test_verdict_uses_provider_owned_bytes_and_manifest():
     provider = _store(
         run={"run_id": "run-1"},
-        manifest={"trace_hash": "hash", "signature": "signature", "execution_mode": "live"},
+        manifest={
+            "trace_hash": "hash",
+            "signature": "signature",
+            "execution_mode": "live",
+            "compliance_status": "pass",
+        },
         events=[{"event": "run_start", "data": {"execution_mode": "live"}}],
     )
     with patch(
@@ -152,7 +157,10 @@ def test_get_authoritative_verdict_all_branches():
     assert RunSummaryService.get_authoritative_verdict("r1", run_store=provider) == "UNKNOWN"
 
     provider = _store(run={"run_id": "r1"}, manifest={"a": 1}, trace=None)
-    assert RunSummaryService.get_authoritative_verdict("r1", run_store=provider) == "UNKNOWN"
+    assert (
+        RunSummaryService.get_authoritative_verdict("r1", run_store=provider)
+        == "FAILED_VERIFICATION"
+    )
 
     # 3. TraceVerifier returns False
     provider = _store(run={"run_id": "r1"}, manifest={"a": 1}, trace=b"data")
@@ -169,7 +177,10 @@ def test_get_authoritative_verdict_all_branches():
         "eval_runner.services.run_summary.TraceVerifier.verify_trace_bytes",
         side_effect=RuntimeError("Cryptographic error"),
     ):
-        assert RunSummaryService.get_authoritative_verdict("r1", run_store=provider) == "ERROR"
+        assert (
+            RunSummaryService.get_authoritative_verdict("r1", run_store=provider)
+            == "FAILED_VERIFICATION"
+        )
 
     # 5. Verified provisional (simulated or provisional flag)
     provider = _store(
@@ -182,7 +193,7 @@ def test_get_authoritative_verdict_all_branches():
     ):
         assert (
             RunSummaryService.get_authoritative_verdict("r1", run_store=provider)
-            == "VERIFIED_PROVISIONAL"
+            == "FAILED_VERIFICATION"
         )
 
     # 6. Attested fail

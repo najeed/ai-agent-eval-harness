@@ -1057,6 +1057,16 @@ class WorkflowInterpreter:
                 payload["oracle_results"] = result["oracle_results"]
             if "node_verdict" in result and result["node_verdict"]:
                 payload["node_verdict"] = result["node_verdict"]
+            observations = [
+                row
+                for row in (result.get("transition_evidence") or [])
+                if isinstance(row, dict)
+                and (row.get("pre_snapshot_hash") or row.get("post_snapshot_hash"))
+            ]
+            if observations:
+                # Preserve independently observed pre/post-state commitments in
+                # the same durable carrier as their typed oracle outcomes.
+                payload["transition_evidence"] = observations
             if result.get("is_root_cause") is True:
                 payload["is_root_cause"] = True
             if result.get("approval_phase"):

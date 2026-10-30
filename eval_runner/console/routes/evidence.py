@@ -170,6 +170,18 @@ def build_verification_package(
                 cert_data=cert_data,
                 scenario_data=scenario_resolved or None,
             )
+            crypto_verification.setdefault("errors", [])
+            from eval_runner.verifier import TraceVerifier
+
+            authority = TraceVerifier.verify_run(
+                run_id,
+                run_store=run_store,
+                context=context,
+                scenario_data=scenario_resolved or None,
+            )
+            crypto_verification["verified"] = authority["is_valid"]
+            if authority.get("failure_reason"):
+                crypto_verification["errors"].append(authority["failure_reason"])
         except ImportError:
             # verify_trace_certificate not yet available; fall back to conservative check
             crypto_verification["errors"].append(
@@ -519,11 +531,12 @@ def _verify_package_request(*, authoritative: bool):
         raw_trace_events=raw_trace_events,
         public_key_pem=public_key_pem,
         require_signature=require_signature,
+        canonical_manifest=data.get("execution_manifest") or data.get("canonical_manifest"),
         require_scenario_binding=require_scenario,
     )
     res["verification_mode"] = "AUTHORITATIVE" if authoritative else "DIAGNOSTIC"
-    res["authoritative"] = authoritative
-    res["certified"] = bool(authoritative and res.get("verified"))
+    res["authoritative"] = bool(authoritative and res.get("authoritative"))
+    res["certified"] = bool(authoritative and res.get("certified"))
     if not authoritative and res.get("verified"):
         res["status"] = "DIAGNOSTIC_VALID"
     status_code = 200 if res.get("verified") else 422

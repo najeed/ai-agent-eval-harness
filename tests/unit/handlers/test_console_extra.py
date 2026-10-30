@@ -127,14 +127,20 @@ def test_debugger_state_store_events():
 
 # --- Demo trace generation ---
 def test_debugger_dynamic_demo_generation(client, tmp_path):
-    with (
-        patch("eval_runner.console.demo_traces.get_demo_trace", return_value=[{"event": "test"}]),
-        patch("eval_runner.console.routes.config.RUN_LOG_DIR", tmp_path / "runs"),
-    ):
-        # We don't create the file, so Path.exists() for historical will be False.
-        # But we need get_demo_trace to be called.
-        res = client.get("/api/debugger/state?run_id=run-loan-risk-pass")
-        assert res.status_code == 200
+    client.application.config["DEBUG"] = True
+    from eval_runner import config
+
+    with patch.object(config, "ENABLE_DEMO", True):
+        with (
+            patch(
+                "eval_runner.console.demo_traces.get_demo_trace", return_value=[{"event": "test"}]
+            ),
+            patch("eval_runner.console.routes.config.RUN_LOG_DIR", tmp_path / "runs"),
+        ):
+            # We don't create the file, so Path.exists() for historical will be False.
+            # But we need get_demo_trace to be called.
+            res = client.get("/api/debugger/state?run_id=run-loan-risk-pass")
+            assert res.status_code == 200
 
 
 def test_debugger_missing_demo_fallback(client, tmp_path):

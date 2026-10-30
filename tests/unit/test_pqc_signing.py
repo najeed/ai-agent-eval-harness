@@ -117,6 +117,7 @@ class TestPQCSigning(unittest.TestCase):
 
         with patch("eval_runner.identity.IdentityService.get_public_key") as mock_get_pub:
             mock_pub = MagicMock(spec=Ed25519PublicKey)
+            mock_pub.public_bytes.return_value = b"0" * 32
             mock_get_pub.return_value = mock_pub
 
             # Execute verification

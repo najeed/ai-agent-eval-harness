@@ -2545,17 +2545,21 @@ async def test_session_executor_cancellation_and_empty_results(tmp_path):
 
 
 def test_session_psutil_import_error():
-    import importlib
+    import importlib.util
     import sys
 
-    with patch.dict(sys.modules, {"psutil": None}):
-        import eval_runner.session as sess_mod
+    import eval_runner.session as sess_mod
 
-        try:
-            importlib.reload(sess_mod)
-            assert sess_mod.psutil is None
-        finally:
-            importlib.reload(sess_mod)
+    # Import the optional-dependency branch under a separate module name. Reloading
+    # the shared module replaces classes already imported by other test modules.
+    original_session = sess_mod.SessionManager
+    name = "eval_runner._session_psutil_probe"
+    spec = importlib.util.spec_from_file_location(name, sess_mod.__file__)
+    probe = importlib.util.module_from_spec(spec)
+    with patch.dict(sys.modules, {"psutil": None, name: probe}):
+        spec.loader.exec_module(probe)
+        assert probe.psutil is None
+    assert sess_mod.SessionManager is original_session
 
 
 def test_session_init_execution_mode_and_isolate_events(tmp_path):

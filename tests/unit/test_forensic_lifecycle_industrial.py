@@ -65,7 +65,9 @@ def test_forensic_seal_hash_integrity(vault_setup):
     assert manifest["trace_hash"] == actual_hash
 
     # 3. Run the authoritative verifier
-    assert TraceVerifier.verify_trace(trace_bytes, manifest, run_store=store) is True
+    assert (
+        TraceVerifier.verify_trace(trace_bytes, manifest, run_store=store, trace_only=True) is True
+    )
 
 
 def test_forensic_shim_relevance_strict():

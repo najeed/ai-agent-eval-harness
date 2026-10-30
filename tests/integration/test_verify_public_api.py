@@ -39,7 +39,7 @@ def test_public_verify_endpoint_v3(app_and_store, client, tmp_path):
     run_dir = tmp_path / "runs" / run_id
     run_dir.mkdir(parents=True)
     trace_path = run_dir / "run.jsonl"
-    trace_path.write_text('{"event": "test"}\n', encoding="utf-8")
+    trace_path.write_text('{"event": "run_start", "execution_mode": "live"}\n', encoding="utf-8")
 
     identity_id = "system_id"
     keys_dir = tmp_path / "keys" / identity_id
@@ -67,6 +67,7 @@ def test_public_verify_endpoint_v3(app_and_store, client, tmp_path):
         run_store=run_store,
         identity_id=identity_id,
         scenario_data=scenario,
+        metadata={"required_oracle_ids": scenario["required_oracle_ids"]},
     )
     run_store.save_run_manifest(run_id, manifest)
     run_store.update_run_status(run_id, "SEALED")

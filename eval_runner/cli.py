@@ -634,7 +634,18 @@ Usage: agentv <command> [options]
     verify_pkg_parser.add_argument(
         "--require-signature",
         action="store_true",
-        help="Require cryptographic signature",
+        default=True,
+        help="Require cryptographic signature (default)",
+    )
+    verify_pkg_parser.add_argument(
+        "--diagnostic",
+        action="store_true",
+        help="Perform non-authoritative package analysis without requiring a signature",
+    )
+    verify_pkg_parser.add_argument(
+        "--execution-manifest",
+        dest="execution_manifest_path",
+        help="Actual execution manifest JSON required for authoritative verification",
     )
     verify_pkg_parser.add_argument(
         "--scenario",

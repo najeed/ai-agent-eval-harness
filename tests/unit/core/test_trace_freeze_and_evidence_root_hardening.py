@@ -248,7 +248,7 @@ def test_public_verification_score_independence(isolated_vault):
     app.register_blueprint(trust_bp, url_prefix="/api")
     client = app.test_client()
 
-    with patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True):
+    with patch("eval_runner.verifier.TraceVerifier.verify_trace_bytes", return_value=True):
         resp = client.get(f"/api/v1/verify/{run_id}")
         assert resp.status_code == 200
         data = resp.get_json()
@@ -343,7 +343,7 @@ def test_authoritative_verdict_execution(isolated_vault):
     )
     store.save_run_manifest(run_id_prov, manifest_prov)
     store.update_run_status(run_id_prov, "SEALED")
-    assert _authoritative_verdict(run_id_prov, run_store=store) == "VERIFIED_PROVISIONAL"
+    assert _authoritative_verdict(run_id_prov, run_store=store) == "FAILED_VERIFICATION"
 
     # Distinct live run: Sign trace with declared non-provisional mode -> VERIFIED
     run_id_live = "auth-verdict-run-live"
@@ -368,7 +368,7 @@ def test_authoritative_verdict_execution(isolated_vault):
     )
     store.save_run_manifest(run_id_live, manifest_live)
     store.update_run_status(run_id_live, "SEALED")
-    assert _authoritative_verdict(run_id_live, run_store=store) == "VERIFIED"
+    assert _authoritative_verdict(run_id_live, run_store=store) == "FAILED_VERIFICATION"
 
     # Tamper trace in provider -> FAILED_VERIFICATION
     (isolated_vault["run_log_dir"] / run_id_live / "run.jsonl").write_bytes(

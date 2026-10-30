@@ -195,7 +195,7 @@ def _probe_endpoint(protocol: str, endpoint: str, timeout: float = 5.0) -> dict[
         headers={"User-Agent": "agentv-reachability/1.0", "Connection": "close"},
     )
     try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:  # nosec B310 - scheme restricted to http/https above
+        with urllib.request.urlopen(req, timeout=timeout) as resp:  # nosec B310
             resp.read(4096)
             latency_ms = int((time.perf_counter() - started) * 1000)
             if 200 <= resp.status < 500:

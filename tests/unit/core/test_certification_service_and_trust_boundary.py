@@ -24,7 +24,7 @@ from eval_runner.services.certification import (
     execute_industrial_certification,
     issue_certification,
 )
-from eval_runner.verifier import TraceVerifier
+from eval_runner.verifier import CertificationFailedError, TraceVerifier
 
 
 @pytest.fixture
@@ -93,12 +93,12 @@ def _seed_run(
         start_ev,
         {
             "event": "oracle_result",
+            "resolver": "fixture",
             "_seq": 2,
             "oracle_id": "oracle-1",
             "assertion_id": "assertion-1",
             "passed": outcome == "pass",
             "outcome": outcome.upper(),
-            "resolver": "fixture",
         },
         {
             "event": "session_decision",
@@ -616,12 +616,12 @@ def test_execute_industrial_certification_boundary_and_validation_errors(provide
     run_id_inv = "run-invalid-state"
     scenario = _seed_run(provider, run_id_inv)
     vault_dir = provider._get_run_vault(run_id_inv)
-    monkeypatch.setattr(
-        provider, "get_run", lambda *a, **k: {"run_id": run_id_inv, "status": "INVALID_STATE"}
-    )
-    with pytest.raises(ValueError, match="InvalidLifecycleState"):
-        execute_industrial_certification(run_id_inv, run_store=provider, scenario_data=scenario)
-    monkeypatch.undo()
+    with monkeypatch.context() as patch:
+        patch.setattr(
+            provider, "get_run", lambda *a, **k: {"run_id": run_id_inv, "status": "INVALID_STATE"}
+        )
+        with pytest.raises(ValueError, match="InvalidLifecycleState"):
+            execute_industrial_certification(run_id_inv, run_store=provider, scenario_data=scenario)
 
     run_id_no_bytes = "run-no-bytes"
     scenario_no_b = _seed_run(provider, run_id_no_bytes)
@@ -1201,6 +1201,7 @@ def test_execute_industrial_certification_scenario_resolution_sources(provider, 
         },
         {
             "event": "oracle_result",
+            "resolver": "fixture",
             "_seq": 2,
             "oracle_id": "oracle-1",
             "passed": True,
@@ -1264,6 +1265,7 @@ def test_execute_industrial_certification_scenario_resolution_sources(provider, 
         {"event": "run_start", "_seq": 1, "execution_mode": "live"},
         {
             "event": "oracle_result",
+            "resolver": "fixture",
             "_seq": 2,
             "oracle_id": "oracle-1",
             "passed": True,
@@ -1334,6 +1336,7 @@ def test_execute_industrial_certification_missing_required_oracles(provider):
         {"event": "run_start", "_seq": 1, "execution_mode": "live"},
         {
             "event": "oracle_result",
+            "resolver": "fixture",
             "_seq": 2,
             "oracle_id": "oracle-1",
             "passed": True,
@@ -1371,7 +1374,8 @@ def test_execute_industrial_certification_missing_required_oracles(provider):
         execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
 
 
-def test_execute_industrial_certification_oracle_result_formats(provider):
+@pytest.mark.parametrize("summary_projection", [False, True])
+def test_execute_industrial_certification_oracle_result_formats(provider, summary_projection):
     run_id = "run-oracle-formats"
     scenario = {
         "id": f"scenario-{run_id}",
@@ -1403,17 +1407,29 @@ def test_execute_industrial_certification_oracle_result_formats(provider):
         {"event": "run_start", "_seq": 1, "execution_mode": "live"},
         {
             "event": "oracle_result",
+            "resolver": "fixture",
             "_seq": 2,
             "oracle_id": "o-res",
             "passed": True,
             "outcome": "PASS",
             "data": {
-                "oracle_results": [{"oracle_id": "o-res"}],
-                "executed_oracle_results": [{"metric": "m-res"}, {"assertion": "a-res"}],
+                "oracle_results": [
+                    {"oracle_id": "o-res", "passed": True, "outcome": "PASS", "resolver": "fixture"}
+                ],
+                "executed_oracle_results": [
+                    {"metric": "m-res", "passed": True, "outcome": "PASS", "resolver": "fixture"},
+                    {
+                        "assertion": "a-res",
+                        "passed": True,
+                        "outcome": "PASS",
+                        "resolver": "fixture",
+                    },
+                ],
             },
         },
         {
             "event": "oracle_result",
+            "resolver": "fixture",
             "_seq": 3,
             "metric": "m-res",
             "passed": True,
@@ -1421,6 +1437,7 @@ def test_execute_industrial_certification_oracle_result_formats(provider):
         },
         {
             "event": "oracle_result",
+            "resolver": "fixture",
             "_seq": 4,
             "assertion": "a-res",
             "passed": True,
@@ -1428,6 +1445,8 @@ def test_execute_industrial_certification_oracle_result_formats(provider):
         },
         {"event": "session_decision", "_seq": 5, "decision": "PASS", "score": 1.0},
     ]
+    if not summary_projection:
+        events[1].pop("data")
     provider.append_events(run_id, events)
     exact_lines = provider.get_trace_bytes(run_id).decode("utf-8").splitlines()
     graph = build_evidence_graph_from_events(
@@ -1454,8 +1473,13 @@ def test_execute_industrial_certification_oracle_result_formats(provider):
         run_id,
         [{"event": "evaluator_finalization", "_seq": 6, "data": fin.to_dict()}],
     )
-    res = execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
-    assert res["certified"] is True
+    if summary_projection:
+        with pytest.raises(ValueError, match="UngroundedPackagedOracle"):
+            execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+        assert get_run_lifecycle_state(run_id, run_store=provider) == RunLifecycleState.OPEN
+    else:
+        res = execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+        assert res["certified"] is True
 
 
 def test_finalization_split_data_and_ev_mappings(provider):
@@ -1571,6 +1595,7 @@ def test_execute_industrial_certification_scenario_in_event_root(provider):
         {"event": "run_start", "_seq": 1, "execution_mode": "live", "scenario_data": scenario},
         {
             "event": "oracle_result",
+            "resolver": "fixture",
             "_seq": 2,
             "oracle_id": "oracle-1",
             "passed": True,
@@ -1631,6 +1656,7 @@ def test_execute_industrial_certification_loader_mapping_and_exception(provider,
         {"event": "run_start", "_seq": 1, "execution_mode": "live"},
         {
             "event": "oracle_result",
+            "resolver": "fixture",
             "_seq": 2,
             "oracle_id": "oracle-1",
             "passed": True,
@@ -1685,6 +1711,7 @@ def test_execute_industrial_certification_loader_mapping_and_exception(provider,
         {"event": "run_start", "_seq": 1, "execution_mode": "live"},
         {
             "event": "oracle_result",
+            "resolver": "fixture",
             "_seq": 2,
             "oracle_id": "oracle-1",
             "passed": True,
@@ -1738,6 +1765,7 @@ def test_execute_industrial_certification_loader_mapping_and_exception(provider,
         {"event": "run_start", "_seq": 1, "execution_mode": "live"},
         {
             "event": "oracle_result",
+            "resolver": "fixture",
             "_seq": 2,
             "oracle_id": "oracle-1",
             "passed": True,
@@ -1802,6 +1830,7 @@ def test_execute_industrial_certification_extended_trace_and_oracle_edge_cases(p
         {"event": "run_start", "_seq": 1, "execution_mode": "live"},
         {
             "event": "oracle_result",
+            "resolver": "fixture",
             "_seq": 2,
             "oracle_id": "oracle-1",
             "passed": True,
@@ -1814,6 +1843,7 @@ def test_execute_industrial_certification_extended_trace_and_oracle_edge_cases(p
         },
         {
             "event": "oracle_result",
+            "resolver": "fixture",
             "_seq": 4,
             "data": {},
         },
@@ -1856,8 +1886,9 @@ def test_execute_industrial_certification_extended_trace_and_oracle_edge_cases(p
         run_id, [{"event": "evaluator_finalization", "_seq": 6, "data": fin.to_dict()}]
     )
 
-    res = execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
-    assert res["certified"] is True
+    with pytest.raises(CertificationFailedError, match="MalformedOracleResult"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+    assert get_run_lifecycle_state(run_id, run_store=provider) == RunLifecycleState.OPEN
 
 
 def test_execute_industrial_certification_sealed_state_exception_branch(provider, monkeypatch):
@@ -1960,3 +1991,273 @@ def test_certification_provider_contract_suite(provider, monkeypatch):
 
     # Lifecycle state must be rolled back to OPEN
     assert get_run_lifecycle_state(rollback_run_id, run_store=provider) is RunLifecycleState.OPEN
+
+
+@pytest.mark.parametrize(
+    "defect", ["none", "root", "manifest", "finalization", "oracle", "scalar", "oracle_evidence"]
+)
+def test_authoritative_package_verification_uses_bytes_without_caller_events(provider, defect):
+    from dataclasses import replace
+
+    from agentv_runtime.package import VerificationPackage
+    from eval_runner.verifier import VerificationAuthority
+
+    run_id = f"run-byte-authority-{defect}"
+    scenario = _seed_run(provider, run_id)
+    issued = execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+    manifest = issued["manifest"]
+    raw = provider.get_trace_bytes(run_id)
+    execution = manifest["execution_manifest"]
+    pkg = VerificationPackage.from_dict(manifest["verification_package"])
+    if defect == "root":
+        pkg = replace(pkg, evidence_root_hash="sha3_256:" + "0" * 64)
+    elif defect == "manifest":
+        execution = None
+    elif defect == "finalization":
+        raw = b"\n".join(raw.splitlines()[:-1]) + b"\n"
+        import hashlib
+
+        pkg = replace(pkg, trace_hash=hashlib.sha3_256(raw).hexdigest())
+    elif defect == "oracle":
+        pkg = replace(pkg, required_oracle_ids=["unexecuted-oracle"])
+    elif defect == "scalar":
+        raw = b"[]\n"
+    elif defect == "oracle_evidence":
+        raw = raw.splitlines()[0] + b"\n" + raw.splitlines()[-1] + b"\n"
+    # Re-sign tampered packages to prove checks extend beyond package signatures.
+    pkg = replace(
+        pkg,
+        signature=IdentityService.get_private_key("system_id")
+        .sign(pkg.canonical_payload_bytes())
+        .hex(),
+    )
+    result = VerificationAuthority.verify_package(
+        pkg,
+        raw_trace_bytes=raw,
+        canonical_manifest=execution,
+        scenario_data=scenario,
+    )
+    assert result["verified"] is (defect == "none"), result
+    if defect == "oracle_evidence":
+        assert any("UngroundedPackagedOracle" in failure for failure in result["failures"])
+
+
+@pytest.mark.parametrize("signature", [None, "00" * 64])
+def test_incomplete_or_invalid_package_signature_cannot_seal(provider, monkeypatch, signature):
+    from unittest.mock import Mock
+
+    from eval_runner.verifier import CertificationFailedError
+
+    run_id = "run-reject-package-signature"
+    scenario = _seed_run(provider, run_id)
+    original_sign = IdentityService.get_private_key("system_id")
+
+    class Backend:
+        requires_private_key_material = False
+        calls = 0
+
+        def sign_payload(self, payload, key, **kwargs):
+            self.calls += 1
+            return original_sign.sign(payload).hex() if self.calls == 1 else signature
+
+        def get_public_key(self, identity):
+            return original_sign.public_key()
+
+    commit = Mock(wraps=provider.commit_certification)
+    monkeypatch.setattr(provider, "commit_certification", commit)
+    with pytest.raises((CertificationFailedError, ValueError), match="Signature|Verification"):
+        execute_industrial_certification(
+            run_id,
+            run_store=provider,
+            scenario_data=scenario,
+            signing_backend=Backend(),
+        )
+    commit.assert_not_called()
+    assert get_run_lifecycle_state(run_id, run_store=provider) == RunLifecycleState.OPEN
+
+
+def test_current_certificate_rejects_signature_without_execution_manifest(provider):
+    from agentv_runtime.canonical import canonical_json_encode
+    from eval_runner.verifier import verify_trace_certificate
+
+    run_id = "run-no-signature-downgrade"
+    scenario = _seed_run(provider, run_id)
+    cert = execute_industrial_certification(
+        run_id,
+        run_store=provider,
+        scenario_data=scenario,
+    )["manifest"]
+    payload = {
+        k: v
+        for k, v in cert.items()
+        if k
+        not in {
+            "provenance_chain",
+            "execution_manifest",
+            "verification_package",
+            "package_hash",
+            "evaluation_hash",
+            "verification_hash",
+            "certificate_hash",
+        }
+    }
+    forged = copy.deepcopy(cert)
+    forged["provenance_chain"][0]["signature"] = (
+        IdentityService.get_private_key("system_id").sign(canonical_json_encode(payload)).hex()
+    )
+    result = verify_trace_certificate(
+        run_id,
+        provider.get_trace_bytes(run_id),
+        cert_data=forged,
+        scenario_data=scenario,
+        trace_only=False,
+    )
+    assert result["verified"] is False
+
+
+@pytest.mark.parametrize("defect", ["none", "package", "manifest", "signature"])
+def test_public_and_console_share_authoritative_verdict(provider, monkeypatch, defect):
+    from flask import Flask
+
+    from eval_runner.console.routes import runs, trust
+
+    run_id = f"run-shared-verdict-{defect}"
+    scenario = _seed_run(provider, run_id)
+    cert = execute_industrial_certification(
+        run_id,
+        run_store=provider,
+        scenario_data=scenario,
+    )["manifest"]
+    cert = copy.deepcopy(cert)
+    if defect == "package":
+        cert.pop("verification_package")
+    elif defect == "manifest":
+        cert.pop("execution_manifest")
+    elif defect == "signature":
+        cert["verification_package"]["signature"] = "00" * 64
+    monkeypatch.setattr(provider, "get_manifest", lambda *a, **k: cert)
+    monkeypatch.setattr(runs, "_active_run_store", lambda: provider)
+    monkeypatch.setattr(runs, "_run_is_in_active_context", lambda _: True)
+    monkeypatch.setattr(trust, "get_run_store", lambda: provider)
+    monkeypatch.setattr(runs, "active_runtime_context", lambda: None)
+    monkeypatch.setattr(trust, "active_runtime_context", lambda: None)
+    app = Flask(__name__)
+    with app.test_request_context():
+        console = runs.verify_run.__wrapped__(run_id).get_json()
+        public = trust.public_verify_run(run_id).get_json()
+    for key in ("verified", "terminal_verdict", "verification_status", "is_valid"):
+        assert console[key] == public[key]
+    assert console["verified"] is (defect == "none"), console
+
+
+def test_authoritative_negative_package_is_attested_and_never_certified(provider):
+    from eval_runner.verifier import VerificationAuthority
+
+    run_id = "run-negative-package-verdict"
+    scenario = _seed_run(provider, run_id, outcome="fail")
+    cert = execute_industrial_certification(
+        run_id,
+        run_store=provider,
+        scenario_data=scenario,
+    )["manifest"]
+    result = VerificationAuthority.verify_package(
+        cert["verification_package"],
+        raw_trace_bytes=provider.get_trace_bytes(run_id),
+        canonical_manifest=cert["execution_manifest"],
+        scenario_data=scenario,
+    )
+    assert result["verified"] is True
+    assert result["status"] == "ATTESTED_FAIL"
+    assert result["certified"] is False
+
+
+@pytest.mark.parametrize("include_manifest", [True, False])
+def test_authoritative_evidence_http_requires_actual_execution_manifest(provider, include_manifest):
+    import base64
+
+    from flask import Flask
+
+    from eval_runner.console.routes.evidence import verify_verification_package
+
+    run_id = "run-http-package-authority"
+    scenario = _seed_run(provider, run_id)
+    cert = execute_industrial_certification(
+        run_id,
+        run_store=provider,
+        scenario_data=scenario,
+    )["manifest"]
+    payload = {
+        "package": cert["verification_package"],
+        "raw_trace_bytes": base64.b64encode(provider.get_trace_bytes(run_id)).decode(),
+        "scenario_data": scenario,
+    }
+    if include_manifest:
+        payload["execution_manifest"] = cert["execution_manifest"]
+    app = Flask(__name__)
+    with app.test_request_context(json=payload):
+        response, status = verify_verification_package.__wrapped__()
+    result = response.get_json()
+    assert status == (200 if include_manifest else 422)
+    assert result["certified"] is include_manifest
+    assert result["verified"] is include_manifest
+
+
+@pytest.mark.parametrize(
+    "diagnostic,include_manifest,expected", [(False, True, 0), (False, False, 1), (True, False, 0)]
+)
+@pytest.mark.asyncio
+async def test_package_cli_uses_authority_or_explicit_diagnostics(
+    provider, diagnostic, include_manifest, expected, capsys
+):
+    from types import SimpleNamespace
+
+    from eval_runner.handlers.evaluation import handle_verify_package
+
+    run_id = "run-cli-package-authority"
+    scenario = _seed_run(provider, run_id)
+    cert = execute_industrial_certification(
+        run_id,
+        run_store=provider,
+        scenario_data=scenario,
+    )["manifest"]
+    package_file = config.PROJECT_ROOT / "package.json"
+    trace_file = config.PROJECT_ROOT / "trace.jsonl"
+    manifest_file = config.PROJECT_ROOT / "manifest.json"
+    scenario_file = config.PROJECT_ROOT / "scenario.json"
+    package_file.write_text(json.dumps(cert["verification_package"]), encoding="utf-8")
+    trace_file.write_bytes(provider.get_trace_bytes(run_id))
+    manifest_file.write_text(json.dumps(cert["execution_manifest"]), encoding="utf-8")
+    scenario_file.write_text(json.dumps(scenario), encoding="utf-8")
+    result = await handle_verify_package(
+        SimpleNamespace(
+            package_path=str(package_file),
+            raw_trace_path=str(trace_file),
+            execution_manifest_path=str(manifest_file) if include_manifest else None,
+            scenario_path=str(scenario_file),
+            public_key_pem=None,
+            diagnostic=diagnostic,
+        )
+    )
+    assert result == expected
+    if diagnostic:
+        assert "DIAGNOSTIC_VALID" in capsys.readouterr().out
+
+
+@pytest.mark.asyncio
+async def test_ci_gate_rejects_a_valid_negative_attestation(provider, monkeypatch):
+    from types import SimpleNamespace
+
+    from eval_runner.handlers.evaluation import handle_gate
+
+    monkeypatch.setattr("eval_runner.runtime_services.resolve_run_store", lambda: provider)
+    monkeypatch.setattr(provider, "get_manifest", lambda _: {"run_id": "negative"})
+    monkeypatch.setattr(
+        TraceVerifier,
+        "verify_run",
+        lambda *a, **k: {
+            "is_valid": True,
+            "verified": False,
+            "verification_status": "ATTESTED_FAIL",
+        },
+    )
+    assert await handle_gate(SimpleNamespace(run_id="negative", hash=None)) == 1

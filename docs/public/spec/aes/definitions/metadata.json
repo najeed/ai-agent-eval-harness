@@ -117,7 +117,6 @@
     "policies": {
       "type": "object"
     },
-
     "provisioning_hash": {
       "type": "string",
       "description": "SHA3-256 hash of the resolved shim_resources.json used for this run."

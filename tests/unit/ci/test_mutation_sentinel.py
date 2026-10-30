@@ -2,15 +2,18 @@
 
 import ast
 import io
+import os
 import sys
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
+import pytest
+
 
 def _load_sentinel_module():
-    path = Path("tools/ci/run_mutation_tests.py")
+    path = Path(__file__).resolve().parents[3] / "tools/ci/run_mutation_tests.py"
     spec = spec_from_file_location("mutation_sentinel_test_module", path)
     assert spec is not None and spec.loader is not None
     module = module_from_spec(spec)
@@ -172,8 +175,8 @@ def test_mutation_sentinel_limits_declared_boundaries_to_their_required_families
     assert selected_families == {"boolean", "commitment", "comparison", "guard"}
 
 
-def test_mutation_sentinel_tracks_only_the_proven_equivalent_approval_exclusion():
-    """Authorization mutants stay executable unless their equivalence is explicit."""
+def test_mutation_sentinel_keeps_current_approval_guards_executable():
+    """An obsolete fallback-scan exclusion cannot suppress current authorization guards."""
     sentinel = _load_sentinel_module()
     target = next(
         item for item in sentinel.CRITICAL_MUTATION_TARGETS if item.path.name == "approval_store.py"
@@ -185,22 +188,17 @@ def test_mutation_sentinel_tracks_only_the_proven_equivalent_approval_exclusion(
         "comparison",
         "guard",
     }
-    assert target.excluded_mutations == {("get_request", 90, "or", "and")}
+    assert not target.excluded_mutations
 
 
-def test_mutation_sentinel_documents_only_proven_equivalent_evidence_exclusions():
-    """Dead expressions and unreachable defaults are not counted as runtime mutants."""
+def test_mutation_sentinel_drops_stale_evidence_exclusions():
+    """Old line coordinates are not exemptions for the current evidence implementation."""
     sentinel = _load_sentinel_module()
     target = next(
         item for item in sentinel.CRITICAL_MUTATION_TARGETS if item.path.name == "evidence_graph.py"
     )
 
-    assert target.excluded_mutations == {
-        ("build_evidence_graph", 271, "False", "True"),
-        ("build_evidence_graph_from_events", 379, "is not", "is"),
-        ("build_evidence_graph_from_events", 382, "is not", "is"),
-        ("build_evidence_graph_from_events", 383, "False", "True"),
-    }
+    assert not target.excluded_mutations
 
 
 def test_mutation_sentinel_vets_scope_selectors_without_empty_pytest_probes():
@@ -418,3 +416,258 @@ def test_mutation_sentinel_baseline_cache_key_binds_the_corpus_and_targets():
 
     assert key == sentinel._baseline_cache_key(tests, (lifecycle_target.path, sqlite_target.path))
     assert key != sentinel._baseline_cache_key(tests, (sqlite_target.path,))
+
+
+def test_verifier_mutation_scopes_are_provider_native_and_exist():
+    sentinel = _load_sentinel_module()
+    target = next(t for t in sentinel.CRITICAL_MUTATION_TARGETS if t.path.name == "verifier.py")
+    assert "verify_run_directory" not in target.scopes
+    assert {
+        "verify_run",
+        "verify_trace_bytes",
+        "sign_trace_bytes",
+        "verify_certification_artifact",
+    } <= target.scopes
+    available = sentinel.discover_defined_scopes(ast.parse(target.path.read_text(encoding="utf-8")))
+    assert target.scopes <= available
+
+
+def test_all_mutation_scopes_exist_after_provider_migration():
+    sentinel = _load_sentinel_module()
+    for target in sentinel.CRITICAL_MUTATION_TARGETS:
+        available = sentinel.discover_defined_scopes(
+            ast.parse(target.path.read_text(encoding="utf-8"))
+        )
+        assert target.scopes <= available, (target.path, target.scopes - available)
+    recorder = next(
+        t for t in sentinel.CRITICAL_MUTATION_TARGETS if t.path.name == "flight_recorder.py"
+    )
+    assert {"bind_run_provider", "_provider_for_run", "is_certification_mode"} <= recorder.scopes
+
+
+@pytest.mark.parametrize(("mutated", "expected_exit"), [(False, 0), (True, 1)])
+@pytest.mark.parametrize("consumer_only", [False, True])
+def test_mutation_loader_preserves_package_identity_and_reexports(
+    tmp_path, mutated, expected_exit, consumer_only
+):
+    sentinel = _load_sentinel_module()
+    package = tmp_path / "loader_probe"
+    package.mkdir()
+    (package / "__init__.py").write_text(
+        "from .subject import ANSWER\nfrom .consumer import answer\n", encoding="utf-8"
+    )
+    (package / "consumer.py").write_text(
+        "from .subject import ANSWER\ndef answer():\n    return ANSWER\n", encoding="utf-8"
+    )
+    (package / "helper.py").write_text("INCREMENT = 2\n", encoding="utf-8")
+    subject = package / "subject.py"
+    source = "from .helper import INCREMENT\nANSWER = 40 + INCREMENT\nOPTIONAL = None\n"
+    subject.write_text(source, encoding="utf-8")
+    test = tmp_path / "test_loader_probe.py"
+    test.write_text(
+        "import loader_probe\n"
+        "from loader_probe.subject import ANSWER\n"
+        "def test_package_contract():\n"
+        "    assert loader_probe.__name__ == 'loader_probe'\n"
+        "    assert loader_probe.__spec__.name == 'loader_probe'\n"
+        "    assert loader_probe.__package__ == 'loader_probe'\n"
+        "    assert not hasattr(loader_probe, 'OPTIONAL')\n"
+        + (
+            "    assert loader_probe.answer() == 42\n"
+            if consumer_only
+            else "    assert loader_probe.ANSWER == ANSWER == 42\n"
+        ),
+        encoding="utf-8",
+    )
+    sentinel.BASE_DIR = tmp_path
+    code = sentinel._make_loader_code(
+        source.replace("40 +", "41 +") if mutated else source,
+        subject,
+        "loader_probe.subject",
+        repr(
+            [str(test), "--rootdir", str(tmp_path), "-o", "testpaths="] + sentinel.FAST_PYTEST_FLAGS
+        ),
+    )
+    result = sentinel.subprocess.run(
+        [sys.executable, "-B", "-"],
+        input=code,
+        text=True,
+        capture_output=True,
+        env={**os.environ, "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"},
+        timeout=60,
+    )
+    assert result.returncode == expected_exit, result.stdout + result.stderr
+    assert subject.read_text(encoding="utf-8") == source
+
+
+@pytest.mark.parametrize("exit_code", [2, 3, 4])
+def test_mutation_sentinel_never_counts_pytest_errors_as_kills(exit_code):
+    sentinel = _load_sentinel_module()
+    target = Path("eval_runner/utils/base.py").resolve()
+    with patch.object(
+        sentinel.subprocess,
+        "run",
+        return_value=SimpleNamespace(returncode=exit_code, stdout="pytest infrastructure error"),
+    ):
+        status = sentinel.evaluate_mutant(
+            target, target.read_text(encoding="utf-8"), ["tests/unit/core/test_core_utilities.py"]
+        )
+    assert status == "indeterminate"
+
+
+def test_mutation_baseline_uses_the_same_injection_loader():
+    sentinel = _load_sentinel_module()
+    target = sentinel.TARGET_MODULES[0]
+    with (
+        patch.object(sentinel, "_load_baseline_cache", return_value={}),
+        patch.object(sentinel, "_write_baseline_cache"),
+        patch.object(sentinel.time, "monotonic", side_effect=[0.0, 20.0]),
+        patch.object(
+            sentinel.subprocess, "run", return_value=SimpleNamespace(returncode=0, stdout="")
+        ) as run,
+    ):
+        timeouts, _ = sentinel.verify_sentinel_preconditions([target], workers=3)
+    assert run.call_args.args[0][-1] == "-"
+    assert "base64.b64decode" in run.call_args.kwargs["input"]
+    assert timeouts[target.name] >= 3 * 20.0
+
+
+def test_cached_mutant_respects_measured_timeout_budget():
+    sentinel = _load_sentinel_module()
+    target = Path("eval_runner/utils/base.py").resolve()
+    tests = ["tests/unit/core/test_core_utilities.py"]
+    cache = {
+        sentinel._mutation_cache_key("eval_runner.utils.base", tests, "validate"): "test_validate"
+    }
+    with patch.object(
+        sentinel.subprocess, "run", return_value=SimpleNamespace(returncode=1, stdout="")
+    ) as run:
+        assert (
+            sentinel.evaluate_mutant(
+                target,
+                target.read_text(encoding="utf-8"),
+                tests,
+                timeout_seconds=90,
+                scope="validate",
+                killer_cache=cache,
+            )
+            == "killed"
+        )
+    assert run.call_args.kwargs["timeout"] == 90
+
+
+def test_mutation_progress_reports_failure_details_immediately():
+    sentinel = _load_sentinel_module()
+    stream = io.StringIO()
+    progress = sentinel._MutationProgress(total=1, workers=1, stream=stream)
+    progress.report("survived", "verify_run: missing provider guard")
+    assert "[SURVIVED] verify_run: missing provider guard" in stream.getvalue()
+
+
+def test_mutation_exclusions_have_reasons_and_match_current_source():
+    sentinel = _load_sentinel_module()
+    for target in sentinel.CRITICAL_MUTATION_TARGETS:
+        source = target.path.read_text(encoding="utf-8")
+        points = sentinel.discover_mutation_points(
+            source, sentinel._annotation_line_numbers(ast.parse(source))
+        )
+        available = {(p.scope, p.lineno, p.original, p.mutated) for p in points}
+        assert target.excluded_mutations <= available
+        assert set(target.exclusion_reasons or {}) == target.excluded_mutations
+        assert all((target.exclusion_reasons or {}).values())
+
+
+def test_selected_acceptance_node_is_hashed_and_discovered():
+    sentinel = _load_sentinel_module()
+    selected = sentinel.EVIDENCE_CHAIN_POSITIVE
+    assert "test_release_evidence_chain_matrix" in sentinel._declared_test_names([selected])
+    target = sentinel.TARGET_MODULES[0]
+    assert sentinel._baseline_cache_key((selected,), (target,)) != sentinel._baseline_cache_key(
+        (selected.replace("complete_chain", "altered_manifest"),), (target,)
+    )
+
+
+@pytest.mark.parametrize("binding_use", [False, True])
+def test_commitment_mutations_distinguish_error_labels_from_binding(binding_use):
+    sentinel = _load_sentinel_module()
+    source = (
+        "def parse(data):\n"
+        "    mandatory_str_fields = [('scenario_hash', 'scenario_hash')]\n"
+        "    for key, label in mandatory_str_fields:\n"
+        "        if key not in data:\n"
+        "            raise ValueError(f'missing {label}')\n"
+    )
+    if binding_use:
+        source += "        data[label] = data[key]\n"
+    fields = [
+        point
+        for point in sentinel.discover_mutation_points(source, set())
+        if point.original == "scenario_hash"
+    ]
+    assert len(fields) == (2 if binding_use else 1)
+
+
+def test_cached_success_cannot_replace_a_fresh_injected_control():
+    sentinel = _load_sentinel_module()
+    target = sentinel.TARGET_MODULES[0]
+    tests = tuple(sentinel._tests_for_module(target))
+    cached = {sentinel._baseline_cache_key(tests, (target,)): {"duration_seconds": 1.0}}
+    with (
+        patch.object(sentinel, "_load_baseline_cache", return_value=cached),
+        patch.object(sentinel, "_write_baseline_cache"),
+        patch.object(
+            sentinel.subprocess,
+            "run",
+            return_value=SimpleNamespace(
+                returncode=1, stdout="control assertion failed", stderr=""
+            ),
+        ) as run,
+        pytest.raises(SystemExit),
+    ):
+        sentinel.verify_sentinel_preconditions([target], workers=1)
+    assert run.call_count == 1
+
+
+def test_error_label_filter_does_not_cross_function_boundaries():
+    sentinel = _load_sentinel_module()
+    source = (
+        "def validate(data):\n"
+        "    mandatory_str_fields = [('scenario_hash', 'scenario_hash')]\n"
+        "    for key, label in mandatory_str_fields:\n"
+        "        if key not in data:\n"
+        "            raise ValueError(f'missing {label}')\n"
+        "def bind(data):\n"
+        "    mandatory_str_fields = [('scenario_hash', 'scenario_hash')]\n"
+        "    for key, label in mandatory_str_fields:\n"
+        "        data[label] = data[key]\n"
+    )
+    fields = [
+        point
+        for point in sentinel.discover_mutation_points(source, set())
+        if point.original == "scenario_hash"
+    ]
+    assert sum(point.scope == "validate" for point in fields) == 1
+    assert sum(point.scope == "bind" for point in fields) == 2
+
+
+@pytest.mark.parametrize("change", ["unchanged", "edited", "deleted"])
+def test_mutation_input_check_preserves_workspace_edits(tmp_path, change):
+    sentinel = _load_sentinel_module()
+    target = tmp_path / "subject.py"
+    original = b"VALUE = 1\n"
+    target.write_bytes(original)
+    if change == "edited":
+        target.write_bytes(b"USER_EDIT = 2\n")
+    elif change == "deleted":
+        target.unlink()
+
+    if change == "unchanged":
+        sentinel.assert_sources_unchanged({target: original})
+        assert target.read_bytes() == original
+    else:
+        with pytest.raises(RuntimeError, match="MutationSourceChanged"):
+            sentinel.assert_sources_unchanged({target: original})
+        if change == "edited":
+            assert target.read_bytes() == b"USER_EDIT = 2\n"
+        else:
+            assert not target.exists()

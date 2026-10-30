@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:agentv:signature:digest-envelope:v1",
+  "title": "AgentV raw Ed25519 over canonical digest envelope v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profile", "envelope", "signature"],
+  "properties": {
+    "profile": {"const": "agentv.signature.digest-envelope.v1"},
+    "signature": {
+      "type": "string",
+      "minLength": 88,
+      "maxLength": 88,
+      "pattern": "^[A-Za-z0-9+/]{86}==$",
+      "description": "Canonical padded base64 of exactly 64 bytes; strict decoding and re-encoding are also required."
+    },
+    "envelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile", "version", "envelope_canonicalization", "purpose", "payload_projection",
+        "payload_canonicalization", "payload_digest", "payload_digest_algorithm",
+        "payload_digest_encoding", "signing_algorithm", "signing_semantics", "signer_identity",
+        "key_id", "public_key_fingerprint", "fingerprint_algorithm", "public_key_encoding",
+        "signature_encoding", "signature_length"
+      ],
+      "properties": {
+        "profile": {"const": "agentv.signature.digest-envelope.v1"},
+        "version": {"type": "integer", "const": 1},
+        "envelope_canonicalization": {"const": "RFC8785"},
+        "purpose": {"enum": ["agentv.certificate", "agentv.verification-package", "agentv.evaluator-finalization"]},
+        "payload_projection": {"enum": ["agentv.certificate.unsigned.v1", "agentv.verification-package.unsigned.v1", "agentv.evaluator-finalization.unsigned.v1"]},
+        "payload_canonicalization": {"const": "RFC8785"},
+        "payload_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "payload_digest_algorithm": {"const": "sha256"},
+        "payload_digest_encoding": {"const": "hex-lowercase"},
+        "signing_algorithm": {"const": "Ed25519"},
+        "signing_semantics": {"const": "raw-ed25519-over-canonical-envelope-bytes"},
+        "signer_identity": {"type": "string", "minLength": 1},
+        "key_id": {
+          "type": "string",
+          "pattern": "^(sha256:[0-9a-f]{64}|arn:[a-z0-9-]+:kms:[a-z0-9-]+:[0-9]{12}:key/[a-zA-Z0-9-]+)$"
+        },
+        "public_key_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "fingerprint_algorithm": {"const": "sha256"},
+        "public_key_encoding": {"const": "spki-der"},
+        "signature_encoding": {"const": "base64-rfc4648-padded"},
+        "signature_length": {"type": "integer", "const": 64}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"purpose": {"const": "agentv.certificate"}}},
+          "then": {"properties": {"payload_projection": {"const": "agentv.certificate.unsigned.v1"}}}
+        },
+        {
+          "if": {"properties": {"purpose": {"const": "agentv.verification-package"}}},
+          "then": {"properties": {"payload_projection": {"const": "agentv.verification-package.unsigned.v1"}}}
+        },
+        {
+          "if": {"properties": {"purpose": {"const": "agentv.evaluator-finalization"}}},
+          "then": {"properties": {"payload_projection": {"const": "agentv.evaluator-finalization.unsigned.v1"}}}
+        }
+      ]
+    }
+  },
+  "$comment": "Schema validation alone is insufficient: canonical byte equality, field types, payload projection/digest, envelope size, key identity/fingerprint, external purpose/profile/rotation/revocation policy, strict signature encoding and Ed25519 verification are mandatory."
+}

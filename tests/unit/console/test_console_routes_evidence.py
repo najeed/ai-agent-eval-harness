@@ -144,7 +144,9 @@ def test_get_verification_package_success_with_cert_and_provenance(crypto_client
         },
     ]
 
-    ev_graph = build_evidence_graph_from_events(core_events)
+    store.append_events(run_id, core_events)
+    recorded_lines = store.get_trace_bytes(run_id).decode("utf-8").splitlines()
+    ev_graph = build_evidence_graph_from_events(list(zip(core_events, recorded_lines, strict=True)))
     evidence_root = ev_graph.get(
         "evidence_root_hash", f"sha3_256:{hashlib.sha3_256(b'empty').hexdigest()}"
     )
@@ -164,7 +166,7 @@ def test_get_verification_package_success_with_cert_and_provenance(crypto_client
         terminal_seq=3,
     ).sign()
     fin_ev = {"event": "evaluator_finalization", "data": fin_rec.to_dict()}
-    store.append_events(run_id, [*core_events, fin_ev])
+    store.append_events(run_id, [fin_ev])
 
     trace_bytes = store.get_trace_bytes(run_id)
     manifest = TraceVerifier.sign_trace_bytes(

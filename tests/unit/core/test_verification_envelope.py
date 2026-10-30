@@ -105,7 +105,7 @@ def test_package_signing_and_detached_verification():
     assert signed_pkg.verify_signature(public_key_pem=other_signer.public_key_pem) is False
 
 
-def test_verification_authority_full_verification_pass():
+def test_verification_authority_rejects_package_without_execution_manifest_and_finalization():
     from agentv_runtime.canonical import canonical_json_dumps
     from agentv_runtime.manifest import compute_scenario_hash
 
@@ -166,9 +166,9 @@ def test_verification_authority_full_verification_pass():
         public_key_pem=signer.public_key_pem,
         require_signature=True,
     )
-    assert res["verified"] is True
-    assert res["status"] == "CERTIFIED"
-    assert len(res["failures"]) == 0
+    assert res["verified"] is False
+    assert "ExecutionManifestMissing" in " ".join(res["failures"])
+    assert "MissingEvaluatorFinalization" in " ".join(res["failures"])
 
 
 def test_verification_authority_fails_on_tampered_trace():
@@ -350,14 +350,15 @@ def test_package_verify_signature_identity_service_fallback(monkeypatch):
     # Mock IdentityService returning public key
     from unittest.mock import MagicMock
 
-    mock_id_svc = MagicMock()
-    mock_id_svc.get_public_key.return_value = signer.public_key
-    monkeypatch.setattr("eval_runner.identity.IdentityService", mock_id_svc)
+    from eval_runner.identity import IdentityService
+
+    mock_get_public_key = MagicMock(return_value=signer.public_key)
+    monkeypatch.setattr(IdentityService, "get_public_key", mock_get_public_key)
 
     assert signed.verify_signature() is True
 
     # Mock IdentityService throwing exception
-    mock_id_svc.get_public_key.side_effect = RuntimeError("DB down")
+    mock_get_public_key.side_effect = RuntimeError("DB down")
     assert signed.verify_signature() is False
 
 
@@ -416,7 +417,7 @@ def test_package_verify_signature_corrupt_signature_and_rsa_key():
     # RSA key instead of Ed25519
     from cryptography.hazmat.primitives.asymmetric import rsa
 
-    rsa_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)  # nosec B505
+    rsa_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
     rsa_pem = (
         rsa_key.public_key()
         .public_bytes(

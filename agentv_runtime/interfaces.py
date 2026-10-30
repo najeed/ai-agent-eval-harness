@@ -118,7 +118,13 @@ class SigningBackend(ABC):
         self, payload: bytes, key_identifier: str | Path | Any = None, **kwargs: Any
     ) -> str | dict[str, Any]:
         """
-        Signs a raw bytes payload and returns a cryptographic signature string or metadata dict.
+        Signs payload bytes. Artifact callers pass the versioned artifact ``purpose``
+        keyword. Return either a legacy raw Ed25519 hex signature or the complete
+        ``agentv.signature.digest-envelope.v1`` response from agentv_runtime.signatures.
+        Unversioned signature/sig metadata wrappers are not artifact signing contracts.
+        DigestEnvelopeSigningBackend adapts an explicitly selected RAW signer; the
+        RAW provider signs canonical envelope bytes, never an unlabeled payload digest.
+        Remote errors must propagate without choosing a different signing authority.
         """
         raise NotImplementedError
 

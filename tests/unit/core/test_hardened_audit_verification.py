@@ -351,7 +351,8 @@ def test_verification_authority_package_validation():
         pkg_valid, scenario_data=scenario_data, require_signature=False
     )
     assert res_valid["verified"] is True
-    assert res_valid["status"] == "CERTIFIED"
+    assert res_valid["status"] == "DIAGNOSTIC_VALID"
+    assert res_valid["authoritative"] is False
 
     # Incomplete package: missing required oracle
     pkg_missing_oracle = VerificationPackage(
@@ -463,7 +464,8 @@ def test_verification_authority_comprehensive_failure_branches():
     res_fail = VerificationAuthority.verify_package(
         p_fail_dec, scenario_data=scenario_data, require_signature=False
     )
-    assert res_fail["status"] == "ATTESTED_FAIL"
+    assert res_fail["status"] == "DIAGNOSTIC_VALID"
+    assert res_fail["certified"] is False
     assert not any("UnverifiedDecision" in f for f in res_fail["failures"])
 
     # 6. DuplicateOracleId
@@ -621,7 +623,9 @@ def test_verification_authority_split_and_manifest_tamper_detection():
         require_signature=False,
     )
     assert art_res["verified"] is True, f"Failures: {art_res.get('failures')}"
-    assert art_res["status"] == "CERTIFIED"
+    assert art_res["status"] == "DIAGNOSTIC_VALID"
+    assert art_res["authoritative"] is False
+    assert art_res["certified"] is False
 
     # 3. Tamper manifest only: change tenant_id -> ManifestHashMismatch -> UNVERIFIED
     tampered_manifest = ExecutionManifest(
@@ -1028,8 +1032,8 @@ def test_unified_verdict_contract_attested_fail_is_valid_not_certified():
         require_scenario_binding=False,
     )
 
-    # Valid negative attestation: verified=True, status="ATTESTED_FAIL",
-    # never CERTIFIED and never UNVERIFIED
+    # Unsigned negative evidence is diagnostic and cannot attest or certify.
     assert res["verified"] is True
-    assert res["status"] == "ATTESTED_FAIL"
+    assert res["status"] == "DIAGNOSTIC_VALID"
+    assert res["certified"] is False
     assert res["failures"] == []

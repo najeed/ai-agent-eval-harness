@@ -74,7 +74,7 @@ def _make_finalization_event(
         evidence_root_hash=evidence_root,
         outcome=outcome,
         score=score,
-        terminal_seq=1,
+        terminal_seq=max((event.get("_seq", 0) for event, _ in parsed), default=len(parsed)),
     )
     rec = rec.sign()
     fin_dict = rec.to_dict()
@@ -219,17 +219,20 @@ def _create_signed_pqc_run(store, run_id: str, identity_id: str) -> dict[str, An
     metrics_ev = {"event": "summary_metrics", "metrics": {"success_rate": 1.0}}
     end_ev = {"event": "run_end", "outcome": "pass", "status": "pass", "score": 1.0}
 
-    core_events_str = [
-        json.dumps(start_ev),
-        json.dumps(assert_ev),
-        json.dumps(metrics_ev),
-        json.dumps(end_ev),
-    ]
+    core_events = [start_ev, assert_ev, metrics_ev, end_ev]
+    for sequence, event in enumerate(core_events, start=1):
+        event["_seq"] = sequence
+    store.append_events(run_id, core_events)
+    exact_lines = store.get_trace_bytes(run_id).decode("utf-8").splitlines()
     fin_ev_str = _make_finalization_event(
-        run_id, "test_scenario", core_events_str, exec_manifest=exec_manifest
+        run_id,
+        "test_scenario",
+        exact_lines,
+        exec_manifest=exec_manifest,
     )
-    all_events = [start_ev, assert_ev, metrics_ev, end_ev, json.loads(fin_ev_str)]
-    store.append_events(run_id, all_events)
+    fin_event = json.loads(fin_ev_str)
+    fin_event["_seq"] = len(core_events) + 1
+    store.append_events(run_id, [fin_event])
 
     trace_bytes = store.get_trace_bytes(run_id)
     assert trace_bytes is not None
@@ -239,7 +242,11 @@ def _create_signed_pqc_run(store, run_id: str, identity_id: str) -> dict[str, An
         run_id=run_id,
         run_store=store,
         identity_id=identity_id,
-        provisional=True,
+        provisional=False,
+        execution_mode="live",
+        execution_manifest=exec_manifest.to_dict(),
+        scenario_data=scenario_data,
+        evidence_root_hash=fin_event["data"]["evidence_root_hash"],
     )
     store.save_run_manifest(run_id, manifest)
     store.update_run_status(run_id, "SEALED")

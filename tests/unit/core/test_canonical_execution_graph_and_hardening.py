@@ -92,6 +92,7 @@ def test_verify_run_directory_all_paths(tmp_path):
     store.append_events("valid_run", [{"event": "run_start"}])
     manifest_data = {
         "run_id": "valid_run",
+        "compliance_status": "pass",
         "trace_hash": "dummy_hash",
         "hash_algorithm": "sha3_256",
         "signature": {"algorithm": "Ed25519", "key_id": "key_1"},
@@ -100,8 +101,8 @@ def test_verify_run_directory_all_paths(tmp_path):
 
     with patch.object(TraceVerifier, "verify_trace_bytes", return_value=True):
         res = TraceVerifier.verify_run("valid_run", run_store=store)
-        assert res["verification_status"] == "VERIFIED_PROVISIONAL"
-        assert res["is_valid"] is True
+        assert res["verification_status"] == "FAILED_VERIFICATION"
+        assert res["is_valid"] is False
         assert res["algorithm"] == "Ed25519"
         assert "execution_mode" in res
         assert "provisional" in res
@@ -127,7 +128,7 @@ def test_verify_run_directory_all_paths(tmp_path):
 
     with patch.object(TraceVerifier, "verify_trace_bytes", return_value=True):
         res_sim = TraceVerifier.verify_run("sim_run", run_store=store)
-        assert res_sim["verification_status"] == "VERIFIED_PROVISIONAL"
+        assert res_sim["verification_status"] == "FAILED_VERIFICATION"
         assert res_sim["provisional"] is True
         assert res_sim["execution_mode"] == "simulated"
 
@@ -210,7 +211,15 @@ def test_run_verify_api_endpoint(tmp_path, monkeypatch):
         # 2. 200 with verification details
         store.create_run("r123", "scenario-1")
         store.append_events("r123", [{"event": "start"}])
-        store.save_run_manifest("r123", {"run_id": "r123", "vc_version": "3.0.0"})
+        store.save_run_manifest(
+            "r123",
+            {
+                "run_id": "r123",
+                "vc_version": "3.0.0",
+                "execution_mode": "live",
+                "compliance_status": "pass",
+            },
+        )
 
         with patch.object(
             TraceVerifier,

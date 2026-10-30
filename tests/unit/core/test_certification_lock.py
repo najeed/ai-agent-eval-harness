@@ -212,22 +212,27 @@ def test_thread_lock_timeout_and_unacquired_release(tmp_path):
     import threading
 
     barrier = threading.Barrier(2)
+    release_holder = threading.Event()
 
     def hold_lock():
-        lock._thread_lock.acquire()
-        barrier.wait()
-        time.sleep(0.05)
-        lock._thread_lock.release()
-
-    import time
+        with lock._thread_lock:
+            barrier.wait()
+            release_holder.wait(timeout=5)
 
     t = threading.Thread(target=hold_lock, daemon=True)
     t.start()
     barrier.wait()
 
-    with pytest.raises(TimeoutError, match="could not lock"):
-        lock.acquire()
-    t.join()
+    try:
+        with pytest.raises(TimeoutError, match="could not lock"):
+            lock.acquire()
+    finally:
+        release_holder.set()
+        t.join(timeout=5)
+    assert not t.is_alive()
+    lock.acquire()
+    lock.verify_active()
+    lock.release()
 
 
 def test_acquire_failure_after_registration_and_release_failure(tmp_path, monkeypatch):
@@ -264,3 +269,38 @@ def test_context_manager_protocol(tmp_path):
 
     assert not lock._acquired
     assert not store.is_certification_leased("run-ctx")
+
+
+def test_concurrent_certification_caller_times_out_then_acquires_after_release(tmp_path):
+    import threading
+    from concurrent.futures import ThreadPoolExecutor
+
+    store = LocalFileRunStore(tmp_path)
+    store.create_run("run-two-callers", "scenario")
+    holder_ready = threading.Event()
+    holder_release = threading.Event()
+
+    def hold_lease():
+        with PerRunCertificationLock("run-two-callers", run_store=store) as holder:
+            holder.verify_active()
+            holder_ready.set()
+            assert holder_release.wait(timeout=10)
+
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        holder = pool.submit(hold_lease)
+        try:
+            assert holder_ready.wait(timeout=10)
+            contender = PerRunCertificationLock(
+                "run-two-callers",
+                timeout_seconds=0.01,
+                run_store=store,
+            )
+            with pytest.raises(TimeoutError, match="CertificationLockConflict"):
+                contender.acquire()
+            assert store.is_certification_leased("run-two-callers")
+        finally:
+            holder_release.set()
+        holder.result(timeout=10)
+    with PerRunCertificationLock("run-two-callers", run_store=store) as successor:
+        successor.verify_active()
+    assert not store.is_certification_leased("run-two-callers")

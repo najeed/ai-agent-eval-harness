@@ -535,6 +535,8 @@ async def test_signing_backend_can_sign():
 
     mock_signing = MagicMock()
     mock_signing.can_sign.return_value = True
+    mock_signing.sign.return_value = "a" * 128
+    mock_signing.sign_payload.return_value = "a" * 128
     runner.signing_backend = mock_signing
 
     mock_run_store = MagicMock()

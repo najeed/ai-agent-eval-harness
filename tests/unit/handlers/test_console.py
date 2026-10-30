@@ -264,12 +264,16 @@ def test_debugger_load_run_id(client, tmp_path):
 
 
 def test_debugger_demo_trace_dynamic(client):
-    """Test dynamic generation of demo traces."""
-    with patch("eval_runner.console.demo_traces.get_demo_trace") as mock_get:
-        mock_get.return_value = [{"event": "start"}]
-        response = client.get("/api/debugger/state?run_id=run-loan-risk-fail")
-        assert response.status_code == 200
-        assert "Demo Narrative" in response.get_json()["data"]["summary"]["message"]
+    client.application.config["DEBUG"] = True
+    from eval_runner import config
+
+    with patch.object(config, "ENABLE_DEMO", True):
+        """Test dynamic generation of demo traces."""
+        with patch("eval_runner.console.demo_traces.get_demo_trace") as mock_get:
+            mock_get.return_value = [{"event": "start"}]
+            response = client.get("/api/debugger/state?run_id=run-loan-risk-fail")
+            assert response.status_code == 200
+            assert "Demo Narrative" in response.get_json()["data"]["summary"]["message"]
 
 
 def test_read_doc_errors(client, tmp_path):

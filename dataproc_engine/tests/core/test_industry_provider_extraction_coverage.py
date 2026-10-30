@@ -223,7 +223,7 @@ async def test_correlator_extended_branches(tmp_path):
         return orig_import(name, *args, **kwargs)
 
     with patch("builtins.__import__", side_effect=mock_import):
-        # A. Substring match fallback
+        # A. Normalized names use the same measured scorer without optional libraries.
         fin_sub = StandardSchema(
             id="fin_sub",
             industry="finance",
@@ -234,20 +234,18 @@ async def test_correlator_extended_branches(tmp_path):
         tel_sub = StandardSchema(
             id="tel_sub",
             industry="telecom",
-            data={"entity_name": "Apple", "value": 90},
+            data={"entity_name": "Apple Inc", "value": 90},
             provenance={},
             checksum="hash",
         )
         res_sub = correlator.correlate({"finance": [fin_sub], "telecom": [tel_sub]})
         assert res_sub["finance"][0].data["telecom_footprint_speed"] == 90
 
-        # B. Close match difflib fallback
-        # We use names that are close but do not contain each other as substrings
-        # to avoid the substring breakout and reach difflib get_close_matches.
+        # B. A close match above the explicit default threshold.
         fin_record = StandardSchema(
             id="fin1",
             industry="finance",
-            data={"entity_name": "Appel Corp"},
+            data={"entity_name": "Apple Incs"},
             provenance={},
             checksum="hash",
         )
@@ -259,7 +257,7 @@ async def test_correlator_extended_branches(tmp_path):
             checksum="hash",
         )
         res_fallback = correlator.correlate({"finance": [fin_record], "telecom": [telecom_record]})
-        # Appel Corp matches Apple Inc via difflib get_close_matches
+        # The measured ratio exceeds 85; no constant fallback confidence is used.
         assert res_fallback["finance"][0].data["telecom_footprint_speed"] == 100
 
 

@@ -158,7 +158,7 @@ class EnterpriseSigningBackend(SigningBackend):
         self, payload: bytes, key_identifier: str | Path | Any = None, **kwargs: Any
     ) -> str:
         self.signed_payloads.append(payload)
-        sig = hashlib.sha256(payload + b"::enterprise-kms-key").hexdigest()
+        sig = hashlib.sha512(payload + b"::enterprise-kms-key").hexdigest()
         return sig
 
     def verify_signature(
@@ -168,7 +168,7 @@ class EnterpriseSigningBackend(SigningBackend):
         public_key_identifier: str | Path | Any = None,
         **kwargs: Any,
     ) -> bool:
-        expected = hashlib.sha256(payload + b"::enterprise-kms-key").hexdigest()
+        expected = hashlib.sha512(payload + b"::enterprise-kms-key").hexdigest()
         return signature == expected
 
 

@@ -16,11 +16,11 @@ def sample_datasets():
         provenance={},
         checksum="xyz",
     )
-    # Telecom: Apple (Fuzzy match candidate)
+    # Telecom: normalized equivalent above the measured similarity threshold.
     tel = StandardSchema(
         id="t1",
         industry="telecom",
-        data={"entity_name": "Apple", "value": 500},
+        data={"entity_name": "Apple Inc", "value": 500},
         provenance={},
         checksum="abc",
     )
@@ -43,7 +43,7 @@ def test_correlator_production_logic(sample_datasets):
     enriched = correlator.correlate(sample_datasets)
 
     fin_record = enriched["finance"][0]
-    # 1. Fuzzy match worked (Apple Inc. -> Apple)
+    # 1. Normalized entity match worked (Apple Inc. -> Apple Inc).
     assert fin_record.data["telecom_footprint_speed"] == 500
     # 2. Temporal match worked (2023-01-01)
     assert fin_record.data["spatio_temporal_energy_cost"] == 85.0

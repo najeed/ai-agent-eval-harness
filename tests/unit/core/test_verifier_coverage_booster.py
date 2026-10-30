@@ -53,16 +53,22 @@ def test_core_trace_signer_private_key_material_missing():
 
 
 def test_core_trace_signer_private_key_material_present_and_dict_signatures():
-    signer = CoreTraceSigner()
-    backend = MagicMock()
-    backend.requires_private_key_material = True
-    backend.sign_payload.return_value = {"signature": "abc_hex_sig"}
+    from agentv_runtime.signatures import (
+        DigestEnvelopeSigningBackend,
+        SignaturePolicy,
+        fingerprint,
+    )
+    from eval_runner.reference.signing import LocalEd25519SigningBackend
 
-    real_key = ed25519.Ed25519PrivateKey.generate()
+    signer = CoreTraceSigner()
+    real_key = IdentityService.get_private_key("system_id", auto_provision=False)
+    pub_key = real_key.public_key()
+    policy = SignaturePolicy("system_id", "sha256:" + fingerprint(pub_key), pub_key)
+    envelope_backend = DigestEnvelopeSigningBackend(LocalEd25519SigningBackend(), policy)
 
     manifest = {
         "signing_context": {
-            "signing_backend": backend,
+            "signing_backend": envelope_backend,
             "identity_id": "system_id",
         }
     }
@@ -70,8 +76,8 @@ def test_core_trace_signer_private_key_material_present_and_dict_signatures():
     with patch.object(IdentityService, "get_private_key", return_value=real_key):
         res = signer.sign(manifest, next_signer=lambda m: m)
 
-    assert backend.sign_payload.called
-    assert res.get("signature") == "abc_hex_sig" or backend.sign_payload.called
+    assert res["provenance_chain"][0]["signature_profile"] == "agentv.signature.digest-envelope.v1"
+    assert isinstance(res["provenance_chain"][0]["signature"], dict)
 
 
 def test_core_trace_signer_dict_sig_field_and_empty_signature_failure():
@@ -86,7 +92,11 @@ def test_core_trace_signer_dict_sig_field_and_empty_signature_failure():
             "identity_id": "system_id",
         }
     }
-    signer.sign(manifest, next_signer=lambda m: m)
+    with pytest.raises(
+        CertificationFailedError,
+        match="Invalid or unauthorized structured signing response",
+    ):
+        signer.sign(manifest, next_signer=lambda m: m)
     assert backend.sign_payload.called
 
     backend.sign_payload.return_value = {}

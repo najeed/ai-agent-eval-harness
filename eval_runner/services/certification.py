@@ -69,6 +69,23 @@ class CertificationService:
 
     @staticmethod
     def _finalization(events: list[dict[str, Any]], run_id: str) -> EvaluatorFinalizationRecord:
+        carriers = [
+            event
+            for event in events
+            if event.get("event") == "evaluator_finalization"
+            or event.get("event") in {"run_end", "end"}
+            and isinstance(
+                event.get("finalization")
+                or (event.get("data") if isinstance(event.get("data"), dict) else {}).get(
+                    "finalization"
+                ),
+                Mapping,
+            )
+        ]
+        if len(carriers) > 1:
+            raise ValueError(
+                "DuplicateEvaluatorFinalization: exactly one authoritative finalization is required"
+            )
         for event in reversed(events):
             event_name = event.get("event")
             event_data = event.get("data") if isinstance(event.get("data"), dict) else event
@@ -774,6 +791,27 @@ class CertificationService:
                 signing_backend=signing_backend,
                 evidence_root_hash=finalization.evidence_root_hash,
             )
+            # Verify the complete signed artifact before the provider's irreversible commit.
+            from eval_runner.verifier import verify_trace_certificate
+
+            if not verify_trace_certificate(
+                run_id,
+                bytes(trace_bytes),
+                cert_data=manifest,
+                scenario_data=effective_scenario,
+                trace_only=False,
+            ).get("verified"):
+                raise ValueError("CertificateSelfVerificationFailed: invalid certificate signature")
+            from eval_runner.verifier import VerificationAuthority
+
+            checked = VerificationAuthority.verify_certification_artifact(
+                manifest["verification_package"],
+                raw_trace_bytes=bytes(trace_bytes),
+                canonical_manifest=execution_manifest_dict,
+                scenario_data=effective_scenario,
+            )
+            if not checked.get("verified"):
+                raise ValueError(f"CertificateSelfVerificationFailed: {checked.get('failures')}")
             lock.verify_active()
             committed = run_store.commit_certification(
                 run_id,

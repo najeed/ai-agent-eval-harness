@@ -159,7 +159,7 @@ def test_provider_trace_ownership_mismatch_is_rejected_before_signing(cert_env):
 # ---------------------------------------------------------------------------
 
 
-def test_verify_defaults_to_full_ledger_and_detects_tampering(cert_env):
+def test_verify_defaults_to_full_chain_and_keeps_partial_certificates_diagnostic(cert_env):
     env = cert_env
     manifest = TraceVerifier.sign_trace_bytes(
         env["trace_bytes"],
@@ -177,7 +177,14 @@ def test_verify_defaults_to_full_ledger_and_detects_tampering(cert_env):
             run_store=env["store"],
             trace_only=False,
         )
-        is True
+        is False
+    )
+    # A trace signature alone is useful only for explicit integrity diagnostics.
+    assert TraceVerifier.verify_trace(
+        env["trace_bytes"],
+        manifest,
+        run_store=env["store"],
+        trace_only=True,
     )
 
     # Tamper with trace bytes
@@ -207,9 +214,9 @@ def test_verify_run_uses_full_chain(cert_env):
     env["store"].update_run_status(env["run_id"], "SEALED")
 
     result = TraceVerifier.verify_run(env["run_id"], run_store=env["store"])
-    assert result["is_valid"] is True
+    assert result["is_valid"] is False
     assert result["has_certificate"] is True
-    assert result["verification_status"] == "VERIFIED_PROVISIONAL"
+    assert result["verification_status"] == "FAILED_VERIFICATION"
 
 
 # ---------------------------------------------------------------------------

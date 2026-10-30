@@ -77,7 +77,7 @@ graph TD
     SPLIT -->|Lightweight / Air-Gapped| SIG["verify_package_signature_only()<br/>Cryptographic Signature Verification"]
     SPLIT -->|Deep Forensic Audit| ART["verify_package_artifacts()<br/>Raw Trace, Manifest, Scenario & Evidence Graph"]
     
-    SIG --> RES1["Status: CERTIFIED / UNSIGNED / UNVERIFIED"]
+    SIG --> RES1["Status: SIGNATURE_VALID / SIGNATURE_INVALID / UNSIGNED"]
     ART --> RES2["Multi-Point Forensic Verdict"]
 ```
 
@@ -89,9 +89,9 @@ from eval_runner.verifier import VerificationAuthority
 # Requires an external trust root (PEM string, path, or mapping)
 result = VerificationAuthority.verify_package_signature_only(
     package,
-    trust_roots={"system_id": public_key_pem},
+    key_registry={"system_id": public_key_pem},
 )
-# Returns: {"verified": True/False, "status": "CERTIFIED"|"UNSIGNED"|"UNVERIFIED", ...}
+# Returns: {"verified": True/False, "status": "SIGNATURE_VALID"|"SIGNATURE_INVALID"|"UNSIGNED", ...}
 ```
 
 ### 2. Deep Artifact Verification
@@ -104,9 +104,35 @@ result = VerificationAuthority.verify_package_artifacts(
     canonical_manifest=manifest,
     scenario_data=scenario_dict,
     require_signature=True,
-    trust_roots={"system_id": public_key_pem},
+    key_registry={"system_id": public_key_pem},
 )
 ```
+
+### Authoritative certification verification
+
+Use the complete authority contract to verify a certification claim. It derives all events from the exact raw JSONL bytes and requires the actual execution manifest, scenario, signed evaluator finalization, evidence root, oracle reconciliation, and package signature:
+
+```python
+result = VerificationAuthority.verify_certification_artifact(
+    package=pkg,
+    raw_trace_bytes=raw_bytes,
+    canonical_manifest=execution_manifest,
+    scenario_data=scenario_dict,
+    key_registry=trusted_keys,
+)
+```
+
+`verify_package(..., require_signature=True)` uses this same contract. The authoritative HTTP endpoint, `POST /api/v1/evidence/verify`, accepts `package`, base64 `raw_trace_bytes`, `execution_manifest`, and `scenario_data`; it resolves signing trust server-side. Caller-supplied keys or reconstructed event lists are rejected.
+
+The package CLI uses authoritative verification by default:
+
+```bash
+python -m eval_runner.cli verify-package package.json --trace run.jsonl --execution-manifest execution_manifest.json --scenario scenario.json
+```
+
+Use `--diagnostic` explicitly for unsigned analysis. The CI gate rejects valid negative attestations as well as invalid evidence.
+
+Run verification through the CLI, console, and public Trust API uses `TraceVerifier.verify_run`, which also requires the provider's sealed lifecycle state. Current certificates require a canonical manifest signature that includes the execution manifest. Legacy signature formats are available only through explicit trace-only diagnostics. Unsigned package analysis returns `DIAGNOSTIC_VALID` and cannot certify a run; HTTP callers use `/api/v1/evidence/verify-diagnostic`.
 
 ### Multi-Point Verification Checks:
 1. **External Trust Root Anchoring**: The signing identity and public key are anchored against an authoritative external trust root or key registry; unanchored or self-signed keys fail closed as `UNVERIFIED`.

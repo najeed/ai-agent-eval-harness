@@ -365,7 +365,7 @@ def test_system_route_debugger_loan_narrative(client):
     assert res.status_code == 200
     state = client.get("/api/debugger/state").get_json()
     msg = state["data"]["summary"]["message"]
-    assert "(Industrial Demo Narrative)" in msg
+    assert msg == "Evaluation complete. Status: COMPLETED"
 
 
 def test_system_route_cleanup_runs_dir_absent(client, monkeypatch):
@@ -396,7 +396,9 @@ def test_system_route_cleanup_runs_plugin_without_method(client, console_jail):
         manager.plugins.remove(plugin)
 
 
-def test_system_route_debugger_state_demo_trace_hydration(client):
+def test_system_route_debugger_state_demo_trace_hydration(client, monkeypatch):
+    monkeypatch.setattr(config, "ENABLE_DEMO", True)
+    monkeypatch.setitem(client.application.config, "DEBUG", True)
     """Cover 336->363 false branch: get_demo_trace returns a trace, skipping file scan."""
     demo_events = [{"event": "run_start", "data": {}}]
     with patch("eval_runner.console.demo_traces.get_demo_trace", return_value=demo_events):
@@ -571,7 +573,7 @@ def test_debugger_state_store_run_end_variations():
         run_id="run-loan-narrative",
     )
     state = DebuggerStateStore.get_state("run-loan-narrative")
-    assert "Industrial Demo Narrative" in state["summary"]["message"]
+    assert state["summary"]["message"] == "Evaluation complete. Status: SUCCESS"
 
     # Normal run ID without loan prefix
     DebuggerStateStore.handle_event(
@@ -832,3 +834,23 @@ def test_system_ollama_status_error_and_status_branches(client):
         assert res_bad_json.status_code == 200
         assert res_bad_json.get_json()["available"] is True
         assert res_bad_json.get_json()["models"] == []
+
+
+@pytest.mark.parametrize("demo_enabled,debug", [(False, False), (True, False), (False, True)])
+def test_production_debugger_uses_provider_evidence(client, monkeypatch, demo_enabled, debug):
+    from eval_runner.console.routes import system
+
+    monkeypatch.setattr(config, "ENABLE_DEMO", demo_enabled)
+    monkeypatch.setitem(client.application.config, "DEBUG", debug)
+    provider_events = [{"event": "run_end", "data": {"status": "PROVIDER_RESULT"}}]
+    with (
+        patch.object(system, "get_run_store") as get_store,
+        patch("eval_runner.console.demo_traces.get_demo_trace") as demo,
+    ):
+        get_store.return_value.get_events.return_value = provider_events
+        response = client.get("/api/debugger/state?run_id=run-loan-demo-hydrate")
+    assert response.status_code == 200
+    assert response.get_json()["data"]["summary"]["message"] == (
+        "Evaluation complete. Status: PROVIDER_RESULT"
+    )
+    demo.assert_not_called()

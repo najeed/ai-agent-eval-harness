@@ -471,6 +471,7 @@ def test_verifier_artifact_store_wiring(tmp_path, monkeypatch):
         "event": "oracle_result",
         "run_id": run_id,
         "oracle_id": "oracle_1",
+        "resolver": "fixture",
         "assertion_id": "assert_1",
         "passed": True,
         "outcome": "PASS",
@@ -770,7 +771,7 @@ async def test_all_extension_families_exclusive_injection_contract(tmp_path):
 
     # 4. Custom SigningBackend Spy
     mock_signing_backend = MagicMock(spec=SigningBackend)
-    mock_signing_backend.sign_payload.return_value = "mock_sig_hex_12345"
+    mock_signing_backend.sign_payload.return_value = "a" * 128
 
     # 5. Custom ConfigResolver
     mock_resolver = MagicMock(spec=ConfigResolver)

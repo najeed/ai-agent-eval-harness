@@ -361,7 +361,12 @@ def test_resume_requires_provider_owned_durable_token(app, provider_scope, reque
 # Verification is explicitly exact-byte and provider scoped.
 def test_verify_uses_exact_provider_bytes_and_manifest(app, provider_scope, scope):
     provider_scope.get_run.return_value = {"run_id": "r1"}
-    manifest = {"run_id": "r1", "trace_hash": "abc"}
+    manifest = {
+        "run_id": "r1",
+        "trace_hash": "abc",
+        "execution_mode": "live",
+        "compliance_status": "pass",
+    }
     canonical = b'{"event":"run_end","_seq":7}\n'
     provider_scope.get_manifest.return_value = manifest
     provider_scope.get_trace_bytes.return_value = canonical
@@ -370,7 +375,9 @@ def test_verify_uses_exact_provider_bytes_and_manifest(app, provider_scope, scop
     ) as verify:
         response = invoke(app, runs.verify_run, "r1")
     assert body(response)["verification_status"] == "VERIFIED"
-    verify.assert_called_once_with(canonical, manifest, run_store=provider_scope, context=scope)
+    verify.assert_called_once_with(
+        canonical, manifest, run_store=provider_scope, context=scope, trace_only=False
+    )
 
 
 def test_verify_missing_provider_evidence_is_404(app, provider_scope):

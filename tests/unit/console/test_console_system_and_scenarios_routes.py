@@ -21,7 +21,7 @@ from eval_runner.utils import rmtree_resilient
 @pytest.fixture(scope="module")
 def console_jail(request):
     worker_id = getattr(request.config, "workerinput", {}).get("workerid", "master")
-    tmp_root = Path(tempfile.gettempdir()) / f"aes_console_sys_jail_extra_{worker_id}"
+    tmp_root = Path(tempfile.gettempdir()) / f"aes_console_sys_jail_routes_{worker_id}"
     root = tmp_root / "root"
     runs = root / "runs"
     docs = root / "docs-v1-deprecated-reference"
@@ -145,18 +145,22 @@ def test_debugger_state_loan_narrative_formatting(client):
     assert res.status_code == 200
     state = client.get("/api/debugger/state").get_json()
     msg = state["data"]["summary"]["message"]
-    assert "(Industrial Demo Narrative)" in msg
+    assert "Industrial Demo Narrative" not in msg
 
 
 def test_debugger_state_demo_trace_hydration_bypass(client):
-    """Verify debugger state serves demo traces directly when present."""
-    demo_events = [{"event": "run_start", "data": {}}]
-    with patch("eval_runner.console.demo_traces.get_demo_trace", return_value=demo_events):
-        res = client.get("/api/debugger/state?run_id=run-loan-demo-hydrate")
-    assert res.status_code == 200
-    body = res.get_json()
-    assert "data" in body
-    assert "timeline" in body["data"]
+    client.application.config["DEBUG"] = True
+    from eval_runner import config
+
+    with patch.object(config, "ENABLE_DEMO", True):
+        """Verify debugger state serves demo traces directly when present."""
+        demo_events = [{"event": "run_start", "data": {}}]
+        with patch("eval_runner.console.demo_traces.get_demo_trace", return_value=demo_events):
+            res = client.get("/api/debugger/state?run_id=run-loan-demo-hydrate")
+        assert res.status_code == 200
+        body = res.get_json()
+        assert "data" in body
+        assert "timeline" in body["data"]
 
 
 def test_debugger_state_nested_glob_and_empty_line_handling(client):

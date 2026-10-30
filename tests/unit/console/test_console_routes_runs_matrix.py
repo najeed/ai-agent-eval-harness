@@ -63,7 +63,10 @@ def test_authoritative_verdict_provider_edge_cases(provider):
     with patch(
         "eval_runner.services.run_summary.TraceVerifier.verify_trace_bytes", side_effect=ValueError
     ):
-        assert RunSummaryService.get_authoritative_verdict("corrupt", run_store=provider) == "ERROR"
+        assert (
+            RunSummaryService.get_authoritative_verdict("corrupt", run_store=provider)
+            == "FAILED_VERIFICATION"
+        )
 
 
 def test_stream_runs_list_uses_provider_records(app, provider, scope):
@@ -128,7 +131,11 @@ def test_stream_logs_uses_provider_events_and_transport_cursor(app, provider, sc
 
 def test_verify_run_endpoint_uses_provider_exact_bytes(app, provider, scope):
     provider.get_run.return_value = {"run_id": "run-verify-ok"}
-    provider.get_manifest.return_value = {"trace_hash": "digest"}
+    provider.get_manifest.return_value = {
+        "trace_hash": "digest",
+        "execution_mode": "live",
+        "compliance_status": "pass",
+    }
     provider.get_trace_bytes.return_value = b'{"event":"run_end"}\n'
     with (
         patch.object(runs, "_active_run_store", return_value=provider),
@@ -138,5 +145,9 @@ def test_verify_run_endpoint_uses_provider_exact_bytes(app, provider, scope):
         response = invoke(app, runs.verify_run, "run-verify-ok")
     assert response.get_json()["verification_status"] == "VERIFIED"
     verify.assert_called_once_with(
-        b'{"event":"run_end"}\n', {"trace_hash": "digest"}, run_store=provider, context=scope
+        b'{"event":"run_end"}\n',
+        {"trace_hash": "digest", "execution_mode": "live", "compliance_status": "pass"},
+        run_store=provider,
+        context=scope,
+        trace_only=False,
     )

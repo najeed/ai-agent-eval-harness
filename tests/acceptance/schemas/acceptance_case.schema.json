@@ -124,6 +124,15 @@
             },
             "sealed_required": {
               "type": "boolean"
+            },
+            "certificate_forbidden": {
+              "type": "boolean"
+            },
+            "verification_forbidden": {
+              "type": "boolean"
+            },
+            "sealed_forbidden": {
+              "type": "boolean"
             }
           },
           "additionalProperties": false

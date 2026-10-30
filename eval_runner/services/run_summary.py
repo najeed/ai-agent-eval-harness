@@ -102,55 +102,9 @@ class RunSummaryService:
         """Verify only provider-owned manifest and trace bytes for ``run_id``."""
         if not run_id:
             return "NOT_EXECUTED"
-        run = run_store.get_run(run_id, context=context) if hasattr(run_store, "get_run") else None
-        trace_bytes = (
-            run_store.get_trace_bytes(run_id, context=context)
-            if hasattr(run_store, "get_trace_bytes")
-            else None
-        )
-        manifest = (
-            run_store.get_manifest(run_id, context=context)
-            if hasattr(run_store, "get_manifest")
-            else None
-        )
-        if run is None and trace_bytes is None:
-            return "NOT_EXECUTED"
-        if not manifest or trace_bytes is None:
-            return "UNKNOWN"
-        try:
-            if not TraceVerifier.verify_trace_bytes(
-                trace_bytes,
-                manifest,
-                run_store=run_store,
-                context=context,
-                trace_only=False,
-            ):
-                return "FAILED_VERIFICATION"
-        except Exception as exc:
-            logger.debug("Authoritative provider verification failed for %s: %s", run_id, exc)
-            return "ERROR"
-        events = (
-            run_store.get_events(run_id, offset=0, limit=10_000_000, context=context)
-            if hasattr(run_store, "get_events")
-            else []
-        )
-        mode, provisional = cls._truth_level(events, manifest)
-        if provisional or mode.lower() in {"simulated", "unknown"}:
-            return "VERIFIED_PROVISIONAL"
-        compliance = manifest.get("compliance") or {}
-        cert = manifest.get("certification") or {}
-        status = str(
-            cert.get("outcome")
-            or compliance.get("status")
-            or manifest.get("compliance_status")
-            or manifest.get("status")
-            or ""
-        ).lower()
-        return (
-            "ATTESTED_FAIL"
-            if status in {"fail", "failed", "attested_fail", "attested_failed", "execution_failed"}
-            else "VERIFIED"
-        )
+        result = TraceVerifier.verify_run(run_id, run_store=run_store, context=context)
+        status = result["verification_status"]
+        return {"NOT_FOUND": "NOT_EXECUTED", "UNVERIFIED": "UNKNOWN"}.get(status, status)
 
     @classmethod
     def compute_summary(

@@ -15,6 +15,7 @@ def test_verify_run_reads_only_the_supplied_provider():
         "trace_hash": "digest",
         "signature": "signature",
         "execution_mode": "live",
+        "compliance_status": "pass",
     }
     provider.get_trace_bytes.return_value = b'{"event":"run_end"}\n'
 

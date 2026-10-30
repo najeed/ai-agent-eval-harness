@@ -235,7 +235,10 @@ def test_v3_signing_cycle():
     assert "evidence.txt" in manifest["evidence_ledger"]
 
     assert (
-        TraceVerifier.verify_trace(trace_path.read_bytes(), manifest, run_store=run_store) is True
+        TraceVerifier.verify_trace(
+            trace_path.read_bytes(), manifest, run_store=run_store, trace_only=True
+        )
+        is True
     )
 
 
@@ -283,7 +286,9 @@ def test_v3_governance_ttl():
     valid_trace.write_text('{"event": "data"}\n')
     valid_manifest = sign_and_save("run-valid-ttl", valid_trace.read_bytes(), run_store=run_store)
     assert (
-        TraceVerifier.verify_trace(valid_trace.read_bytes(), valid_manifest, run_store=run_store)
+        TraceVerifier.verify_trace(
+            valid_trace.read_bytes(), valid_manifest, run_store=run_store, trace_only=True
+        )
         is True
     )
 
@@ -312,7 +317,10 @@ async def test_verify_trace_async():
     manifest = sign_and_save(run_id, trace_path.read_bytes(), run_store=run_store)
     assert (
         await TraceVerifier.verify_trace_async(
-            trace_path.read_bytes(), manifest, run_store=run_store
+            trace_path.read_bytes(),
+            manifest,
+            run_store=run_store,
+            trace_only=True,
         )
         is True
     )
@@ -716,8 +724,7 @@ def test_core_trace_signer_sign_pqc_success(monkeypatch):
     monkeypatch.setattr(config, "PQC_ENABLED", True)
     monkeypatch.setattr(config, "PQC_STRICT_MODE", False)
 
-    mock_private_key = MagicMock()
-    mock_private_key.sign.return_value = b"\x00" * 64
+    mock_private_key = ed25519.Ed25519PrivateKey.generate()
 
     mock_pqc_client = MagicMock()
     mock_pqc_client.sign_digest.return_value = "pqc_sig_hex"
@@ -747,8 +754,7 @@ def test_core_trace_signer_pqc_client_unavailable_strict(monkeypatch):
     monkeypatch.setattr(config, "PQC_ENABLED", True)
     monkeypatch.setattr(config, "PQC_STRICT_MODE", True)
 
-    mock_private_key = MagicMock()
-    mock_private_key.sign.return_value = b"\x00" * 64
+    mock_private_key = ed25519.Ed25519PrivateKey.generate()
 
     manifest = {
         "provenance_chain": [],
@@ -769,8 +775,7 @@ def test_core_trace_signer_pqc_client_unavailable_non_strict(monkeypatch):
     monkeypatch.setattr(config, "PQC_ENABLED", True)
     monkeypatch.setattr(config, "PQC_STRICT_MODE", False)
 
-    mock_private_key = MagicMock()
-    mock_private_key.sign.return_value = b"\x00" * 64
+    mock_private_key = ed25519.Ed25519PrivateKey.generate()
 
     manifest = {
         "provenance_chain": [],
@@ -793,8 +798,7 @@ def test_core_trace_signer_pqc_sign_fails_strict(monkeypatch):
     monkeypatch.setattr(config, "PQC_ENABLED", True)
     monkeypatch.setattr(config, "PQC_STRICT_MODE", True)
 
-    mock_private_key = MagicMock()
-    mock_private_key.sign.return_value = b"\x00" * 64
+    mock_private_key = ed25519.Ed25519PrivateKey.generate()
 
     mock_pqc_client = MagicMock()
     mock_pqc_client.sign_digest.side_effect = RuntimeError("PQC API down")
@@ -821,8 +825,7 @@ def test_core_trace_signer_pqc_sign_fails_non_strict(monkeypatch):
     monkeypatch.setattr(config, "PQC_ENABLED", True)
     monkeypatch.setattr(config, "PQC_STRICT_MODE", False)
 
-    mock_private_key = MagicMock()
-    mock_private_key.sign.return_value = b"\x00" * 64
+    mock_private_key = ed25519.Ed25519PrivateKey.generate()
 
     mock_pqc_client = MagicMock()
     mock_pqc_client.sign_digest.side_effect = RuntimeError("API down")
@@ -980,7 +983,9 @@ def test_verify_trace_pqc_mismatch_and_unavailable(monkeypatch):
         "eval_runner.identity.IdentityService.get_pqc_client", return_value=mock_pqc_client_bad
     ):
         assert (
-            TraceVerifier.verify_trace(trace_path.read_bytes(), manifest, run_store=run_store)
+            TraceVerifier.verify_trace(
+                trace_path.read_bytes(), manifest, run_store=run_store, trace_only=True
+            )
             is False
         )
 
@@ -991,7 +996,9 @@ def test_verify_trace_pqc_mismatch_and_unavailable(monkeypatch):
         "eval_runner.identity.IdentityService.get_pqc_client", return_value=mock_pqc_client_good
     ):
         assert (
-            TraceVerifier.verify_trace(trace_path.read_bytes(), manifest, run_store=run_store)
+            TraceVerifier.verify_trace(
+                trace_path.read_bytes(), manifest, run_store=run_store, trace_only=True
+            )
             is True
         )
 
@@ -999,7 +1006,9 @@ def test_verify_trace_pqc_mismatch_and_unavailable(monkeypatch):
     monkeypatch.setattr(config, "PQC_STRICT_MODE", True)
     with patch("eval_runner.identity.IdentityService.get_pqc_client", return_value=None):
         assert (
-            TraceVerifier.verify_trace(trace_path.read_bytes(), manifest, run_store=run_store)
+            TraceVerifier.verify_trace(
+                trace_path.read_bytes(), manifest, run_store=run_store, trace_only=True
+            )
             is False
         )
 
@@ -1007,7 +1016,9 @@ def test_verify_trace_pqc_mismatch_and_unavailable(monkeypatch):
     manifest_bad_algo = manifest.copy()
     manifest_bad_algo["provenance_chain"][-1]["algorithm"] = "UNKNOWN_ALGO"
     assert (
-        TraceVerifier.verify_trace(trace_path.read_bytes(), manifest_bad_algo, run_store=run_store)
+        TraceVerifier.verify_trace(
+            trace_path.read_bytes(), manifest_bad_algo, run_store=run_store, trace_only=True
+        )
         is False
     )
 
@@ -1486,6 +1497,7 @@ def test_verify_trace_key_resolution_and_package_signature(tmp_path):
             signed_no_pkg,
             run_store=run_store,
             public_key_pem="INVALID_PEM_BYTES",
+            trace_only=True,
         )
         is True
     )
@@ -1497,6 +1509,7 @@ def test_verify_trace_key_resolution_and_package_signature(tmp_path):
             signed_no_pkg,
             run_store=run_store,
             key_registry={"system_id": "INVALID_PEM_BYTES"},
+            trace_only=True,
         )
         is True
     )
@@ -1508,6 +1521,7 @@ def test_verify_trace_key_resolution_and_package_signature(tmp_path):
             signed_no_pkg,
             run_store=run_store,
             key_registry={"system_id": valid_pem},
+            trace_only=True,
         )
         is True
     )
@@ -1523,6 +1537,7 @@ def test_verify_trace_key_resolution_and_package_signature(tmp_path):
             signed_no_pkg,
             run_store=run_store,
             trust_root=MockTrustRootObj(),
+            trace_only=True,
         )
         is True
     )
@@ -1535,7 +1550,11 @@ def test_verify_trace_key_resolution_and_package_signature(tmp_path):
     (sub_ident_dir / "public_key.pem").write_text("NOT_A_VALID_PEM", encoding="utf-8")
     assert (
         TraceVerifier.verify_trace(
-            trace_path.read_bytes(), signed_no_pkg, run_store=run_store, trust_root=custom_trust_dir
+            trace_path.read_bytes(),
+            signed_no_pkg,
+            run_store=run_store,
+            trust_root=custom_trust_dir,
+            trace_only=True,
         )
         is True
     )
@@ -1545,7 +1564,11 @@ def test_verify_trace_key_resolution_and_package_signature(tmp_path):
     (custom_trust_dir / "system_id.pem").write_text(valid_pem, encoding="utf-8")
     assert (
         TraceVerifier.verify_trace(
-            trace_path.read_bytes(), signed_no_pkg, run_store=run_store, trust_root=custom_trust_dir
+            trace_path.read_bytes(),
+            signed_no_pkg,
+            run_store=run_store,
+            trust_root=custom_trust_dir,
+            trace_only=True,
         )
         is True
     )
@@ -1576,7 +1599,11 @@ def test_verify_trace_key_resolution_and_package_signature(tmp_path):
 
     assert (
         TraceVerifier.verify_trace(
-            trace_path.read_bytes(), signed_with_pkg, run_store=run_store, public_key_pem=valid_pem
+            trace_path.read_bytes(),
+            signed_with_pkg,
+            run_store=run_store,
+            public_key_pem=valid_pem,
+            trace_only=True,
         )
         is False
     )
@@ -2438,7 +2465,7 @@ def test_verify_trace_sealed_run_matching_run_log_dir(tmp_path, monkeypatch):
             verify_ledger=False,
             require_sealed=True,
         )
-        assert ok is True
+        assert ok is False
 
 
 def test_verify_trace_trust_root_object_resolution(tmp_path, monkeypatch):
@@ -3018,7 +3045,12 @@ def test_verify_certification_artifact_successful_authoritative_certification():
     )
 
     run_id = "run_auth_pass"
-    scen_data = {"id": "scen_100", "version": "1.0.0", "metadata": {}}
+    scen_data = {
+        "id": "scen_100",
+        "version": "1.0.0",
+        "metadata": {},
+        "required_oracle_ids": ["oracle_auth"],
+    }
     scen_hash = compute_scenario_hash(scen_data)
 
     man_manifest_obj = ExecutionManifest(
@@ -3026,13 +3058,23 @@ def test_verify_certification_artifact_successful_authoritative_certification():
         scenario_id="scen_100",
         scenario_version="1.0.0",
         scenario_hash=scen_hash,
+        metadata={"required_oracle_ids": ["oracle_auth"]},
+        runtime_config={"execution_mode": "live"},
     )
     man_hash = man_manifest_obj.compute_manifest_hash()
 
-    ev1 = {"event": "start", "_seq": 1}
+    ev1 = {"event": "start", "_seq": 1, "execution_mode": "live"}
     raw_ev1_str = json.dumps(ev1)
 
-    ev_graph = build_evidence_graph_from_events([(ev1, raw_ev1_str)])
+    oracle_event = {
+        "event": "oracle_result",
+        "_seq": 2,
+        "oracle_id": "oracle_auth",
+        "outcome": "PASS",
+        "resolver": "deterministic_rule",
+    }
+    oracle_line = json.dumps(oracle_event)
+    ev_graph = build_evidence_graph_from_events([(ev1, raw_ev1_str), (oracle_event, oracle_line)])
     ev_root = compute_evidence_graph_root(ev_graph)
 
     fin = EvaluatorFinalizationRecord(
@@ -3048,17 +3090,18 @@ def test_verify_certification_artifact_successful_authoritative_certification():
         evidence_root_hash=ev_root,
         outcome="pass",
         score=1.0,
+        terminal_seq=2,
     )
     signed_fin = fin.sign(priv)
 
     ev_end = {
         "event": "run_end",
-        "_seq": 2,
+        "_seq": 3,
         "finalization": signed_fin.to_dict(),
     }
     raw_ev_end_str = json.dumps(ev_end)
 
-    raw_trace_bytes = f"{raw_ev1_str}\n{raw_ev_end_str}\n".encode()
+    raw_trace_bytes = f"{raw_ev1_str}\n{oracle_line}\n{raw_ev_end_str}\n".encode()
     trace_hash = _sha3_256_digest(raw_trace_bytes)
 
     pkg = _make_canonical_package(
@@ -3083,7 +3126,10 @@ def test_verify_certification_artifact_successful_authoritative_certification():
         ],
         decision={"decision": "PASS", "score": 1.0, "verdict": "VERIFIED"},
         execution_identity={"run_id": run_id, "execution_mode": "live"},
-        metadata={"provisional": False},
+        metadata={
+            "provisional": False,
+            "certificate_profile": "agentv.certification.v3.0.0",
+        },
         signer_identity="eval_agent",
     )
     signed_pkg = pkg.sign(priv)

@@ -20,6 +20,7 @@ import pytest
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 
+from agentv_runtime.canonical import canonical_json_encode
 from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
 from agentv_runtime.package import VerificationPackage
 from eval_runner import config
@@ -151,7 +152,7 @@ def clean_vault_setup(tmp_path, monkeypatch):
     trust_root.mkdir(parents=True, exist_ok=True)
 
     trace_file = run_dir / "run.jsonl"
-    line1 = json.dumps({"event": "start", "run_id": run_id, "turn": 1})
+    line1 = json.dumps({"event": "start", "run_id": run_id, "turn": 1, "execution_mode": "live"})
     line2 = json.dumps({"event": "action", "tool": "search", "query": "auth_key"})
     line3 = json.dumps({"event": "stop", "run_id": run_id, "turn": 2})
     trace_file.write_text(f"{line1}\n{line2}\n{line3}\n", encoding="utf-8")
@@ -242,9 +243,9 @@ def sign_and_save(run_id, trace_bytes, run_store=None, **kwargs):
 @pytest.fixture(autouse=True)
 def _bridge_golden_matrix_to_providers(monkeypatch):
     """
-    Test suite bridge: Maps legacy golden matrix call signatures to provider-native
-    primitives (sign_trace_bytes, verify_trace_bytes, verify_run) using explicit
-    LocalFileRunStore authority, ensuring full cryptographic verification.
+    Keep historical path fixtures focused on certificate-integrity checks.
+    Provider-native verification and issuance tests separately enforce the full
+    manifest, finalization, oracle, and sealed-state authority contract.
     """
     from eval_runner.forensics import ForensicRelevanceEngine
     from eval_runner.reference.local_run_store import LocalFileRunStore
@@ -480,16 +481,18 @@ def _bridge_golden_matrix_to_providers(monkeypatch):
                 trace_only = False
             elif kwargs.get("verify_ledger") or kwargs.get("require_sealed"):
                 trace_only = False
-            return TraceVerifier.verify_trace_bytes(
-                trace_bytes,
-                manifest_data,
-                run_store=run_store,
-                trace_only=trace_only,
-                **{
-                    k: v
-                    for k, v in kwargs.items()
-                    if k not in ("run_store", "trace_only", "run_id")
-                },
+            if kwargs.get("verify_ledger"):
+                return False
+            if run_store.get_trace_bytes(run_id) != trace_bytes:
+                return False
+            return bool(
+                verify_trace_certificate(
+                    run_id,
+                    trace_bytes,
+                    cert_data=manifest_data,
+                    scenario_data=manifest_data.get("scenario_data"),
+                    trace_only=trace_only,
+                ).get("verified")
             )
         return orig_verify_trace(*args, **kwargs)
 
@@ -1326,7 +1329,7 @@ def test_core_signer_unsignable_identity_fails_closed(clean_vault_setup, monkeyp
     trace_file = clean_vault_setup["trace_file"]
     sidecar = trace_file.parent / "run_manifest.json"
 
-    with pytest.raises(CertificationFailedError, match="no usable signing capability"):
+    with pytest.raises(CertificationFailedError, match="trusted private key not found"):
         TraceVerifier.sign_trace(str(trace_file), identity_id="ghost_signer", run_id=run_id)
 
     # Fail-closed: the aborted transaction leaves zero certificate artifacts.
@@ -1411,7 +1414,7 @@ def test_lifecycle_event_on_empty_trace_starts_at_byte_zero(clean_vault_setup):
 
 # --- Wave-1 Hotfix Regression: verify_trace_certificate + degenerate sigs ---
 
-VC_EVENT_LINE = '{"event": "start"}\n'
+VC_EVENT_LINE = '{"event": "start", "execution_mode": "live"}\n'
 
 
 @pytest.fixture
@@ -1655,6 +1658,7 @@ def _append_authoritative_finalization(trace_file: Path, run_id: str, run_dir: P
         scenario_id=f"scen_{run_id}",
         scenario_version="1.0.0",
         scenario_hash=scen_h,
+        runtime_config={"execution_mode": "live"},
     )
     (run_dir / "execution_manifest.json").write_text(json.dumps(eman.to_dict()), encoding="utf-8")
 
@@ -2063,8 +2067,8 @@ def test_independent_trace_oracle_mldsa65_algorithm(clean_vault_setup):
             )
 
 
-def test_verifier_direct_sign_method_fallback():
-    """Key with .sign but without private_bytes."""
+def test_verifier_direct_sign_method_does_not_bypass_selected_backend():
+    """A direct .sign method cannot bypass the selected provider's key contract."""
 
     class CustomSigningKey:
         def sign(self, data: bytes) -> bytes:
@@ -2076,9 +2080,9 @@ def test_verifier_direct_sign_method_fallback():
     }
     signer = CoreTraceSigner()
     with patch.object(IdentityService, "get_private_key", return_value=CustomSigningKey()):
-        res = signer.sign(manifest, lambda m: m)
-        assert len(res["provenance_chain"]) == 1
-        assert res["provenance_chain"][0]["signature"] == b"custom_signature_bytes".hex()
+        with pytest.raises(CertificationFailedError, match="trusted private key not found"):
+            signer.sign(manifest, lambda m: m)
+        assert manifest["provenance_chain"] == []
 
 
 def test_verifier_override_interceptor_local_cleanup():
@@ -2212,6 +2216,7 @@ def test_verification_authority_comprehensive_matrix():
     res_ev_mismatch = VerificationAuthority.verify_package(
         pkg_unsigned,
         raw_trace_events=events,
+        raw_trace_bytes=(json.dumps(events[0]) + "\n").encode(),
     )
     assert any("EvidenceRootMismatch" in f for f in res_ev_mismatch["failures"])
 
@@ -2219,7 +2224,11 @@ def test_verification_authority_comprehensive_matrix():
         "agentv_runtime.evidence_graph.build_evidence_graph_from_events",
         side_effect=ValueError("Graph fail"),
     ):
-        res_ev_err = VerificationAuthority.verify_package(pkg_unsigned, raw_trace_events=events)
+        res_ev_err = VerificationAuthority.verify_package(
+            pkg_unsigned,
+            raw_trace_events=events,
+            raw_trace_bytes=(json.dumps(events[0]) + "\n").encode(),
+        )
         assert res_ev_err["verified"] is False
         assert any("EvidenceReconstructionFailed" in f for f in res_ev_err["failures"])
 
@@ -2483,7 +2492,10 @@ def test_verification_authority_verify_package_complete_provenance_fallback():
         patch("agentv_runtime.evidence_graph.build_evidence_graph_from_events", return_value={}),
     ):
         res = VerificationAuthority.verify_package(
-            pkg, raw_trace_events=raw_events, require_signature=True
+            pkg,
+            raw_trace_events=raw_events,
+            raw_trace_bytes=(json.dumps(raw_events[0]) + "\n").encode(),
+            require_signature=True,
         )
         assert not any("DirectProvenanceViolation" in f for f in res["failures"])
 
@@ -2808,7 +2820,10 @@ def test_verification_authority_verify_package_incomplete_provenance_and_sig_exc
         patch.object(VerificationPackage, "verify_signature", return_value=True),
     ):
         res1 = VerificationAuthority.verify_package(
-            pkg, raw_trace_events=raw_events, require_signature=True
+            pkg,
+            raw_trace_events=raw_events,
+            raw_trace_bytes=(json.dumps(raw_events[0]) + "\n").encode(),
+            require_signature=True,
         )
         assert any("DirectProvenanceViolation" in f for f in res1["failures"])
 
@@ -2824,7 +2839,10 @@ def test_verification_authority_verify_package_incomplete_provenance_and_sig_exc
         ),
     ):
         res2 = VerificationAuthority.verify_package(
-            pkg, raw_trace_events=raw_events, require_signature=True
+            pkg,
+            raw_trace_events=raw_events,
+            raw_trace_bytes=(json.dumps(raw_events[0]) + "\n").encode(),
+            require_signature=True,
         )
         assert any("SignatureVerificationFailed" in f for f in res2["failures"])
 
@@ -2955,7 +2973,7 @@ def _make_signed_cert_for_bytes(
     if evidence_root_hash is not None:
         manifest_payload["evidence_root_hash"] = evidence_root_hash
 
-    canonical_bytes = json.dumps(manifest_payload, sort_keys=True).encode("utf-8")
+    canonical_bytes = canonical_json_encode(manifest_payload)
     sig_hex = priv_key.sign(canonical_bytes).hex()
 
     manifest_payload["provenance_chain"] = [
@@ -3236,7 +3254,12 @@ def test_verification_authority_package_artifacts_and_signature_only():
     )
     m_hash = manifest.compute_manifest_hash()
 
-    raw_trace_bytes = b'{"event": "run_start", "_seq": 1}\n{"event": "run_end", "_seq": 2}\n'
+    raw_trace_bytes = (
+        b'{"event": "run_start", "_seq": 1}\n'
+        b'{"event": "oracle_result", "_seq": 2, "oracle_id": "oracle_1", '
+        b'"outcome": "PASS", "resolver": "builtin_v1"}\n'
+        b'{"event": "run_end", "_seq": 3}\n'
+    )
     trace_hash = f"sha3_256:{hashlib.sha3_256(raw_trace_bytes).hexdigest()}"
     raw_events = [json.loads(line) for line in raw_trace_bytes.splitlines() if line.strip()]
     ev_graph = build_evidence_graph_from_events(
@@ -3281,7 +3304,9 @@ def test_verification_authority_package_artifacts_and_signature_only():
         require_signature=False,
     )
     assert res["verified"] is True
-    assert res["status"] == "CERTIFIED"
+    assert res["status"] == "DIAGNOSTIC_VALID"
+    assert res["authoritative"] is False
+    assert res["certified"] is False
     assert "TraceBytesMissing" not in res["failures"]
 
     # verify_package_signature_only without signature -> UNSIGNED
@@ -3455,16 +3480,22 @@ def test_verify_trace_blank_lines_and_empty_events(clean_vault_setup):
         encoding="utf-8",
     )
 
-    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
-
-    mock_pk = MagicMock(spec=Ed25519PublicKey)
-    with patch.object(IdentityService, "get_public_key", return_value=mock_pk):
-        assert (
-            TraceVerifier.verify_trace(
-                str(trace_empty), str(m_empty_path), trace_only=True, require_sealed=False
-            )
-            is True
+    # A positive diagnostic still requires a real trusted signature, even for blank bytes.
+    empty_manifest = json.loads(m_empty_path.read_text(encoding="utf-8"))
+    empty_manifest.pop("provenance_chain")
+    empty_manifest["run_id"] = run_id_empty
+    private_key = IdentityService.get_private_key("system_id", auto_provision=False)
+    signature = private_key.sign(canonical_json_encode(empty_manifest)).hex()
+    empty_manifest["provenance_chain"] = [
+        {"algorithm": "ED25519", "identity": "system_id", "signature": signature}
+    ]
+    m_empty_path.write_text(json.dumps(empty_manifest), encoding="utf-8")
+    assert (
+        TraceVerifier.verify_trace(
+            str(trace_empty), str(m_empty_path), trace_only=True, require_sealed=False
         )
+        is True
+    )
 
 
 def test_verify_trace_certificate_raw_pk_non_str_bytes():
@@ -3482,7 +3513,7 @@ def test_verify_trace_certificate_raw_pk_non_str_bytes():
         "run_id": "test-raw-pk-run",
         "trace_hash": f"sha3_256:{hashlib.sha3_256(trace_bytes).hexdigest()}",
     }
-    canonical_bytes = json.dumps(manifest_payload, sort_keys=True).encode("utf-8")
+    canonical_bytes = canonical_json_encode(manifest_payload)
     sig_hex = priv_key.sign(canonical_bytes).hex()
 
     manifest_payload["provenance_chain"] = [
@@ -3520,7 +3551,7 @@ def test_verify_trace_certificate_evidence_root_trace_bytes_edge_cases():
         "trace_hash": "sha3_256:abc",
         "evidence_root_hash": "sha3_256:target_root",
     }
-    canonical_bytes = json.dumps(manifest_payload, sort_keys=True).encode("utf-8")
+    canonical_bytes = canonical_json_encode(manifest_payload)
     sig_hex = priv_key.sign(canonical_bytes).hex()
     manifest_payload["provenance_chain"] = [
         {
@@ -3559,7 +3590,7 @@ def test_verify_trace_certificate_evidence_root_trace_bytes_edge_cases():
         "trace_hash": f"sha3_256:{t_hash_val}",
         "evidence_root_hash": expected_root,
     }
-    canonical_bytes2 = json.dumps(manifest_payload2, sort_keys=True).encode("utf-8")
+    canonical_bytes2 = canonical_json_encode(manifest_payload2)
     manifest_payload2["provenance_chain"] = [
         {
             "algorithm": "ED25519",
@@ -3993,7 +4024,9 @@ def test_verify_package_artifacts_scenario_decision_oracle_and_sig_branches():
                 scenario_data=scen_data,
                 require_signature=False,
             )
-            assert res_fail["status"] == "ATTESTED_FAIL"
+            assert res_fail["status"] == "DIAGNOSTIC_VALID"
+            assert res_fail["authoritative"] is False
+            assert res_fail["certified"] is False
             assert not any("UnverifiedDecision" in f for f in res_fail["failures"])
 
         # 4. Missing required oracles
@@ -4278,7 +4311,7 @@ async def test_verifier_signer_and_utilities_full_coverage(clean_vault_setup):
     assert signer.can_sign("standard") is True
     assert signer.can_sign("unsupported_format") is False
 
-    # 3. CoreTraceSigner signing fallback when private_bytes raises
+    # 3. Export failure aborts instead of calling the key's direct .sign method.
     mock_priv = MagicMock()
     mock_priv.private_bytes.side_effect = RuntimeError("No private bytes")
     mock_priv.sign.return_value = b"raw_sig_bytes"
@@ -4290,10 +4323,11 @@ async def test_verifier_signer_and_utilities_full_coverage(clean_vault_setup):
             },
             "certification": {"stages": [{"stage": "pre"}], "outcome": "CERTIFIED"},
         }
-        signed_manifest = signer.sign(manifest_data, lambda m: m)
-        assert signed_manifest["provenance_chain"][0]["signature"] == b"raw_sig_bytes".hex()
+        with pytest.raises(CertificationFailedError, match="No private bytes"):
+            signer.sign(manifest_data, lambda m: m)
+        mock_priv.sign.assert_not_called()
 
-    # 3b. CoreTraceSigner signing when private_key only has sign (no private_bytes)
+    # 3b. A sign-only key does not satisfy the deliberately selected local backend.
     mock_priv_sign_only = MagicMock(spec=["sign"])
     mock_priv_sign_only.sign.return_value = b"raw_sig_bytes_2"
     with patch(
@@ -4301,8 +4335,9 @@ async def test_verifier_signer_and_utilities_full_coverage(clean_vault_setup):
         return_value=mock_priv_sign_only,
     ):
         manifest_data_2 = {"signing_context": {"identity_id": "test_signer_2"}}
-        signed_manifest_2 = signer.sign(manifest_data_2, lambda m: m)
-        assert signed_manifest_2["provenance_chain"][0]["signature"] == b"raw_sig_bytes_2".hex()
+        with pytest.raises(CertificationFailedError, match="trusted private key not found"):
+            signer.sign(manifest_data_2, lambda m: m)
+        mock_priv_sign_only.sign.assert_not_called()
 
     # 3c. CoreTraceSigner when private_key exposes no sign capability
     mock_priv_empty = object()
@@ -4312,11 +4347,12 @@ async def test_verifier_signer_and_utilities_full_coverage(clean_vault_setup):
     ):
         with pytest.raises(
             CertificationFailedError,
-            match="exposes no usable signing capability",
+            match="trusted private key not found",
         ):
             signer.sign({"signing_context": {"identity_id": "empty_priv"}}, lambda m: m)
 
-    # 4. PQC strict mode exceptions
+    # 4. PQC strict mode exceptions, after a successful real Ed25519 signature.
+    mock_priv = Ed25519PrivateKey.generate()
     with patch("eval_runner.config.PQC_ENABLED", True):
         with patch("eval_runner.config.PQC_STRICT_MODE", True):
             # Case A: Client raises error
@@ -5203,12 +5239,23 @@ def test_verifier_remaining_branches_matrix(clean_vault_setup):
         decision={"decision": "PASS"},
         certificate_hash=c_match_hash,
     )
-    VerificationAuthority.verify_package_artifacts(
+    res_cert_match = VerificationAuthority.verify_package_artifacts(
         pkg_cert_art_match,
         raw_trace_bytes=b"any",
         raw_trace_events=[],
         canonical_manifest=m_cert_match_dict,
         require_signature=False,
+    )
+    assert not any("CertificateHashMismatch" in failure for failure in res_cert_match["failures"])
+    res_cert_changed_root = VerificationAuthority.verify_package_artifacts(
+        pkg_cert_art_match,
+        raw_trace_bytes=b"any",
+        raw_trace_events=[],
+        canonical_manifest={**m_cert_match_dict, "evidence_root_hash": "sha3_256:altered"},
+        require_signature=False,
+    )
+    assert any(
+        "CertificateHashMismatch" in failure for failure in res_cert_changed_root["failures"]
     )
 
     with patch(

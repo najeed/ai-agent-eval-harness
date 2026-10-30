@@ -59,8 +59,13 @@ def resolve_extension(  # noqa: UP047
         entry_point_group = f"{ENTRY_POINT_NAMESPACE}.{family}"
 
         discovered = {}
+        disable_external = bool(os.getenv("AGENTV_DISABLE_EXTERNAL_PLUGINS"))
         try:
             for ep in importlib.metadata.entry_points(group=entry_point_group):
+                if disable_external and not target_name:
+                    dist_name = getattr(getattr(ep, "dist", None), "name", None)
+                    if dist_name and dist_name not in {"agentv", "ai-agent-eval-harness"}:
+                        continue
                 discovered[ep.name] = ep
         except Exception as exc:
             logger.warning("Failed to enumerate entry points for '%s': %s", entry_point_group, exc)

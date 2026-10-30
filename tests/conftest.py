@@ -232,6 +232,7 @@ async def reset_sessions():
 @pytest.fixture(autouse=True)
 def reset_plugins():
     """Resets all registries before each test."""
+    from agentv_runtime.discovery import reset_extensions
     from eval_runner.catalog import ScenarioCatalog
     from eval_runner.engine import AgentAdapterRegistry
     from eval_runner.events import reset
@@ -239,6 +240,7 @@ def reset_plugins():
     from eval_runner.metrics import MetricRegistry
     from eval_runner.plugins import manager
 
+    reset_extensions()
     manager.reset()
     AgentAdapterRegistry.reset()
     reset()
@@ -256,6 +258,7 @@ def reset_plugins():
         pass
     yield
     try:
+        reset_extensions()
         manager.reset()
         AgentAdapterRegistry.reset()
         reset()
@@ -629,6 +632,7 @@ def append_authoritative_finalization(
             scenario_id=scen_data.get("id", f"scen_{run_id}"),
             scenario_version=scen_data.get("version", "1.0.0"),
             scenario_hash=scen_h,
+            metadata={"required_oracle_ids": compile_required_oracle_ids(scen_data)},
         )
         man_file.write_text(json.dumps(eman.to_dict()), encoding="utf-8")
         man_h = eman.compute_manifest_hash()

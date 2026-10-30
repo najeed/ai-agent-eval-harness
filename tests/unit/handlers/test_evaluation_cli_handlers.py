@@ -402,6 +402,7 @@ async def test_handle_verify_package_branches(tmp_path):
         raw_trace_path=None,
         public_key_pem=None,
         require_signature=False,
+        diagnostic=True,
     )
     assert await evaluation.handle_verify_package(args_valid) == 0
 

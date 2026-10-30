@@ -172,6 +172,7 @@ def _seed_live_certified_run(tmp_path, run_id: str):
         "event": "oracle_result",
         "_seq": 2,
         "oracle_id": "oracle_1",
+        "resolver": "fixture",
         "assertion_id": "assert_1",
         "passed": True,
         "outcome": "PASS",
@@ -479,7 +480,10 @@ def test_verifier_sign_trace_fail_closed_on_unusable_signing_capability(tmp_path
             return_value=DummyNonSigningKey(),
         ),
     ):
-        with pytest.raises(CertificationFailedError, match="exposes no usable signing capability"):
+        with pytest.raises(
+            CertificationFailedError,
+            match="Pre-existing trusted private key not found for certification identity",
+        ):
             TraceVerifier.sign_trace_bytes(
                 trace_bytes,
                 run_id=run_id,

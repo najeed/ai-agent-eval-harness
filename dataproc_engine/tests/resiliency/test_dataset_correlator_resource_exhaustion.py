@@ -50,11 +50,11 @@ async def test_correlator_fuzzy_and_temporal():
         checksum="xyz",
     )
 
-    # 2. Telecom Record (Fuzzy Match: Apple)
+    # 2. Telecom Record (same normalized company name).
     tel_record = StandardSchema(
         id="t1",
         industry="telecom",
-        data={"entity_name": "Apple", "value": 50.5},
+        data={"entity_name": "Apple Inc", "value": 50.5},
         provenance={},
         checksum="abc",
     )

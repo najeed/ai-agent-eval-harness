@@ -286,7 +286,7 @@ def test_debugger_state_demo_narrative(client, console_jail):
 
     res = client.get(f"/api/debugger/state?run_id={run_id}")
     assert res.status_code == 200
-    assert "Industrial Demo Narrative" in res.get_json()["data"]["summary"]["message"]
+    assert "Industrial Demo Narrative" not in res.get_json()["data"]["summary"]["message"]
 
 
 def test_debugger_event_mapping_complex(client):
@@ -304,7 +304,7 @@ def test_debugger_event_mapping_complex(client):
     summary = res.get_json()["data"]["summary"]
     assert summary["current_agent"] == "Agent TestBot"
     assert summary["last_tool"] == "search"
-    assert "Industrial Demo Narrative" in summary["message"]
+    assert "Industrial Demo Narrative" not in summary["message"]
 
 
 def test_mutate_scenario_missing_path(client):
@@ -666,7 +666,7 @@ def test_debugger_state_historical_and_events(client, console_jail):
         }
     )
     loan_state = DebuggerStateStore.get_state("run-loan-100")
-    assert "Industrial Demo Narrative" in loan_state["summary"]["message"]
+    assert "Industrial Demo Narrative" not in loan_state["summary"]["message"]
 
     # Load historical trace from disk
     run_dir = console_jail["runs"] / "run-hist-1"

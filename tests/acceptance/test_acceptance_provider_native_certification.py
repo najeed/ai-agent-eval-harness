@@ -55,6 +55,7 @@ def _seed_provider_run(store: LocalFileRunStore, run_id: str) -> dict:
         {"event": "run_start", "_seq": 1, "run_id": run_id, "execution_mode": "live"},
         {
             "event": "oracle_result",
+            "resolver": "fixture",
             "_seq": 2,
             "run_id": run_id,
             "oracle_id": "oracle-1",

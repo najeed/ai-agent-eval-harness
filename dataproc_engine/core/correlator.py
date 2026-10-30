@@ -1,5 +1,9 @@
 import logging
+import math
 import os
+import re
+import unicodedata
+from difflib import SequenceMatcher
 from typing import Any
 
 import pandas as pd
@@ -7,6 +11,17 @@ import pandas as pd
 from .base_provider import StandardSchema
 
 logger = logging.getLogger("DataCorrelator")
+
+CORRELATION_ALGORITHM = "difflib.SequenceMatcher.ratio/autojunk=false/v1"
+CORRELATION_NORMALIZATION = "unicode-nfkc-casefold-alphanumeric-whitespace/v1"
+DEFAULT_MINIMUM_SIMILARITY = 85.0
+
+
+def _entity_name(value: Any) -> str:
+    if not isinstance(value, str):
+        return ""
+    value = unicodedata.normalize("NFKC", value).casefold()
+    return " ".join(re.sub(r"[^\w\s]|_", " ", value).split())
 
 
 class DataCorrelator:
@@ -27,17 +42,28 @@ class DataCorrelator:
 
     @staticmethod
     def correlate(
-        datasets: dict[str, list[StandardSchema]], target_dir: str | None = None
+        datasets: dict[str, list[StandardSchema]],
+        target_dir: str | None = None,
+        *,
+        minimum_similarity: float = DEFAULT_MINIMUM_SIMILARITY,
     ) -> dict[str, list[StandardSchema]]:
         """
         Main entry point for cross-dataset correlation.
         """
+        if (
+            isinstance(minimum_similarity, bool)
+            or not isinstance(minimum_similarity, (int, float))
+            or not math.isfinite(minimum_similarity)
+            or not 0 < minimum_similarity <= 100
+        ):
+            raise ValueError("minimum_similarity must be finite and greater than 0, up to 100")
         logger.info("Starting cross-industry correlation...")
 
         # 1. Discover existing datasets recursively in the target directory to enrich current run
         if target_dir and os.path.exists(target_dir):
-            for root, _, files in os.walk(target_dir):
-                for file in files:
+            for root, directories, files in os.walk(target_dir):
+                directories.sort()
+                for file in sorted(files):
                     if file.endswith((".csv", ".jsonl")):
                         # Infer industry from filename (e.g., finance_records.csv -> finance)
                         ind_name = file.split("_")[0].split(".")[0]
@@ -63,67 +89,60 @@ class DataCorrelator:
         # 2. Build an Entity Map (Industry -> Name -> Record)
         entity_map = {}
         for industry, records in datasets.items():
-            entity_map[industry] = {
-                str(r.data.get("entity_name", r.data.get("name", ""))).lower().strip(): r
-                for r in records
-            }
+            # Sorting fixes ties and duplicate normalized names independently of input order.
+            entity_map[industry] = {}
+            for record in sorted(records, key=lambda r: str(r.id)):
+                name = _entity_name(record.data.get("entity_name", record.data.get("name")))
+                if name:
+                    entity_map[industry].setdefault(name, record)
 
         # 3. Propagate Signals
         for industry, current_records in datasets.items():
             if industry == "finance":
                 for fin_record in current_records:
-                    fin_name = str(fin_record.data.get("entity_name", "")).lower().strip()
+                    # Re-running correlation must not retain a link rejected by the new inputs.
+                    fin_record.data.pop("telecom_footprint_speed", None)
+                    fin_record.provenance.pop("correlated_telecom_id", None)
+                    fin_record.provenance.pop("telecom_correlation", None)
+                    fin_name = _entity_name(fin_record.data.get("entity_name"))
                     if not fin_name:
                         continue
 
                     # Telecom Enrichment
                     if "telecom" in entity_map:
-                        tel_names = list(entity_map["telecom"].keys())
+                        tel_names = sorted(entity_map["telecom"])
                         matched_name = None
                         score = 0.0
-
-                        try:
-                            from rapidfuzz import process, utils
-
-                            # Find the best match with a score threshold
-                            match = process.extractOne(
-                                fin_name,
-                                tel_names,
-                                processor=utils.default_process,
-                                score_cutoff=85,
+                        # A single scorer makes optional dependencies irrelevant to evidence.
+                        for name in tel_names:
+                            measured = (
+                                100.0
+                                * SequenceMatcher(None, fin_name, name, autojunk=False).ratio()
                             )
-                            if match:
-                                matched_name = match[0]
-                                score = match[1]
-                        except ImportError:
-                            # Robust Fallback to standard library difflib & substring checking
-                            import difflib
-
-                            # Check substring containment (e.g. "Apple" in "Apple Inc.")
-                            for name in tel_names:
-                                if name in fin_name or fin_name in name:
-                                    matched_name = name
-                                    score = 95.0
-                                    break
-
-                            if not matched_name:
-                                matches = difflib.get_close_matches(
-                                    fin_name, tel_names, n=1, cutoff=0.5
-                                )
-                                if matches:
-                                    matched_name = matches[0]
-                                    score = 80.0  # Simulated score for fallback matches
+                            if measured >= minimum_similarity and measured > score:
+                                matched_name, score = name, measured
 
                         if matched_name:
                             tel_record = entity_map["telecom"][matched_name]
                             logger.info(
-                                "Fuzzy Match (Fallback enabled): "
+                                "Measured entity similarity: "
                                 f"{fin_name} <-> {matched_name} (Score: {score})"
                             )
                             fin_record.data["telecom_footprint_speed"] = tel_record.data.get(
                                 "value"
                             )
                             fin_record.provenance["correlated_telecom_id"] = tel_record.id
+                            fin_record.provenance["telecom_correlation"] = {
+                                "matched_record_id": tel_record.id,
+                                "similarity_score": score,
+                                "score_scale": "0-100",
+                                "minimum_similarity": float(minimum_similarity),
+                                "algorithm": CORRELATION_ALGORITHM,
+                                "normalization": CORRELATION_NORMALIZATION,
+                                "source_name": fin_name,
+                                "matched_name": matched_name,
+                                "tie_break": "normalized-name-then-record-id-ascending",
+                            }
 
                     # Energy Enrichment (Spatio-Temporal Matching)
                     if "energy" in datasets:

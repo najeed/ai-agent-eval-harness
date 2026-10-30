@@ -8,6 +8,7 @@ and marks the task complete.
 import json
 import os
 import sys
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 
@@ -30,9 +31,30 @@ def commit_external_acceptance_transfer() -> None:
         headers={"Content-Type": "application/json"},
         method="POST",
     )
-    with urlopen(request, timeout=5) as response:  # nosec B310 - CI-pinned oracle URL
-        if response.status not in (200, 201):
-            raise RuntimeError("independent state oracle rejected approved transfer")
+    try:
+        with urlopen(request, timeout=5) as response:  # nosec B310
+            if response.status not in (200, 201):
+                raise RuntimeError("independent state oracle rejected approved transfer")
+    except HTTPError as error:
+        if error.code != 409:
+            raise
+        error.close()
+        # A repeated attempt may reuse the operation's idempotency key. Only
+        # independent confirmation of that exact committed operation is success.
+        with urlopen(base_url + "/state", timeout=5) as response:  # nosec B310
+            observation = json.loads(response.read().decode("utf-8"))
+        matches = [
+            row
+            for row in observation.get("state", {}).get("transfers", [])
+            if isinstance(row, dict) and row.get("id") == "acceptance-compliant-transfer"
+        ]
+        expected = {"source": "operating", "target": "recipient", "amount": 200}
+        if len(matches) != 1 or any(
+            matches[0].get(key) != value for key, value in expected.items()
+        ):
+            raise RuntimeError(
+                "independent oracle did not confirm the original transfer"
+            ) from error
 
 
 def main():

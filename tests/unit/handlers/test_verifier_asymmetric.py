@@ -61,16 +61,25 @@ def test_trace_verification_cycle(tmp_path, monkeypatch):
     assert manifest["provenance_chain"][0]["identity"] == identity_id
 
     # 4. Success Verification
-    assert TraceVerifier.verify_trace(trace_bytes, manifest, run_store=run_store) is True
+    assert (
+        TraceVerifier.verify_trace(trace_bytes, manifest, run_store=run_store, trace_only=True)
+        is True
+    )
 
     # 5. Tamper Verification (Data mismatch)
     tampered_bytes = b"TAMPERED"
-    assert TraceVerifier.verify_trace(tampered_bytes, manifest, run_store=run_store) is False
+    assert (
+        TraceVerifier.verify_trace(tampered_bytes, manifest, run_store=run_store, trace_only=True)
+        is False
+    )
 
     # 6. Corruption Verification (Manifest mismatch)
     bad_manifest = dict(manifest)
     bad_manifest["trace_hash"] = "wrong-hash"
-    assert TraceVerifier.verify_trace(trace_bytes, bad_manifest, run_store=run_store) is False
+    assert (
+        TraceVerifier.verify_trace(trace_bytes, bad_manifest, run_store=run_store, trace_only=True)
+        is False
+    )
 
 
 def test_verification_service_pipeline_depth_and_override(tmp_path):

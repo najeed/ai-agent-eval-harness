@@ -115,13 +115,9 @@ class LocalFileRunStore(RunStore):
     def log_dir(self) -> Path:
         if self._custom_log_dir is not None:
             return self._custom_log_dir
-        base = config.RUN_LOG_DIR
-        if isinstance(base, Path):
-            base.mkdir(parents=True, exist_ok=True)
-            return base
-        res = Path(base).resolve()
-        res.mkdir(parents=True, exist_ok=True)
-        return res
+        # Reads (including listing an empty provider) must not create directories.
+        # Mutation paths create their vault explicitly through _get_run_vault(create=True).
+        return Path(config.RUN_LOG_DIR).resolve()
 
     @property
     def base_dir(self) -> Path:
