@@ -55,7 +55,7 @@ framework-langserve = [
     "langserve>=0.3.3",
 ]
 framework-langgraph = [
-    "langgraph==1.2.18",
+    "langgraph==1.2.19",
 ]
 framework-ag2 = [
     "ag2==1.2.2",
@@ -84,7 +84,7 @@ langsmith = [
 # 4. Domain & Task Extras
 nlp = [
     "sentence-transformers==6.2.0",
-    "transformers==5.21.1",
+    "transformers==5.22.1",
     "datasets==5.1.0",
 ]
 docs = [
@@ -106,7 +106,7 @@ frameworks = [
     "langchain==1.4.7",
     "langchain-core>=1.7.3",
     "langserve>=0.3.3",
-    "langgraph==1.2.18",
+    "langgraph==1.2.19",
     "ag2==1.2.2",
 #    "crewai==1.15.29; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
 ]
@@ -122,13 +122,13 @@ langchain-all = [
 
 all = [
     "sentence-transformers==6.2.0",
-    "transformers==5.21.1",
+    "transformers==5.22.1",
     "datasets==5.1.0",
     "google-genai==2.34.0",
     "langchain==1.4.7",
     "langchain-core>=1.7.3",
     "langserve>=0.3.3",
-    "langgraph==1.2.18",
+    "langgraph==1.2.19",
     "ag2==1.2.2",
 #    "crewai==1.15.29; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
     "langchain-openai==1.7.3",
