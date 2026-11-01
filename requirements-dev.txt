@@ -10,13 +10,13 @@
 pytest>=9.1.1,<9.2.0
 pytest-cov>=7.1.0
 pytest-deduplicate>=0.1.6
-pytest-asyncio>=1.4.1
+pytest-asyncio>=1.4.1.post1
 pytest-aiohttp>=1.1.1
 pytest-xdist>=3.8.0
 hypothesis>=6.170.14
 mutmut>=3.8.1
-vcrpy>=9.2.0
-pytest-benchmark>=5.3.0
+vcrpy>=9.4.0
+pytest-benchmark>=5.3.1
 python-multipart>=0.0.32
 playwright>=1.64.1
 pre-commit>=4.7.0

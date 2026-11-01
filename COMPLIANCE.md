@@ -17,7 +17,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | Package | Version | License | License File |
 | :--- | :--- | :--- | :--- |
 | **aiohttp** | 3.14.5 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **Authlib** | 1.9.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **Authlib** | 1.9.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **certifi** | 2026.10.23 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **cryptography** | 50,<51 | Apache 2.0 / BSD | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **Flask** | 3.1.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |

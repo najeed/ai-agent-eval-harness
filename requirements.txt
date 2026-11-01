@@ -22,6 +22,6 @@ psutil==7.2.2
 httpx==0.28.1
 sqlalchemy==2.1.6
 python-dotenv==1.2.4
-Authlib==1.9.1
+Authlib==1.9.2
 Pillow==13.0.0
 idna==3.20
