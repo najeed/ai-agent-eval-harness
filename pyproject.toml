@@ -48,8 +48,8 @@ provider-gemini = [
 
 # 2. Framework Environments (Evaluated and verified agent architectures)
 framework-langchain = [
-    "langchain==1.4.7",
-    "langchain-core>=1.7.3",
+    "langchain==1.4.8",
+    "langchain-core>=1.7.4",
 ]
 framework-langserve = [
     "langserve>=0.3.3",
@@ -69,7 +69,7 @@ langchain-openai = [
     "langchain-openai==1.7.3",
 ]
 langchain-anthropic = [
-    "langchain-anthropic>=1.7.7",
+    "langchain-anthropic>=1.7.8",
 ]
 langchain-gemini = [
     "langchain-google-genai>=4.4.2",
@@ -78,7 +78,7 @@ langchain-ollama = [
     "langchain-ollama>=1.1.0",
 ]
 langsmith = [
-    "langsmith==0.14.16",
+    "langsmith==0.14.17",
 ]
 
 # 4. Domain & Task Extras
@@ -103,21 +103,21 @@ vcs = [
 
 # 5. Composed Ecosystem Extras
 frameworks = [
-    "langchain==1.4.7",
-    "langchain-core>=1.7.3",
+    "langchain==1.4.8",
+    "langchain-core>=1.7.4",
     "langserve>=0.3.3",
     "langgraph==1.2.19",
     "ag2==1.2.2",
 #    "crewai==1.15.29; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
 ]
 langchain-all = [
-    "langchain==1.4.7",
-    "langchain-core>=1.7.3",
+    "langchain==1.4.8",
+    "langchain-core>=1.7.4",
     "langchain-openai==1.7.3",
-    "langchain-anthropic>=1.7.7",
+    "langchain-anthropic>=1.7.8",
     "langchain-google-genai>=4.4.2",
     "langchain-ollama>=1.1.0",
-    "langsmith==0.14.16",
+    "langsmith==0.14.17",
 ]
 
 all = [
@@ -125,17 +125,17 @@ all = [
     "transformers==5.22.1",
     "datasets==5.1.0",
     "google-genai==2.34.0",
-    "langchain==1.4.7",
-    "langchain-core>=1.7.3",
+    "langchain==1.4.8",
+    "langchain-core>=1.7.4",
     "langserve>=0.3.3",
     "langgraph==1.2.19",
     "ag2==1.2.2",
 #    "crewai==1.15.29; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
     "langchain-openai==1.7.3",
-    "langchain-anthropic>=1.7.7",
+    "langchain-anthropic>=1.7.8",
     "langchain-google-genai>=4.4.2",
     "langchain-ollama>=1.1.0",
-    "langsmith==0.14.16",
+    "langsmith==0.14.17",
     "pypdf==6.21.4",
     "python-docx==1.2.0",
     "lxml==6.1.3",
