@@ -32,9 +32,9 @@ dependencies = [
     "opentelemetry-sdk==1.45.2",
     "psutil==7.2.2",
     "httpx==0.28.1",
-    "sqlalchemy==2.1.6",
+    "sqlalchemy==2.1.7",
     "python-dotenv==1.2.4",
-    "Authlib==1.9.2",
+    "Authlib==1.9.3",
     "Pillow==13.0.0",
     "idna==3.20",
 ]
