@@ -4217,7 +4217,7 @@
 <p>To establish cryptographic provenance, AgentV records the full multi-turn trajectory of an agent into a cryptographically sealed <code>run_manifest.json</code> (Verification Certificate v3) structure.</p>
 <p>Every execution manifest undergoes a dual-layer cryptographic signature generation using local Ed25519 and remote ML-DSA-65 (FIPS 204 PQC) keys:
 $$\text{Digest} = \text{SHAKE-256}(\text{ManifestMetadata})$$
-$$\text{Signature}<em _text_Ed25519="\text{Ed25519">{\text{Hybrid}} = \Big(\text{Sign}</em>}}(\text{PrivKey<em _text_ML-DSA-65="\text{ML-DSA-65">{\text{local}}, \text{Digest}), \ \text{Sign}</em>)\Big)$$
+$$\text{Signature}<em _text_Ed25519>{\text{Hybrid}} = \Big(\text{Sign}</em>}}(\text{PrivKey<em _text_ML-DSA-65>{\text{local}}, \text{Digest}), \ \text{Sign}</em>)\Big)$$
 This guarantees that historical traces are mathematically bound to both classical and quantum-resistant authorities.}}(\text{PrivKey}_{\text{CycleCore}}, \text{Digest</p>
 <h3 id="42-behavioral-dna-weighted-severity-model-wsm">4.2. Behavioral DNA &amp; Weighted Severity Model (WSM)<a class="headerlink" href="#42-behavioral-dna-weighted-severity-model-wsm" title="Permanent link">&para;</a></h3>
 <p>AgentV evaluates agent behavior using a multi-dimensional scoring engine aligned with the <strong>NIST AI-100-1</strong> standard. Rather than calculating simple accuracy ratios, AgentV implements a <strong>Weighted Severity Model (WSM)</strong> across seven dimensions:
