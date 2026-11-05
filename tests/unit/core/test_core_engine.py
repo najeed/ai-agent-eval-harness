@@ -1032,3 +1032,155 @@ async def test_agent_adapter_registry_dispatch_metadata_edge_cases():
         turn_ctx=ctx,
     )
     assert res["action"] == "final_answer"
+
+
+def test_render_outbound_payload_non_dict_template():
+    from types import SimpleNamespace
+
+    from eval_runner.engine import render_outbound_payload
+
+    ctx = SimpleNamespace(
+        metadata={"payload_template": "a-raw-string-template"},
+        input_payload={},
+        node_id="n1",
+        run_id="r1",
+    )
+    payload, h = render_outbound_payload("test prompt", ctx, "generic")
+    assert payload == {"task_description": "test prompt"}
+    assert h.startswith("sha3_256:")
+
+
+def test_render_outbound_payload_openapi_non_dict_input():
+    from types import SimpleNamespace
+
+    from eval_runner.engine import render_outbound_payload
+
+    ctx = SimpleNamespace(
+        metadata={},
+        input_payload=["not-a-dict", "another-item"],
+        node_id="n1",
+        run_id="r1",
+    )
+    payload, h = render_outbound_payload("openapi prompt", ctx, "openapi")
+    assert payload == {"task_description": "openapi prompt"}
+    assert h.startswith("sha3_256:")
+
+
+def test_render_outbound_payload_non_json_serializable_fallback():
+    from datetime import datetime
+    from types import SimpleNamespace
+
+    from eval_runner.engine import render_outbound_payload
+
+    ctx = SimpleNamespace(
+        metadata={"payload_template": {"ts": datetime(2026, 1, 1), "task": "{task_description}"}},
+        input_payload={},
+        node_id="n1",
+        run_id="r1",
+    )
+    payload, h = render_outbound_payload("datetime prompt", ctx, "generic")
+    assert payload["task"] == "datetime prompt"
+    assert h.startswith("sha3_256:")
+
+
+@pytest.mark.asyncio
+async def test_call_agent_metadata_none_initialization():
+    from types import SimpleNamespace
+    from unittest.mock import AsyncMock
+
+    from eval_runner.engine import AgentAdapterRegistry
+
+    mock_adapter = AsyncMock(return_value={"action": "done"})
+    AgentAdapterRegistry.register("mock_meta_init", mock_adapter)
+
+    ctx = SimpleNamespace(
+        history=(),
+        input_payload={},
+        task_id="t1",
+        turn_number=1,
+        span_context=None,
+        metadata=None,
+    )
+    res = await AgentAdapterRegistry.call_agent(
+        protocol="mock_meta_init",
+        endpoint="local",
+        message="init metadata test",
+        history=[],
+        turn_ctx=ctx,
+    )
+    assert res["action"] == "done"
+    assert isinstance(ctx.metadata, dict)
+    assert "outbound_payload_hash" in ctx.metadata
+    assert "rendered_outbound_payload" in ctx.metadata
+
+
+@pytest.mark.asyncio
+async def test_call_agent_preserves_existing_metadata():
+    from types import SimpleNamespace
+    from unittest.mock import AsyncMock
+
+    from eval_runner.engine import AgentAdapterRegistry
+
+    mock_adapter = AsyncMock(return_value={"action": "done"})
+    AgentAdapterRegistry.register("mock_preserve_meta", mock_adapter)
+
+    ctx = SimpleNamespace(
+        history=(),
+        input_payload={},
+        task_id="t1",
+        turn_number=1,
+        span_context=None,
+        metadata={"pre_existing_key": "pre_existing_value"},
+    )
+    res = await AgentAdapterRegistry.call_agent(
+        protocol="mock_preserve_meta",
+        endpoint="local",
+        message="preserve metadata test",
+        history=[],
+        turn_ctx=ctx,
+    )
+    assert res["action"] == "done"
+    assert ctx.metadata.get("pre_existing_key") == "pre_existing_value"
+
+
+@pytest.mark.asyncio
+async def test_call_agent_without_active_span_success_and_failure():
+    from types import SimpleNamespace
+    from unittest.mock import AsyncMock, patch
+
+    from eval_runner.engine import AgentAdapterRegistry
+
+    mock_adapter = AsyncMock(return_value={"action": "no_span_success"})
+    AgentAdapterRegistry.register("mock_no_span", mock_adapter)
+
+    ctx = SimpleNamespace(
+        history=(),
+        input_payload={},
+        task_id="t1",
+        turn_number=1,
+        span_context=None,
+        metadata={},
+    )
+
+    with patch("opentelemetry.trace.get_tracer", side_effect=RuntimeError("otel disabled")):
+        # Success path without active span (exercises span is None in finally / post-call)
+        res = await AgentAdapterRegistry.call_agent(
+            protocol="mock_no_span",
+            endpoint="local",
+            message="no span message",
+            history=[],
+            turn_ctx=ctx,
+        )
+        assert res["action"] == "no_span_success"
+
+        # Failure path without active span (exercises span is None in except / finally)
+        failing_adapter = AsyncMock(side_effect=ValueError("failing adapter error"))
+        AgentAdapterRegistry.register("mock_failing_span", failing_adapter)
+        with pytest.raises(ValueError, match="failing adapter error"):
+            await AgentAdapterRegistry.call_agent(
+                protocol="mock_failing_span",
+                endpoint="local",
+                message="fail message",
+                history=[],
+                turn_ctx=ctx,
+            )

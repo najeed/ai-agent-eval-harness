@@ -250,15 +250,22 @@ def test_forensics_register_raw_interaction_boundedness(tmp_path):
 
 
 def test_evidence_graph_link_assertion_with_evidence_reference():
-    """Verify EvidenceGraph recognizes and binds EvidenceReference nodes."""
+    """
+    Verify EvidenceGraph recognizes and binds EvidenceReference
+    nodes when content digest matches.
+    """
+    from agentv_runtime.evidence_graph import compute_evidence_reference_digest
+
+    sampled = {"part_id": "P-100", "qty": 50}
+    expected_digest = compute_evidence_reference_digest(sampled)
     ref = EvidenceReference(
         source_id="sap://materials",
         scope="inventory",
         selector_hash="sel_hash",
         query_or_operation_hash="q_hash",
-        result_hash="res_hash_1234567890",
+        result_hash=expected_digest,
         result_count=1,
-        sampled_result={"part_id": "P-100", "qty": 50},
+        sampled_result=sampled,
         provenance={"erp": "sap"},
     )
 
@@ -271,10 +278,133 @@ def test_evidence_graph_link_assertion_with_evidence_reference():
 
     linked_node = link_assertion(assertion=assertion, seq_index={})
     assert linked_node["resolved"] is True
+    assert linked_node["is_direct_provenance"] is True
     assert linked_node["source_type"] == "evidence_reference"
-    assert linked_node["content_hash"] == "res_hash_1234567890"
+    assert linked_node["content_hash"] == expected_digest
     assert "sap://materials#inventory" in linked_node["source_ref"]
     assert linked_node["reference"]["result_count"] == 1
+
+
+def test_fabricated_structurally_valid_evidence_reference_is_rejected():
+    """
+    Verify fabricated but structurally valid EvidenceReferences fail resolution
+    and verifier checks.
+    """
+    from agentv_runtime.evidence_graph import (
+        compute_evidence_reference_digest,
+        verify_trace_evidence_references,
+    )
+
+    sampled = {"part_id": "P-100", "qty": 50}
+    wrong_digest = compute_evidence_reference_digest({"part_id": "P-100", "qty": 999})
+
+    # 1. Structurally valid EvidenceReference whose result_hash does not match sampled_result
+    fabricated_ref = EvidenceReference(
+        source_id="sap://materials",
+        scope="inventory",
+        selector_hash="a" * 64,
+        query_or_operation_hash="b" * 64,
+        result_hash=wrong_digest,
+        result_count=1,
+        sampled_result=sampled,
+        provenance={"erp": "sap"},
+    )
+    node_mismatch = link_assertion(
+        assertion={
+            "oracle_id": "assert_inventory_check",
+            "metric": "inventory_accuracy",
+            "passed": True,
+            "evidence_reference": fabricated_ref,
+        },
+        seq_index={1: "sha3_256:" + ("c" * 64)},
+        fallback_seq=1,
+    )
+    assert node_mismatch["resolved"] is False
+    assert node_mismatch["is_direct_provenance"] is False
+    assert node_mismatch["source_type"] == "unresolved"
+
+    # 2. Structurally valid reference dict with source_id +
+    # 64-hex result_hash but no content or anchor
+    unanchored_node = link_assertion(
+        assertion={
+            "oracle_id": "assert_unanchored",
+            "passed": True,
+            "evidence_reference": {
+                "source_id": "sap://materials",
+                "scope": "inventory",
+                "selector_hash": "a" * 64,
+                "query_or_operation_hash": "b" * 64,
+                "result_hash": wrong_digest,
+                "result_count": 1,
+            },
+        },
+        seq_index={},
+    )
+    assert unanchored_node["resolved"] is False
+    assert unanchored_node["is_direct_provenance"] is False
+    assert unanchored_node["source_type"] == "unresolved"
+
+    # 3. Authoritative trace & oracle verifier rejects fabricated carrier/packaged references
+    valid_digest = compute_evidence_reference_digest(sampled)
+    valid_ref_dict = {
+        "source_id": "sap://materials",
+        "scope": "inventory",
+        "selector_hash": "a" * 64,
+        "query_or_operation_hash": "b" * 64,
+        "result_hash": valid_digest,
+        "result_count": 1,
+        "sampled_result": sampled,
+    }
+    trace_events = [
+        (
+            {
+                "event": "oracle_result",
+                "_seq": 1,
+                "oracle_id": "assert_inventory_check",
+                "passed": True,
+                "evidence_reference": valid_ref_dict,
+            },
+            '{"event":"oracle_result","_seq":1}',
+        ),
+        (
+            {
+                "event": "run_end",
+                "_seq": 2,
+                "data": {
+                    "assertions": [
+                        {
+                            "oracle_id": "assert_inventory_check",
+                            "passed": True,
+                            "evidence_reference": {
+                                **valid_ref_dict,
+                                "result_hash": wrong_digest,
+                            },
+                        }
+                    ]
+                },
+            },
+            '{"event":"run_end","_seq":2}',
+        ),
+    ]
+    failures = verify_trace_evidence_references(
+        trace_events,
+        executed_oracle_results=[
+            {
+                "oracle_id": "assert_unanchored",
+                "passed": True,
+                "evidence_reference": {
+                    "source_id": "snowflake://orders",
+                    "scope": "orders",
+                    "selector_hash": "a" * 64,
+                    "query_or_operation_hash": "b" * 64,
+                    "result_hash": wrong_digest,
+                    "result_count": 1,
+                },
+            }
+        ],
+    )
+    assert len(failures) == 2
+    assert all("EvidenceReferenceVerificationFailed" in f for f in failures)
 
 
 @pytest.mark.asyncio

@@ -175,8 +175,7 @@ class SignaturePolicy:
     key_id: str
     public_key: Any
     permitted_purposes: tuple[str, ...] = field(default_factory=lambda: tuple(PROJECTIONS))
-    permitted_profiles: tuple[str, ...] = (PROFILE, "ed25519-raw")
-    allow_legacy_raw: bool = True
+    permitted_profiles: tuple[str, ...] = (PROFILE,)
     revoked: bool = False
     not_before: datetime | None = None
     not_after: datetime | None = None
@@ -238,16 +237,10 @@ def unsigned_envelope(payload: bytes, policy: SignaturePolicy, purpose: str) -> 
 def verify_artifact_signature(
     payload: bytes, response: Any, policy: SignaturePolicy, purpose: str
 ) -> bool:
-    """Offline verification; no backend calls and no rejected-envelope legacy fallback."""
+    """Offline verification; no backend calls and no legacy raw fallback."""
     try:
         if not isinstance(response, dict):
-            if not policy.allow_legacy_raw or not isinstance(response, str):
-                return False
-            policy.authorize(purpose, "ed25519-raw")
-            if not re.fullmatch(r"[0-9a-fA-F]{128}", response):
-                return False
-            public_key_object(policy.public_key).verify(bytes.fromhex(response), payload)
-            return True
+            return False
         if set(response) != {"profile", "envelope", "signature"}:
             return False
         if response["profile"] != PROFILE:
@@ -299,12 +292,12 @@ def resolve_policy(
 
 
 def validate_signing_response(
-    payload: bytes, response: Any, *, identity: str, purpose: str
+    payload: bytes, response: Any, *, identity: str, purpose: str, public_key: Any = None
 ) -> str | dict[str, Any]:
     """Validate provider responses before publishing them, preserving complete envelopes."""
     if isinstance(response, dict):
         # Unversioned signature/sig wrappers are ambiguous and deliberately unsupported.
-        policy = resolve_policy(identity)
+        policy = resolve_policy(identity, public_key=public_key)
         if not verify_artifact_signature(payload, response, policy, purpose):
             raise SignatureContractError("Invalid or unauthorized structured signing response")
         return response
@@ -351,7 +344,14 @@ class DigestEnvelopeSigningBackend(SigningBackend):
         self, payload: bytes, key_identifier: Any = None, *, purpose: str, **kwargs: Any
     ) -> dict[str, Any]:
         envelope = unsigned_envelope(payload, self.policy, purpose)
-        raw = self.backend.sign_payload(canonical_json_encode(envelope), key_identifier, **kwargs)
+        backend_kwargs = dict(kwargs)
+        if key_identifier is not None:
+            backend_kwargs.pop("identity", None)
+        elif "identity" in backend_kwargs:
+            key_identifier = backend_kwargs.pop("identity")
+        raw = self.backend.sign_payload(
+            canonical_json_encode(envelope), key_identifier, **backend_kwargs
+        )
         if not isinstance(raw, str) or not re.fullmatch(r"[0-9a-fA-F]{128}", raw):
             raise SignatureContractError("RAW backend must return exactly 64 hex-encoded bytes")
         response = {
@@ -371,3 +371,27 @@ class DigestEnvelopeSigningBackend(SigningBackend):
         ):
             return False
         return verify_artifact_signature(payload, signature, self.policy, purpose)
+
+
+def sign_digest_envelope(
+    payload: bytes,
+    private_key: Any,
+    *,
+    identity: str,
+    purpose: str,
+    trust_root: Any = None,
+) -> dict[str, Any]:
+    """Helper to sign a payload with an Ed25519 private key into a valid envelope response."""
+    pub = (
+        private_key.public_key()
+        if callable(getattr(private_key, "public_key", None))
+        else getattr(private_key, "public_key", None)
+    )
+    policy = resolve_policy(identity, public_key=pub, trust_root=trust_root)
+    envelope = unsigned_envelope(payload, policy, purpose)
+    sig_bytes = private_key.sign(canonical_json_encode(envelope))
+    return {
+        "profile": PROFILE,
+        "envelope": envelope,
+        "signature": base64.b64encode(sig_bytes).decode("ascii"),
+    }

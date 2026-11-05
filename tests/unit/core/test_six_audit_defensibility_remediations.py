@@ -77,17 +77,19 @@ def test_rem1_flight_recorder_fail_closed_in_certification_mode(tmp_path: Path):
 
     and forbid seal/certificate generation.
     """
-    recorder = FlightRecorderPlugin(
-        log_dir=tmp_path, run_store=LocalFileRunStore(tmp_path), certification_mode=True
-    )
+    provider = LocalFileRunStore(tmp_path)
+    recorder = FlightRecorderPlugin(log_dir=tmp_path, run_store=provider, certification_mode=True)
     run_id = "cert-run-001"
 
-    # Force write to raise an OSError
-    with patch("builtins.open", side_effect=OSError("Disk full / write failure")):
+    # Fail the persistence contract, independently of the provider's file-writing primitive.
+    with patch.object(
+        provider, "append_events", side_effect=OSError("Disk full / write failure")
+    ) as append_events:
         event = Event("model_call", {"run_id": run_id, "prompt": "test"})
         with pytest.raises(RuntimeError, match="TracePersistenceError"):
             recorder.handle_event(event)
 
+    append_events.assert_called_once()
     assert recorder.get_run_state(run_id) == "CERTIFICATION_FAILED"
     assert run_id in recorder._failed_runs
 
@@ -99,21 +101,31 @@ def test_rem1_flight_recorder_fail_closed_in_certification_mode(tmp_path: Path):
     assert not seal_file.exists(), "trace_seal.json must not be created for failed runs"
 
 
+@pytest.mark.parametrize("mode_variable", ["EVAL_CERTIFICATION_MODE", "EVAL_ATTESTATION_MODE"])
 def test_rem1_flight_recorder_env_certification_mode(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, mode_variable: str
 ):
     """EVAL_CERTIFICATION_MODE=true or EVAL_ATTESTATION_MODE=true activates fail-closed."""
-    monkeypatch.setenv("EVAL_CERTIFICATION_MODE", "true")
-    recorder = FlightRecorderPlugin(log_dir=tmp_path, run_store=LocalFileRunStore(tmp_path))
+    for variable in ("AES_CERTIFICATION_MODE", "EVAL_CERTIFICATION_MODE", "EVAL_ATTESTATION_MODE"):
+        monkeypatch.delenv(variable, raising=False)
+    monkeypatch.setenv(mode_variable, "true")
+    provider = LocalFileRunStore(tmp_path)
+    recorder = FlightRecorderPlugin(log_dir=tmp_path, run_store=provider)
     assert recorder.is_certification_mode() is True
 
     run_id = "cert-env-run"
-    with patch("builtins.open", side_effect=OSError("Storage failure")):
+    with patch.object(
+        provider, "append_events", side_effect=OSError("Storage failure")
+    ) as append_events:
         event = Event("step_start", {"run_id": run_id})
         with pytest.raises(RuntimeError, match="TracePersistenceError"):
             recorder.handle_event(event)
 
+    append_events.assert_called_once()
     assert recorder.get_run_state(run_id) == "CERTIFICATION_FAILED"
+    with pytest.raises(RuntimeError, match="TracePersistenceError"):
+        recorder.finalize_run(run_id)
+    assert not (tmp_path / run_id / "trace_seal.json").exists()
 
 
 # ---------------------------------------------------------------------------

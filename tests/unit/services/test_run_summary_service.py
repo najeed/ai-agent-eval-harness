@@ -163,7 +163,7 @@ def test_get_authoritative_verdict_all_branches():
     )
 
     # 3. TraceVerifier returns False
-    provider = _store(run={"run_id": "r1"}, manifest={"a": 1}, trace=b"data")
+    provider = _store(run={"run_id": "r1"}, manifest={"trace_hash": "sha3_256:00"}, trace=b"data")
     with patch(
         "eval_runner.services.run_summary.TraceVerifier.verify_trace_bytes", return_value=False
     ):
@@ -185,7 +185,11 @@ def test_get_authoritative_verdict_all_branches():
     # 5. Verified provisional (simulated or provisional flag)
     provider = _store(
         run={"run_id": "r1"},
-        manifest={"execution_mode": "simulated", "status": "passed"},
+        manifest={
+            "execution_mode": "simulated",
+            "status": "passed",
+            "trace_hash": "sha3_256:00",
+        },
         trace=b"data",
     )
     with patch(

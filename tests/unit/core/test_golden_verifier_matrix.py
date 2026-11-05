@@ -104,7 +104,16 @@ class IndependentTraceOracle:
                     verified = False
                     for b in candidate_manifest_bytes:
                         try:
-                            pub_key.verify(bytes.fromhex(sig_hex), b)
+                            from agentv_runtime.signatures import (
+                                CERTIFICATE,
+                                resolve_policy,
+                                verify_artifact_signature,
+                            )
+
+                            if not verify_artifact_signature(
+                                b, sig_hex, resolve_policy(identity_id, pub_key), CERTIFICATE
+                            ):
+                                raise ValueError("EnvelopeSignatureVerificationFailed")
                             verified = True
                             break
                         except Exception:
@@ -2974,7 +2983,18 @@ def _make_signed_cert_for_bytes(
         manifest_payload["evidence_root_hash"] = evidence_root_hash
 
     canonical_bytes = canonical_json_encode(manifest_payload)
-    sig_hex = priv_key.sign(canonical_bytes).hex()
+    from agentv_runtime.signatures import CERTIFICATE, sign_digest_envelope
+
+    sig_hex = sign_digest_envelope(
+        canonical_bytes,
+        priv_key,
+        identity={
+            "test-mutant-kill-run": "mock_anchor",
+            "test-raw-pk-run": "int_key_signer",
+            "test-ev-root-edge-run": "signer_ev",
+        }[manifest_payload["run_id"]],
+        purpose=CERTIFICATE,
+    )
 
     manifest_payload["provenance_chain"] = [
         {
@@ -3485,7 +3505,14 @@ def test_verify_trace_blank_lines_and_empty_events(clean_vault_setup):
     empty_manifest.pop("provenance_chain")
     empty_manifest["run_id"] = run_id_empty
     private_key = IdentityService.get_private_key("system_id", auto_provision=False)
-    signature = private_key.sign(canonical_json_encode(empty_manifest)).hex()
+    from agentv_runtime.signatures import CERTIFICATE, sign_digest_envelope
+
+    signature = sign_digest_envelope(
+        canonical_json_encode(empty_manifest),
+        private_key,
+        identity="system_id",
+        purpose=CERTIFICATE,
+    )
     empty_manifest["provenance_chain"] = [
         {"algorithm": "ED25519", "identity": "system_id", "signature": signature}
     ]
@@ -3514,7 +3541,18 @@ def test_verify_trace_certificate_raw_pk_non_str_bytes():
         "trace_hash": f"sha3_256:{hashlib.sha3_256(trace_bytes).hexdigest()}",
     }
     canonical_bytes = canonical_json_encode(manifest_payload)
-    sig_hex = priv_key.sign(canonical_bytes).hex()
+    from agentv_runtime.signatures import CERTIFICATE, sign_digest_envelope
+
+    sig_hex = sign_digest_envelope(
+        canonical_bytes,
+        priv_key,
+        identity={
+            "test-mutant-kill-run": "mock_anchor",
+            "test-raw-pk-run": "int_key_signer",
+            "test-ev-root-edge-run": "signer_ev",
+        }[manifest_payload["run_id"]],
+        purpose=CERTIFICATE,
+    )
 
     manifest_payload["provenance_chain"] = [
         {
@@ -3552,7 +3590,18 @@ def test_verify_trace_certificate_evidence_root_trace_bytes_edge_cases():
         "evidence_root_hash": "sha3_256:target_root",
     }
     canonical_bytes = canonical_json_encode(manifest_payload)
-    sig_hex = priv_key.sign(canonical_bytes).hex()
+    from agentv_runtime.signatures import CERTIFICATE, sign_digest_envelope
+
+    sig_hex = sign_digest_envelope(
+        canonical_bytes,
+        priv_key,
+        identity={
+            "test-mutant-kill-run": "mock_anchor",
+            "test-raw-pk-run": "int_key_signer",
+            "test-ev-root-edge-run": "signer_ev",
+        }[manifest_payload["run_id"]],
+        purpose=CERTIFICATE,
+    )
     manifest_payload["provenance_chain"] = [
         {
             "algorithm": "ED25519",
@@ -3596,7 +3645,9 @@ def test_verify_trace_certificate_evidence_root_trace_bytes_edge_cases():
             "algorithm": "ED25519",
             "identity": "signer_ev",
             "public_key": pub_key.public_bytes(Encoding.Raw, PublicFormat.Raw).hex(),
-            "signature": priv_key.sign(canonical_bytes2).hex(),
+            "signature": sign_digest_envelope(
+                canonical_bytes2, priv_key, identity="signer_ev", purpose=CERTIFICATE
+            ),
         }
     ]
 
@@ -5247,6 +5298,15 @@ def test_verifier_remaining_branches_matrix(clean_vault_setup):
         require_signature=False,
     )
     assert not any("CertificateHashMismatch" in failure for failure in res_cert_match["failures"])
+
+    # Mutant 680 killer (line 3009): verify_package must match certificate_hash with execution_mode
+    res_pkg_match = VerificationAuthority.verify_package(
+        pkg_cert_art_match,
+        canonical_manifest=m_cert_match_dict,
+        require_signature=False,
+    )
+    assert not any("CertificateHashMismatch" in failure for failure in res_pkg_match["failures"])
+
     res_cert_changed_root = VerificationAuthority.verify_package_artifacts(
         pkg_cert_art_match,
         raw_trace_bytes=b"any",

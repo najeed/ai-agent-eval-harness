@@ -4,6 +4,7 @@ import os
 from abc import ABC, abstractmethod
 from pathlib import Path
 
+from agentv_runtime.discovery import get_registered_extension
 from agentv_runtime.scope import (
     ScopePolicy,
     ScopeToken,
@@ -89,9 +90,7 @@ def normalize_entitlements(user: dict) -> dict:
     contract is mandatory. When a generic context dictionary is provided,
     its key-values are normalized as opaque scope tags.
     """
-    has_cp_v2_claims = (
-        user.get("context_version") == CONTEXT_VERSION or "authorized_contexts" in user
-    )
+    has_cp_v2_claims = "context_version" in user or "authorized_contexts" in user
     has_legacy_context = any(k in user for k in CONTEXT_FIELDS)
 
     # 1. Generic principal with opaque context or unscoped
@@ -201,7 +200,10 @@ class AuthManager(ABC):
         pass
 
     def get_service_credential(self) -> str | None:
-        """Retrieve a service credential for background machine clients."""
+        return None
+
+    def get_authorization_backend(self) -> AuthorizationBackend | None:
+        """Return the active AuthorizationBackend governing this provider, if any."""
         return None
 
 
@@ -209,16 +211,23 @@ class StaticKeyProvider(AuthManager):
     """Default OSS provider: Single Master/Root Key maps to explicit granular nodes."""
 
     def __init__(self, key: str, backend: AuthorizationBackend | None = None):
+        from .. import config
+
         self.key = key
-        # Only the built-in fallback backend represents the legacy static
-        # root key.  A supplied backend is the verified authority for its
-        # principal claims, even when it happens to use the reference backend
-        # implementation.
-        self._uses_configured_backend = backend is not None
-        self.backend = backend or resolve_authorization_backend(master_key=key)
-        self._register_demo_principals()
-        self._jwks_client = None
-        self._jwks_url_cached = None
+        self.backend = (
+            backend if backend is not None else resolve_authorization_backend(master_key=key)
+        )
+        self._uses_configured_backend = (
+            backend is not None
+            or get_registered_extension("authorization_backends") is not None
+            or any((config.OIDC_JWKS_URL, config.OIDC_ISSUER, config.OIDC_AUDIENCE))
+        )
+        if not self._uses_configured_backend:
+            self._register_demo_principals()
+
+    def get_authorization_backend(self) -> AuthorizationBackend:
+        """Expose the sole identity and permission authority."""
+        return self.backend
 
     def _register_demo_principals(self) -> None:
         """Load explicit local demo identities only when demo mode is enabled.
@@ -278,173 +287,85 @@ class StaticKeyProvider(AuthManager):
             raise RuntimeError(f"Invalid demo identity fixture: {fixture_path}") from exc
 
     def authenticate(self, credentials: str) -> dict | None:
-        if not credentials:
+        if not isinstance(credentials, str) or not credentials:
             return None
-
-        # Check backend first
-        principal = self.backend.validate_token(credentials)
-        if principal:
-            perms = list(principal.permissions)
-            ptype = principal.metadata.get(
-                "type", "static-root" if principal.principal_id == "root-admin" else "backend-auth"
-            )
-            # Preserve configured/OIDC backend permissions exactly.  The
-            # finite Core expansion exists solely for the old unscoped static
-            # root-key compatibility path; replacing '*' elsewhere would
-            # erase extension-defined permission vocabularies.
+        try:
+            principal = self.backend.validate_token(credentials)
+            if not isinstance(principal, AuthPrincipal):
+                return None
             if (
-                not self._uses_configured_backend
-                and ptype == "static-root"
-                and principal.principal_id == "root-admin"
-                and "*" in perms
+                not isinstance(principal.principal_id, str)
+                or not principal.principal_id
+                or not isinstance(principal.metadata, dict)
+                or not isinstance(principal.permissions, list)
+                or not isinstance(principal.roles, list)
+                or any(not isinstance(p, str) or not p for p in principal.permissions)
+                or any(not isinstance(r, str) or not r for r in principal.roles)
             ):
-                perms = Permission.ADMIN()
+                return None
             user = {
+                **principal.metadata,
                 "id": principal.principal_id,
                 "name": principal.metadata.get("name", principal.principal_id),
-                "permissions": perms,
-                "type": ptype,
+                "permissions": list(principal.permissions),
+                "roles": list(principal.roles),
+                "type": principal.metadata.get("type", "backend-auth"),
             }
-            if principal.roles:
-                user["roles"] = list(principal.roles)
-            # Context is supplied by the authorization backend, never by a
-            # Console request.  Preserve it when a backend supports it.
-            for claim in (
-                "email",
-                "role",
-                "roles",
-                "org_id",
-                "tenant_id",
-                "workspace_id",
-                "active_environment",
-                "context_version",
-                "context",
-                "authorized_contexts",
+            if (
+                not self._uses_configured_backend
+                and user["type"] == "static-root"
+                and "*" in user["permissions"]
             ):
-                if claim in principal.metadata:
-                    user[claim] = principal.metadata[claim]
+                user["permissions"] = Permission.ADMIN()
             for claim in ("context_version", "context", "authorized_contexts"):
                 value = getattr(principal, claim, None)
                 if value is not None:
                     user[claim] = value
-            return user
-
-        if not self.key or credentials != self.key:
+            return normalize_entitlements(user)
+        except Exception:
+            # Denial, malformed provider data and outages all fail closed.
             return None
 
-        # [Hardening] Explicit Granular Nodes
-        return {
-            "id": "root-admin",
-            "name": "System Administrator",
-            "permissions": Permission.ADMIN(),
-            "type": "static-root",
-        }
-
     def verify_token(self, token: str) -> dict | None:
-        """
-        Verify OAuth2/OIDC JWT Bearer token.
-        If config.OIDC_JWKS_URL is set, verifies signature against the JWKS endpoint.
-        Otherwise, falls back to checking if the token matches the static Master Key.
-        """
-        from .. import config
-
-        if config.OIDC_JWKS_URL:
-            try:
-                import jwt
-
-                if not self._jwks_client or self._jwks_url_cached != config.OIDC_JWKS_URL:
-                    self._jwks_client = jwt.PyJWKClient(
-                        config.OIDC_JWKS_URL,
-                        cache_jwk_set=True,
-                        cache_lifetime=config.OIDC_JWKS_CACHE_TTL,
-                    )
-                    self._jwks_url_cached = config.OIDC_JWKS_URL
-
-                signing_key = self._jwks_client.get_signing_key_from_jwt(token)
-
-                kwargs = {
-                    "algorithms": ["RS256", "RS384", "RS512", "ES256", "ES384", "ES512"],
-                    "leeway": 10,  # [Hardening] Allow minor clock desynchronization skew
-                }
-                if config.OIDC_AUDIENCE:
-                    kwargs["audience"] = config.OIDC_AUDIENCE
-                if config.OIDC_ISSUER:
-                    kwargs["issuer"] = config.OIDC_ISSUER
-
-                payload = jwt.decode(token, signing_key.key, **kwargs)
-
-                permissions = payload.get("permissions", [])
-                if isinstance(permissions, str):
-                    permissions = permissions.split()
-                if not permissions:
-                    roles = payload.get("roles", [])
-                    if isinstance(roles, str):
-                        roles = [roles]
-                    if "admin" in roles or "system-admin" in roles:
-                        permissions = Permission.ADMIN()
-                    else:
-                        scope = payload.get("scope", "")
-                        if scope:
-                            permissions = scope.split(" ")
-
-                user = {
-                    "id": payload.get("sub", "unknown-oidc-user"),
-                    "email": payload.get("email", ""),
-                    "name": payload.get("name", payload.get("preferred_username", "OIDC User")),
-                    "permissions": permissions,
-                    "type": "oidc-sso",
-                }
-                # These are normalized from the verified OIDC payload so
-                # downstream extension handoffs can retain tenant context.
-                if "roles" in payload:
-                    user["roles"] = roles if "roles" in locals() else payload["roles"]
-                for claim in ("org_id", "tenant_id", "workspace_id"):
-                    if claim in payload:
-                        user[claim] = payload[claim]
-                environment = payload.get("active_environment", payload.get("environment"))
-                if environment is not None:
-                    user["active_environment"] = environment
-                for claim in ("context_version", "context", "authorized_contexts"):
-                    if claim in payload:
-                        user[claim] = payload[claim]
-                return user
-            except Exception as e:
-                if os.getenv("DEBUG", "false").lower() == "true":
-                    print(f"   [Auth] JWT Verification failed: {e}")
-                return None
-
+        """Bearer and API credentials use the same configured authority."""
         return self.authenticate(token)
 
     def has_permission(self, user: dict, permission_node: str) -> bool:
-        """Strict PBAC implementation: Verifies granular permissions node."""
-        user_perms = user.get("permissions", [])
-        if "*" in user_perms or permission_node in user_perms:
-            return True
-        principal = AuthPrincipal(principal_id=user.get("id", "unknown"), permissions=user_perms)
-        result = self.backend.check_permission(principal, permission_node, "")
-        if not result and os.getenv("DEBUG", "false").lower() == "true":
-            print(f"   [Auth] [DENIED] Node '{permission_node}' not in user perms: {user_perms}")
-        return result
+        try:
+            user = normalize_entitlements(user)
+            permissions = user.get("permissions", [])
+            roles = user.get("roles", [])
+            user_id = user.get("id") or user.get("principal_id") or "user"
+            if isinstance(roles, str):
+                roles = [roles]
+            if (
+                not isinstance(user_id, str)
+                or not user_id
+                or not isinstance(permissions, list)
+                or not isinstance(roles, list)
+                or any(not isinstance(p, str) or not p for p in permissions)
+                or any(not isinstance(r, str) or not r for r in roles)
+            ):
+                return False
+            principal = AuthPrincipal(
+                principal_id=user_id,
+                roles=roles,
+                permissions=permissions,
+                metadata=dict(user),
+                context_version=user.get("context_version"),
+                context=user.get("context"),
+                authorized_contexts=user.get("authorized_contexts"),
+            )
+            return self.backend.check_permission(principal, permission_node, "") is True
+        except Exception:
+            return False
 
     def get_service_credential(self) -> str | None:
-        """
-        Resolves a machine credential for server-to-server operations.
-        Prioritizes the configured backend before static key fallback.
-        """
-        if self._uses_configured_backend and hasattr(self.backend, "get_service_credential"):
-            cred = self.backend.get_service_credential()
-            if cred:
-                return cred
-        from .. import config
-
-        return (
-            self.key
-            or os.getenv("SERVICE_API_KEY")
-            or getattr(config, "SERVICE_API_KEY", None)
-            or os.getenv("DASHBOARD_API_KEY")
-            or getattr(config, "DASHBOARD_API_KEY", None)
-            or None
-        )
+        try:
+            credential = self.backend.get_service_credential()
+            return credential if isinstance(credential, str) and credential else None
+        except Exception:
+            return None
 
 
 _configured_authorization_backend: AuthorizationBackend | None = None
@@ -502,11 +423,7 @@ def get_auth_provider() -> AuthManager:
     backend = _configured_authorization_backend
     if backend is None:
         factory_spec = os.getenv(_AUTHORIZATION_BACKEND_FACTORY_ENV, "").strip()
-        backend = (
-            _load_configured_authorization_backend(factory_spec)
-            if factory_spec
-            else resolve_authorization_backend(master_key=config.SERVICE_API_KEY)
-        )
+        backend = _load_configured_authorization_backend(factory_spec) if factory_spec else None
     return StaticKeyProvider(config.SERVICE_API_KEY, backend=backend)
 
 
@@ -604,7 +521,7 @@ def require_permission(permission_node: str):
                 if hasattr(policy, "allows_permission"):
                     decision = policy.allows_permission(principal, permission_node, scope)
                     if decision is not None:
-                        return decision
+                        return bool(decision)
                 return provider.has_permission(principal, permission_node)
 
             # NOTE: No implicit localhost trust, even in demo mode.

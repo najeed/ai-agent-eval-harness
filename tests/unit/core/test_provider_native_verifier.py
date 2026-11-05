@@ -68,8 +68,9 @@ def test_byte_signer_hashes_the_exact_provider_bytes():
     trace = b'{"event":"run_start"}\n'
     provider = MagicMock()
     provider.get_trace_bytes.return_value = trace
-    signer = MagicMock()
-    signer.sign_payload.return_value = "ab" * 64
+    from eval_runner.reference.signing import LocalEd25519SigningBackend
+
+    signer = LocalEd25519SigningBackend()
 
     manifest = TraceVerifier.sign_trace_bytes(
         trace,

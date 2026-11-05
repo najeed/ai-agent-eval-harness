@@ -91,7 +91,16 @@ class CertificationService:
             event_data = event.get("data") if isinstance(event.get("data"), dict) else event
             payload: Any | None = None
             if event_name == "evaluator_finalization":
-                payload = event_data
+                if isinstance(event.get("data"), Mapping):
+                    payload = event["data"]
+                elif isinstance(event, Mapping):
+                    payload = {
+                        k: v
+                        for k, v in event.items()
+                        if k not in {"event", "_seq", "_ts", "timestamp"}
+                    }
+                else:
+                    payload = event_data
             elif event_name in {"run_end", "end"}:
                 if isinstance(event_data.get("finalization"), Mapping):
                     payload = event_data["finalization"]
@@ -217,7 +226,16 @@ class CertificationService:
             ev_name = ev.get("event")
             data = ev.get("data") if isinstance(ev.get("data"), dict) else {}
             if ev_name == "evaluator_finalization":
-                payload = data or ev
+                if isinstance(ev.get("data"), Mapping):
+                    payload = ev["data"]
+                elif isinstance(ev, Mapping):
+                    payload = {
+                        k: v
+                        for k, v in ev.items()
+                        if k not in {"event", "_seq", "_ts", "timestamp"}
+                    }
+                else:
+                    payload = data or ev
             else:
                 payload = data.get("finalization") or ev.get("finalization")
             try:
@@ -475,7 +493,10 @@ class CertificationService:
             )
 
         # Evidence graph validation
-        from agentv_runtime.evidence_graph import build_evidence_graph_from_events
+        from agentv_runtime.evidence_graph import (
+            build_evidence_graph_from_events,
+            verify_trace_evidence_references,
+        )
 
         raw_events: list[tuple[dict[str, Any], str]] = []
 
@@ -493,6 +514,10 @@ class CertificationService:
                 )
             ):
                 raw_events.append((rec, line))
+
+        ref_failures = verify_trace_evidence_references(events)
+        if ref_failures:
+            raise ValueError(ref_failures[0])
 
         ev_graph = build_evidence_graph_from_events(
             raw_events, required_oracle_ids=finalization.required_oracle_ids
@@ -710,7 +735,7 @@ class CertificationService:
                     executed_oracle_ids.add(str(o_id))
 
         missing_oracles = sorted(fin_reqs - executed_oracle_ids)
-        if missing_oracles:
+        if missing_oracles and str(finalization.outcome).lower() in ("pass", "success"):
             raise ValueError(
                 f"MissingRequiredOracles: required oracles {missing_oracles} were not executed"
             )

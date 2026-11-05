@@ -47,6 +47,31 @@ async def test_sandbox_shared_state_failures(tmp_path):
     assert "no read permission" in res_read.get("message", "")
 
 
+@pytest.mark.asyncio
+async def test_sandbox_shared_state_success(tmp_path):
+    scenario = {
+        "id": "test",
+        "metadata": {
+            "agent_topology": {"agent_1": {"writes": ["ns_1:*"], "reads": ["ns_1:*"]}},
+        },
+        "tools": {"write_tool": {}, "read_tool": {}},
+    }
+    sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+
+    # Authorized write succeeds without error
+    res_write = await sandbox.execute(
+        "write_tool", {"shared_write": {"path": "ns_1:key", "value": 42}}, agent_name="agent_1"
+    )
+    assert res_write.get("status") != "error"
+    assert sandbox.shared_state.registry.get("ns_1:key") == 42
+
+    # Authorized read succeeds without error
+    res_read = await sandbox.execute(
+        "read_tool", {"shared_read": {"path": "ns_1:key"}}, agent_name="agent_1"
+    )
+    assert res_read.get("status") != "error"
+
+
 # --- AbstractSandbox Error Handling ---
 @pytest.mark.asyncio
 async def test_sandbox_setup_skips_undeclared_forensic_state(tmp_path):

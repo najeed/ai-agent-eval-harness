@@ -1,9 +1,7 @@
-import hashlib
 import sys
 import tempfile
 import unittest
-from datetime import datetime
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 # Mock cyclecore_pq before importing eval_runner
 mock_cyclecore = MagicMock()
@@ -77,60 +75,39 @@ class TestPQCSigning(unittest.TestCase):
         args, kwargs = mock_client.sign_digest.call_args
         self.assertEqual(len(kwargs["digest"]), 32)
 
-    @patch("eval_runner.identity.IdentityService.get_private_key")
-    def test_verify_hybrid_signatures(self, mock_get_priv):
-        # Mock clients
-        mock_priv = MagicMock()
-        mock_get_priv.return_value = mock_priv
+    def test_verify_hybrid_signatures(self):
+        config.PQC_ENABLED = True
+        config.PQC_IDENTITY_ID = "system_id@pqc"
+        config.PQC_PROVIDER = "cyclecore"
 
         mock_client = MagicMock()
+        mock_client.sign_digest.return_value = "cafebabe" * 60
         mock_client.verify_digest.return_value = True
         identity.IdentityService._pqc_client = mock_client
 
-        # Create a mock manifest with valid hex and timestamp
-        timestamp = datetime.now().astimezone().isoformat()
+        identity_id = "pqc_hybrid_test_id"
+        identity.IdentityService._provision_local_identity(identity_id)
+
         trace_bytes = self.run_store.get_trace_bytes(self.run_id)
-        trace_hash = hashlib.sha3_256(trace_bytes).hexdigest()
-        manifest = {
-            "run_id": self.run_id,
-            "vc_version": "3.0.0",
-            "trace_hash": trace_hash,
-            "hash_algorithm": "sha3_256",
-            "timestamp": timestamp,
-            "provenance_chain": [
-                {
-                    "identity": "system_id",
-                    "signature": "deadbeef" * 8,  # 32 bytes hex
-                    "algorithm": "ED25519",
-                },
-                {
-                    "identity": "system_id@pqc",
-                    "signature": "cafebabe" * 60,  # Large hex for PQC
-                    "algorithm": "ML-DSA-65",
-                },
-            ],
-        }
-        self.run_store.save_run_manifest(self.run_id, manifest)
+        manifest = verifier.TraceVerifier.sign_trace_bytes(
+            trace_bytes,
+            run_id=self.run_id,
+            identity_id=identity_id,
+            run_store=self.run_store,
+        )
 
-        # Mock public key verification
-        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+        self.assertEqual(len(manifest["provenance_chain"]), 2)
+        self.assertEqual(manifest["provenance_chain"][0]["algorithm"], "ED25519")
+        self.assertEqual(manifest["provenance_chain"][1]["algorithm"], "ML-DSA-65")
 
-        with patch("eval_runner.identity.IdentityService.get_public_key") as mock_get_pub:
-            mock_pub = MagicMock(spec=Ed25519PublicKey)
-            mock_pub.public_bytes.return_value = b"0" * 32
-            mock_get_pub.return_value = mock_pub
-
-            # Execute verification
-            success = verifier.TraceVerifier.verify_trace_bytes(
-                trace_bytes,
-                manifest,
-                run_store=self.run_store,
-                trace_only=True,
-            )
-
-            self.assertTrue(success)
-            mock_pub.verify.assert_called_once()
-            mock_client.verify_digest.assert_called_once()
+        success = verifier.TraceVerifier.verify_trace_bytes(
+            trace_bytes,
+            manifest,
+            run_store=self.run_store,
+            trace_only=True,
+        )
+        self.assertTrue(success)
+        mock_client.verify_digest.assert_called_once()
 
     def test_pqc_disabled_fallback(self):
         """When PQC is disabled, only a classical ED25519 signature is produced."""

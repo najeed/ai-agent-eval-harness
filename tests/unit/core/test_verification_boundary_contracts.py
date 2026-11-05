@@ -9,6 +9,12 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from agentv_runtime.canonical import canonical_json_encode
 from agentv_runtime.manifest import compute_scenario_hash
+from agentv_runtime.signatures import (
+    CERTIFICATE,
+    SignaturePolicy,
+    fingerprint,
+    sign_digest_envelope,
+)
 from eval_runner.verifier import TraceVerifier, verify_trace_certificate
 
 
@@ -73,12 +79,21 @@ def test_certificate_integrity_accepts_declared_scenario_hash_locations(hash_loc
         certificate["scenario_hash"] = compute_scenario_hash(scenario)
     if hash_location in {"metadata", "both"}:
         certificate["metadata"] = {"scenario_hash": compute_scenario_hash(scenario)}
-    signature = key.sign(canonical_json_encode(certificate)).hex()
+    policy = SignaturePolicy(
+        "boundary-signer", f"sha256:{fingerprint(key.public_key())}", key.public_key()
+    )
+    signature = sign_digest_envelope(
+        canonical_json_encode(certificate),
+        key,
+        identity="boundary-signer",
+        purpose=CERTIFICATE,
+    )
     certificate["provenance_chain"] = [
         {"identity": "boundary-signer", "algorithm": "ED25519", "signature": signature}
     ]
     trust = SimpleNamespace(
-        get_public_key=lambda identity: key.public_key() if identity == "boundary-signer" else None
+        get_public_key=lambda identity: key.public_key() if identity == "boundary-signer" else None,
+        get_signature_policy=lambda identity: policy if identity == "boundary-signer" else None,
     )
 
     result = verify_trace_certificate(

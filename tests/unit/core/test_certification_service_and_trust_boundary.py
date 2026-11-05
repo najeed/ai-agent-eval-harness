@@ -2027,9 +2027,7 @@ def test_authoritative_package_verification_uses_bytes_without_caller_events(pro
     # Re-sign tampered packages to prove checks extend beyond package signatures.
     pkg = replace(
         pkg,
-        signature=IdentityService.get_private_key("system_id")
-        .sign(pkg.canonical_payload_bytes())
-        .hex(),
+        signature=pkg.sign(IdentityService.get_private_key("system_id")).signature,
     )
     result = VerificationAuthority.verify_package(
         pkg,

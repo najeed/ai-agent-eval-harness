@@ -111,6 +111,26 @@ async def test_commit_interceptor_decision_controls_the_observed_state(
     if not allowed:
         assert response["error_code"] == "STATE_COMMIT_REJECTED"
     assert sandbox.state["balance"] == expected_balance
+    # Without a mutation_receipt mapping, mutation_delivery event must not be emitted
+    delivery_calls = [
+        c for c in sandbox.event_bus.emit.call_args_list if c[0] and c[0][0] == "mutation_delivery"
+    ]
+    assert len(delivery_calls) == 0
+
+    # With a valid mutation_receipt mapping and event_bus, receipt must be delivered
+    if allowed:
+        p_receipt = SimpleNamespace(
+            trigger_interceptor=lambda *args: {
+                "allowed": True,
+                "mutation_receipt": {"receipt_id": "rcpt_1"},
+            }
+        )
+        sb_receipt = sandbox_for(tmp_path, allowed=True, plugin=p_receipt)
+        await sb_receipt.execute("transfer", {})
+        sb_receipt.event_bus.emit.assert_any_call(
+            "mutation_delivery",
+            {"category": "MUTATION_DELIVERY", "mutation_receipt": {"receipt_id": "rcpt_1"}},
+        )
 
 
 @pytest.mark.asyncio

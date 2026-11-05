@@ -124,6 +124,105 @@ def test_local_provider_recovers_journaled_certification_commit_after_interrupti
     assert not store._commit_journal_path(vault).exists()
 
 
+@pytest.mark.parametrize("existing_manifest", [False, True])
+def test_local_provider_commit_survives_reader_recovery_during_publication(
+    tmp_path, monkeypatch, existing_manifest
+):
+    """A reader completing the journal must not consume the committer's staged file."""
+    store = LocalFileRunStore(tmp_path)
+    reader = LocalFileRunStore(tmp_path)
+    run_id = "run-overlapping-recovery"
+    store.create_run(run_id, "scenario")
+    if existing_manifest:
+        store.save_run_manifest(run_id, {"execution_manifest": {"scenario_id": "scenario"}})
+    assert store.acquire_certification_lease(
+        run_id, owner_id="certifier", fencing_token="fence-1", timeout_seconds=60
+    )
+    vault = store._get_run_vault(run_id)
+    target = vault / "run_manifest.json"
+    manifest = {"run_id": run_id, "trace_hash": "sha3_256:committed"}
+    replace_path = Path.replace
+    recovered = []
+
+    def recover_before_replace(staged, destination):
+        if Path(destination) == target and not recovered:
+            # Interleave the second provider after staging and before publication,
+            # exactly where a lease heartbeat can observe the durable journal.
+            recovered.append(True)
+            assert reader.get_run(run_id)["lifecycle"] == "SEALED"
+            assert reader.get_manifest(run_id) == manifest
+        return replace_path(staged, destination)
+
+    monkeypatch.setattr(Path, "replace", recover_before_replace)
+    assert store.commit_certification(
+        run_id, manifest, owner_id="certifier", fencing_token="fence-1"
+    )
+    assert recovered == [True]
+    assert store.get_run(run_id)["lifecycle"] == "SEALED"
+    assert store.get_manifest(run_id) == manifest
+    assert store.commit_certification(
+        run_id, manifest, owner_id="certifier", fencing_token="fence-1"
+    )
+    assert not store.commit_certification(
+        run_id, {**manifest, "trace_hash": "altered"}, owner_id="certifier", fencing_token="fence-1"
+    )
+    assert not store._commit_journal_path(vault).exists()
+    assert not list(vault.glob("*.tmp"))
+
+
+@pytest.mark.parametrize("failure", ["fsync", "replace"])
+def test_local_provider_failed_atomic_write_preserves_original_and_cleans_stage(
+    tmp_path, monkeypatch, failure
+):
+    target = tmp_path / "run_manifest.json"
+    target.write_bytes(b"original")
+    existing_paths = set(tmp_path.iterdir())
+
+    def fail_write(*args):
+        raise OSError("injected storage failure")
+
+    with monkeypatch.context() as patcher:
+        if failure == "fsync":
+            patcher.setattr("eval_runner.reference.local_run_store.os.fsync", fail_write)
+        else:
+            patcher.setattr(Path, "replace", fail_write)
+        with pytest.raises(OSError, match="injected storage failure"):
+            LocalFileRunStore._write_bytes_durable(target, b"replacement")
+
+    assert target.read_bytes() == b"original"
+    assert set(tmp_path.iterdir()) == existing_paths
+
+
+@pytest.mark.parametrize("permanent", [False, True])
+def test_local_provider_atomic_write_bounds_windows_sharing_retries(
+    tmp_path, monkeypatch, permanent
+):
+    target = tmp_path / "run_manifest.json"
+    target.write_bytes(b"original")
+    existing_paths = set(tmp_path.iterdir())
+    replace_path = Path.replace
+    attempts = []
+
+    def sharing_violation(staged, destination):
+        attempts.append(staged)
+        if permanent or len(attempts) == 1:
+            raise PermissionError("injected sharing violation")
+        return replace_path(staged, destination)
+
+    monkeypatch.setattr(Path, "replace", sharing_violation)
+    monkeypatch.setattr("eval_runner.reference.local_run_store.time.sleep", lambda delay: None)
+    if permanent:
+        with pytest.raises(PermissionError, match="injected sharing violation"):
+            LocalFileRunStore._write_bytes_durable(target, b"replacement")
+        assert len(attempts) == 5
+        assert target.read_bytes() == b"original"
+    else:
+        LocalFileRunStore._write_bytes_durable(target, b"replacement")
+        assert len(attempts) == 2
+        assert target.read_bytes() == b"replacement"
+    assert set(tmp_path.iterdir()) == existing_paths
+
+
 def test_lifecycle_uses_injected_provider_not_filesystem(tmp_path):
     provider = LocalFileRunStore(tmp_path)
     provider.create_run("run-1", "scenario-1")

@@ -606,6 +606,25 @@ class WorkflowInterpreter:
             # is the operator-visible root cause and drives failure routing.
             details = getattr(exc, "details", None)
             if exc.__class__.__name__ == "ApprovalBoundaryRejected" and isinstance(details, dict):
+                rejection = dict(details)
+                fault = rejection.get("mutation_fault") or "approval_boundary"
+                error_text = (
+                    rejection.get("error") or f"Approval security boundary rejected request: {exc}"
+                )
+                oracle_results = rejection.get("oracle_results")
+                if not oracle_results:
+                    oracle_results = [
+                        {
+                            "oracle_id": f"security:{fault}",
+                            "scenario_node_id": item.node_id,
+                            "resolver": "security_preflight",
+                            "requiredness": "REQUIRED",
+                            "outcome": "FAIL",
+                            "error": error_text,
+                            "expected": "ALLOWED",
+                            "observed": "REJECTED",
+                        }
+                    ]
                 result = {
                     "task_id": item.node_id,
                     "status": "failure",
@@ -617,6 +636,7 @@ class WorkflowInterpreter:
                     "is_root_cause": True,
                     "approval_phase": getattr(exc, "phase", "preflight"),
                     "mutation_fault": details.get("mutation_fault"),
+                    "oracle_results": oracle_results,
                 }
             else:
                 result = {

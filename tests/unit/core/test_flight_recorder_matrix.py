@@ -111,6 +111,10 @@ def test_bind_and_release_run_provider_edge_cases(tmp_path):
     # release when binding is None safely continues
     FlightRecorderPlugin.release_active_recorder("r_missing", run_store=store_a)
 
+    # Empty run_id must not register in _run_providers (guard or -> and killer)
+    rec.bind_run_provider("", store_a)
+    assert "" not in rec._run_providers
+
 
 def test_handle_event_run_id_collisions_and_resumption_errors(tmp_path):
     store = LocalFileRunStore(tmp_path / "store")
@@ -134,18 +138,58 @@ def test_handle_event_run_id_collisions_and_resumption_errors(tmp_path):
 
 def test_handle_event_unowned_and_signing_failures(tmp_path, monkeypatch):
     store = LocalFileRunStore(tmp_path / "store")
-    rec = FlightRecorderPlugin(run_store=store)
+    mock_store = MagicMock()
+    mock_store.is_certification_leased.return_value = False
+    rec_mock = FlightRecorderPlugin(run_store=mock_store)
 
-    # 1. Unowned event (no run_id) raises TracePersistenceError
-    with pytest.raises(
-        RuntimeError, match="TracePersistenceError: trace event has no run ownership"
-    ):
-        rec.handle_event(Event("step", {"data": "no_run_id"}))
+    # 1. Unowned event (no run_id / empty run_id) raises TracePersistenceError (mutant 69 killer)
+    with pytest.raises(RuntimeError, match=r"trace event has no run ownership"):
+        rec_mock.handle_event(Event("step", {"data": "no_run_id"}))
+    assert "unknown" not in rec_mock._run_states
+    assert "unknown" not in rec_mock._failed_runs
+    mock_store.get_events.assert_not_called()
+
+    # Empty run_id on RUN_START raises unowned error without recording state (mutants 45, 69 killer)
+    with pytest.raises(RuntimeError, match=r"trace event has no run ownership"):
+        rec_mock.handle_event(Event(CoreEvents.RUN_START, {"run_id": "", "is_resume": False}))
+    assert "unknown" not in rec_mock._run_states
+    assert "unknown" not in rec_mock._failed_runs
+    mock_store.get_events.assert_not_called()
+
+    # Empty run_id on generic steps (mutants 54, 69 killer)
+    mock_store.reset_mock()
+    with pytest.raises(RuntimeError, match=r"trace event has no run ownership"):
+        rec_mock.handle_event(Event("agent_step", {"run_id": "", "val": 1}))
+    assert "unknown" not in rec_mock._run_states
+    assert "unknown" not in rec_mock._failed_runs
+    mock_store.get_events.assert_not_called()
+
+    # Unbound recorder must fail on unowned event without recording state (mutants 51, 69 killer)
+    rec_unbound = FlightRecorderPlugin()
+    with pytest.raises(RuntimeError, match=r"trace event has no run ownership"):
+        rec_unbound.handle_event(Event("step", {}))
+    assert "unknown" not in rec_unbound._run_states
+    assert "unknown" not in rec_unbound._failed_runs
+
+    # Signing backend key_id must be honored when _private_key_path is not set (mutant 64 killer)
+    mock_custom_signer = MagicMock()
+    mock_custom_signer.can_sign.return_value = True
+    mock_custom_signer.key_id = "custom-key-id-999"
+    mock_custom_signer.sign_payload.return_value = "mock-sig-envelope-token"
+    rec_custom_key = FlightRecorderPlugin(run_store=store, signing_backend=mock_custom_signer)
+    store.create_run("run-custom-key", "scenario")
+    rec_custom_key.bind_run_provider("run-custom-key", store)
+    rec_custom_key.handle_event(Event("step", {"run_id": "run-custom-key", "step": 1}))
+    mock_custom_signer.sign_payload.assert_called()
+    assert mock_custom_signer.sign_payload.call_args[0][1] == "custom-key-id-999"
 
     # 2. EVAL_REQUIRE_SIGNING=true with NullSigningBackend raises CryptographicSigningError
+    store.create_run("run-sign-req", "scenario")
+    rec_null = FlightRecorderPlugin(run_store=store)
+    rec_null.bind_run_provider("run-sign-req", store)
     monkeypatch.setenv("EVAL_REQUIRE_SIGNING", "true")
     with pytest.raises(RuntimeError, match="CryptographicSigningError: Signing is mandatory"):
-        rec.handle_event(Event("step", {"run_id": "run-sign-req"}))
+        rec_null.handle_event(Event("step", {"run_id": "run-sign-req"}))
     monkeypatch.delenv("EVAL_REQUIRE_SIGNING")
 
     # 3. Signing failure under AUDIT_LEVEL=2 raises CryptographicSigningError
@@ -208,6 +252,8 @@ def test_finalize_run_edge_cases_and_seals(tmp_path, monkeypatch):
     mock_art_store.store_artifact.assert_called_once()
     stored_json = json.loads(mock_art_store.store_artifact.call_args[1]["content"])
     assert stored_json["signer_identity"] == "test-node"
+    assert "trace_digest" in stored_json
+    assert stored_json["trace_digest"].startswith("sha3_256:")
     assert stored_json["key_id"] == "key-001"
     assert stored_json["signature"] == "aabbcc"
 

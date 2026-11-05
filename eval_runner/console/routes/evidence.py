@@ -73,6 +73,58 @@ def _certification_graph(
     )
 
 
+def _deduplicate_assertions(raw: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """
+    Deduplicate assertions with last-carrier precedence,
+    payload enrichment, and fail-closed safety.
+    """
+    by_key: dict[tuple[str, str], dict[str, Any]] = {}
+    for a in raw:
+        if not isinstance(a, dict):
+            continue
+        oid = str(
+            a.get("oracle_id") or a.get("metric") or a.get("assertion") or a.get("name") or ""
+        )
+        node = str(
+            a.get("node") or a.get("scenario_node_id") or a.get("node_id") or a.get("task_id") or ""
+        )
+        key = (oid, node)
+        if key not in by_key:
+            by_key[key] = dict(a)
+        else:
+            existing = by_key[key]
+            # Fail-closed safety invariant: if any carrier noted failure, it remains failed
+            prev_passed = existing.get("passed")
+            curr_passed = a.get("passed")
+            prev_outcome = str(existing.get("outcome") or "").upper()
+            curr_outcome = str(a.get("outcome") or "").upper()
+            is_failed = (
+                prev_passed is False
+                or curr_passed is False
+                or prev_outcome in ("FAIL", "FAILED")
+                or curr_outcome in ("FAIL", "FAILED")
+            )
+            # Last carrier takes precedence for payload, details, and metadata
+            merged = {**existing, **a}
+            if is_failed:
+                merged["passed"] = False
+                if curr_outcome in ("FAIL", "FAILED"):
+                    merged["outcome"] = curr_outcome
+                elif prev_outcome in ("FAIL", "FAILED"):
+                    merged["outcome"] = prev_outcome
+                else:
+                    merged["outcome"] = "FAIL"
+            # Retain non-null expected / actual / description if present in either
+            if merged.get("expected") is None and existing.get("expected") is not None:
+                merged["expected"] = existing["expected"]
+            if merged.get("actual") is None and existing.get("actual") is not None:
+                merged["actual"] = existing["actual"]
+            if not merged.get("description") and existing.get("description"):
+                merged["description"] = existing["description"]
+            by_key[key] = merged
+    return list(by_key.values())
+
+
 def build_verification_package(
     run_id: str, *, run_store: Any, context: dict[str, Any] | None = None
 ) -> dict[str, Any] | None:
@@ -144,6 +196,17 @@ def build_verification_package(
 
     signatures = cert_data.get("provenance_chain", cert_data.get("signatures", []))
 
+    has_certificate = bool(
+        manifest_data.get("verification_package")
+        or manifest_data.get("certification")
+        or manifest_data.get("vc_version")
+        or manifest_data.get("certificate")
+        or manifest_data.get("provenance_chain")
+        or manifest_data.get("signatures")
+        or manifest_data.get("signature")
+        or manifest_data.get("trace_hash")
+    )
+
     # ---------------------------------------------------------------------------
     # Authoritative Cryptographic Verification
     # ---------------------------------------------------------------------------
@@ -153,6 +216,8 @@ def build_verification_package(
     # ---------------------------------------------------------------------------
     crypto_verification: dict[str, Any] = {
         "verified": False,
+        "authoritative": False,
+        "has_certificate": has_certificate,
         "signer_identity": None,
         "manifest_hash_match": False,
         "scenario_hash_match": False,
@@ -160,7 +225,7 @@ def build_verification_package(
         "algorithm": None,
     }
 
-    if cert_data:
+    if has_certificate:
         try:
             from eval_runner.verifier import verify_trace_certificate
 
@@ -171,6 +236,7 @@ def build_verification_package(
                 scenario_data=scenario_resolved or None,
             )
             crypto_verification.setdefault("errors", [])
+            crypto_verification["has_certificate"] = True
             from eval_runner.verifier import TraceVerifier
 
             authority = TraceVerifier.verify_run(
@@ -303,6 +369,9 @@ def build_verification_package(
             None,
             [],
         )
+
+    assertions = _deduplicate_assertions(assertions)
+    observed_assertions = _deduplicate_assertions(observed_assertions)
 
     # [Chain header] Run → Scenario(revision) → Config → Target → Mode → Run.
     # Five immutable bindings an auditor must have WITHOUT reconstructing

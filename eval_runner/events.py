@@ -323,6 +323,7 @@ class CoreEvents:
     EXTERNAL_TOOL_CALL = "external_tool_call"
     EXTERNAL_TOOL_RESULT = "external_tool_result"
     EVALUATION = "evaluation"
+    ASSERTION_EVALUATED = "assertion_evaluated"
     HITL_PAUSE = "hitl_pause"
     HITL_RESUME = "hitl_resume"
     APPROVAL_CREATED = "approval_created"
@@ -428,6 +429,7 @@ class EventStage(StrEnum):
     SYNTHESIS = "synthesis"
     SCENARIOS = "scenarios"
     EVALUATION = "evaluation"
+    ASSERTION_EVALUATED = "assertion_evaluated"
     STRESS = "stress"
     SYSTEM = "system"
 

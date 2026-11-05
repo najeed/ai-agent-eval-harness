@@ -35,13 +35,8 @@ def test_legacy_signed_package_profile_is_explicitly_non_authoritative(finalizat
     # the detached package's metadata claimed otherwise. Its signature is real.
     legacy["metadata"]["provisional"] = False
     key = IdentityService.get_private_key("system_id", auto_provision=False)
-    legacy["signature"] = key.sign(
-        VerificationPackage.from_dict(legacy).canonical_payload_bytes()
-    ).hex()
-    key.public_key().verify(
-        bytes.fromhex(legacy["signature"]),
-        VerificationPackage.from_dict(legacy).canonical_payload_bytes(),
-    )
+    legacy["signature"] = VerificationPackage.from_dict(legacy).sign(key).signature
+    assert VerificationPackage.from_dict(legacy).verify_signature() is True
     inputs = {
         "raw_trace_bytes": trace,
         "canonical_manifest": execution_manifest,

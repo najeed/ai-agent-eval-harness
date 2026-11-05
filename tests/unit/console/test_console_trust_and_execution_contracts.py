@@ -176,7 +176,10 @@ def test_auth_me_scenarios(ent_client):
     client, _ = ent_client
 
     # 1. Anonymous with dev mode on (localhost)
-    with patch.object(config, "ENABLE_DEMO", True, create=True):
+    with (
+        patch.object(config, "ENABLE_DEMO", True, create=True),
+        patch.dict("os.environ", {"DEV_PERSONA_SIMULATOR": "true"}),
+    ):
         res = client.get("/api/auth/me", environ_base={"REMOTE_ADDR": "127.0.0.1"})
         assert res.status_code == 200
         data = res.get_json()

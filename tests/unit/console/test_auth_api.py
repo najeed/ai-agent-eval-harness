@@ -350,10 +350,8 @@ def test_auth_me_endpoint(client):
         resp = client.get("/api/auth/me")
         assert resp.status_code == 200
         data = resp.json
-        assert data["authenticated"] is True
-        assert "user" in data
-        assert "role" in data["user"]
-        assert "permissions" in data["user"]
+        assert data["authenticated"] is False
+        assert data["user"] is None
 
 
 def test_auth_me_returns_allowlisted_verified_context_without_secrets(client):
@@ -1016,7 +1014,6 @@ class TestAuthManagerExhaustiveCoverage:
 
         from eval_runner import config
         from eval_runner.console.auth_manager import StaticKeyProvider
-        from eval_runner.reference.auth import SimpleAPIKeyAuthBackend
 
         monkeypatch.setattr(config, "ENABLE_DEMO", True)
 
@@ -1044,8 +1041,7 @@ class TestAuthManagerExhaustiveCoverage:
         )
         monkeypatch.setenv("AGENTV_DEMO_IDENTITIES_FILE", str(demo_file))
 
-        backend = SimpleAPIKeyAuthBackend()
-        provider = StaticKeyProvider("master-key", backend=backend)
+        provider = StaticKeyProvider("master-key")
         authenticated = provider.authenticate("demo-operator-key")
         assert authenticated is not None
         assert authenticated["id"] == "demo-op"
@@ -1056,7 +1052,7 @@ class TestAuthManagerExhaustiveCoverage:
         bad_file.write_text("NOT_VALID_JSON", encoding="utf-8")
         monkeypatch.setenv("AGENTV_DEMO_IDENTITIES_FILE", str(bad_file))
         with pytest.raises(RuntimeError, match="Invalid demo identity fixture"):
-            StaticKeyProvider("master-key", backend=SimpleAPIKeyAuthBackend())
+            StaticKeyProvider("master-key")
 
     def test_load_configured_authorization_backend_errors_and_success(self, monkeypatch):
         from eval_runner.console.auth_manager import (
@@ -1324,7 +1320,6 @@ class TestAuthManagerExhaustiveCoverage:
             get_auth_provider,
             register_authorization_backend,
         )
-        from eval_runner.reference.auth import SimpleAPIKeyAuthBackend
 
         monkeypatch.setenv("DEBUG", "true")
 
@@ -1341,13 +1336,13 @@ class TestAuthManagerExhaustiveCoverage:
         bad_f1.write_text(json.dumps({"principals": "not-a-list"}), encoding="utf-8")
         monkeypatch.setenv("AGENTV_DEMO_IDENTITIES_FILE", str(bad_f1))
         with pytest.raises(RuntimeError, match="Invalid demo identity fixture"):
-            StaticKeyProvider("key", backend=SimpleAPIKeyAuthBackend())
+            StaticKeyProvider("key")
 
         bad_f2 = tmp_path / "bad2.json"
         bad_f2.write_text(json.dumps({"principals": ["not-a-dict"]}), encoding="utf-8")
         monkeypatch.setenv("AGENTV_DEMO_IDENTITIES_FILE", str(bad_f2))
         with pytest.raises(RuntimeError, match="Invalid demo identity fixture"):
-            StaticKeyProvider("key", backend=SimpleAPIKeyAuthBackend())
+            StaticKeyProvider("key")
 
         bad_f3 = tmp_path / "bad3.json"
         bad_f3.write_text(
@@ -1358,7 +1353,7 @@ class TestAuthManagerExhaustiveCoverage:
         )
         monkeypatch.setenv("AGENTV_DEMO_IDENTITIES_FILE", str(bad_f3))
         with pytest.raises(RuntimeError, match="Invalid demo identity fixture"):
-            StaticKeyProvider("key", backend=SimpleAPIKeyAuthBackend())
+            StaticKeyProvider("key")
 
         # Clear demo identities file so subsequent instantiations succeed
         monkeypatch.delenv("AGENTV_DEMO_IDENTITIES_FILE", raising=False)
@@ -1371,9 +1366,7 @@ class TestAuthManagerExhaustiveCoverage:
         backend_none.validate_token.return_value = None
         prov_fallback = StaticKeyProvider("root-secret-key", backend=backend_none)
         fallback_user = prov_fallback.authenticate("root-secret-key")
-        assert fallback_user is not None
-        assert fallback_user["type"] == "static-root"
-        assert fallback_user["id"] == "root-admin"
+        assert fallback_user is None
 
         # 5. Principal with direct claim attributes, roles, and metadata claims
         mock_backend = MagicMock()
@@ -1391,8 +1384,20 @@ class TestAuthManagerExhaustiveCoverage:
                 "workspace_id": "ws-attr",
                 "active_environment": "stage",
                 "context_version": "1",
-                "context": {"env": "stage"},
-                "authorized_contexts": [{"env": "stage"}],
+                "context": {
+                    "org_id": "org-attr",
+                    "tenant_id": "tenant-attr",
+                    "workspace_id": "ws-attr",
+                    "active_environment": "stage",
+                },
+                "authorized_contexts": [
+                    {
+                        "org_id": "org-attr",
+                        "tenant_id": "tenant-attr",
+                        "workspace_id": "ws-attr",
+                        "environments": ["stage"],
+                    }
+                ],
             },
         )
         mock_p.context_version = "2"
@@ -1415,7 +1420,7 @@ class TestAuthManagerExhaustiveCoverage:
         mock_p_noroles = AuthPrincipal(principal_id="noroles", permissions=["*"], roles=None)
         mock_backend.validate_token.return_value = mock_p_noroles
         u_noroles = provider.authenticate("any-key")
-        assert "roles" not in u_noroles
+        assert u_noroles["roles"] == []
 
         # Check has_permission returning True (debug skip branch)
         assert provider.has_permission(user, "extensions:run") is True
@@ -1435,7 +1440,7 @@ class TestAuthManagerExhaustiveCoverage:
         backend_no_cred = MagicMock()
         backend_no_cred.get_service_credential.return_value = None
         provider_no_cred = StaticKeyProvider("fallback-static-key", backend=backend_no_cred)
-        assert provider_no_cred.get_service_credential() == "fallback-static-key"
+        assert provider_no_cred.get_service_credential() is None
 
         # 7. get_auth_provider with factory spec in environment
         monkeypatch.setenv(
@@ -1453,105 +1458,9 @@ class TestAuthManagerExhaustiveCoverage:
         assert reg_prov.backend == registered_mock
         register_authorization_backend(None)
 
-    def test_oidc_jwt_verification_exhaustive_branches(self, monkeypatch):
-        jwks_url = "https://auth.example.com/.well-known/jwks.json"
-        monkeypatch.setattr("eval_runner.config.OIDC_JWKS_URL", jwks_url)
+    def test_oidc_missing_trust_configuration_denies_static_key(self, monkeypatch):
+        monkeypatch.setattr("eval_runner.config.OIDC_JWKS_URL", "https://issuer/jwks")
         monkeypatch.setattr("eval_runner.config.OIDC_AUDIENCE", None)
         monkeypatch.setattr("eval_runner.config.OIDC_ISSUER", None)
         provider = StaticKeyProvider("master-key-123")
-
-        mock_jwks_client = MagicMock()
-        mock_jwks_client.get_signing_key_from_jwt.return_value = MagicMock()
-
-        # A0. Audience and issuer absent (falsy)
-        with (
-            patch("jwt.PyJWKClient", return_value=mock_jwks_client),
-            patch("jwt.decode", return_value={"sub": "user-no-aud"}),
-        ):
-            user_no_aud = provider.verify_token("token-no-aud")
-            assert user_no_aud is not None
-
-        monkeypatch.setattr("eval_runner.config.OIDC_AUDIENCE", "agentv-service")
-        monkeypatch.setattr("eval_runner.config.OIDC_ISSUER", "https://auth.example.com")
-
-        # A. permissions as string
-        payload_str_perms = {
-            "sub": "user-str-perms",
-            "permissions": "scenarios:read runs:read",
-        }
-        with (
-            patch("jwt.PyJWKClient", return_value=mock_jwks_client),
-            patch("jwt.decode", return_value=payload_str_perms),
-        ):
-            user_a = provider.verify_token("token-a")
-            assert user_a["permissions"] == ["scenarios:read", "runs:read"]
-
-        # B. roles as string and admin mapping
-        payload_str_role = {
-            "sub": "user-str-role",
-            "roles": "admin",
-        }
-        with (
-            patch("jwt.PyJWKClient", return_value=mock_jwks_client),
-            patch("jwt.decode", return_value=payload_str_role),
-        ):
-            user_b = provider.verify_token("token-b")
-            assert user_b["permissions"] == Permission.ADMIN()
-
-        # C. Empty scope and empty permissions
-        payload_empty_scope = {
-            "sub": "user-empty-scope",
-            "scope": "",
-        }
-        with (
-            patch("jwt.PyJWKClient", return_value=mock_jwks_client),
-            patch("jwt.decode", return_value=payload_empty_scope),
-        ):
-            user_c = provider.verify_token("token-c")
-            assert user_c["permissions"] == []
-
-        # D. Non-empty scope mapping
-        payload_scope = {
-            "sub": "user-scope",
-            "scope": "custom:read custom:write",
-        }
-        with (
-            patch("jwt.PyJWKClient", return_value=mock_jwks_client),
-            patch("jwt.decode", return_value=payload_scope),
-        ):
-            user_scope = provider.verify_token("token-scope")
-            assert user_scope["permissions"] == ["custom:read", "custom:write"]
-
-        # E. Context and claims in payload
-        payload_ctx = {
-            "sub": "user-ctx",
-            "org_id": "org-jwt",
-            "tenant_id": "ten-jwt",
-            "workspace_id": "ws-jwt",
-            "active_environment": "prod",
-            "context_version": "v3",
-            "context": {"team": "red"},
-            "authorized_contexts": [{"team": "red"}],
-        }
-        with (
-            patch("jwt.PyJWKClient", return_value=mock_jwks_client),
-            patch("jwt.decode", return_value=payload_ctx),
-        ):
-            user_d = provider.verify_token("token-d")
-            assert user_d["org_id"] == "org-jwt"
-            assert user_d["tenant_id"] == "ten-jwt"
-            assert user_d["workspace_id"] == "ws-jwt"
-            assert user_d["active_environment"] == "prod"
-            assert user_d["context_version"] == "v3"
-            assert user_d["context"] == {"team": "red"}
-            assert user_d["authorized_contexts"] == [{"team": "red"}]
-
-        # F. Exception with DEBUG=false (skips print)
-        monkeypatch.setenv("DEBUG", "false")
-        with patch("jwt.PyJWKClient", side_effect=ValueError("boom")):
-            assert provider.verify_token("bad-token") is None
-
-        # G. Exception with DEBUG=true (executes print)
-        monkeypatch.setenv("DEBUG", "true")
-        with patch("jwt.PyJWKClient", side_effect=ValueError("boom-loud")):
-            assert provider.verify_token("bad-token-debug") is None
+        assert provider.verify_token("master-key-123") is None

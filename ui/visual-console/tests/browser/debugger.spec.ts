@@ -9,7 +9,7 @@ test('debugger switches to the run selected in the dropdown', async ({ page }) =
 
   await page.route('**/api/status', route => route.fulfill({ json: { status: 'ok' } }));
   await page.route('**/api/nav', route => route.fulfill({ json: { items: [] } }));
-  await page.route('**/api/auth/me', route => route.fulfill({ json: { user: { id: 'test', roles: ['admin'] } } }));
+  await page.route('**/api/auth/me', route => route.fulfill({ json: { authenticated: true, user: { id: 'test', permissions: ['*'] } } }));
   await page.route('**/api/runs', route => route.fulfill({
     json: { runs: [{ run_id: 'latest-run' }, { run_id: 'archived-run' }] },
   }));
@@ -45,7 +45,7 @@ test('debugger renders canonical workflow nodes and edges', async ({ page }) => 
   };
   await page.route('**/api/status', route => route.fulfill({ json: { status: 'ok' } }));
   await page.route('**/api/nav', route => route.fulfill({ json: { items: [] } }));
-  await page.route('**/api/auth/me', route => route.fulfill({ json: { user: { id: 'test', roles: ['admin'] } } }));
+  await page.route('**/api/auth/me', route => route.fulfill({ json: { authenticated: true, user: { id: 'test', permissions: ['*'] } } }));
   await page.route('**/api/runs', route => route.fulfill({ json: { runs: [{ run_id: 'test-run' }] } }));
   await page.route('**/api/v1/runs/test-run', route => route.fulfill({ json: { status: 'COMPLETED', scenario } }));
   await page.route('**/api/v1/runs/test-run/stream**', route => route.fulfill({
@@ -87,7 +87,7 @@ test('debugger handles runtime execution trace with branches, retries, HITL paus
 
   await page.route('**/api/status', route => route.fulfill({ json: { status: 'ok' } }));
   await page.route('**/api/nav', route => route.fulfill({ json: { items: [] } }));
-  await page.route('**/api/auth/me', route => route.fulfill({ json: { user: { id: 'test', roles: ['admin'] } } }));
+  await page.route('**/api/auth/me', route => route.fulfill({ json: { authenticated: true, user: { id: 'test', permissions: ['*'] } } }));
   await page.route('**/api/runs', route => route.fulfill({ json: { runs: [{ run_id: 'full-trace-run' }] } }));
   await page.route('**/api/v1/runs/full-trace-run', route => route.fulfill({ json: { status: 'COMPLETED', scenario } }));
   await page.route('**/api/v1/runs/full-trace-run/stream**', route => route.fulfill({
@@ -123,7 +123,7 @@ test('debugger renders planned pending preview in executed mode before execution
 
   await page.route('**/api/status', route => route.fulfill({ json: { status: 'ok' } }));
   await page.route('**/api/nav', route => route.fulfill({ json: { items: [] } }));
-  await page.route('**/api/auth/me', route => route.fulfill({ json: { user: { id: 'test', roles: ['admin'] } } }));
+  await page.route('**/api/auth/me', route => route.fulfill({ json: { authenticated: true, user: { id: 'test', permissions: ['*'] } } }));
   await page.route('**/api/runs', route => route.fulfill({ json: { runs: [{ run_id: 'pending-run' }] } }));
   await page.route('**/api/v1/runs/pending-run', route => route.fulfill({ json: { status: 'RUNNING', scenario } }));
   await page.route('**/api/v1/runs/pending-run/stream**', route => route.fulfill({
@@ -140,7 +140,7 @@ test('debugger renders planned pending preview in executed mode before execution
 test('adversarial mutator displays explicit error banner when catalog endpoint fails', async ({ page }) => {
   await page.route('**/api/status', route => route.fulfill({ json: { status: 'ok' } }));
   await page.route('**/api/nav', route => route.fulfill({ json: { items: [] } }));
-  await page.route('**/api/auth/me', route => route.fulfill({ json: { user: { id: 'test', roles: ['admin'] } } }));
+  await page.route('**/api/auth/me', route => route.fulfill({ json: { authenticated: true, user: { id: 'test', permissions: ['*'] } } }));
   await page.route('**/api/scenarios?**', route => route.fulfill({ json: { scenarios: [{ id: 'test-scenario', title: 'Test Scenario', industry: 'General' }] } }));
   await page.route('**/api/v1/mutations', route => route.fulfill({ status: 500, json: { error: 'Service Unavailable' } }));
 

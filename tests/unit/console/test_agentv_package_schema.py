@@ -165,6 +165,9 @@ def test_verification_package_sign_verify_strict_and_key_registry_branches(tmp_p
         key_id = "test-key-id"
         public_key_pem = pub_pem
 
+        def public_key(self):
+            return public_key
+
         def sign(self, payload: bytes) -> bytes:
             return private_key.sign(payload)
 
@@ -198,6 +201,9 @@ def test_verification_package_sign_verify_strict_and_key_registry_branches(tmp_p
         algorithm = "ed25519"
         key_id = ""
         public_key_pem = pub_pem
+
+        def public_key(self):
+            return public_key
 
         def sign(self, payload: bytes) -> bytes:
             return private_key.sign(payload)
@@ -286,7 +292,8 @@ def test_verification_package_sign_verify_strict_and_key_registry_branches(tmp_p
     )
     assert corrupt_sig_pkg.verify_signature(public_key_pem=pub_pem) is False
 
-    # Dict signature form in from_dict
+    # An unversioned dictionary wrapper in signature cannot override
+    # trusted top-level package identity/key metadata
     dict_sig_pkg = VerificationPackage.from_dict(
         {
             **signed_pkg.to_dict(),
@@ -299,8 +306,8 @@ def test_verification_package_sign_verify_strict_and_key_registry_branches(tmp_p
             },
         }
     )
-    assert dict_sig_pkg.signer_identity == "dict-signer"
-    assert dict_sig_pkg.key_id == "dict-key-id"
+    assert dict_sig_pkg.signer_identity == "test-signer"
+    assert dict_sig_pkg.key_id == signed_pkg.key_id
 
     # Strict mode validation on missing scenario_id or trace_hash
     with pytest.raises(ValueError, match="strict instantiation requires valid"):

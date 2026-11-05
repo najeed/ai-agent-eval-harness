@@ -105,18 +105,23 @@ def test_oidc_jwt_verification_success():
                 leeway=10,
                 audience="agentv-service",
                 issuer="https://auth.example.com",
+                options={"require": ["sub", "iss", "aud", "exp"]},
             )
 
 
 def test_oidc_jwt_verification_roles_and_scope():
     jwks_url = "https://auth.example.com/.well-known/jwks.json"
-    with mock.patch("eval_runner.config.OIDC_JWKS_URL", jwks_url):
+    with (
+        mock.patch("eval_runner.config.OIDC_JWKS_URL", jwks_url),
+        mock.patch("eval_runner.config.OIDC_ISSUER", "https://auth.example.com"),
+        mock.patch("eval_runner.config.OIDC_AUDIENCE", "agentv-service"),
+    ):
         provider = StaticKeyProvider("master-key-123")
 
         mock_jwks_client = mock.MagicMock()
         mock_jwks_client.get_signing_key_from_jwt.return_value = mock.MagicMock()
 
-        # Test roles -> admin mapping
+        # Administrator-looking roles never grant permissions
         mock_payload = {
             "sub": "admin-1",
             "roles": ["system-admin"],
@@ -126,7 +131,7 @@ def test_oidc_jwt_verification_roles_and_scope():
             mock.patch("jwt.decode", return_value=mock_payload),
         ):
             user = provider.verify_token("token")
-            assert user["permissions"] == Permission.ADMIN()
+            assert user["permissions"] == []
 
         # Test scope mapping
         mock_payload_scope = {
@@ -143,7 +148,11 @@ def test_oidc_jwt_verification_roles_and_scope():
 
 def test_oidc_jwt_verification_failure():
     jwks_url = "https://auth.example.com/.well-known/jwks.json"
-    with mock.patch("eval_runner.config.OIDC_JWKS_URL", jwks_url):
+    with (
+        mock.patch("eval_runner.config.OIDC_JWKS_URL", jwks_url),
+        mock.patch("eval_runner.config.OIDC_ISSUER", "https://auth.example.com"),
+        mock.patch("eval_runner.config.OIDC_AUDIENCE", "agentv-service"),
+    ):
         provider = StaticKeyProvider("master-key-123")
 
         with mock.patch("jwt.PyJWKClient", side_effect=Exception("Failed to load JWKS")):

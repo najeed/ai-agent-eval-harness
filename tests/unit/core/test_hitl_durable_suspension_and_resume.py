@@ -703,10 +703,13 @@ def test_p0_run_lifecycle_edge_branches(tmp_path: Path):
     transition_run_lifecycle(run_fin, RunLifecycleState.FINALIZING, run_store=store)
     assert rollback_run_lifecycle_to_open(run_fin, run_store=store) == RunLifecycleState.OPEN
 
-    # Rollback when unlink raises OSError still returns OPEN
+    # A provider rejection must not be reported as a successful rollback.
     transition_run_lifecycle(run_fin, RunLifecycleState.FINALIZING, run_store=store)
-    with patch.object(Path, "unlink", side_effect=OSError("Unlink permission error")):
-        assert rollback_run_lifecycle_to_open(run_fin, run_store=store) == RunLifecycleState.OPEN
+    with patch.object(store, "update_run_status", return_value=False) as update_status:
+        with pytest.raises(RuntimeError, match="rejected lifecycle rollback"):
+            rollback_run_lifecycle_to_open(run_fin, run_store=store)
+    update_status.assert_called_once_with(run_fin, RunLifecycleState.OPEN.value, context=None)
+    assert get_run_lifecycle_state(run_fin, run_store=store) == RunLifecycleState.FINALIZING
 
     # transition_run_lifecycle re-raises OSError on marker write failure
     with patch.object(Path, "replace", side_effect=OSError("Write disk full")):

@@ -488,6 +488,13 @@ class PluginManager:
         except ImportError:
             pass
 
+        try:
+            from .mutator_plugin import RuntimeMutationPlugin
+
+            internal_manifest.append(RuntimeMutationPlugin)
+        except ImportError:
+            pass
+
         # -- Ecosystem Adapters --
         try:
             from eval_runner.adapters.ag2 import AG2AdapterPlugin

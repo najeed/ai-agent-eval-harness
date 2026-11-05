@@ -76,9 +76,35 @@ tests/
 *   **Dependencies**: Rely on mocked HTTP services, temporary files, and local shim environments.
 
 ### 5. AST Mutation Testing Sentinel (`tools/ci/run_mutation_tests.py`)
-*   **Focus**: Verifies test suite efficacy by mutating abstract syntax trees in core verification modules (`verifier.py`, `tool_sandbox.py`, `base.py`).
-*   **Threshold**: Enforces a minimum **90% mutation kill rate** (100% achieved).
-*   **Command**: `python tools/ci/run_mutation_tests.py`
+*   **Focus**: Verifies test suite efficacy by mutating abstract syntax trees in core verification modules (`verifier.py`, `tool_sandbox.py`, `signatures.py`, `evidence_graph.py`, etc.).
+*   **Threshold**: Enforces a strict **100.00% definitive mutation kill rate** across all evaluated critical runtime modules.
+*   **Command**: `python tools/ci/run_mutation_tests.py --full`
+
+#### High-Performance Concurrency & Windows Dev Drive Architecture
+When evaluating full AST mutant populations (780+ mutants across concurrent processes), filesystem filter driver contention and lock collisions can impact throughput on Windows. Follow these recommended architectural configurations:
+
+1. **Suppress Filesystem Cache Provider (`-p no:cacheprovider`)**:
+   Concurrent pytest workers contending on `.pytest_cache/v/cache/lastfailed` create NTFS file-lock contention. `FAST_PYTEST_FLAGS` strips `cacheprovider` to run cleanly in memory without filesystem locks.
+
+2. **Bytecode Caching & Pre-Compilation**:
+   Workers execute mutants via in-memory AST injection (`compile(..., "exec")`), leaving the mutated module strictly in RAM. To accelerate dependency resolution, pre-compile third-party dependencies once:
+   ```powershell
+   python -m compileall -q .
+   ```
+
+3. **Windows 11 Dev Drive & Defender Performance Mode**:
+   For maximum I/O throughput without compromising security, execute mutation testing on a Windows 11 **Dev Drive** (ReFS formatted VHDX partition). Dev Drives enable Defender Performance Mode, converting synchronous antivirus filter driver hooks into asynchronous background scans, eliminating up to 80% of Defender I/O overhead while maintaining 100% real-time security.
+
+   Execute the mutation sentinel with cache and temp directories redirected to your Dev Drive volume (e.g. `V:`):
+   ```powershell
+   $env:PYTHONPYCACHEPREFIX = "V:\pycache"
+   $env:TEMP = "V:\temp"
+   $env:TMP = "V:\temp"
+   .\.venv\Scripts\python.exe tools/ci/run_mutation_tests.py --full --workers 6
+   ```
+
+4. **Worker Concurrency Tuning**:
+   On Windows, setting `--workers 4` to `--workers 6` avoids minifilter queue saturation (`fltmgr.sys`) and delivers faster total wall-clock turnaround than higher worker counts.
 
 ### 6. Compliance Tests (`test_doctor.py`)
 *   **Focus**: Active environment verification, virtual file system verification, and AES schema validity.

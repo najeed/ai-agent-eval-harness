@@ -134,17 +134,54 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
   }, [run?.run_id]);
 
   // Hydrated Assertions: from evidencePackage (verdict/graph) or trace events
-  const assertions = React.useMemo(() => {
-    const normalizeAssertions = (rawAssertions: any[]) => rawAssertions.map((a: any) => ({
-      name: a.metric || a.assertion || a.name || a.oracle_id || 'assertion',
-      passed: a.passed === true || a.outcome === 'PASS',
-      expected: a.expected != null ? String(a.expected) : undefined,
-      actual: a.actual != null ? String(a.actual) : a.observed != null ? String(a.observed) : undefined,
-      description: a.description,
-      node: a.node || a.node_id || a.scenario_node_id,
-      metric: a.metric || a.assertion,
-    }));
+  const normalizeAssertions = (rawAssertions: any[]) => {
+    const normalized = (rawAssertions || []).map((a: any) => {
+      const isPassed =
+        a.passed === true ||
+        String(a.outcome || a.status || a.verdict || '').toUpperCase() === 'PASS';
+      return {
+        name: a.oracle_id || a.metric || a.assertion || a.name || 'assertion',
+        passed: isPassed,
+        expected: a.expected != null ? String(a.expected) : undefined,
+        actual:
+          a.actual != null
+            ? String(a.actual)
+            : a.observed != null
+            ? String(a.observed)
+            : a.actual_after != null
+            ? String(a.actual_after)
+            : undefined,
+        description: a.description,
+        node: a.scenario_node_id || a.node_id || a.node,
+        metric: a.metric || a.assertion || a.oracle_id,
+      };
+    });
 
+    const byKey = new Map<string, any>();
+    normalized.forEach((item) => {
+      const key = `${item.name}::${item.node || ''}`;
+      const existing = byKey.get(key);
+      if (!existing) {
+        byKey.set(key, item);
+      } else {
+        // Last-carrier precedence for payload and metadata,
+        // with fail-closed safety invariant for pass/fail determination.
+        byKey.set(key, {
+          ...existing,
+          ...item,
+          passed: existing.passed && item.passed,
+          expected: item.expected !== undefined ? item.expected : existing.expected,
+          actual: item.actual !== undefined ? item.actual : existing.actual,
+          description: item.description || existing.description,
+          node: item.node || existing.node,
+          metric: item.metric || existing.metric,
+        });
+      }
+    });
+    return Array.from(byKey.values());
+  };
+
+  const assertions = React.useMemo(() => {
     if (evidencePackage?.verdict?.assertions && Array.isArray(evidencePackage.verdict.assertions) && evidencePackage.verdict.assertions.length > 0) {
       return normalizeAssertions(evidencePackage.verdict.assertions);
     }
@@ -152,7 +189,7 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
       return normalizeAssertions(evidencePackage.assertions);
     }
     if (evidencePackage?.evidence_graph?.nodes && Array.isArray(evidencePackage.evidence_graph.nodes) && evidencePackage.evidence_graph.nodes.length > 0) {
-      return evidencePackage.evidence_graph.nodes.map((n: any) => ({
+      return normalizeAssertions(evidencePackage.evidence_graph.nodes.map((n: any) => ({
         name: n.label || n.oracle_id || n.metric || n.node || 'assertion',
         passed: n.passed === true || n.outcome === 'PASS',
         expected: n.expected != null ? String(n.expected) : undefined,
@@ -160,7 +197,7 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
         description: n.description || `Node: ${n.node || n.node_id || 'unknown'} (${n.kind || 'metric'})`,
         node: n.node || n.node_id,
         metric: n.label || n.oracle_id,
-      }));
+      })));
     }
     for (let i = streamEvents.length - 1; i >= 0; i--) {
       const event = streamEvents[i];
@@ -174,7 +211,7 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
         return normalizeAssertions(eventAssertions);
       }
     }
-    return run.assertions || [];
+    return normalizeAssertions(run.assertions || []);
   }, [evidencePackage, streamEvents, run.assertions]);
 
   // Hydrated Tool Calls
@@ -192,25 +229,36 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
       receipt_hash?: string;
     }> = [];
     const externalByReceipt = new Map<string, (typeof tools)[number]>();
+    const seenToolKeys = new Set<string>();
+
     streamEvents.forEach((ev, idx) => {
       const evType = ev.event || ev.type;
       if (evType === 'tool_call' || evType === 'agent_tool_call' || evType === 'external_tool_call') {
         const d = ev.data || ev;
+        const toolName = d.tool || d.name || d.tool_name || 'unknown_tool';
+        const turn = d.turn ?? d.step ?? 1;
+        const receiptHash = d.receipt_hash;
+        const callKey = receiptHash
+          ? `receipt:${receiptHash}`
+          : `${turn}:${toolName}:${JSON.stringify(d.parameters || d.params || d.arguments || d.input || {})}`;
+        if (seenToolKeys.has(callKey)) return;
+        seenToolKeys.add(callKey);
+
         const toolCall = {
-          turn: d.turn ?? d.step ?? 1,
+          turn,
           order: d.order ?? idx + 1,
-          tool: d.tool || d.name || d.tool_name || 'unknown_tool',
+          tool: toolName,
           parameters: d.parameters || d.params || d.arguments || d.input || {},
           result: d.result || d.output || {},
           node_id: d.node_id || d.task_id,
           duration_ms: d.duration_ms || d.latency_ms,
           source: d.source,
           provenance: d.provenance,
-          receipt_hash: d.receipt_hash,
+          receipt_hash: receiptHash,
         };
         tools.push(toolCall);
-        if (evType === 'external_tool_call' && typeof d.receipt_hash === 'string') {
-          externalByReceipt.set(d.receipt_hash, toolCall);
+        if (evType === 'external_tool_call' && typeof receiptHash === 'string') {
+          externalByReceipt.set(receiptHash, toolCall);
         }
       } else if (evType === 'external_tool_result') {
         const d = ev.data || ev;
@@ -249,33 +297,33 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
 
   // Hydrated Policy Evidence: 3 STRICT STATES
   const policyEvidence = React.useMemo(() => {
-    const violations: Array<{
+    const rawViolations: Array<{
       rule: string;
       severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
       message: string;
     }> = [];
-    const evaluations: Array<{
+    const rawEvaluations: Array<{
       policy_id: string;
       decision: string;
       reason?: string;
     }> = [];
 
     if (run.policy_violations && run.policy_violations.length > 0) {
-      violations.push(...run.policy_violations);
+      rawViolations.push(...run.policy_violations);
     }
 
     streamEvents.forEach(ev => {
       const evType = ev.event || ev.type;
       const d = ev.data || {};
       if (evType === 'policy_violation' || d.status === 'policy_violation' || ev.status === 'policy_violation') {
-        violations.push({
+        rawViolations.push({
           rule: d.rule || d.policy_id || ev.rule || 'Guardrail Policy',
           severity: (d.severity || ev.severity || 'HIGH').toUpperCase() as any,
           message: d.message || d.violation || ev.message || 'Policy violation detected',
         });
       }
       if (evType === 'policy_check' || d.decision === 'allowed' || (d.policy_id && d.decision)) {
-        evaluations.push({
+        rawEvaluations.push({
           policy_id: d.policy_id || 'guardrail',
           decision: d.decision || 'allowed',
           reason: d.reason,
@@ -287,13 +335,13 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
       const isPolicy = a.kind === 'policy' || (typeof a.name === 'string' && a.name.toLowerCase().includes('policy')) || (typeof a.metric === 'string' && a.metric.toLowerCase().includes('policy'));
       if (isPolicy) {
         if (!a.passed) {
-          violations.push({
+          rawViolations.push({
             rule: a.name || a.metric || 'Policy Assertion',
             severity: 'HIGH',
             message: `Policy assertion failed: expected ${a.expected ?? 'pass'}, actual ${a.actual ?? 'fail'}`,
           });
         } else {
-          evaluations.push({
+          rawEvaluations.push({
             policy_id: a.name || a.metric || 'Policy Assertion',
             decision: 'allowed',
             reason: 'Assertion passed',
@@ -301,6 +349,45 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
         }
       }
     });
+
+    // Deduplicate violations by rule: last-carrier precedence with payload enrichment
+    const violationMap = new Map<string, (typeof rawViolations)[number]>();
+    rawViolations.forEach((v) => {
+      const existing = violationMap.get(v.rule);
+      if (!existing) {
+        violationMap.set(v.rule, v);
+      } else {
+        const severityRank: Record<string, number> = { LOW: 1, MEDIUM: 2, HIGH: 3, CRITICAL: 4 };
+        const maxSeverity =
+          (severityRank[existing.severity] || 0) >= (severityRank[v.severity] || 0)
+            ? existing.severity
+            : v.severity;
+        violationMap.set(v.rule, {
+          ...existing,
+          ...v,
+          severity: maxSeverity,
+          message: v.message || existing.message,
+        });
+      }
+    });
+    const violations = Array.from(violationMap.values());
+
+    // Deduplicate evaluations by policy_id: last-carrier precedence
+    const evaluationMap = new Map<string, (typeof rawEvaluations)[number]>();
+    rawEvaluations.forEach((e) => {
+      const existing = evaluationMap.get(e.policy_id);
+      if (!existing) {
+        evaluationMap.set(e.policy_id, e);
+      } else {
+        evaluationMap.set(e.policy_id, {
+          ...existing,
+          ...e,
+          decision: e.decision || existing.decision,
+          reason: e.reason || existing.reason,
+        });
+      }
+    });
+    const evaluations = Array.from(evaluationMap.values());
 
     let state: 'FAIL' | 'PASS' | 'NOT_VERIFIED' = 'NOT_VERIFIED';
     if (violations.length > 0) {
@@ -325,19 +412,33 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
   const isVerified = (verdict === 'VERIFIED' || verdict === 'VERIFIED_PROVISIONAL') && !isAttestedFail;
   const isBreach = verdict === 'POLICY_BREACH' || policyEvidence.state === 'FAIL';
   const isNotVerified = verdict === 'FAILED_VERIFICATION' || verdict === 'NOT_VERIFIED';
+  const isUncertified = verdict === 'UNVERIFIED' || verdict === 'UNCERTIFIED';
 
   // [P0-2, P0-4] Authoritative failed assertions for "What failed" / RCA
   const crypto = evidencePackage?.cryptographic_verification;
   const certifiedAssertions = evidencePackage?.verdict?.assertions;
   const diagnosticAssertions = evidencePackage?.observed_assertions;
-  const assertionEvidence: any[] = Array.isArray(certifiedAssertions) && certifiedAssertions.length > 0
+  const rawAssertionSource = Array.isArray(certifiedAssertions) && certifiedAssertions.length > 0
     ? certifiedAssertions
     : Array.isArray(diagnosticAssertions) && diagnosticAssertions.length > 0
       ? diagnosticAssertions
       : Array.isArray(evidencePackage?.assertions) && evidencePackage.assertions.length > 0
         ? evidencePackage.assertions
         : assertions;
-  const failedAssertions = assertionEvidence.filter((a: any) => a && a.passed === false);
+  const assertionEvidence = React.useMemo(() => {
+    return normalizeAssertions(rawAssertionSource);
+  }, [rawAssertionSource]);
+  const failedAssertions = React.useMemo(() => {
+    return assertionEvidence.filter((a: any) => a && a.passed === false);
+  }, [assertionEvidence]);
+
+  const isEvaluationSuccess =
+    (run.status === 'COMPLETED' ||
+      run.status === 'PASSED' ||
+      run.resultStatus === 'PASS' ||
+      run.score === 1.0) &&
+    failedAssertions.length === 0 &&
+    !isBreach;
 
   // Hydrated Duration (fallback to streamEvents timestamps if run.duration is not recorded)
   const derivedDuration = React.useMemo(() => {
@@ -360,23 +461,38 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
 
   // Hydrated Assurance Score (fallback to evidence package, assertions ratio, or terminal status)
   const derivedScore = React.useMemo(() => {
-    if (run.score != null && typeof run.score === 'number') return run.score;
+    // 1. Authoritative score from evidence package if available
     const pkgScore = evidencePackage?.score ?? evidencePackage?.decision?.score;
-    if (pkgScore != null && typeof pkgScore === 'number') return pkgScore;
-    if (assertions && assertions.length > 0) {
-      const passedCount = assertions.filter(
+    if (pkgScore != null && typeof pkgScore === 'number') {
+      return pkgScore <= 1.0 ? pkgScore : pkgScore / 100;
+    }
+
+    // 2. Computed ratio from evaluated assertions (using authoritative normalized evidence source)
+    const activeAssertions = assertionEvidence && assertionEvidence.length > 0 ? assertionEvidence : assertions;
+    if (activeAssertions && activeAssertions.length > 0) {
+      const passedCount = activeAssertions.filter(
         (a: any) => a.passed === true || a.status === 'PASS' || a.outcome === 'PASS'
       ).length;
-      return passedCount / assertions.length;
+      return passedCount / activeAssertions.length;
     }
-    if (run.status === 'CERTIFIED' || run.status === 'PASSED' || run.resultStatus === 'PASS') {
+
+    // 3. Score from run metadata if positive
+    if (run.score != null && typeof run.score === 'number' && run.score > 0) {
+      return run.score <= 1.0 ? run.score : run.score / 100;
+    }
+
+    // 4. Strict verdict/status fallbacks
+    if (isVerified || run.status === 'CERTIFIED' || run.status === 'PASSED' || run.resultStatus === 'PASS' || (isEvaluationSuccess && run.status === 'COMPLETED')) {
       return 1.0;
     }
-    if (run.status === 'FAILED' || run.resultStatus === 'FAIL') {
+    if (isAttestedFail || isBreach || isNotVerified || run.status === 'FAILED' || run.resultStatus === 'FAIL') {
       return 0.0;
     }
+    if (run.score != null && typeof run.score === 'number') {
+      return run.score <= 1.0 ? run.score : run.score / 100;
+    }
     return null;
-  }, [run.score, run.status, run.resultStatus, evidencePackage, assertions]);
+  }, [run.score, run.status, run.resultStatus, evidencePackage, assertions, isVerified, isAttestedFail, isBreach, isNotVerified]);
 
   // Hydrated Start Time / Temporal Identifier
   const derivedStartTime = React.useMemo(() => {
@@ -424,13 +540,15 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
       : isBreach
         ? 'FAIL; authoritative policy_violation event in the certified trace.'
         : failedAssertions.length > 0
-          ? `FAIL; ${failedAssertions.length} assertion(s) failed. First failure: ${failedAssertions[0].metric ?? failedAssertions[0].assertion ?? failedAssertions[0].name ?? 'unnamed'
-          } on node '${failedAssertions[0].node ?? failedAssertions[0].node_id ?? '?'}'.`
-          : crypto && crypto.errors?.length > 0
-            ? `NOT VERIFIED; ${crypto.errors[0]}`
-            : isNotVerified
-              ? 'NOT VERIFIED; runtime verification decision: FAIL.'
-              : 'INCONCLUSIVE; no authoritative verification result available for this run.';
+          ? `FAIL; ${failedAssertions.length} assertion(s) failed. First failure: ${failedAssertions[0].name ?? failedAssertions[0].metric ?? 'unnamed'
+          } on node '${failedAssertions[0].node ?? '?'}'.`
+          : (isUncertified || crypto?.has_certificate === false) && isEvaluationSuccess
+            ? 'YES (Uncertified); agent safely achieved intended state transitions without policy violations (all assertions passed). Cryptographic attestation has not yet been issued.'
+            : crypto && crypto.errors?.length > 0
+              ? `NOT VERIFIED; ${crypto.errors[0]}`
+              : isNotVerified
+                ? 'NOT VERIFIED; runtime verification decision: FAIL.'
+                : 'INCONCLUSIVE; no authoritative verification result available for this run.';
   const attestationGrade: string =
     evidencePackage?.evidence_chain_valid === true ? 'Cryptographically Attested' : 'Unattested';
 
@@ -507,6 +625,8 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
                 <AlertTriangle className="w-6 h-6 text-rose-400" />
               ) : isBreach || isNotVerified ? (
                 <AlertTriangle className="w-6 h-6 text-rose-400" />
+              ) : isUncertified ? (
+                <Clock className="w-6 h-6 text-amber-400" />
               ) : (
                 <HelpCircle className="w-6 h-6 text-amber-400" />
               )}
@@ -515,7 +635,15 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
                   Verification Verdict
                 </div>
                 <div className="text-sm font-black tracking-wide">
-                  {auditLoading ? 'Verifying...' : isProvisional ? 'VERIFIED (PROVISIONAL)' : isAttestedFail ? 'ATTESTED FAIL' : verdict}
+                  {auditLoading
+                    ? 'Verifying...'
+                    : isProvisional
+                      ? 'VERIFIED (PROVISIONAL)'
+                      : isAttestedFail
+                        ? 'ATTESTED FAIL'
+                        : isUncertified
+                          ? 'UNCERTIFIED'
+                          : verdict}
                 </div>
               </div>
             </div>
@@ -630,7 +758,7 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
                 <span className="text-sm font-bold text-indigo-300 block truncate" title={derivedStartTime || ''}>
                   {formattedStartTime}
                 </span>
-                {derivedStartTime && (
+                {derivedStartTime && derivedStartTime !== formattedStartTime && (
                   <span className="text-[10px] text-slate-500 block truncate font-mono mt-0.5" title={derivedStartTime}>
                     {derivedStartTime}
                   </span>

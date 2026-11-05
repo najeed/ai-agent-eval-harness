@@ -11,7 +11,7 @@ REQUIRED = {
     "test_every_envelope_binding_is_enforced_even_with_a_genuine_signature": 18,
     "test_malformed_or_ambiguous_responses_do_not_downgrade": 12,
     "test_external_trust_policy_restricts_valid_signatures": 5,
-    "test_raw_legacy_evidence_requires_explicit_policy": 1,
+    "test_raw_legacy_hex_signature_is_rejected": 1,
     "test_remote_outage_and_wrong_key_fail_without_local_fallback": 1,
     "test_noncanonical_payloads_cannot_claim_rfc8785": 4,
     "test_resolved_backend_outage_cannot_use_existing_local_private_key": 1,

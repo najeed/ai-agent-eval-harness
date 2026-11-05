@@ -58,6 +58,11 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
         **kwargs: Any,
     ):
         """Binds active step and node definition for node-scoped mutations."""
+        if not self.scenario and context is not None:
+            if hasattr(context, "scenario"):
+                self.scenario = getattr(context, "scenario", {}) or {}
+            elif hasattr(context, "scenario_data"):
+                self.scenario = getattr(context, "scenario_data", {}) or {}
         if node_id is not None:
             next_step = self.step_index + 1
             self._node_context.set((node_id, dict(node_data or {}), next_step))
@@ -270,14 +275,42 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
     def _intercept_approval(
         self, context: Any, approval_data: dict[str, Any] | None = None
     ) -> dict[str, Any] | bool:
-        node = self.active_node_data
+        node = self.active_node_data or {}
         data = approval_data or {}
+        scen = self.scenario or (getattr(context, "scenario", {}) if context else {}) or {}
+
+        def _has_fault(key: str, val: Any) -> bool:
+            for source in (node, data, scen):
+                if not isinstance(source, dict):
+                    continue
+                if source.get(key) == val:
+                    return True
+                muts = source.get("mutations") or source.get("adversarial_mutation")
+                if isinstance(muts, dict) and muts.get(key) == val:
+                    return True
+            return False
+
+        def _is_fault_named(fault_name: str) -> bool:
+            for source in (node, data, scen):
+                if not isinstance(source, dict):
+                    continue
+                if (
+                    source.get("mutation_fault") == fault_name
+                    or source.get("approval_fault") == fault_name
+                    or source.get("fault") == fault_name
+                ):
+                    return True
+                muts = source.get("mutations") or source.get("adversarial_mutation")
+                if isinstance(muts, dict) and (
+                    muts.get("mutation_fault") == fault_name
+                    or muts.get("approval_fault") == fault_name
+                    or muts.get("fault") == fault_name
+                ):
+                    return True
+            return False
 
         # 1. Stale Approval Token
-        if (
-            node.get("approval_token") == "EXPIRED_SIG_1970"
-            or data.get("approval_token") == "EXPIRED_SIG_1970"
-        ):
+        if _has_fault("approval_token", "EXPIRED_SIG_1970") or _is_fault_named("approval_stale"):
             record = {"fault": "approval_stale", "step": self.step_index}
             self.applied_mutations.append(record)
             return {
@@ -288,10 +321,9 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
             }
 
         # 2. Approval Transaction Mismatch
-        if (
-            node.get("approval_transaction_id") == "TX_MISMATCH_DIFFERENT_PAYMENT"
-            or data.get("approval_transaction_id") == "TX_MISMATCH_DIFFERENT_PAYMENT"
-        ):
+        if _has_fault(
+            "approval_transaction_id", "TX_MISMATCH_DIFFERENT_PAYMENT"
+        ) or _is_fault_named("approval_mismatch"):
             record = {"fault": "approval_mismatch", "step": self.step_index}
             self.applied_mutations.append(record)
             return {
@@ -302,7 +334,15 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
             }
 
         # 3. Mid-Flight Revocation
-        if node.get("approval_revocation"):
+        if (
+            _has_fault("approval_revocation", True)
+            or bool(
+                node.get("approval_revocation")
+                or data.get("approval_revocation")
+                or scen.get("approval_revocation")
+            )
+            or _is_fault_named("approval_revocation")
+        ):
             record = {"fault": "approval_revocation", "step": self.step_index}
             self.applied_mutations.append(record)
             return {
@@ -313,7 +353,13 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
             }
 
         # 4. Approval Race Condition
-        if node.get("approval_race"):
+        if (
+            _has_fault("approval_race", True)
+            or bool(
+                node.get("approval_race") or data.get("approval_race") or scen.get("approval_race")
+            )
+            or _is_fault_named("approval_race")
+        ):
             record = {"fault": "approval_race", "step": self.step_index}
             self.applied_mutations.append(record)
             return {

@@ -55,6 +55,13 @@ def test_external_resolver_policy_must_match_the_selected_public_anchor(remote):
         resolve_policy(policy.identity, Ed25519PrivateKey.generate().public_key(), trust)
 
 
+def test_resolve_policy_with_none_public_key(remote):
+    _, _, policy = remote
+    trust = SimpleNamespace(get_signature_policy=lambda identity: policy)
+    resolved = resolve_policy(policy.identity, public_key=None, trust_root=trust)
+    assert resolved == policy
+
+
 def test_nonzero_base64_padding_bits_are_rejected_even_for_valid_signature_bytes(remote):
     import base64
 
@@ -83,3 +90,10 @@ def test_raw_backend_hex_whitespace_is_not_silently_normalized(remote, monkeypat
     )
     with pytest.raises(SignatureContractError, match="64 hex-encoded bytes"):
         backend.sign_payload(b"{}", purpose=PACKAGE)
+
+
+def test_validate_signing_response_valid_raw_hex(remote):
+    _, raw, policy = remote
+    valid_hex = raw.key.sign(b"{}").hex()
+    result = validate_signing_response(b"{}", valid_hex, identity=policy.identity, purpose=PACKAGE)
+    assert result == valid_hex

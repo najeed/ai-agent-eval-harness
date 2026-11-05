@@ -185,13 +185,27 @@ def resolve_authorization_backend(
     """Resolve the active authorization contract with the OSS backend as fallback."""
 
     def _local_default() -> AuthorizationBackend:
-        from eval_runner.reference.auth import SimpleAPIKeyAuthBackend
+        from eval_runner import config
+        from eval_runner.reference.auth import OIDCAuthorizationBackend, SimpleAPIKeyAuthBackend
 
+        if any((config.OIDC_JWKS_URL, config.OIDC_ISSUER, config.OIDC_AUDIENCE)):
+            return OIDCAuthorizationBackend(
+                config.OIDC_JWKS_URL,
+                config.OIDC_ISSUER,
+                config.OIDC_AUDIENCE,
+                config.OIDC_JWKS_CACHE_TTL,
+            )
         return SimpleAPIKeyAuthBackend(master_key=master_key)
 
-    return resolve_extension(
-        "authorization_backends", explicit=explicit, default_factory=_local_default
+    backend = resolve_extension(
+        "authorization_backends",
+        explicit=explicit,
+        default_factory=_local_default,
+        fail_closed=True,
     )
+    if not isinstance(backend, AuthorizationBackend):
+        raise RuntimeError("Authorization provider must implement AuthorizationBackend")
+    return backend
 
 
 __all__ = [

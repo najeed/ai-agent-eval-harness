@@ -41,7 +41,7 @@ class VerificationPackage:
     decision: dict[str, Any]
     package_version: str = PACKAGE_SCHEMA_VERSION
     package_id: str = ""
-    signature: str | dict[str, Any] | None = None
+    signature: dict[str, Any] | None = None
     signer_identity: str | None = None
     public_key_pem: str | None = None
     algorithm: str = "ed25519"
@@ -193,15 +193,51 @@ class VerificationPackage:
         )
 
         payload_bytes = presigned.canonical_payload_bytes()
-        if hasattr(signer, "sign_payload"):
-            from agentv_runtime.signatures import PACKAGE, validate_signing_response
+        from agentv_runtime.signatures import (
+            PACKAGE,
+            sign_digest_envelope,
+            validate_signing_response,
+        )
 
+        pub_obj = None
+        if hasattr(signer, "sign_payload"):
+            if hasattr(signer, "get_public_key") and callable(signer.get_public_key):
+                try:
+                    pub_obj = signer.get_public_key(signer_id)
+                except Exception:
+                    pub_obj = None
             sig_raw = signer.sign_payload(payload_bytes, signer_id, purpose=PACKAGE)
             sig_raw = validate_signing_response(
-                payload_bytes, sig_raw, identity=signer_id, purpose=PACKAGE
+                payload_bytes,
+                sig_raw,
+                identity=signer_id,
+                purpose=PACKAGE,
+                public_key=pub_obj,
+            )
+        elif hasattr(signer, "public_key") and hasattr(signer, "sign"):
+            pub_obj = signer.public_key() if callable(signer.public_key) else signer.public_key
+            sig_raw = sign_digest_envelope(
+                payload_bytes, signer, identity=signer_id, purpose=PACKAGE
+            )
+            sig_raw = validate_signing_response(
+                payload_bytes,
+                sig_raw,
+                identity=signer_id,
+                purpose=PACKAGE,
+                public_key=pub_obj,
             )
         else:
             sig_raw = signer.sign(payload_bytes)
+            if not isinstance(sig_raw, dict):
+                from agentv_runtime.signatures import SignatureContractError
+
+                raise SignatureContractError("IncompleteSignature: expected a versioned envelope")
+            sig_raw = validate_signing_response(
+                payload_bytes,
+                sig_raw,
+                identity=signer_id,
+                purpose=PACKAGE,
+            )
         sig_hex = sig_raw.hex() if isinstance(sig_raw, bytes) else sig_raw
 
         data = asdict(presigned)
@@ -243,10 +279,10 @@ class VerificationPackage:
         elif trust_root is not None:
             if hasattr(trust_root, "get_public_key"):
                 target_id = (
-                    self.signer_identity
-                    if isinstance(self.signature, dict)
-                    else self.key_id or self.signer_identity
-                ) or "system_id"
+                    self.key_id
+                    if self.key_id and not str(self.key_id).startswith(("sha256:", "arn:"))
+                    else (self.signer_identity or self.key_id or "system_id")
+                )
                 try:
                     pk = trust_root.get_public_key(target_id)
                     if pk:
@@ -260,15 +296,12 @@ class VerificationPackage:
                     anchored_pem = None
             elif isinstance(trust_root, (str, Path)):
                 root_path = Path(trust_root)
-                target_id = (
-                    self.signer_identity
-                    if isinstance(self.signature, dict)
-                    else self.key_id or self.signer_identity
-                )
-                if target_id:
-                    candidate = root_path / target_id / "public_key.pem"
-                    if candidate.is_file():
-                        anchored_pem = candidate.read_text(encoding="utf-8")
+                for target_id in (self.signer_identity, self.key_id):
+                    if target_id and not str(target_id).startswith(("sha256:", "arn:")):
+                        candidate = root_path / str(target_id) / "public_key.pem"
+                        if candidate.is_file():
+                            anchored_pem = candidate.read_text(encoding="utf-8")
+                            break
         else:
             # Check default IdentityService trust root
             try:
@@ -363,20 +396,13 @@ class VerificationPackage:
                 raise ValueError(
                     "Unknown field outside verification-package unsigned projection v1"
                 )
-        if isinstance(sig_raw, dict) and "profile" not in sig_raw and "envelope" not in sig_raw:
-            # Historical transport wrappers are parsed only as legacy raw evidence.
-            # Unknown/malformed versioned responses remain intact and fail profile validation.
-            sig_val = sig_raw.get("signature")
-            signer_id = sig_raw.get("identity") or data.get("signer_identity")
-            pub_pem = sig_raw.get("public_key_pem") or data.get("public_key_pem")
-            algo = sig_raw.get("algorithm") or data.get("algorithm", "ed25519")
-            key_id = sig_raw.get("key_id") or data.get("key_id")
-        else:
-            sig_val = sig_raw
-            signer_id = data.get("signer_identity")
-            pub_pem = data.get("public_key_pem")
-            algo = data.get("algorithm", "ed25519")
-            key_id = data.get("key_id")
+        sig_val = sig_raw
+        signer_id = data.get("signer_identity")
+        pub_pem = data.get("public_key_pem")
+        algo = data.get("algorithm", "ed25519")
+        key_id = data.get("key_id")
+
+        # Clean envelope extraction: do not mutate signed package metadata
 
         fields = {
             "scenario_id": scenario_id,

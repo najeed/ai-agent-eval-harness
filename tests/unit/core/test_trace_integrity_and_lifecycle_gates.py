@@ -199,7 +199,7 @@ def _seed_live_certified_run(tmp_path, run_id: str):
         finalized_at="2026-09-01T00:00:00Z",
     ).sign()
     run_store.append_events(
-        run_id, [{"event": "evaluator_finalization", "_seq": 3, **fin_rec.to_dict()}]
+        run_id, [{"event": "evaluator_finalization", "_seq": 3, "data": fin_rec.to_dict()}]
     )
     run_store.save_run_manifest(
         run_id,

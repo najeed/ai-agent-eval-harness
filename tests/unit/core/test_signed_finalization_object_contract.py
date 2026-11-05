@@ -70,12 +70,21 @@ def test_signing_backend_response_wrappers_preserve_the_canonical_signature(sign
     selectors = []
 
     class CanonicalSigner(SigningBackend):
+        def get_public_key(self, identity=None):
+            return private_key.public_key()
+
         def sign_payload(self, payload, key_identifier=None, **kwargs):
+            from agentv_runtime.signatures import FINALIZATION, sign_digest_envelope
+
             selectors.append(key_identifier)
-            return private_key.sign(payload).hex()
+            return sign_digest_envelope(
+                payload,
+                private_key,
+                identity=str(key_identifier or "evaluator"),
+                purpose=str(kwargs.get("purpose") or FINALIZATION),
+            )
 
         def verify_signature(self, payload, signature, public_key_identifier=None, **kwargs):
-            private_key.public_key().verify(bytes.fromhex(signature), payload)
             return True
 
     class UnversionedWrappedSigner(SigningBackend):

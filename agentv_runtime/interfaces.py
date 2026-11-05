@@ -119,8 +119,9 @@ class SigningBackend(ABC):
     ) -> str | dict[str, Any]:
         """
         Signs payload bytes. Artifact callers pass the versioned artifact ``purpose``
-        keyword. Return either a legacy raw Ed25519 hex signature or the complete
-        ``agentv.signature.digest-envelope.v1`` response from agentv_runtime.signatures.
+        keyword and require a complete ``agentv.signature.digest-envelope.v1``
+        response from agentv_runtime.signatures. Raw Ed25519 hex is only a low-level
+        primitive for DigestEnvelopeSigningBackend, never an artifact signature.
         Unversioned signature/sig metadata wrappers are not artifact signing contracts.
         DigestEnvelopeSigningBackend adapts an explicitly selected RAW signer; the
         RAW provider signs canonical envelope bytes, never an unlabeled payload digest.

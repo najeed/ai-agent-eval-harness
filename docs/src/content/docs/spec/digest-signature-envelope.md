@@ -138,9 +138,9 @@ are rejected for versioned responses.
 
 `SignaturePolicy` is trusted configuration, never data read from an envelope.
 It binds logical identity, immutable key identity, external public key, permitted
-purposes/profiles, legacy policy, revocation, and timezone-aware validity bounds.
+purposes/profiles, revocation, and timezone-aware validity bounds.
 Revoked keys, disallowed purposes/profiles, expired keys, and not-yet-valid keys
-fail verification, including legacy verification. Current v1 validity checks use
+fail verification. Current v1 validity checks use
 verification time; historical validation requires a separately defined trusted
 timestamp policy and must not infer time from an unsigned claim.
 
@@ -153,23 +153,22 @@ alongside its trusted `public_key.pem`. Example for a pinned KMS key:
   "key_id": "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012",
   "permitted_profiles": ["agentv.signature.digest-envelope.v1"],
   "permitted_purposes": ["agentv.certificate", "agentv.verification-package"],
-  "allow_legacy_raw": false,
   "revoked": false,
   "not_before": "2026-10-30T00:00:00+00:00"
 }
 ```
 
 An external resolver may instead implement `get_signature_policy(identity)` and
-return a `SignaturePolicy`. With no policy file, the explicitly defined default
-uses the trusted public-key fingerprint as key identity and permits both v1
-envelopes and existing raw Ed25519 evidence. Set `allow_legacy_raw: false` and
-remove `ed25519-raw` from permitted profiles to enforce migration. Unknown or
-malformed envelope responses never enter that legacy path.
+return a `SignaturePolicy`. With no policy file, the default uses the trusted
+public-key fingerprint as key identity and permits only
+`agentv.signature.digest-envelope.v1` for the supported purposes. Raw hexadecimal
+artifact signatures and unversioned wrappers are rejected. The former
+`allow_legacy_raw` policy field and `ed25519-raw` profile are unsupported; remove
+them from existing trust policy files before issuing new certificates.
 
-The existing raw path verifies the original frozen artifact projection directly
-with Ed25519 and exactly 64 hex-encoded signature bytes. It does not guess an
-algorithm from signature size. Legacy trace-only diagnostics remain
-non-authoritative under the separate certification verdict contract.
+The low-level RAW Ed25519 primitive remains available to the envelope adapter,
+which signs canonical envelope bytes. It does not authorize raw artifact
+signatures. Historical trace-only diagnostics remain non-authoritative.
 
 ## Provider handoff and independent verification
 

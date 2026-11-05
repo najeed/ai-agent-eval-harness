@@ -1595,16 +1595,15 @@ class TestSafeRunPathResolver:
 class TestAuthAndCatalogExtraBranches:
     """Tests extra edge cases in SimpleAPIKeyAuthBackend and LocalFileCatalogStore."""
 
-    def test_auth_backend_dynamic_bootstrap_key(self, monkeypatch):
+    def test_auth_backend_missing_configuration_has_no_bootstrap_key(self, monkeypatch):
         monkeypatch.delenv("EVAL_MASTER_KEY", raising=False)
         monkeypatch.delenv("CONSOLE_MASTER_KEY", raising=False)
 
         backend = SimpleAPIKeyAuthBackend(static_keys=None, master_key=None)
-        assert backend.master_key is not None
-        assert len(backend.master_key) > 20
-        principal = backend.validate_token(backend.master_key)
-        assert principal is not None
-        assert principal.principal_id == "root-admin"
+        assert backend.master_key is None
+        assert backend.get_service_credential() is None
+        assert backend.list_keys() == []
+        assert backend.validate_token("root-admin") is None
 
         # Check permission with None principal
         assert backend.check_permission(None, "resource") is False  # type: ignore
@@ -1700,7 +1699,7 @@ class TestAuthAndCatalogExtraBranches:
         assert p.principal_id == "root-admin"
 
         # 4. Masking and list_principals coverage
-        backend4 = SimpleAPIKeyAuthBackend()
+        backend4 = SimpleAPIKeyAuthBackend(master_key="explicit-test-key-for-masking")
         masked_keys = backend4.list_keys(mask=True)
         raw_keys = backend4.list_keys(mask=False)
         assert len(masked_keys) == 1

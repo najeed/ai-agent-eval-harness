@@ -435,12 +435,18 @@ def test_verification_authority_comprehensive_failure_branches():
     )
     assert any("TraceSealEventCountMismatch" in f for f in res["failures"])
 
-    # 3. ScenarioBindingIncomplete: missing scenario_id or version
+    # 3. ScenarioBindingIncomplete: missing scenario_id or version (Mutant 633 killer)
     p_incomp = dataclasses.replace(base_pkg, scenario_id="")
     res = VerificationAuthority.verify_package(
         p_incomp, scenario_data=scenario_data, require_signature=False
     )
     assert any("ScenarioBindingIncomplete" in f for f in res["failures"])
+
+    p_incomp_ver = dataclasses.replace(base_pkg, scenario_version="")
+    res_ver = VerificationAuthority.verify_package(
+        p_incomp_ver, scenario_data=scenario_data, require_signature=False
+    )
+    assert any("ScenarioBindingIncomplete" in f for f in res_ver["failures"])
 
     # 4. ScenarioIdMismatch / ScenarioVersionMismatch
     bad_scen_data = {

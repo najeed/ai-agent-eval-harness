@@ -5,7 +5,6 @@ OSS Reference Implementation: SimpleAPIKeyAuthBackend
 
 import logging
 import os
-import secrets
 from typing import Any
 
 from eval_runner.interfaces.auth import AuthorizationBackend, AuthPrincipal
@@ -18,8 +17,7 @@ class SimpleAPIKeyAuthBackend(AuthorizationBackend):
     Simple API Key based reference authorization backend.
     Validates tokens against static keys or environment variables
     (EVAL_MASTER_KEY, CONSOLE_MASTER_KEY).
-    If no keys or environment master key are configured, generates
-    a secure random bootstrap token at startup.
+    If no keys are configured, authentication is unavailable.
     """
 
     def __init__(
@@ -32,15 +30,6 @@ class SimpleAPIKeyAuthBackend(AuthorizationBackend):
             self.master_key: str | None = master_key if master_key else None
         elif env_master:
             self.master_key = env_master
-        elif not static_keys:
-            # Generate a secure dynamic bootstrap secret rather than shipping a static default
-            self.master_key = secrets.token_urlsafe(32)
-            masked_preview = (
-                f"{self.master_key[:4]}...{self.master_key[-4:]}"
-                if len(self.master_key) >= 8
-                else "***"
-            )
-            logger.info("Generated dynamic bootstrap master API key (masked: %s)", masked_preview)
         else:
             self.master_key = None
 
@@ -52,7 +41,7 @@ class SimpleAPIKeyAuthBackend(AuthorizationBackend):
                 "principal_id": "root-admin",
                 "roles": ["admin"],
                 "permissions": ["*"],
-                "metadata": {"name": "System Administrator"},
+                "metadata": {"name": "System Administrator", "type": "static-root"},
             }
 
     def register_key(
@@ -165,3 +154,70 @@ class SimpleAPIKeyAuthBackend(AuthorizationBackend):
         if self._keys:
             return next(iter(self._keys.keys()))
         return None
+
+
+class OIDCAuthorizationBackend(AuthorizationBackend):
+    """OIDC authority with explicit trust configuration and literal permissions.
+
+    Roles are descriptive claims. Only explicit permissions (or OAuth scopes)
+    authorize actions; wildcard entitlements are never accepted from JWTs.
+    """
+
+    def __init__(self, jwks_url, issuer, audience, cache_ttl=3600):
+        self.jwks_url = jwks_url
+        self.issuer = issuer
+        self.audience = audience
+        self.cache_ttl = cache_ttl
+        self._jwks_client = None
+
+    def validate_token(self, token: str) -> AuthPrincipal | None:
+        if not all(
+            isinstance(v, str) and v.strip()
+            for v in (token, self.jwks_url, self.issuer, self.audience)
+        ):
+            return None
+        try:
+            import jwt
+
+            from eval_runner.console.auth_manager import normalize_entitlements
+
+            if self._jwks_client is None:
+                self._jwks_client = jwt.PyJWKClient(
+                    self.jwks_url,
+                    cache_jwk_set=True,
+                    cache_lifetime=self.cache_ttl,
+                )
+            signing_key = self._jwks_client.get_signing_key_from_jwt(token)
+            payload = jwt.decode(
+                token,
+                signing_key.key,
+                algorithms=["RS256", "RS384", "RS512", "ES256", "ES384", "ES512"],
+                leeway=10,
+                audience=self.audience,
+                issuer=self.issuer,
+                options={"require": ["sub", "iss", "aud", "exp"]},
+            )
+            subject = payload.get("sub")
+            roles = payload.get("roles", [])
+            permissions = payload.get("permissions", payload.get("scope", "").split())
+            if (
+                not isinstance(subject, str)
+                or not subject
+                or not isinstance(roles, list)
+                or not isinstance(permissions, list)
+                or any(not isinstance(r, str) or not r for r in roles)
+                or any(not isinstance(p, str) or not p or "*" in p for p in permissions)
+            ):
+                return None
+            metadata = dict(payload)
+            metadata["type"] = "oidc-sso"
+            if "environment" in payload and "active_environment" not in payload:
+                metadata["active_environment"] = payload["environment"]
+            metadata = normalize_entitlements(metadata)
+            return AuthPrincipal(subject, roles=roles, permissions=permissions, metadata=metadata)
+        except Exception:
+            return None
+
+    def check_permission(self, principal: AuthPrincipal, resource: str, action: str = "") -> bool:
+        target = f"{resource}:{action}" if action else resource
+        return target in principal.permissions and "*" not in target

@@ -94,9 +94,8 @@ def _finalizations(events):
 
 def _independent_signature_review(signature, payload, anchor, identity, purpose):
     """Independent protocol implementation: external key, exact fields, no Core signer APIs."""
-    if isinstance(signature, str):
-        anchor.verify(bytes.fromhex(signature), payload)
-        return
+    if not isinstance(signature, dict):
+        raise AssertionError("expected digest envelope")
     from cryptography.hazmat.primitives import serialization
 
     key_der = anchor.public_bytes(
@@ -499,9 +498,9 @@ async def test_release_evidence_chain_matrix(real_chain, case, boundary, expecte
         package["metadata"].pop("certificate_profile")
         package["metadata"]["provisional"] = False
         package["signature"] = (
-            IdentityService.get_private_key("system_id", auto_provision=False)
-            .sign(VerificationPackage.from_dict(package).canonical_payload_bytes())
-            .hex()
+            VerificationPackage.from_dict(package)
+            .sign(IdentityService.get_private_key("system_id", auto_provision=False))
+            .signature
         )
         cert["package_hash"] = VerificationPackage.from_dict(package).compute_package_hash()
     elif case == "altered_manifest":
@@ -583,11 +582,7 @@ async def test_release_evidence_chain_matrix(real_chain, case, boundary, expecte
         package["trace_hash"] = _digest(raw)
         package["trace_seal"]["trace_digest"] = _digest(raw)
         parsed = VerificationPackage.from_dict(package)
-        package["signature"] = (
-            IdentityService.get_private_key("system_id")
-            .sign(parsed.canonical_payload_bytes())
-            .hex()
-        )
+        package["signature"] = parsed.sign(IdentityService.get_private_key("system_id")).signature
     sealed = case != "unsealed_run"
     anchors = {
         identity: IdentityService.get_public_key(identity, auto_provision=False)

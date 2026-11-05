@@ -12,6 +12,7 @@ the originally published manifest is never mutated.
 import json
 import logging
 import os
+import tempfile
 import time
 from collections.abc import Generator
 from datetime import datetime
@@ -148,21 +149,27 @@ class LocalFileRunStore(RunStore):
 
     @staticmethod
     def _write_bytes_durable(path: Path, content: bytes) -> None:
-        temporary = path.with_suffix(path.suffix + ".tmp")
-        with open(temporary, "wb") as stream:
-            stream.write(content)
-            stream.flush()
-            os.fsync(stream.fileno())
-        for attempt in range(5):
-            try:
-                temporary.replace(path)
-                break
-            except PermissionError:
-                if attempt < 4:
-                    time.sleep(0.01 * (attempt + 1))
-                    continue
-                raise
-        LocalFileRunStore._sync_directory(path.parent)
+        # Readers and the lease heartbeat can recover the same durable journal
+        # concurrently. Each writer must own its staging file through rename.
+        descriptor, name = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
+        temporary = Path(name)
+        try:
+            with os.fdopen(descriptor, "wb") as stream:
+                stream.write(content)
+                stream.flush()
+                os.fsync(stream.fileno())
+            for attempt in range(5):
+                try:
+                    temporary.replace(path)
+                    break
+                except PermissionError:
+                    if attempt < 4:
+                        time.sleep(0.01 * (attempt + 1))
+                        continue
+                    raise
+            LocalFileRunStore._sync_directory(path.parent)
+        finally:
+            temporary.unlink(missing_ok=True)
 
     @staticmethod
     def _sync_directory(directory: Path) -> None:
@@ -1163,21 +1170,14 @@ class LocalFileRunStore(RunStore):
             # this write is recovered forward to the same sealed evidence.
             self._write_json_durable(self._commit_journal_path(vault), journal)
             self._recover_pending_certification(vault)
-            for _ in range(10):
-                published = self._read_json(target)
-                if (
-                    self._is_sealed(vault)
-                    and published is not None
-                    and (_canonical_digest(published) == incoming_digest)
-                ):
-                    return True
-                time.sleep(0.02)
+            published = self._read_json(target)
             return (
                 self._is_sealed(vault)
                 and published is not None
                 and (_canonical_digest(published) == incoming_digest)
             )
         except OSError:
+            logger.warning("Certification commit failed for run '%s'", run_id, exc_info=True)
             return False
 
     def delete_run(self, run_id: str, context: dict[str, Any] | None = None) -> bool:

@@ -105,8 +105,21 @@ async def test_hitl_pause_resume(monkeypatch, tmp_path):
         events.append(event.name)
 
     # Note: SessionManager uses an isolated bus; tests must subscribe to the instance
+    from types import SimpleNamespace
+
     session = _session(tmp_path, "hitl_test_run", scenario)
     session.event_bus.subscribe(event_listener)
+    monkeypatch.setenv("AGENTV_TEST_NON_DURABLE_HITL", "1")
+
+    async def mock_wait_and_resolve(token, *args, **kwargs):
+        session.approval_manager.resolve_durable_request(token, "APPROVED", decided_by="reviewer")
+        return SimpleNamespace(status="APPROVED", decision_reason="auto-resolved")
+
+    monkeypatch.setattr(
+        session.approval_manager,
+        "wait_for_durable_resolution",
+        mock_wait_and_resolve,
+    )
 
     results = await session.execute_tasks(1)
 

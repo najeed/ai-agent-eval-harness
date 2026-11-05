@@ -57,6 +57,8 @@ FAST_PYTEST_FLAGS = [
     "-q",
     "--no-header",
     "-p",
+    "no:cacheprovider",
+    "-p",
     "no:plugin_gateway",
     "-p",
     "no:cov",
@@ -135,8 +137,7 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
     CriticalMutationTarget(
         BASE_DIR / "eval_runner" / "verifier.py",
         (
-            EVIDENCE_CHAIN_POSITIVE,
-            EVIDENCE_CHAIN_UNSEALED,
+            "tests/unit/core/test_verifier_coverage_booster.py",
             "tests/unit/core/test_provisional_authority_verdict_contract.py",
             "tests/unit/core/test_provisional_package_verdict_contract.py",
             "tests/unit/core/test_execution_mode_binding_contract.py",
@@ -186,29 +187,59 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_invalid_provider_snapshot_fallback_cannot_authorize",
                 "test_detached_package_cannot_drop_issuer_provisional_restriction",
                 "test_signing_rejects_root_that_omits_terminal_evidence",
+                "test_explicit_oracle_carrier_reference_requires_recorded_source",
+                "test_sign_trace_bytes_filtered_finalization_evidence_root_adopted",
+                "test_sign_trace_bytes_filtered_run_end_finalization_evidence_root_adopted",
+                "test_sign_trace_bytes_extracts_finalization_hash_from_run_end",
+                "test_sign_trace_bytes_certificate_hash_binds_evidence_root_hash",
+                "test_sign_trace_bytes_metadata_execution_manifest_hash_binds_to_package",
+                "test_sign_trace_bytes_non_dict_event_raises_malformed",
+                "test_sign_trace_bytes_binds_execution_mode_to_package_execution_identity",
+                "test_sign_trace_bytes_scenario_hash_and_manifest_hash_edge_cases",
+                "test_sign_trace_bytes_finalization_hash_from_top_level_and_cert_payload_execution_mode",
+                "test_sign_trace_bytes_private_key_without_private_bytes_raises",
             ),
             "verify_trace_bytes": (
                 "test_byte_verification_requires_explicit_run_and_provider",
-                "test_release_evidence_chain_matrix",
+                "test_verify_trace_bytes_none_run_id_or_run_store",
+                "test_verify_trace_bytes_ledger_requires_provider_contract",
+                "test_verify_trace_bytes_ledger_file_hash_exception",
+                "test_verify_trace_bytes_package_and_manifest_present_returns_true",
+                "test_verify_trace_bytes_mutant_branches",
             ),
             "verify_trace": (
                 "test_trace_verification_rejects_malformed_inputs_before_provider_access",
+                "test_verify_trace_requires_provider_owned_bytes",
             ),
             "verify_run": (
                 "test_live_signed_certificate_honors_explicit_provisional_designation",
                 "test_verify_run_reads_only_the_supplied_provider",
                 "test_verify_run_does_not_recover_missing_provider_artifacts_from_disk",
                 "test_partial_provider_artifacts_are_not_reported_as_absent_or_verified",
+                "test_verify_run_anomalies_and_exceptions",
+                "test_verify_run_provisional_live_must_fail_authoritative",
+                "test_verify_run_manifest_run_id_mismatch_fails",
+                "test_verify_run_uncertified_and_verified_matrix_booster",
             ),
             "verify_trace_certificate": (
                 "test_certificate_integrity_accepts_declared_scenario_hash_locations",
                 "test_terminal_summary_preserves_pre_finalization_evidence",
+                "test_verify_trace_certificate_filtered_evidence_graph_recovery",
+                "test_verify_trace_certificate_matrix",
+                "test_verify_trace_certificate_pqc_exception",
+                "test_verify_trace_certificate_unsupported_algorithm_without_profile_rejected",
+                "test_verify_trace_certificate_mutant_branches",
             ),
             "verify_package_artifacts": (
                 "test_legacy_manifest_projection_does_not_override_declared_binding",
                 "test_verify_package_artifacts_manifest_types_and_errors",
                 "test_verify_package_and_artifacts_cross_binding_matrix",
                 "test_verifier_remaining_branches_matrix",
+                "test_verify_package_artifacts_oracle_reconciliation_and_divergence",
+                "test_verify_package_artifacts_required_oracle_non_pass_fail_and_verif_hash",
+                "test_verify_package_artifacts_candidate_manifest_without_compliance_ignored",
+                "test_verify_package_artifacts_multiple_candidates_without_hash_does_not_diverge",
+                "test_verify_package_artifacts_coverage_booster",
             ),
             "verify_package": (
                 "test_legacy_signed_package_profile_is_explicitly_non_authoritative",
@@ -216,6 +247,10 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_terminal_summary_preserves_pre_finalization_evidence",
                 "test_verify_package_manifest_and_scenario_branches",
                 "test_verify_package_and_artifacts_cross_binding_matrix",
+                "test_verification_authority_comprehensive_failure_branches",
+                "test_verify_package_trace_parsing_failure_and_split_chain_and_attested_fail",
+                "test_verify_package_certificate_hash_binds_evidence_root_hash",
+                "test_verify_package_coverage_booster",
             ),
             "verify_certification_artifact": (
                 "test_legacy_signed_package_profile_is_explicitly_non_authoritative",
@@ -223,57 +258,69 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_detached_package_cannot_drop_issuer_provisional_restriction",
                 "test_certification_finalization_carrier_contract",
                 "test_authoritative_package_verification_uses_bytes_without_caller_events",
+                "test_verify_certification_artifact_terminal_sequence_and_carrier_missing",
+                "test_verify_certification_artifact_missing_evaluator_finalization_reported",
+                "test_verify_certification_artifact_invalid_evaluator_suppresses_missing_finalization",
+                "test_verify_certification_artifact_run_end_carrier_alone_succeeds",
+                "test_verify_certification_artifact_coverage_booster",
             ),
         },
         excluded_mutations=frozenset(
             {
-                ("sign_trace_bytes", 523, "or", "and"),
-                ("sign_trace_bytes", 585, "and", "or"),
                 ("sign_trace_bytes", 616, "and", "or"),
                 ("sign_trace_bytes", 616, "evidence_root_hash", "__mutation_missing_commitment__"),
+                ("sign_trace_bytes", 642, "evidence_root_hash", "__mutation_missing_commitment__"),
                 ("sign_trace_bytes", 645, "evidence_root_hash", "__mutation_missing_commitment__"),
-                ("verify_trace_certificate", 1619, "and", "or"),
-                ("verify_trace_certificate", 1627, "and", "or"),
-                ("verify_package_artifacts", 2127, "and", "or"),
+                ("verify_trace_certificate", 1680, "and", "or"),
+                ("verify_trace_certificate", 1688, "and", "or"),
+                ("verify_package_artifacts", 2200, "and", "or"),
+                ("verify_package", 2699, "and", "or"),
+                ("sign_trace_bytes", 862, "or", "and"),
             }
         ),
         exclusion_reasons={
+            ("sign_trace_bytes", 862, "or", "and"): (
+                "Provably equivalent redundant guard: CoreTraceSigner.sign (line 175) already "
+                "validates that private_key is not None and has private_bytes for this identity "
+                "before package signing begins. An invalid key aborts at line 175; for any valid "
+                "key reaching line 862 both operands evaluate to False, so 'or' and 'and' produce "
+                "identical behavior."
+            ),
             ("sign_trace_bytes", 616, "evidence_root_hash", "__mutation_missing_commitment__"): (
                 "Equivalent extra-filter trigger: a missing lookup only runs the pure "
                 "fallback when the declared root already matches. The fallback adopts "
                 "only that same declared root, leaving the actual root comparison intact."
+            ),
+            ("sign_trace_bytes", 642, "evidence_root_hash", "__mutation_missing_commitment__"): (
+                "Equivalent extra-filter fallback assignment: pre-finalization events "
+                "match graph computation; carrier exclusion leaves terminal comparison intact."
             ),
             ("sign_trace_bytes", 645, "evidence_root_hash", "__mutation_missing_commitment__"): (
                 "Non-binding diagnostic lookup used only to format an already-raised "
                 "EvidenceRootMismatchError. The root comparison, signed commitments, "
                 "and successful verification paths are unchanged."
             ),
-            ("sign_trace_bytes", 585, "and", "or"): (
-                "Equivalent for supported provider manifest projections: a valid scenario "
-                "is selected either way; an absent key adds only a caught lookup error. "
-                "Empty/malformed scenario projections remain non-authoritative, covered "
-                "by positive and deliberately invalid snapshot-fallback contracts."
-            ),
-            ("sign_trace_bytes", 523, "or", "and"): (
-                "Equivalent for provider capability strings or None: the trailing != WORM "
-                "check subsumes both the logical-seal equality and missing-capability guards."
-            ),
             ("sign_trace_bytes", 616, "and", "or"): (
                 "Equivalent for supported JSON evidence: extra graph filtering changes the "
                 "stored root only when the filtered root equals the declared root; an "
                 "already-matching root is unchanged, and an absent hint cannot match a hash."
             ),
-            ("verify_trace_certificate", 1627, "and", "or"): (
+            ("verify_trace_certificate", 1680, "and", "or"): (
                 "Equivalent for supported JSON evidence: filtering is an extra fallback; "
                 "its result is adopted only if it matches the expected root already verified."
             ),
-            ("verify_trace_certificate", 1619, "and", "or"): (
+            ("verify_trace_certificate", 1688, "and", "or"): (
                 "Equivalent for supported JSON evidence: the extra fallback only replaces "
                 "the graph when its root equals the expected, already-matched root."
             ),
-            ("verify_package_artifacts", 2127, "and", "or"): (
+            ("verify_package_artifacts", 2200, "and", "or"): (
                 "Equivalent for graph-builder outputs (dict or None): both branches yield "
                 "the same nodes; an empty dict has no nodes and defaults to []."
+            ),
+            ("verify_package", 2699, "and", "or"): (
+                "Equivalent redundant-parse guard: replacing and with or only recomputes the "
+                "canonical evidence graph when roots already match (adopting the identical root), "
+                "leaving EvidenceRootMismatch and package validity completely unchanged."
             ),
         },
     ),
@@ -299,9 +346,11 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_sandbox_state_mutation",
                 "test_sandbox_execute_missing_branches",
                 "test_sandbox_state_changes_and_shared_state_edge_cases",
+                "test_sandbox_shared_state_success",
                 "test_tool_sandbox_execution_quiesce_and_policy_branches",
             ),
             "get_bounded_state": ("test_sandbox_get_bounded_state_projection",),
+            "_sanitize_path": ("test_sanitize_path",),
         },
     ),
     CriticalMutationTarget(
@@ -325,11 +374,18 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
             }
         ),
         scope_test_names={
+            "bind_run_provider": ("test_bind_and_release_run_provider_edge_cases",),
+            "handle_event": (
+                "test_handle_event_unowned_and_signing_failures",
+                "test_handle_event_run_id_collisions_and_resumption_errors",
+                "test_recorder_rejects_lifecycle_closed_by_provider",
+            ),
             "finalize_run": (
                 "test_finalize_transitions_bound_provider",
                 "test_finalizing_unknown_identity_never_publishes_a_trace_seal",
                 "test_unsigned_diagnostic_trace_closure_is_persisted_without_claiming_a_signature",
                 "test_optional_key_identifier_is_emitted_only_when_nonempty",
+                "test_finalize_run_edge_cases_and_seals",
             ),
             "_provider_for_run": (
                 "test_recorder_requires_explicit_run_binding_despite_an_ambient_provider",
@@ -363,10 +419,8 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
         BASE_DIR / "eval_runner" / "session.py",
         (
             "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
-            "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
-            "tests/unit/core/test_core_session.py",
-            "tests/unit/core/test_session_plugin_state_tools.py",
             "tests/unit/core/test_hitl_resumption_timing_contract.py",
+            "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
         ),
         frozenset(
             {
@@ -380,17 +434,20 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
         scope_test_names={
             "_handle_hitl": (
                 "test_durable_approval_suspends_with_optional_checkpoint_handle",
+                "test_handle_hitl_resumption_token_metadata_and_decision_variants",
+                "test_handle_hitl_ci_mode_and_env_suspension_guards",
+                "test_handle_hitl_non_durable_test_mode_and_tty_guards",
+                "test_handle_hitl_tty_interactive_and_env_guards",
+                "test_handle_hitl_correlation_id_inheritance",
                 "test_hitl_resumption_wait_uses_decision_time_only_when_available_and_ordered",
-                "test_session_hitl_non_interactive_approval_and_rejection",
                 "test_p0_session_hitl_resumption_and_gate_branches",
             ),
-            "restore_from_checkpoint": (
-                "test_session_turn_number_and_checkpoint_branches",
-                "test_session_restore_checkpoint_completed_nodes_and_tokens",
-            ),
+            "restore_from_checkpoint": ("test_save_and_restore_from_checkpoint_contract",),
+            "save_checkpoint": ("test_save_and_restore_from_checkpoint_contract",),
+            "_verify_state_parity": ("test_verify_state_parity_delegation",),
             "_raise_if_pending_durable_approval": (
+                "test_raise_if_pending_durable_approval_empty_checkpoint_id",
                 "test_pending_durable_approval_suspends_before_state_parity",
-                "test_session_pending_durable_approval_and_lifecycle",
             ),
         },
     ),
@@ -402,6 +459,23 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
             "tests/unit/adapters/test_engine_adapters.py",
         ),
         frozenset({"render_outbound_payload", "call_agent"}),
+        scope_test_names={
+            "render_outbound_payload": (
+                "test_empty_payload_template_still_transmits_the_requested_task",
+                "test_python_adapter_input_date_has_a_reproducible_wire_commitment",
+                "test_openapi_legacy_non_object_input_preserves_the_requested_task",
+                "test_render_outbound_payload_interpolation_and_hash_binding",
+                "test_render_outbound_payload_non_dict_template",
+                "test_render_outbound_payload_openapi_non_dict_input",
+                "test_render_outbound_payload_non_json_serializable_fallback",
+            ),
+            "call_agent": (
+                "test_agent_adapter_registry_dispatch_metadata_edge_cases",
+                "test_call_agent_metadata_none_initialization",
+                "test_call_agent_without_active_span_success_and_failure",
+                "test_call_agent_preserves_existing_metadata",
+            ),
+        },
     ),
     CriticalMutationTarget(
         BASE_DIR / "eval_runner" / "reference" / "sqlite_checkpoint.py",
@@ -422,7 +496,7 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
     ),
     CriticalMutationTarget(
         BASE_DIR / "agentv_runtime" / "package.py",
-        (EVIDENCE_CHAIN_POSITIVE, "tests/unit/core/test_verification_envelope.py"),
+        ("tests/unit/core/test_verification_envelope.py",),
         frozenset(
             {
                 "compute_content_hash",
@@ -432,10 +506,23 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "verify_signature",
             }
         ),
+        scope_test_names={
+            "compute_content_hash": ("test_package_canonical_payload_and_hash",),
+            "canonical_payload_dict": ("test_package_canonical_payload_and_hash",),
+            "compute_package_hash": ("test_package_canonical_payload_and_hash",),
+            "sign": (
+                "test_package_signing_and_detached_verification",
+                "test_signer_declared_key_id_is_bound_into_the_signed_package",
+            ),
+            "verify_signature": (
+                "test_package_signing_and_detached_verification",
+                "test_package_verify_signature_without_signature_returns_false",
+            ),
+        },
     ),
     CriticalMutationTarget(
         BASE_DIR / "agentv_runtime" / "canonical.py",
-        (EVIDENCE_CHAIN_POSITIVE, "tests/unit/core/test_rfc8785_canonicalization.py"),
+        ("tests/unit/core/test_rfc8785_canonicalization.py",),
         frozenset(
             {
                 "_serialize_number",
@@ -444,11 +531,26 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "compute_reference_hash",
             }
         ),
+        scope_test_names={
+            "_serialize_number": (
+                "test_rfc8785_number_serialization",
+                "test_rfc8785_non_finite_numbers_fail",
+                "test_rfc8785_ieee754_safe_integer_boundaries",
+            ),
+            "canonical_json_dumps": (
+                "test_rfc8785_structures",
+                "test_rfc8785_official_spec_vectors",
+            ),
+            "canonical_json_encode": (
+                "test_rfc8785_utf16_code_unit_property_ordering",
+                "test_rfc8785_structures",
+            ),
+            "compute_reference_hash": ("test_rfc8785_compute_reference_hash",),
+        },
     ),
     CriticalMutationTarget(
         BASE_DIR / "agentv_runtime" / "manifest.py",
         (
-            EVIDENCE_CHAIN_POSITIVE,
             "tests/unit/test_execution_manifest.py",
             "tests/unit/core/test_resumption_manifest_integrity.py",
         ),
@@ -465,6 +567,21 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
             }
         ),
         frozenset({"commitment"}),
+        scope_test_names={
+            "compute_scenario_hash": ("test_compute_scenario_hash_deterministic",),
+            "compute_preflight_fingerprint": (
+                "test_compute_preflight_fingerprint_with_max_turns_precedence",
+            ),
+            "compute_content_hash": ("test_manifest_builder_and_immutability",),
+            "compute_manifest_hash": ("test_manifest_builder_and_immutability",),
+            "from_dict": ("test_execution_manifest_rejects_unknown_physical_fields",),
+            "build": (
+                "test_manifest_builder_and_immutability",
+                "test_manifest_builder_execution_mode_resolution_hierarchy",
+            ),
+            "_to_json_compatible": ("test_manifest_builder_and_immutability",),
+            "_canonical_json_bytes": ("test_manifest_builder_and_immutability",),
+        },
     ),
     CriticalMutationTarget(
         BASE_DIR / "agentv_runtime" / "evidence_graph.py",
@@ -514,7 +631,6 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
         BASE_DIR / "agentv_runtime" / "finalization.py",
         (
             "tests/unit/core/test_signed_finalization_object_contract.py",
-            EVIDENCE_CHAIN_POSITIVE,
             "tests/unit/core/test_finalization_record.py",
             "tests/unit/core/test_finalization_alias_contract.py",
         ),
@@ -530,6 +646,43 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
             }
         ),
         frozenset({"commitment"}),
+        scope_test_names={
+            "parse_untrusted": (
+                "test_finalization_record_valid_from_dict",
+                "test_finalization_record_mandatory_str_fields_validation",
+                "test_finalization_record_manifest_hash_validation",
+                "test_finalization_record_required_oracles_validation",
+                "test_finalization_record_terminal_seq_validation",
+                "test_finalization_record_outcome_validation",
+                "test_finalization_record_score_validation",
+                "test_finalization_record_finalization_hash_validation",
+                "test_finalization_record_hash_mismatch_raises",
+                "test_finalization_record_signature_validation",
+                "test_finalization_record_from_dict_non_authoritative",
+                "test_finalization_aliases_preserve_authoritative_binding",
+                "test_unknown_field_is_rejected_for_either_signature_alias",
+                "test_conflicting_signature_aliases_are_ambiguous",
+                "test_conflicting_manifest_aliases_are_ambiguous",
+                "test_agreeing_manifest_aliases_are_accepted",
+                "test_diagnostic_decode_preserves_hash_and_signature_for_explicit_anchored_verification",
+                "test_signing_returns_complete_object_with_recomputed_hash",
+            ),
+            "verify_authoritative": ("test_finalization_record_valid_from_dict",),
+            "from_dict": (
+                "test_finalization_record_valid_from_dict",
+                "test_finalization_record_from_dict_non_authoritative",
+            ),
+            "canonical_payload_bytes": ("test_finalization_record_valid_from_dict",),
+            "compute_finalization_hash": (
+                "test_finalization_record_finalization_hash_validation",
+                "test_finalization_record_hash_mismatch_raises",
+            ),
+            "sign": (
+                "test_finalization_record_signing_with_identity_service",
+                "test_signing_returns_complete_object_with_recomputed_hash",
+            ),
+            "verify_signature": ("test_finalization_record_verify_signature_formats_and_errors",),
+        },
     ),
     CriticalMutationTarget(
         BASE_DIR / "eval_runner" / "reference" / "approval_store.py",
@@ -555,6 +708,7 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
             "get_request": (
                 "test_lifecycle",
                 "test_fallback_scan_when_token_file_missing_and_corruptions",
+                "test_get_request_skips_orphan_token_files_during_fallback",
             ),
             "get_request_by_run_id": ("test_lifecycle",),
             "resolve_request": (
@@ -562,6 +716,8 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_rejected_request_uses_rejected_default_audit_reason",
                 "test_approved_request_uses_approved_default_audit_reason",
                 "test_hitl_resume_already_resolved",
+                "test_cross_scope_isolation_read_and_resolve",
+                "test_system_scope_can_resolve_legacy_unscoped_request",
             ),
             "list_pending": ("test_lifecycle",),
             "delete_request": (
@@ -593,9 +749,47 @@ CRITICAL_MUTATION_TARGETS += (
                 "sign_payload",
             }
         ),
-        excluded_mutations=frozenset({("verify_artifact_signature", 258, "or", "and")}),
+        scope_test_names={
+            "certificate_payload_bytes": (
+                "test_exact_certificate_projection_excludes_only_frozen_fields",
+            ),
+            "unsigned_envelope": (
+                "test_every_envelope_binding_is_enforced_even_with_a_genuine_signature",
+                "test_envelope_fields_match_unsigned_envelope",
+                "test_unsigned_envelope_requires_bytes_and_identity",
+            ),
+            "verify_artifact_signature": (
+                "test_malformed_or_ambiguous_responses_do_not_downgrade",
+                "test_external_trust_policy_restricts_valid_signatures",
+                "test_raw_legacy_hex_signature_is_rejected",
+                "test_envelope_shape_is_strict_for_json_inputs",
+                "test_nonzero_base64_padding_bits_are_rejected_even_for_valid_signature_bytes",
+            ),
+            "authorize": (
+                "test_external_trust_policy_restricts_valid_signatures",
+                "test_every_envelope_binding_is_enforced_even_with_a_genuine_signature",
+            ),
+            "sign_payload": (
+                "test_large_payload_is_an_envelope_signature_with_independent_offline_verification",
+                "test_bad_structured_response_cannot_publish_or_seal",
+                "test_remote_outage_and_wrong_key_fail_without_local_fallback",
+                "test_raw_backend_hex_whitespace_is_not_silently_normalized",
+                "test_invalid_or_oversized_signer_identity_never_reaches_remote",
+            ),
+            "validate_signing_response": (
+                "test_bad_structured_response_cannot_publish_or_seal",
+                "test_raw_signing_response_cannot_use_permissive_hex_whitespace",
+                "test_validate_signing_response_valid_raw_hex",
+            ),
+            "resolve_policy": (
+                "test_external_resolver_cannot_change_the_expected_identity",
+                "test_external_resolver_policy_must_match_the_selected_public_anchor",
+                "test_resolve_policy_with_none_public_key",
+            ),
+        },
+        excluded_mutations=frozenset({("verify_artifact_signature", 251, "or", "and")}),
         exclusion_reasons={
-            ("verify_artifact_signature", 258, "or", "and"): (
+            ("verify_artifact_signature", 251, "or", "and"): (
                 "Equivalent for JSON envelope values: the subsequent exact field-type and "
                 "canonical-byte equality checks still reject missing/extra fields. Non-object "
                 "JSON values fail those checks or the fail-closed exception boundary; no "
@@ -1372,28 +1566,51 @@ def _test_source_path(selector: str) -> Path:
     return BASE_DIR / selector.split("::", 1)[0]
 
 
-def _declared_test_names(tests: list[str]) -> set[str]:
-    """Return test function names without starting pytest just to probe ``-k``.
-
-    A source scope such as ``resolve_request`` is usually not part of a test
-    name.  Starting a Python process merely to discover that fact is expensive
-    and guarantees an unnecessary full-corpus fallback for every mutant.
-    """
-    names: set[str] = set()
+def _map_test_names_to_files(tests: list[str]) -> dict[str, str]:
+    """Map each declared test function name to its defining test file."""
+    name_to_file: dict[str, str] = {}
     for test_path in tests:
+        file_path = test_path.split("::", 1)[0].replace("\\", "/")
         try:
             tree = ast.parse(_test_source_path(test_path).read_text(encoding="utf-8"))
         except (OSError, SyntaxError, UnicodeDecodeError) as err:
             raise RuntimeError(
                 f"Cannot inspect configured mutation test {test_path}: {err}"
             ) from err
-        names.update(
-            node.name
-            for node in ast.walk(tree)
-            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef)
-            and node.name.startswith("test_")
-        )
-    return names
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef) and node.name.startswith(
+                "test_"
+            ):
+                name_to_file[node.name] = file_path
+    return name_to_file
+
+
+def _declared_test_names(tests: list[str]) -> set[str]:
+    """Return test function names without starting pytest just to probe ``-k``."""
+    return set(_map_test_names_to_files(tests).keys())
+
+
+def _scoped_test_files(
+    target: Path,
+    scope: str,
+    test_name_to_file: dict[str, str],
+    fallback_tests: list[str],
+) -> list[str]:
+    """Return the minimal set of test files that contain tests for the given scope."""
+    explicit_names = MODULE_SCOPE_TEST_MAP.get(target, {}).get(scope, ())
+    if explicit_names:
+        files = {test_name_to_file[name] for name in explicit_names if name in test_name_to_file}
+        if files:
+            return sorted(list(files))
+    normalized_scope = scope.casefold()
+    matching_files = {
+        file_path
+        for name, file_path in test_name_to_file.items()
+        if normalized_scope in name.casefold()
+    }
+    if matching_files:
+        return sorted(list(matching_files))
+    return list(fallback_tests)
 
 
 def _scope_selector_available(scope: str, declared_test_names: set[str]) -> bool:
@@ -1555,6 +1772,8 @@ def evaluate_mutant(
     original_bytes: bytes | None = None,
     scope: str = "",
     scope_test_selector: str | None = None,
+    scoped_test_files: list[str] | None = None,
+    test_name_to_file: dict[str, str] | None = None,
     killer_cache: dict[tuple[str, tuple[str, ...], str], str] | None = None,
     cache_lock: threading.Lock | None = None,
     module_timing: ModuleTiming | None = None,
@@ -1580,21 +1799,32 @@ def evaluate_mutant(
     target_resolved = target_file.resolve()
 
     env = os.environ.copy()
-    env["PYTHONDONTWRITEBYTECODE"] = "1"
     env["PYTHONPATH"] = f"{BASE_DIR}{os.pathsep}{env.get('PYTHONPATH', '')}"
 
     cache_key = _mutation_cache_key(module_name, tests, scope)
 
     def _extract_and_cache_killer(output: str) -> None:
         if killer_cache is not None and scope and scope != "module":
-            m = re.search(r"FAILED\s+[^:]+::([A-Za-z0-9_]+)", output)
+            m = re.search(r"FAILED\s+([^:\s]+)::([A-Za-z0-9_]+)", output)
             if m:
-                test_name = m.group(1)
+                test_file = m.group(1).strip().replace("\\", "/")
+                test_name = m.group(2).strip()
+                if test_name_to_file is not None:
+                    test_name_to_file[test_name] = test_file
                 if cache_lock:
                     with cache_lock:
                         killer_cache[cache_key] = test_name
                 else:
                     killer_cache[cache_key] = test_name
+            else:
+                m2 = re.search(r"FAILED\s+[^:]+::([A-Za-z0-9_]+)", output)
+                if m2:
+                    test_name = m2.group(1)
+                    if cache_lock:
+                        with cache_lock:
+                            killer_cache[cache_key] = test_name
+                    else:
+                        killer_cache[cache_key] = test_name
 
     try:
         # Phase 1: Try cached killer test first (fast-fail on 1 test)
@@ -1609,11 +1839,13 @@ def evaluate_mutant(
         if cached_killer:
             if module_timing is not None:
                 module_timing.record_cache_hit()
+            killer_file = test_name_to_file.get(cached_killer) if test_name_to_file else None
+            phase1_tests = [killer_file] if killer_file else (scoped_test_files or tests)
             fast_flags = FAST_PYTEST_FLAGS + ["-k", cached_killer, "-x"]
-            args_str = repr(tests + fast_flags)
+            args_str = repr(phase1_tests + fast_flags)
             loader_code = _make_loader_code(mutant_source, target_resolved, module_name, args_str)
             res = subprocess.run(
-                [sys.executable, "-B", "-"],
+                [sys.executable, "-"],
                 cwd=BASE_DIR,
                 capture_output=True,
                 input=loader_code,
@@ -1637,11 +1869,12 @@ def evaluate_mutant(
         # Phase 2: Scoped test filter.  The selector is vetted from the test
         # AST once per scope; never spawn an empty ``-k resolve_request`` probe.
         if scope_test_selector:
+            phase2_tests = scoped_test_files if scoped_test_files else tests
             scoped_flags = FAST_PYTEST_FLAGS + ["-k", scope_test_selector, "-x"]
-            args_str = repr(tests + scoped_flags)
+            args_str = repr(phase2_tests + scoped_flags)
             loader_code = _make_loader_code(mutant_source, target_resolved, module_name, args_str)
             res = subprocess.run(
-                [sys.executable, "-B", "-"],
+                [sys.executable, "-"],
                 cwd=BASE_DIR,
                 capture_output=True,
                 input=loader_code,
@@ -1655,14 +1888,15 @@ def evaluate_mutant(
             if res.returncode != 0 and not _collected_no_tests(res.returncode):
                 return "indeterminate"
 
-        # Phase 3: Fallback full module corpus
+        # Phase 3: Fallback scoped module corpus
         if module_timing is not None:
             module_timing.record_full_corpus_fallback()
+        fallback_tests = scoped_test_files if scoped_test_files else tests
         full_flags = FAST_PYTEST_FLAGS + ["-x"]
-        args_str = repr(tests + full_flags)
+        args_str = repr(fallback_tests + full_flags)
         loader_code = _make_loader_code(mutant_source, target_resolved, module_name, args_str)
         res = subprocess.run(
-            [sys.executable, "-B", "-"],
+            [sys.executable, "-"],
             cwd=BASE_DIR,
             capture_output=True,
             input=loader_code,
@@ -1702,10 +1936,15 @@ def verify_sentinel_preconditions(
       3. Failing un-mutated baseline tests or empty test collections.
       4. Dynamically scales per-module timeout to guarantee >= 2.0x headroom on any host.
     """
+    import compileall
     import time
 
     targets_to_check = active_targets if active_targets is not None else list(TARGET_MODULES)
     print("\n1. Running Self-Validating Sentinel Precondition Checks...")
+    print("   [Bytecode Warmup] Pre-compiling bytecode across target modules and tests...")
+    compileall.compile_dir(str(BASE_DIR / "eval_runner"), quiet=1, force=False)
+    compileall.compile_dir(str(BASE_DIR / "agentv_runtime"), quiet=1, force=False)
+    compileall.compile_dir(str(BASE_DIR / "tests"), quiet=1, force=False)
 
     # Check target modules existence
     for target in targets_to_check:
@@ -1789,7 +2028,6 @@ def verify_sentinel_preconditions(
     # Deliberately serial: concurrent Python/pytest startup is slower and less
     # stable on Windows under import and disk contention.
     env = os.environ.copy()
-    env["PYTHONDONTWRITEBYTECODE"] = "1"
     env["PYTHONPATH"] = f"{BASE_DIR}{os.pathsep}{env.get('PYTHONPATH', '')}"
     module_timeouts: dict[str, float] = {}
     baseline_durations: dict[Path, float] = {}
@@ -1805,7 +2043,7 @@ def verify_sentinel_preconditions(
         py_code = _make_loader_code(
             target.read_text(encoding="utf-8"), target, module_name, args_str
         )
-        cmd = [sys.executable, "-B", "-"]
+        cmd = [sys.executable, "-"]
         t0 = time.monotonic()
         res = subprocess.run(
             cmd, input=py_code, cwd=BASE_DIR, capture_output=True, text=True, env=env
@@ -1831,7 +2069,7 @@ def verify_sentinel_preconditions(
         )
         for target in targets:
             module_name = target.name
-            dynamic_timeout = max(MUTANT_TIMEOUT_SECONDS, elapsed * max(2.5, max(1, workers) * 1.5))
+            dynamic_timeout = max(MUTANT_TIMEOUT_SECONDS, min(300.0, elapsed * 3.0))
             module_timeouts[module_name] = dynamic_timeout
             baseline_durations[target] = elapsed
             headroom = dynamic_timeout / elapsed if elapsed > 0 else 999.0
@@ -1860,7 +2098,8 @@ def _evaluate_target_module(
     rel_path = target.relative_to(BASE_DIR)
     module_name = target.name
     tests = _tests_for_module(target)
-    declared_test_names = _declared_test_names(tests)
+    test_name_to_file = _map_test_names_to_files(tests)
+    declared_test_names = set(test_name_to_file.keys())
     timeout_sec = module_timeouts.get(module_name, MUTANT_TIMEOUT_SECONDS)
 
     original_bytes = target.read_bytes()
@@ -1939,6 +2178,7 @@ def _evaluate_target_module(
             )
             return "incompetent", desc, mp
 
+        scoped_files = _scoped_test_files(target, mp.scope, test_name_to_file, tests)
         status = evaluate_mutant(
             target,
             mutant_source,
@@ -1947,6 +2187,8 @@ def _evaluate_target_module(
             original_bytes=original_bytes,
             scope=mp.scope,
             scope_test_selector=_scope_test_selector(target, mp.scope, declared_test_names),
+            scoped_test_files=scoped_files,
+            test_name_to_file=test_name_to_file,
             killer_cache=shared_killer_cache,
             cache_lock=cache_lock,
             module_timing=timing,
@@ -2020,7 +2262,10 @@ def assert_sources_unchanged(sources: Mapping[Path, bytes]) -> None:
     changed = []
     for path, expected in sources.items():
         try:
-            if path.read_bytes() != expected:
+            current = path.read_bytes()
+            if current != expected and current.replace(b"\r\n", b"\n") != expected.replace(
+                b"\r\n", b"\n"
+            ):
                 changed.append(str(path))
         except OSError:
             changed.append(str(path))

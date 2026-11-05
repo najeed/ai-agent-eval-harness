@@ -80,9 +80,17 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
     raw_status = str(
         run_data.get("status") or run_data.get("execution_status") or "UNKNOWN"
     ).upper()
+    verif_status = str(run_data.get("verification_status") or "").upper()
     passed = run_data.get("passed")
-    if passed is False:
+
+    if verif_status == "ATTESTED_FAIL":
+        status = "ATTESTED FAIL"
+    elif verif_status in ("FAILED", "FAILED_VERIFICATION", "POLICY_BREACH"):
+        status = verif_status
+    elif passed is False or raw_status in ("FAILED", "FAIL"):
         status = "FAILED"
+    elif verif_status in ("VERIFIED", "CERTIFIED_PASS", "CERTIFIED"):
+        status = "VERIFIED"
     elif passed is True:
         status = (
             "VERIFIED"
@@ -100,6 +108,34 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
     failed_turn = (
         analysis.get("failed_turn_index") or analysis.get("index") or run_data.get("failed_turn")
     )
+    failed_node = None
+    failed_oracles = run_data.get("failed_oracles") or []
+    if failed_oracles and isinstance(failed_oracles[0], dict):
+        first_failed_oracle = failed_oracles[0]
+        failed_node = (
+            first_failed_oracle.get("node_id")
+            or first_failed_oracle.get("scenario_node_id")
+            or first_failed_oracle.get("node")
+        )
+        if failed_turn is None:
+            failed_turn = first_failed_oracle.get("turn") or first_failed_oracle.get("step")
+
+    # If failed_turn is still None, scan events if available
+    events = run_data.get("events") or []
+    if failed_turn is None and events:
+        for ev in events:
+            ev_data = ev.get("data") if isinstance(ev.get("data"), dict) else ev
+            if (
+                ev.get("event") in ("policy_violation", "assertion_evaluated", "metric_evaluated")
+                or ev_data.get("status") in ("FAIL", "FAILED", "policy_violation")
+                or ev_data.get("outcome") in ("FAIL", "FAILED")
+            ):
+                t_val = (
+                    ev.get("turn") or ev_data.get("turn") or ev.get("step") or ev_data.get("step")
+                )
+                if t_val is not None:
+                    failed_turn = t_val
+                    break
 
     if status in ("PASSED", "VERIFIED"):
         root_cause = "Verified Compliant: No failure patterns detected."
@@ -108,22 +144,51 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
         )
         suggestion = "Ready for production certification and deployment."
         severity_score = "0.0 / 10.0"
+        telemetry_text = (
+            "Full execution step events, state mutations, and tool receipts are recorded in the audit trace. "
+            "Complete deterministic sequence verified with 0 causal divergences."
+        )
     else:
+        failure_reasons = run_data.get("failure_reasons") or []
+        first_failure = failure_reasons[0] if failure_reasons else None
         root_cause = (
             analysis.get("root_cause")
             or run_data.get("failure_reason")
+            or (f"Attestation failure: {first_failure}" if first_failure else None)
+            or (
+                "Evaluation criteria not met (ATTESTED FAIL)."
+                if status == "ATTESTED FAIL"
+                else None
+            )
             or "Policy assertion or task constraint failed."
         )
-        summary = (
-            analysis.get("summary")
-            or "Execution terminated before achieving required verification state."
+        summary = analysis.get("summary") or (
+            "Cryptographic signature and audit vault attestation verified, but scenario invariants or safety boundaries failed."
+            if status == "ATTESTED FAIL"
+            else "Execution terminated before achieving required verification state."
         )
         suggestion = (
             analysis.get("suggestion")
-            or "Inspect failing turn in the Live Visual Debugger and adjust agent prompt or policy."
+            or "Inspect causal failure in the Live Visual Debugger and adjust agent prompt, tool schema, or safety policy."
         )
-        confidence = analysis.get("confidence", 0.8)
+        confidence = analysis.get("confidence", 1.0 if status == "ATTESTED FAIL" else 0.8)
         severity_score = f"{round(float(confidence) * 10, 1)} / 10.0"
+        if failed_turn is not None and str(failed_turn).upper() != "N/A":
+            node_desc = f" on node '{failed_node}'" if failed_node else ""
+            telemetry_text = (
+                f"Full execution step events and state timelines are recorded in the audit trace. "
+                f"Jump to turn <strong>{failed_turn}</strong>{node_desc} in the Live Visual Debugger to trace structural discrepancies."
+            )
+        elif failed_node:
+            telemetry_text = (
+                f"Full execution step events and state timelines are recorded in the audit trace. "
+                f"Inspect node '<strong>{failed_node}</strong>' in the Live Visual Debugger to trace structural discrepancies."
+            )
+        else:
+            telemetry_text = (
+                "Full execution step events and state timelines are recorded in the audit trace. "
+                "Inspect the first causal divergence in the Live Visual Debugger to trace structural discrepancies."
+            )
 
     # Truthful PQC status evaluation
     is_pqc = bool(
@@ -142,19 +207,17 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
     else:
         pqc_status = "NON_COMPLIANT (PQC Disabled)"
 
-    has_cert = bool(
-        run_data.get("has_certificate") or run_data.get("is_certified") or status == "VERIFIED"
-    )
-    cert_status = "ISSUED / VALIDATED" if has_cert else "NOT ISSUED (Unverified)"
+    has_cert = bool(run_data.get("has_certificate") or run_data.get("is_certified"))
+    if status == "ATTESTED FAIL":
+        cert_status = "ATTESTATION OF NON-CERTIFICATION (Signed Failure Audit)"
+    elif status in ("VERIFIED", "PASSED") and has_cert:
+        cert_status = "ISSUED / VALIDATED"
+    else:
+        cert_status = "NOT ISSUED (Unverified)"
 
     # 2. Try WeasyPrint if available
     if WEASYPRINT_AVAILABLE:
         try:
-            telemetry_text = (
-                f"Full execution step events and state timelines are recorded. Jump to turn <strong>{failed_turn}</strong> in the Visual Debugger to trace structural discrepancies."
-                if failed_turn is not None
-                else "Full execution step events and state timelines are recorded in the visual trace."
-            )
             html_content = f"""
             <html>
             <head>
@@ -338,12 +401,10 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
 
             # 4. Telemetry Note
             story.append(Paragraph("4. Behavioral Telemetry", h2_style))
-            story.append(
-                Paragraph(
-                    f"Full execution step events and state timelines are recorded. Jump to turn <b>{failed_turn if failed_turn is not None else 'N/A'}</b> in the Visual Debugger to trace structural discrepancies.",
-                    body_style,
-                )
+            reportlab_telemetry = telemetry_text.replace("<strong>", "<b>").replace(
+                "</strong>", "</b>"
             )
+            story.append(Paragraph(reportlab_telemetry, body_style))
             story.append(Spacer(1, 40))
 
             # Footer signature

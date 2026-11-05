@@ -131,19 +131,65 @@ key.verify(sig,json.dumps(e,sort_keys=True,separators=(",",":"),ensure_ascii=Fal
     )
 
 
+ENVELOPE_FIELDS = (
+    "profile",
+    "version",
+    "envelope_canonicalization",
+    "purpose",
+    "payload_projection",
+    "payload_canonicalization",
+    "payload_digest",
+    "payload_digest_algorithm",
+    "payload_digest_encoding",
+    "signing_algorithm",
+    "signing_semantics",
+    "signer_identity",
+    "key_id",
+    "public_key_fingerprint",
+    "fingerprint_algorithm",
+    "public_key_encoding",
+    "signature_encoding",
+    "signature_length",
+)
+
+
+def test_envelope_fields_match_unsigned_envelope():
+    key = Ed25519PrivateKey.generate()
+    policy = SignaturePolicy(
+        "test",
+        "sha256:" + fingerprint(key.public_key()),
+        key.public_key(),
+    )
+    envelope = unsigned_envelope(b"{}", policy, PACKAGE)
+    assert tuple(envelope.keys()) == ENVELOPE_FIELDS
+
+
+def test_unsigned_envelope_requires_bytes_and_identity():
+    key = Ed25519PrivateKey.generate()
+    valid_policy = SignaturePolicy(
+        "test",
+        "sha256:" + fingerprint(key.public_key()),
+        key.public_key(),
+    )
+    with pytest.raises(
+        SignatureContractError, match="Payload bytes and a trusted signer identity are required"
+    ):
+        unsigned_envelope("not-bytes", valid_policy, PACKAGE)
+
+    empty_id_policy = SignaturePolicy(
+        "",
+        "sha256:" + fingerprint(key.public_key()),
+        key.public_key(),
+    )
+    with pytest.raises(
+        SignatureContractError, match="Payload bytes and a trusted signer identity are required"
+    ):
+        unsigned_envelope(b"{}", empty_id_policy, PACKAGE)
+
+
 @pytest.mark.parametrize(
     "field",
-    list(
-        unsigned_envelope(
-            b"{}",
-            SignaturePolicy(
-                "test",
-                "sha256:" + fingerprint((key := Ed25519PrivateKey.generate()).public_key()),
-                key.public_key(),
-            ),
-            PACKAGE,
-        )
-    ),
+    ENVELOPE_FIELDS,
 )
 def test_every_envelope_binding_is_enforced_even_with_a_genuine_signature(remote, field):
     backend, raw, policy = remote
@@ -170,11 +216,12 @@ def test_every_envelope_binding_is_enforced_even_with_a_genuine_signature(remote
         "noncanonical_base64",
         "hex_signature",
         "bool_version",
+        "float_version",
         "extra_response_field",
     ],
 )
 def test_malformed_or_ambiguous_responses_do_not_downgrade(remote, corruption):
-    backend, _, policy = remote
+    backend, raw, policy = remote
     payload = b"{}"
     response = backend.sign_payload(payload, purpose=PACKAGE)
     if corruption == "payload":
@@ -199,6 +246,11 @@ def test_malformed_or_ambiguous_responses_do_not_downgrade(remote, corruption):
         response["signature"] = base64.b64decode(response["signature"]).hex()
     elif corruption == "bool_version":
         response["envelope"]["version"] = True
+    elif corruption == "float_version":
+        response["envelope"]["version"] = 1.0
+        response["signature"] = base64.b64encode(
+            raw.key.sign(canonical_json_encode(response["envelope"]))
+        ).decode()
     else:
         response["extra"] = True
     assert not verify_artifact_signature(payload, response, policy, PACKAGE)
@@ -206,27 +258,25 @@ def test_malformed_or_ambiguous_responses_do_not_downgrade(remote, corruption):
 
 @pytest.mark.parametrize("restriction", ["revoked", "expired", "future", "purpose", "profile"])
 def test_external_trust_policy_restricts_valid_signatures(remote, restriction):
-    backend, _, policy = remote
+    backend, raw, policy = remote
     response = backend.sign_payload(b"{}", purpose=PACKAGE)
     changes = {
         "revoked": {"revoked": True},
         "expired": {"not_after": datetime.now(UTC) - timedelta(seconds=1)},
         "future": {"not_before": datetime.now(UTC) + timedelta(hours=1)},
         "purpose": {"permitted_purposes": (CERTIFICATE,)},
-        "profile": {"permitted_profiles": ("ed25519-raw",)},
+        "profile": {"permitted_profiles": ()},
     }
     assert not verify_artifact_signature(
         b"{}", response, replace(policy, **changes[restriction]), PACKAGE
     )
 
 
-def test_raw_legacy_evidence_requires_explicit_policy(remote):
+def test_raw_legacy_hex_signature_is_rejected(remote):
     _, raw, policy = remote
     signature = raw.key.sign(b"{}").hex()
-    assert verify_artifact_signature(b"{}", signature, policy, PACKAGE)
-    assert not verify_artifact_signature(
-        b"{}", signature, replace(policy, allow_legacy_raw=False), PACKAGE
-    )
+    for purpose in (PACKAGE, CERTIFICATE, FINALIZATION):
+        assert not verify_artifact_signature(b"{}", signature, policy, purpose)
 
 
 def test_remote_outage_and_wrong_key_fail_without_local_fallback(remote):
@@ -271,9 +321,8 @@ def _provision_remote_policy():
             {
                 "version": 1,
                 "key_id": key_id,
-                "permitted_profiles": [PROFILE, "ed25519-raw"],
+                "permitted_profiles": [PROFILE],
                 "permitted_purposes": [CERTIFICATE, PACKAGE],
-                "allow_legacy_raw": True,
                 "revoked": False,
             }
         )

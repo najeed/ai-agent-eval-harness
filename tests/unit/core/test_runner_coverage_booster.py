@@ -533,10 +533,13 @@ async def test_signing_backend_can_sign():
     run_id = "run-signing-backend-can-sign"
     scenario = {"id": "scen-test", "version": "1.0.0"}
 
-    mock_signing = MagicMock()
+    from eval_runner.reference.signing import LocalEd25519SigningBackend
+
+    real_signing = LocalEd25519SigningBackend()
+    mock_signing = MagicMock(spec=LocalEd25519SigningBackend)
     mock_signing.can_sign.return_value = True
-    mock_signing.sign.return_value = "a" * 128
-    mock_signing.sign_payload.return_value = "a" * 128
+    mock_signing.sign_payload.side_effect = real_signing.sign_payload
+    mock_signing.verify_signature.side_effect = real_signing.verify_signature
     runner.signing_backend = mock_signing
 
     mock_run_store = MagicMock()

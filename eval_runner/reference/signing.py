@@ -27,12 +27,14 @@ class LocalEd25519SigningBackend(SigningBackend):
 
     def sign_payload(
         self, payload: bytes, key_identifier: str | Path | bytes, **kwargs: Any
-    ) -> str:
+    ) -> str | dict[str, Any]:
         """
-        Signs raw payload using an Ed25519 private key located at key_identifier
-        (file path or PEM bytes/str).
-        Returns a hex-encoded signature string.
+        Signs payload using an Ed25519 private key located at key_identifier
+        (file path or PEM bytes/str). When ``purpose`` is provided, returns a
+        versioned ``agentv.signature.digest-envelope.v1`` dictionary; otherwise
+         acts as the low-level RAW Ed25519 primitive returning 64 hex-encoded bytes.
         """
+        private_key = None
         if isinstance(key_identifier, (str, Path)):
             p = Path(key_identifier)
             if p.exists() and p.is_file():
@@ -40,6 +42,13 @@ class LocalEd25519SigningBackend(SigningBackend):
                     key_bytes = f.read()
             elif isinstance(key_identifier, str) and "-----BEGIN" in key_identifier:
                 key_bytes = key_identifier.encode("utf-8")
+            elif isinstance(key_identifier, str) and kwargs.get("purpose") and not p.suffix:
+                from eval_runner.identity import IdentityService
+
+                private_key = IdentityService.get_private_key(key_identifier, auto_provision=False)
+                if private_key is None or not isinstance(private_key, ed25519.Ed25519PrivateKey):
+                    raise FileNotFoundError(f"Signing key not found at {key_identifier}")
+                key_bytes = b""
             else:
                 raise FileNotFoundError(f"Signing key not found at {key_identifier}")
         elif isinstance(key_identifier, bytes):
@@ -47,9 +56,28 @@ class LocalEd25519SigningBackend(SigningBackend):
         else:
             raise TypeError("Expected file path, PEM string, or bytes for key_identifier")
 
-        private_key = serialization.load_pem_private_key(key_bytes, password=None)
+        if private_key is None:
+            private_key = serialization.load_pem_private_key(key_bytes, password=None)
         if not isinstance(private_key, ed25519.Ed25519PrivateKey):
             raise TypeError("Expected Ed25519PrivateKey in PEM file")
+
+        purpose = kwargs.get("purpose")
+        if purpose:
+            from agentv_runtime.signatures import sign_digest_envelope
+
+            identity = str(
+                kwargs.get("identity")
+                or (
+                    key_identifier
+                    if isinstance(key_identifier, str)
+                    and "-----BEGIN" not in key_identifier
+                    and not Path(key_identifier).exists()
+                    else "system_id"
+                )
+            )
+            return sign_digest_envelope(
+                payload, private_key, identity=identity, purpose=str(purpose)
+            )
 
         sig_bytes = private_key.sign(payload)
         return sig_bytes.hex()
@@ -57,7 +85,7 @@ class LocalEd25519SigningBackend(SigningBackend):
     def verify_signature(
         self,
         payload: bytes,
-        signature: str,
+        signature: str | dict[str, Any],
         public_key_identifier: str | Path | bytes,
         **kwargs: Any,
     ) -> bool:
@@ -89,6 +117,25 @@ class LocalEd25519SigningBackend(SigningBackend):
             public_key = serialization.load_pem_public_key(pub_bytes)
             if not isinstance(public_key, ed25519.Ed25519PublicKey):
                 return False
+            if isinstance(signature, dict):
+                from agentv_runtime.signatures import (
+                    SignaturePolicy,
+                    fingerprint,
+                    verify_artifact_signature,
+                )
+
+                env = (
+                    signature.get("envelope") if isinstance(signature.get("envelope"), dict) else {}
+                )
+                identity = str(kwargs.get("identity") or env.get("signer_identity") or "system_id")
+                purpose = str(kwargs.get("purpose") or env.get("purpose") or "")
+                key_id = str(env.get("key_id") or ("sha256:" + fingerprint(public_key)))
+                policy = SignaturePolicy(identity, key_id, public_key)
+                return verify_artifact_signature(payload, signature, policy, purpose)
+            if kwargs.get("purpose"):
+                return False
+            # Low-level verification for non-artifact callers only. Artifact
+            # signatures always require the versioned, purpose-bound contract.
             sig_bytes = bytes.fromhex(signature)
             public_key.verify(sig_bytes, payload)
             return True

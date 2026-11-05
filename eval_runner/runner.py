@@ -1269,17 +1269,48 @@ class DefaultRunner(BaseRunner):
             trace_events: list[tuple[dict[str, Any], str]] = []
             trace_read_error: str | None = None
             try:
-                stored_events = self.run_store.get_events(
-                    effective_run_id, offset=0, limit=10_000_000
-                )
-                trace_events = [
-                    (
-                        event,
-                        json.dumps(event, default=str, separators=(",", ":")),
-                    )
-                    for event in stored_events
-                    if isinstance(event, dict)
-                ]
+                # 1. Prefer exact raw physical trace bytes from provider if available
+                raw_bytes = None
+                if hasattr(self.run_store, "get_trace_bytes"):
+                    try:
+                        raw_bytes = self.run_store.get_trace_bytes(
+                            effective_run_id, context=run_context
+                        )
+                    except TypeError:
+                        raw_bytes = self.run_store.get_trace_bytes(effective_run_id)
+                    except Exception as b_err:
+                        logger.debug("Provider get_trace_bytes failed: %s", b_err)
+
+                if raw_bytes:
+                    for line_str in raw_bytes.decode("utf-8").splitlines():
+                        if not line_str.strip():
+                            continue
+                        try:
+                            rec = json.loads(line_str)
+                            if isinstance(rec, dict):
+                                trace_events.append((rec, line_str))
+                        except Exception:
+                            continue
+                else:
+                    try:
+                        stored_events = self.run_store.get_events(
+                            effective_run_id, offset=0, limit=10_000_000, context=run_context
+                        )
+                    except TypeError:
+                        stored_events = self.run_store.get_events(
+                            effective_run_id, offset=0, limit=10_000_000
+                        )
+                    from agentv_runtime.canonical import canonical_json_dumps
+
+                    trace_events = [
+                        (
+                            event,
+                            canonical_json_dumps(event),
+                        )
+                        for event in stored_events
+                        if isinstance(event, dict)
+                    ]
+
                 if not trace_events:
                     trace_read_error = "RunStorageProvider returned no trace events."
             except Exception as read_err:

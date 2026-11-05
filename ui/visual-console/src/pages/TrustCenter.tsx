@@ -43,6 +43,21 @@ export const TrustCenter: React.FC = () => {
   const [resolvedKey, setResolvedKey] = useState('');
   const [showDiagnostics, setShowDiagnostics] = useState(false);
   const certificationPending = Boolean(runDetails && !runDetails.has_certificate);
+  const isEmptyTrace = Boolean(
+    runDetails &&
+    ((runDetails.evidence_nodes !== undefined && Number(runDetails.evidence_nodes) === 0) ||
+      runDetails.can_certify === false ||
+      (runDetails.size !== undefined && Number(runDetails.size) === 0))
+  );
+  const isCriteriaFailed = Boolean(
+    runDetails &&
+    !isEmptyTrace &&
+    ((runDetails.score !== undefined && Number(runDetails.score) < 1.0) ||
+      (runDetails.decision?.score !== undefined && Number(runDetails.decision.score) < 1.0) ||
+      (Array.isArray(runDetails.failed_oracles) && runDetails.failed_oracles.length > 0) ||
+      runDetails.verdict === 'FAILED' ||
+      runDetails.verification_status === 'FAILED')
+  );
 
   const inspectTargetRun = async (rid: string) => {
     if (!rid.trim()) {
@@ -164,8 +179,8 @@ export const TrustCenter: React.FC = () => {
         <button
           onClick={() => setActiveTab('verify')}
           className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'verify'
-              ? 'border-indigo-500 text-indigo-400'
-              : 'border-transparent text-slate-500 hover:text-slate-350'
+            ? 'border-indigo-500 text-indigo-400'
+            : 'border-transparent text-slate-500 hover:text-slate-350'
             }`}
         >
           Verify Running Audit Logs
@@ -173,8 +188,8 @@ export const TrustCenter: React.FC = () => {
         <button
           onClick={() => setActiveTab('certify')}
           className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'certify'
-              ? 'border-indigo-500 text-indigo-400'
-              : 'border-transparent text-slate-500 hover:text-slate-350'
+            ? 'border-indigo-500 text-indigo-400'
+            : 'border-transparent text-slate-500 hover:text-slate-350'
             }`}
         >
           Issue Cryptographic Certificate
@@ -253,10 +268,10 @@ export const TrustCenter: React.FC = () => {
                 <div className="bg-slate-950/60 p-2 rounded border border-slate-800 space-y-0.5">
                   <span className="text-[9px] text-slate-500 uppercase font-bold block">2. Evaluation</span>
                   <span className={`font-mono font-bold ${verifyResult.evaluation_passed
-                      ? 'text-emerald-400'
-                      : verifyResult.evaluation_verdict?.toLowerCase() === 'fail'
-                        ? 'text-red-400'
-                        : 'text-amber-400'
+                    ? 'text-emerald-400'
+                    : verifyResult.evaluation_verdict?.toLowerCase() === 'fail'
+                      ? 'text-red-400'
+                      : 'text-amber-400'
                     }`}>
                     {verifyResult.evaluation_verdict?.toUpperCase() || (verifyResult.evaluation_passed ? 'PASSED' : 'FAILED')}
                   </span>
@@ -381,8 +396,8 @@ export const TrustCenter: React.FC = () => {
                       <div className="bg-slate-900/60 p-2.5 rounded border border-slate-800">
                         <span className="text-[10px] text-slate-500 uppercase block font-semibold">Certification State</span>
                         <span className={`font-bold font-mono ${certificationPending || runDetails.verification_status === 'VERIFIED' || runDetails.verdict === 'VERIFIED'
-                            ? 'text-emerald-400'
-                            : 'text-amber-400'
+                          ? 'text-emerald-400'
+                          : 'text-amber-400'
                           }`}>
                           {certificationPending
                             ? 'CERTIFICATION_NOT_ISSUED'
@@ -399,13 +414,12 @@ export const TrustCenter: React.FC = () => {
 
                     {/* Authoritative Score Diagnostics & Provenance */}
                     {runDetails.score !== undefined && (runDetails.score < 1.0 || runDetails.score_reason || runDetails.status === 'PAUSED_FOR_APPROVAL') && (
-                      <div className={`p-2.5 rounded-lg border text-[11px] space-y-1.5 transition-all ${
-                        runDetails.score_category === 'GOVERNANCE_PAUSE' || runDetails.status === 'PAUSED_FOR_APPROVAL'
+                      <div className={`p-2.5 rounded-lg border text-[11px] space-y-1.5 transition-all ${runDetails.score_category === 'GOVERNANCE_PAUSE' || runDetails.status === 'PAUSED_FOR_APPROVAL'
                           ? 'bg-amber-950/20 border-amber-800/50 text-amber-300'
                           : runDetails.score_category === 'ORACLE_DEFECT' || runDetails.score === 0
-                          ? 'bg-rose-950/20 border-rose-800/50 text-rose-300'
-                          : 'bg-slate-900/60 border-slate-800 text-slate-300'
-                      }`}>
+                            ? 'bg-rose-950/20 border-rose-800/50 text-rose-300'
+                            : 'bg-slate-900/60 border-slate-800 text-slate-300'
+                        }`}>
                         <div className="flex items-center justify-between font-semibold">
                           <span className="flex items-center gap-1.5">
                             {runDetails.score_category === 'GOVERNANCE_PAUSE' || runDetails.status === 'PAUSED_FOR_APPROVAL' ? (
@@ -489,16 +503,46 @@ export const TrustCenter: React.FC = () => {
                   runDetails.provisional ||
                   runDetails.verification_status === 'VERIFIED_PROVISIONAL' ||
                   runDetails.status === 'RUNNING' ||
-                  runDetails.status === 'STALLED'
+                  runDetails.status === 'STALLED' ||
+                  isEmptyTrace
                 }
-                className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 text-white rounded-lg transition-colors text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2"
+                className={`w-full py-2 disabled:bg-slate-800 disabled:text-slate-500 text-white rounded-lg transition-colors text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 ${isEmptyTrace
+                    ? 'bg-slate-800 border border-slate-700/50 text-slate-400 cursor-not-allowed'
+                    : isCriteriaFailed
+                      ? 'bg-rose-700 hover:bg-rose-600 border border-rose-500/50 text-rose-100 shadow-rose-950/40 shadow-lg'
+                      : 'bg-indigo-600 hover:bg-indigo-500'
+                  }`}
               >
-                <Award className="w-4 h-4" />
-                <span>{certifying ? 'Signing Manifest...' : 'Issue Cryptographic Certificate'}</span>
+                {isEmptyTrace ? (
+                  <ShieldAlert className="w-4 h-4 text-slate-500" />
+                ) : isCriteriaFailed ? (
+                  <ShieldAlert className="w-4 h-4 text-rose-300" />
+                ) : (
+                  <Award className="w-4 h-4" />
+                )}
+                <span>
+                  {certifying
+                    ? 'Signing Manifest...'
+                    : isEmptyTrace
+                      ? 'Empty Trace (Unattestable)'
+                      : isCriteriaFailed
+                        ? 'Attest Evaluation Failure (Non-Certification)'
+                        : 'Issue Cryptographic Certificate'}
+                </span>
               </button>
               {!canSignCert && (
                 <p className="text-[11px] text-amber-400/90 text-center font-medium">
                   Signing authority required: Only Compliance Auditors and System Admins can issue cryptographic certificates.
+                </p>
+              )}
+              {canSignCert && isEmptyTrace && (
+                <p className="text-[11px] text-amber-400/90 text-center font-medium">
+                  Zero trace evidence recorded: This run aborted in pre-flight and contains 0 assertion nodes. Cryptographic attestation requires at least one evaluated assertion; empty traces cannot be attested or certified.
+                </p>
+              )}
+              {canSignCert && !isEmptyTrace && isCriteriaFailed && (
+                <p className="text-[11px] text-rose-400/90 text-center font-medium">
+                  Evaluation criteria not met: Clicking will record a cryptographically signed Attestation of Non-Certification in the audit vault.
                 </p>
               )}
             </form>

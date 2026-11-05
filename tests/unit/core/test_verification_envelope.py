@@ -445,11 +445,13 @@ def test_package_from_dict_defaults_and_dict_signature():
     pkg = VerificationPackage.from_dict(raw)
     assert pkg.scenario_id == "s1"
     assert pkg.trace_hash == "sha3_256:xyz"
-    assert pkg.signature == "abcdef123456"
-    assert pkg.signer_identity == "auditor-01"
-    assert pkg.public_key_pem == "pem-content"
+    # An unversioned wrapper cannot supply trusted signature metadata.
+    assert pkg.signature == raw["signature"]
+    assert pkg.signer_identity is None
+    assert pkg.public_key_pem is None
     assert pkg.algorithm == "ed25519"
-    assert pkg.key_id == "k-01"
+    assert pkg.key_id is None
+    assert pkg.verify_signature() is False
     assert pkg.required_oracle_ids == []
     assert pkg.executed_oracle_results == []
 
@@ -576,3 +578,93 @@ def test_rfc8785_unsupported_type_fails():
 
     with pytest.raises(TypeError, match="RFC 8785 unsupported type"):
         canonical_json_dumps(object())
+
+
+def _bare_package(**overrides) -> VerificationPackage:
+    fields = {
+        "scenario_id": "s1",
+        "scenario_version": "1.0.0",
+        "scenario_hash": "sha3_256:s",
+        "manifest_id": "m1",
+        "manifest_hash": "sha3_256:m",
+        "execution_identity": {},
+        "trace_hash": "sha3_256:t",
+        "trace_seal": {},
+        "evidence_root_hash": "sha3_256:e",
+        "required_oracle_ids": [],
+        "executed_oracle_results": [],
+        "decision": {},
+    }
+    fields.update(overrides)
+    return VerificationPackage(**fields)
+
+
+def test_signer_declared_key_id_is_bound_into_the_signed_package():
+    signer = MockEd25519Signer(identity="node-k")
+    signer.key_id = "signer-declared-key"
+
+    signed = _bare_package().sign(signer)
+
+    assert signed.key_id == "signer-declared-key"
+
+
+def test_backend_signer_without_public_key_lookup_is_still_asked_to_sign():
+    from agentv_runtime.signatures import SignatureContractError
+
+    class LookuplessBackend:
+        identity = "node-b"
+
+        def __init__(self):
+            self.calls = []
+
+        def sign_payload(self, payload, key_identifier=None, **kwargs):
+            self.calls.append(kwargs["purpose"])
+            return {"profile": "unverifiable"}
+
+    backend = LookuplessBackend()
+
+    with pytest.raises(SignatureContractError):
+        _bare_package().sign(backend)
+
+    assert len(backend.calls) == 1
+
+
+def test_raw_byte_signer_cannot_produce_a_package_signature():
+    from agentv_runtime.signatures import SignatureContractError
+
+    class RawOnlySigner:
+        identity = "node-r"
+
+        def sign(self, data: bytes) -> bytes:
+            return b"\x01" * 64
+
+    with pytest.raises(SignatureContractError, match="expected a versioned envelope"):
+        _bare_package().sign(RawOnlySigner())
+
+
+@pytest.mark.parametrize(
+    "key_id",
+    ["arn:aws:kms:us-east-1:111122223333:key/abc", "sha256:" + "ab" * 32, ""],
+)
+def test_non_local_key_identifiers_resolve_trust_through_signer_identity(key_id):
+    signer = MockEd25519Signer(identity="node-z")
+    signed = _bare_package(key_id=key_id, signer_identity="node-z").sign(signer)
+    assert signed.key_id == key_id
+    looked_up = []
+
+    class IdentityKeyedTrustRoot:
+        def get_public_key(self, target_id):
+            looked_up.append(target_id)
+            return signer.public_key if target_id == "node-z" else None
+
+    assert signed.verify_signature(trust_root=IdentityKeyedTrustRoot()) is True
+    assert looked_up == ["node-z"]
+
+
+def test_directory_trust_root_never_resolves_an_empty_identifier(tmp_path):
+    signer = MockEd25519Signer(identity="node-z")
+    signed = _bare_package(key_id="", signer_identity="node-z").sign(signer)
+    # A key sitting at the root of the directory is not an anchor for any identity.
+    (tmp_path / "public_key.pem").write_text(signer.public_key_pem, encoding="utf-8")
+
+    assert signed.verify_signature(trust_root=tmp_path) is False

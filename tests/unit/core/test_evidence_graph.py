@@ -79,6 +79,18 @@ def test_incomplete_evidence_references_and_artifacts_remain_unresolved():
         {"reference": {"source_id": "source-only"}},
         {},
     )
+    fabricated_reference = link_assertion(
+        {
+            "reference": {
+                "source_id": "source",
+                "result_hash": "sha3_256:" + ("0" * 64),
+                "sampled_result": {"id": "row-1"},
+            },
+            "event_seq": 2,
+        },
+        {2: "sha3_256:two"},
+        fallback_seq=2,
+    )
     missing_artifact = link_assertion(
         {"artifact": "missing.pdf", "passed": True},
         {},
@@ -88,15 +100,28 @@ def test_incomplete_evidence_references_and_artifacts_remain_unresolved():
     assert incomplete_reference["resolved"] is False
     assert incomplete_reference["source_type"] == "unresolved"
     assert incomplete_reference["is_direct_provenance"] is False
+    assert fabricated_reference["resolved"] is False
+    assert fabricated_reference["source_type"] == "unresolved"
+    assert fabricated_reference["is_direct_provenance"] is False
     assert missing_artifact["resolved"] is False
     assert missing_artifact["source_type"] == "unresolved"
     assert missing_artifact["is_direct_provenance"] is False
 
 
 def test_link_assertion_preserves_direct_and_fallback_provenance_semantics():
+    from agentv_runtime.evidence_graph import compute_evidence_reference_digest
+
     seq_index = {2: "sha3_256:two"}
+    sample = {"id": "row-1", "status": "ok"}
+    sample_hash = f"sha3_256:{compute_evidence_reference_digest(sample)}"
     direct_reference = link_assertion(
-        {"reference": {"source_id": "source", "result_hash": "sha3_256:ref"}},
+        {
+            "reference": {
+                "source_id": "source",
+                "result_hash": sample_hash,
+                "sampled_result": sample,
+            }
+        },
         seq_index,
     )
     artifact = link_assertion(

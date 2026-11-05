@@ -364,11 +364,18 @@ class SessionManager:
                 for n in wf_nodes
             )
         )
-        if has_mutations and not any(
-            isinstance(p, RuntimeMutationPlugin) for p in self.plugin_manager.plugins
-        ):
-            self.mutation_plugin = RuntimeMutationPlugin(self.scenario)
-            self.plugin_manager.plugins.append(self.mutation_plugin)
+        existing_mut = next(
+            (p for p in self.plugin_manager.plugins if isinstance(p, RuntimeMutationPlugin)),
+            None,
+        )
+        if has_mutations:
+            if existing_mut is not None:
+                self.mutation_plugin = existing_mut
+                if not getattr(existing_mut, "scenario", None):
+                    existing_mut.scenario = self.scenario
+            else:
+                self.mutation_plugin = RuntimeMutationPlugin(self.scenario)
+                self.plugin_manager.plugins.append(self.mutation_plugin)
 
         # 1b. Re-load ad-hoc external plugins from provenance map
         for class_name, prov in self.plugin_manager.provenance_map.items():
@@ -1313,6 +1320,38 @@ class SessionManager:
         execution_context: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         node_id = node["id"]
+        task_description = node.get("task_description", "Processing node...")
+        current_message = task_description
+        execution_context = execution_context or {}
+        policy_cursor = len(getattr(sandbox, "policy_decisions", []))
+        node_start_time = time.time()
+        self._current_node_start_time = node_start_time
+        exec_inst_id = (
+            execution_context.get("execution_instance_id")
+            if execution_context
+            else f"{node_id}:attempt:{attempt_number}"
+        )
+        parent_exec_id = execution_context.get("parent_execution_id") if execution_context else None
+        attempt_id = getattr(self, "attempt_id", f"att-{self.run_id}-{attempt_number}")
+
+        # 1. Register running execution node attempt before preflight / boundary checks
+        self.event_bus.emit(
+            CoreEvents.EXECUTION_GRAPH_NODE,
+            {
+                "run_id": self.run_id,
+                "scenario_node_id": node_id,
+                "execution_instance_id": exec_inst_id,
+                "parent_execution_id": parent_exec_id,
+                "label": task_description,
+                "status": "running",
+                "attempt": attempt_number,
+                "attempt_id": attempt_id,
+                "iteration": attempt_number,
+                "task_description": task_description,
+            },
+            span_context=self.session_metadata.get("span_context"),
+        )
+
         # Trigger on_step_start interceptor hook
         self.plugin_manager.trigger_interceptor("on_step_start", self, node_id, node)
         # Approval faults must be rejected before a scenario-declared gate or
@@ -1325,19 +1364,101 @@ class SessionManager:
         if approval_preflight is False or (
             isinstance(approval_preflight, dict) and approval_preflight.get("allowed") is False
         ):
-            details = getattr(self.plugin_manager, "last_rejection_details", None)
+            raw_details = getattr(self.plugin_manager, "last_rejection_details", None)
+            details = dict(raw_details) if isinstance(raw_details, dict) else {}
+            if isinstance(approval_preflight, dict):
+                for k, v in approval_preflight.items():
+                    details.setdefault(k, v)
             reason = getattr(self.plugin_manager, "last_rejection_reason", None)
             if not isinstance(reason, str) or not reason:
-                reason = (
-                    approval_preflight.get("error")
-                    if isinstance(approval_preflight, dict)
-                    else None
-                ) or "Approval rejected by security policy"
+                reason = details.get("error") or "Approval rejected by security policy"
+
+            fault = details.get("mutation_fault") or "approval_boundary"
+            failure_category = details.get("failure_category") or "APPROVAL_SECURITY_REJECTED"
+            error_text = details.get("error") or reason
+
+            # 2. Synthesize Authoritative Security Oracle Failure
+            failed_oracle = {
+                "oracle_id": f"security:{fault}",
+                "scenario_node_id": node_id,
+                "resolver": "security_preflight",
+                "requiredness": "REQUIRED",
+                "outcome": "FAIL",
+                "error": error_text,
+                "expected": "ALLOWED",
+                "observed": "REJECTED",
+            }
+            oracles = [failed_oracle]
+
+            # If plan declared required oracles for this node, also record them as FAIL
+            eval_plan = execution_context.get("evaluation_plan")
+            if eval_plan is not None:
+                for req_o in eval_plan.required_oracles_for_node(node_id):
+                    if req_o.oracle_id != failed_oracle["oracle_id"]:
+                        oracles.append(
+                            {
+                                "oracle_id": req_o.oracle_id,
+                                "scenario_node_id": node_id,
+                                "resolver": req_o.resolver or "security_preflight",
+                                "requiredness": "REQUIRED",
+                                "outcome": "FAIL",
+                                "error": (
+                                    f"Security preflight boundary rejected request: {error_text}"
+                                ),
+                                "expected": "ALLOWED",
+                                "observed": "REJECTED",
+                            }
+                        )
+
+            details["oracle_results"] = oracles
+            details["mutation_fault"] = fault
+            details["failure_category"] = failure_category
+            details["error"] = error_text
+
+            # Emit typed assertion evaluated event for each oracle
+            for o in oracles:
+                self.event_bus.emit(
+                    CoreEvents.ASSERTION_EVALUATED,
+                    {
+                        "run_id": self.run_id,
+                        "node_id": node_id,
+                        "oracle_id": o["oracle_id"],
+                        "resolver": o.get("resolver") or "security_preflight",
+                        "outcome": "FAIL",
+                        "passed": False,
+                        "requiredness": o.get("requiredness", "REQUIRED"),
+                        "error": o.get("error", error_text),
+                        "expected": "ALLOWED",
+                        "observed": "REJECTED",
+                    },
+                    span_context=self.session_metadata.get("span_context"),
+                )
+
+            # 3. Emit Terminal Execution Graph Node
+            self.event_bus.emit(
+                CoreEvents.EXECUTION_GRAPH_NODE,
+                {
+                    "run_id": self.run_id,
+                    "scenario_node_id": node_id,
+                    "execution_instance_id": exec_inst_id,
+                    "parent_execution_id": parent_exec_id,
+                    "label": task_description,
+                    "status": "failed",
+                    "attempt": attempt_number,
+                    "attempt_id": attempt_id,
+                    "iteration": attempt_number,
+                    "task_description": task_description,
+                    "failure_class": failure_category,
+                    "failure_reason": error_text,
+                    "oracle_results": oracles,
+                    "mutation_fault": fault,
+                    "approval_phase": "preflight",
+                    "is_root_cause": True,
+                },
+                span_context=self.session_metadata.get("span_context"),
+            )
+
             raise ApprovalBoundaryRejected(reason, phase="preflight", details=details)
-        task_description = node.get("task_description", "Processing node...")
-        current_message = task_description
-        execution_context = execution_context or {}
-        policy_cursor = len(getattr(sandbox, "policy_decisions", []))
 
         # External authorities are independently observed before the agent can
         # mutate them.  This is distinct from the branch sandbox snapshot and
@@ -1348,31 +1469,6 @@ class SessionManager:
 
         # 1. Forensic Maneuver Start
         print(f"      [Node Execution] ID: {node_id} | Task: {task_description[:50]}...")
-        node_start_time = time.time()
-        self._current_node_start_time = node_start_time
-        exec_inst_id = (
-            execution_context.get("execution_instance_id")
-            if execution_context
-            else f"{node_id}:attempt:{attempt_number}"
-        )
-        parent_exec_id = execution_context.get("parent_execution_id") if execution_context else None
-
-        self.event_bus.emit(
-            CoreEvents.EXECUTION_GRAPH_NODE,
-            {
-                "run_id": self.run_id,
-                "scenario_node_id": node_id,
-                "execution_instance_id": exec_inst_id,
-                "parent_execution_id": parent_exec_id,
-                "label": task_description,
-                "status": "running",
-                "attempt": attempt_number,
-                "attempt_id": getattr(self, "attempt_id", f"att-{self.run_id}-{attempt_number}"),
-                "iteration": attempt_number,
-                "task_description": task_description,
-            },
-            span_context=self.session_metadata.get("span_context"),
-        )
 
         self.event_bus.emit(
             CoreEvents.MANEUVER_START,
@@ -1565,7 +1661,22 @@ class SessionManager:
                 # console can offer isolation even when no approval was
                 # created and the stream terminates immediately.
                 err_msg = f"Approval security boundary rejected request: {exc}"
-                rejection = dict(exc.details)
+                rejection = dict(exc.details or {})
+                fault = rejection.get("mutation_fault") or "approval_boundary"
+                failure_category = rejection.get("failure_category", "APPROVAL_SECURITY_REJECTED")
+                error_text = rejection.get("error") or err_msg
+
+                failed_oracle = {
+                    "oracle_id": f"security:{fault}",
+                    "scenario_node_id": node.get("id", "unknown"),
+                    "resolver": "security_boundary",
+                    "requiredness": "REQUIRED",
+                    "outcome": "FAIL",
+                    "error": error_text,
+                    "expected": "ALLOWED",
+                    "observed": "REJECTED",
+                }
+
                 self.event_bus.emit(
                     CoreEvents.ERROR,
                     {
@@ -1574,19 +1685,40 @@ class SessionManager:
                         "node_id": node.get("id", "unknown"),
                         "task_id": node.get("id", "unknown"),
                         "turn": turn,
-                        "category": rejection.get("failure_category", "APPROVAL_SECURITY_REJECTED"),
+                        "category": failure_category,
                         "failure_class": "APPROVAL_SECURITY_REJECTED",
                         "approval_phase": exc.phase,
-                        "mutation_fault": rejection.get("mutation_fault"),
+                        "mutation_fault": fault,
                         "is_root_cause": True,
                     },
+                )
+                self.event_bus.emit(
+                    CoreEvents.ASSERTION_EVALUATED,
+                    {
+                        "run_id": self.run_id,
+                        "node_id": node.get("id", "unknown"),
+                        "oracle_id": failed_oracle["oracle_id"],
+                        "resolver": failed_oracle.get("resolver") or "security_boundary",
+                        "outcome": "FAIL",
+                        "passed": False,
+                        "requiredness": "REQUIRED",
+                        "error": error_text,
+                        "expected": "ALLOWED",
+                        "observed": "REJECTED",
+                    },
+                    span_context=self.session_metadata.get("span_context"),
                 )
                 task_results = await self._calculate_metrics(
                     node, attempt_number, turn, conversation_history, sandbox, agent_actions
                 )
                 task_results["status"] = "failure"
-                task_results["triage_tag"] = "APPROVAL_SECURITY_REJECTED"
+                task_results["triage_tag"] = failure_category
                 task_results["message"] = err_msg
+                task_results["is_root_cause"] = True
+                task_results["approval_phase"] = exc.phase
+                task_results["mutation_fault"] = fault
+                existing_oracles = task_results.get("oracle_results") or []
+                task_results["oracle_results"] = [*existing_oracles, failed_oracle]
                 node_success = False
                 break
             except Exception as e:
@@ -2056,6 +2188,14 @@ class SessionManager:
                 node_event_payload["failure_reason"] = str(task_results["message"])
         if task_results.get("metrics"):
             node_event_payload["metrics"] = task_results["metrics"]
+        if task_results.get("oracle_results"):
+            node_event_payload["oracle_results"] = task_results["oracle_results"]
+        if task_results.get("is_root_cause"):
+            node_event_payload["is_root_cause"] = True
+        if task_results.get("approval_phase"):
+            node_event_payload["approval_phase"] = task_results["approval_phase"]
+        if task_results.get("mutation_fault"):
+            node_event_payload["mutation_fault"] = task_results["mutation_fault"]
 
         self.event_bus.emit(
             CoreEvents.EXECUTION_GRAPH_NODE,
@@ -2693,7 +2833,7 @@ class SessionManager:
             is_scenario_gate
             or os.environ.get("AGENTV_CLI_HITL_SUSPEND") == "1"
             or os.environ.get("FORCE_HITL_SUSPEND") == "1"
-            or (not sys.stdin.isatty() and os.environ.get("AGENTV_TEST_NON_DURABLE_HITL") != "1")
+            or not sys.stdin.isatty()
         ):
             # Compute outbound hash
             outbound_hash = ""
@@ -2743,7 +2883,10 @@ class SessionManager:
             is_durable_suspend = (
                 is_scenario_gate
                 or os.environ.get("AGENTV_CLI_HITL_SUSPEND") == "1"
-                or os.environ.get("AGENTV_TEST_NON_DURABLE_HITL") != "1"
+                or os.environ.get("FORCE_HITL_SUSPEND") == "1"
+                or (
+                    not sys.stdin.isatty() and os.environ.get("AGENTV_TEST_NON_DURABLE_HITL") != "1"
+                )
             )
             if is_durable_suspend:
                 self.event_bus.emit(
@@ -2822,10 +2965,11 @@ class SessionManager:
 
             if str(approval.status).upper() != "APPROVED":
                 now_ts = time.time()
+                created_at_val = getattr(durable_req, "created_at", None)
                 p_start = (
-                    durable_req.created_at.timestamp()
-                    if isinstance(durable_req.created_at, datetime)
-                    else float(durable_req.created_at or pause_start_ts)
+                    created_at_val.timestamp()
+                    if isinstance(created_at_val, datetime)
+                    else float(created_at_val or pause_start_ts)
                 )
                 wait_dur = round((now_ts - p_start) * 1000, 2) if p_start else None
                 self.event_bus.emit(

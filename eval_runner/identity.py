@@ -30,7 +30,6 @@ class IdentityService:
         """Load purpose/profile/rotation policy from the external trusted identity directory.
 
         Absent an explicit policy, the trusted public-key fingerprint is the key ID.
-        Existing raw Ed25519 evidence remains enabled by this explicit default policy.
         KMS key ARN bindings require a separately provisioned signature_policy.json.
         """
         import json
@@ -66,7 +65,6 @@ class IdentityService:
             "key_id",
             "permitted_profiles",
             "permitted_purposes",
-            "allow_legacy_raw",
             "revoked",
             "not_before",
             "not_after",
@@ -79,12 +77,11 @@ class IdentityService:
             or type(policy["version"]) is not int
             or policy["version"] != 1
             or not isinstance(policy["key_id"], str)
-            or type(policy["allow_legacy_raw"]) is not bool
             or type(policy["revoked"]) is not bool
         ):
             raise SignatureContractError("Malformed external signature policy")
         for name, supported in (
-            ("permitted_profiles", {PROFILE, "ed25519-raw"}),
+            ("permitted_profiles", {PROFILE}),
             ("permitted_purposes", set(PROJECTIONS)),
         ):
             values = policy[name]
@@ -108,7 +105,6 @@ class IdentityService:
             public_key,
             permitted_profiles=tuple(policy["permitted_profiles"]),
             permitted_purposes=tuple(policy["permitted_purposes"]),
-            allow_legacy_raw=policy["allow_legacy_raw"],
             revoked=policy["revoked"],
             **intervals,
         )

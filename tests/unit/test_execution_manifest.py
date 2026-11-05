@@ -72,6 +72,23 @@ def test_manifest_builder_and_immutability():
     restored = ExecutionManifest.from_dict(manifest_dict)
     assert restored == manifest
     assert restored.compute_manifest_hash() == manifest.compute_manifest_hash()
+    import dataclasses
+
+    manifest_alt = dataclasses.replace(manifest, scenario_hash="sha3_256:different_hash")
+    assert manifest.compute_manifest_hash() != manifest_alt.compute_manifest_hash()
+
+    # Exact canonical commitment binding for ExecutionManifest.compute_manifest_hash
+    fixed_manifest = ExecutionManifest(
+        manifest_id="fixed_1",
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:abc",
+        created_at="2026-01-01T00:00:00Z",
+    )
+    assert (
+        fixed_manifest.compute_manifest_hash()
+        == "sha3_256:1dd5511fc74f09f3aa9c6846deaa98d50aa089b10c4cbdf9bc1c891a7f816e7f"
+    )
 
 
 def test_execution_manifest_rejects_unknown_physical_fields():
@@ -178,3 +195,54 @@ def test_compute_preflight_fingerprint_with_max_turns_precedence():
         max_turns=10,
     )
     assert len(fp) == 64
+    assert fp == "7185f3da3007bc5acdca5054b9bee6df909344a963b82084158bd9e7d1d1cd91"
+
+    fp_hermetic = compute_preflight_fingerprint(
+        scenario_id="scen_preflight_override",
+        agent_config={"endpoint": "http://localhost:8000", "protocol": "http"},
+        runtime_config={"max_turns": 5},
+        execution_mode="hermetic",
+    )
+    assert fp != fp_hermetic
+
+
+def test_manifest_builder_execution_mode_resolution_hierarchy():
+    from agentv_runtime.manifest import ManifestBuilder
+
+    # Direct argument
+    m1 = ManifestBuilder.build(
+        scenario_data={"metadata": {"id": "s"}},
+        execution_mode="direct_mode",
+    )
+    assert m1.runtime_config["execution_mode"] == "direct_mode"
+    assert m1.metadata["execution_mode"] == "direct_mode"
+
+    # meta_dict (metadata arg)
+    m2 = ManifestBuilder.build(
+        scenario_data={"metadata": {"id": "s"}},
+        metadata={"execution_mode": "meta_mode"},
+    )
+    assert m2.runtime_config["execution_mode"] == "meta_mode"
+    assert m2.metadata["execution_mode"] == "meta_mode"
+
+    # runtime_config arg
+    m3 = ManifestBuilder.build(
+        scenario_data={"metadata": {"id": "s"}},
+        runtime_config={"execution_mode": "runtime_mode"},
+    )
+    assert m3.runtime_config["execution_mode"] == "runtime_mode"
+    assert m3.metadata["execution_mode"] == "runtime_mode"
+
+    # scenario_data["metadata"]["execution_mode"]
+    m4 = ManifestBuilder.build(
+        scenario_data={"metadata": {"id": "s", "execution_mode": "scenario_meta_mode"}},
+    )
+    assert m4.runtime_config["execution_mode"] == "scenario_meta_mode"
+    assert m4.metadata["execution_mode"] == "scenario_meta_mode"
+
+    # scenario_data["execution_mode"]
+    m5 = ManifestBuilder.build(
+        scenario_data={"metadata": {"id": "s"}, "execution_mode": "scenario_top_mode"},
+    )
+    assert m5.runtime_config["execution_mode"] == "scenario_top_mode"
+    assert m5.metadata["execution_mode"] == "scenario_top_mode"

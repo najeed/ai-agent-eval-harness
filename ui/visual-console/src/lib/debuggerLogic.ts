@@ -14,7 +14,35 @@ export const CANONICAL_TERMINAL_STATUSES = new Set([
   'SEALED',
   'CERTIFIED',
   'STALLED',
+  'CANCELLED',
 ]);
+
+/** Normalize supported outcomes without guessing unknown terminal results. */
+export const normalizeRunStatus = (value: unknown): string => {
+  const status = typeof value === 'string' ? value.toUpperCase() : 'UNKNOWN';
+  return ({
+    SUCCESS: 'COMPLETED', SUCCEEDED: 'COMPLETED', FAILURE: 'FAILED',
+    CANCELED: 'CANCELLED'
+  } as Record<string, string>)[status] ?? status;
+};
+
+export interface RunLifecycle { status: string; sequence: number }
+
+/** Forensic order controls lifecycle; transport cursors control delivery only. */
+export const reduceRunLifecycle = (state: RunLifecycle, event: LogEvent): RunLifecycle => {
+  const kind = event.event || event.name;
+  let status: string;
+  if (kind === 'run_end') status = normalizeRunStatus(event.status);
+  else if (kind === 'execution_graph_node' &&
+    (String(event.status).toLowerCase() === 'failed' || event.failure_class)) status = 'FAILING';
+  else if (kind === 'hitl_pause') status = 'PAUSED_FOR_APPROVAL';
+  else if (kind === 'run_start' || kind === 'hitl_resume' || kind === 'run_resume') status = 'RUNNING';
+  else return state;
+  const sequence = typeof event._seq === 'number' && Number.isSafeInteger(event._seq)
+    ? event._seq : state.sequence + 1;
+  if (sequence <= state.sequence || CANONICAL_TERMINAL_STATUSES.has(state.status)) return state;
+  return { status, sequence };
+};
 
 export interface LogEvent {
   _seq?: number;
@@ -140,8 +168,8 @@ export const projectTraceGraphTopology = (
         ? executedNodeIds.size === 0
           ? scenarioNodes
           : [...scenarioNodes, ...runtimeNodes].filter(node =>
-              executedNodeIds.has(String(node.id || node.scenario_node_id || node.task_id)),
-            )
+            executedNodeIds.has(String(node.id || node.scenario_node_id || node.task_id)),
+          )
         : [...scenarioNodes, ...runtimeNodes];
 
   return { scenarioNodes, runtimeNodes, visibleNodes, executedNodeIds, graphNodeEvents };

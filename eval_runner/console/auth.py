@@ -318,21 +318,26 @@ def get_current_user():
         or os.environ.get("DEV_PERSONA_SIMULATOR", "").lower() == "true"
     )
 
+    has_explicit_credentials = False
     if not user:
         # Check Authorization header (Bearer / API key)
         auth_header = request.headers.get("Authorization", "")
         api_key_header = request.headers.get("X-AES-API-KEY") or request.headers.get("X-API-Key")
         if auth_header.startswith("Bearer "):
+            has_explicit_credentials = True
             user = provider.verify_token(auth_header[7:].strip())
         elif api_key_header:
+            has_explicit_credentials = True
             user = provider.authenticate(api_key_header.strip())
 
-    is_explicit_dev = os.getenv("AGENTV_ENV", "").lower() in ("dev", "development") or is_dev_mode
+    is_explicit_dev = os.getenv("AGENTV_ENV", "").lower() in ("dev", "development") or (
+        os.environ.get("DEV_PERSONA_SIMULATOR", "").lower() == "true"
+    )
     is_loopback = request.remote_addr in ("127.0.0.1", "::1", "localhost") or (
         request.remote_addr is None and os.getenv("AGENTV_TEST_AUTH_BYPASS") == "1"
     )
 
-    if not user and is_explicit_dev and is_loopback:
+    if not user and not has_explicit_credentials and is_explicit_dev and is_loopback:
         # Local development persona default
         user = {
             "id": "dev-admin@agentv.local",
@@ -401,7 +406,7 @@ def get_current_user():
                 "is_dev_mode": is_dev_mode,
             },
         }
-    )
+    ), 200
 
 
 @auth_bp.route("/context", methods=["POST"])

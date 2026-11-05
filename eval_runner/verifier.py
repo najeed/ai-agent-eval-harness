@@ -183,7 +183,7 @@ class CoreTraceSigner(TraceVerificationInterceptor):
                     encryption_algorithm=serialization.NoEncryption(),
                 )
             signature = signing_backend.sign_payload(
-                manifest_bytes, key_identifier, purpose=CERTIFICATE
+                manifest_bytes, key_identifier, purpose=CERTIFICATE, identity=identity_id
             )
             if not signature:
                 raise CertificationFailedError(
@@ -518,11 +518,7 @@ class TraceVerifier:
 
             store = resolve_artifact_store()
             guarantee = getattr(store, "immutability_guarantee", None)
-            if (
-                guarantee == "TAMPER_EVIDENT_LOGICAL_SEAL"
-                or not guarantee
-                or guarantee != "HARDWARE_OR_CLOUD_ENFORCED_WORM"
-            ):
+            if guarantee != "HARDWARE_OR_CLOUD_ENFORCED_WORM":
                 raise CertificationFailedError(
                     f"ImmutableRetentionRequired: Active artifact store "
                     f"'{store.__class__.__name__}' offers '{guarantee or 'UNSPECIFIED'}', "
@@ -582,16 +578,20 @@ class TraceVerifier:
             try:
                 if hasattr(run_store, "get_manifest"):
                     raw_m = run_store.get_manifest(run_id, context=context)
-                    if isinstance(raw_m, dict) and raw_m.get("scenario_data"):
-                        scenario_data = raw_m["scenario_data"]
+                    if isinstance(raw_m, dict):
+                        m_scen = raw_m.get("scenario_data")
+                        if m_scen:
+                            scenario_data = m_scen
             except Exception as exc:
                 logger.debug("Scenario data resolution fallback: %s", exc)
         if execution_manifest is None and run_store is not None and run_id:
             try:
                 if hasattr(run_store, "get_manifest"):
                     raw_m = run_store.get_manifest(run_id, context=context)
-                    if isinstance(raw_m, dict) and raw_m.get("execution_manifest"):
-                        execution_manifest = raw_m["execution_manifest"]
+                    if isinstance(raw_m, dict):
+                        m_exec = raw_m.get("execution_manifest")
+                        if m_exec:
+                            execution_manifest = m_exec
             except Exception as exc:
                 logger.debug("Execution manifest resolution fallback: %s", exc)
         if scenario_data is not None:
@@ -874,7 +874,10 @@ class TraceVerifier:
         from agentv_runtime.signatures import PACKAGE, validate_signing_response
 
         pkg_sig = signing_backend.sign_payload(
-            pkg.canonical_payload_bytes(), package_key_identifier, purpose=PACKAGE
+            pkg.canonical_payload_bytes(),
+            package_key_identifier,
+            purpose=PACKAGE,
+            identity=identity_id,
         )
         pkg_sig = validate_signing_response(
             pkg.canonical_payload_bytes(), pkg_sig, identity=identity_id, purpose=PACKAGE
@@ -1130,6 +1133,47 @@ class TraceVerifier:
                 "has_signature": bool(manifest.get("signature") or manifest.get("signatures")),
                 "failure_reason": "Trace bytes not returned by storage provider.",
             }
+        has_certificate = bool(
+            manifest.get("verification_package")
+            or manifest.get("certification")
+            or manifest.get("vc_version")
+            or manifest.get("certificate")
+            or manifest.get("provenance_chain")
+            or manifest.get("signatures")
+            or manifest.get("signature")
+            or manifest.get("trace_hash")
+        )
+        if not has_certificate:
+            attempt_stats = manifest.get("attempt_statistics") or {}
+            outcome = str(
+                manifest.get("compliance_status")
+                or ("pass" if attempt_stats.get("all_pass") else "")
+            ).lower()
+            passed = outcome in {"pass", "passed", "certified", "certified_pass"}
+            mode = manifest.get("execution_mode")
+            provisional = bool(
+                manifest.get("provisional") or mode in {"simulated", "unknown"} or not mode
+            )
+            return {
+                "run_id": run_id,
+                "verification_status": "UNVERIFIED",
+                "verdict": "UNVERIFIED",
+                "terminal_verdict": "UNVERIFIED",
+                "verified": False,
+                "is_valid": False,
+                "cryptographically_valid": False,
+                "certificate_valid": False,
+                "evaluation_passed": passed,
+                "has_certificate": False,
+                "has_signature": False,
+                "algorithm": None,
+                "is_pqc": False,
+                "trace_hash": None,
+                "timestamp": manifest.get("timestamp"),
+                "execution_mode": mode,
+                "provisional": provisional,
+                "failure_reason": "Run has not been cryptographically certified.",
+            }
         try:
             verify_kwargs = dict(kwargs)
             verify_kwargs.pop("trace_only", None)
@@ -1361,57 +1405,38 @@ def verify_trace_certificate(
         algorithm = entry.get("algorithm", "ED25519")
         signature_hex = entry.get("signature", "")
         identity_id = entry.get("identity") or entry.get("signer_identity") or "system_id"
+        is_envelope = isinstance(signature_hex, dict)
 
-        if isinstance(signature_hex, dict):
-            from agentv_runtime.signatures import resolve_policy, verify_artifact_signature
-
-            try:
-                if algorithm != "ED25519" or entry.get("signature_profile") != signature_hex.get(
-                    "profile"
-                ):
-                    raise ValueError("Signature profile or algorithm declaration mismatch")
-                policy = resolve_policy(identity_id)
-                valid = verify_artifact_signature(
-                    candidate_manifest_bytes[0], signature_hex, policy, CERTIFICATE
-                )
-            except Exception:
-                valid = False
-            if not valid:
-                result["errors"].append(f"EnvelopeSignatureVerificationFailed: '{identity_id}'")
-                all_signatures_valid = False
-            else:
-                sig_count += 1
-                result["signer_identity"] = identity_id
-                result["algorithm"] = algorithm
-            continue
-
-        if entry.get("signature_profile") is not None or algorithm not in {
-            "ED25519",
-            "ed25519",
-            "Ed25519",
-            "ML-DSA-65",
-        }:
-            result["errors"].append(f"UnsupportedSignatureProfile: '{identity_id}'")
-            all_signatures_valid = False
-            continue
-
-        if not signature_hex or (algorithm != "ML-DSA-65" and len(signature_hex) < 8):
+        if not signature_hex or (
+            not is_envelope and algorithm != "ML-DSA-65" and len(str(signature_hex)) < 8
+        ):
             result["errors"].append(
                 f"Signature entry for identity '{identity_id}' is empty or malformed."
             )
             all_signatures_valid = False
             continue
 
-        # Fail-closed: reject degenerate all-zero placeholder signatures.
-        # These carry no cryptographic proof (and would bypass verification
-        # entirely against mock/transparent key objects), so they must never
-        # be allowed to certify evidence.
-        normalized_sig = signature_hex.strip().lower()
-        if not normalized_sig or set(normalized_sig) == {"0"}:
-            result["errors"].append(
-                f"Degenerate all-zero signature rejected for identity '{identity_id}' "
-                "(fail-closed: placeholder signatures cannot certify evidence)."
-            )
+        if not is_envelope:
+            normalized_sig = str(signature_hex).strip().lower()
+            if not normalized_sig or set(normalized_sig) == {"0"}:
+                result["errors"].append(
+                    f"Degenerate all-zero signature rejected for identity '{identity_id}' "
+                    "(fail-closed: placeholder signatures cannot certify evidence)."
+                )
+                all_signatures_valid = False
+                continue
+
+        if not is_envelope and (
+            entry.get("signature_profile") is not None
+            or algorithm
+            not in {
+                "ED25519",
+                "ed25519",
+                "Ed25519",
+                "ML-DSA-65",
+            }
+        ):
+            result["errors"].append(f"UnsupportedSignatureProfile: '{identity_id}'")
             all_signatures_valid = False
             continue
 
@@ -1532,7 +1557,32 @@ def verify_trace_certificate(
 
             from agentv_runtime.signatures import resolve_policy
 
-            policy = resolve_policy(identity_id, public_key)
+            policy = resolve_policy(identity_id, public_key, trust_root=trust_root)
+
+            if is_envelope:
+                decl_profile = entry.get("signature_profile")
+                env_profile = signature_hex.get("profile")
+                if str(algorithm).upper() != "ED25519" or (
+                    decl_profile and decl_profile != env_profile
+                ):
+                    result["errors"].append(f"EnvelopeSignatureVerificationFailed: '{identity_id}'")
+                    all_signatures_valid = False
+                    continue
+                from agentv_runtime.signatures import verify_artifact_signature
+
+                verified = any(
+                    verify_artifact_signature(m_cand, signature_hex, policy, CERTIFICATE)
+                    for m_cand in candidate_manifest_bytes
+                )
+                if verified:
+                    sig_count += 1
+                    result["signer_identity"] = identity_id
+                    result["algorithm"] = algorithm
+                else:
+                    result["errors"].append(f"EnvelopeSignatureVerificationFailed: '{identity_id}'")
+                    all_signatures_valid = False
+                continue
+
             policy.authorize(CERTIFICATE, "ed25519-raw")
             if not policy.allow_legacy_raw:
                 raise ValueError("Legacy raw Ed25519 is disabled by external trust policy")
@@ -1606,6 +1656,17 @@ def verify_trace_certificate(
                                 break
 
                     if not has_line_error and ev_list_with_lines:
+                        from agentv_runtime.evidence_graph import verify_trace_evidence_references
+
+                        for ref_failure in verify_trace_evidence_references(
+                            ev_list_with_lines,
+                            executed_oracle_results=(
+                                cert_data.get("executed_oracle_results")
+                                or cert_data.get("oracle_results")
+                            ),
+                        ):
+                            result["errors"].append(ref_failure)
+
                         req_oracles = (
                             cert_data.get("required_oracles")
                             or cert_data.get("required_oracle_ids")
@@ -2000,7 +2061,19 @@ class VerificationAuthority:
                 from agentv_runtime.evidence_graph import (
                     build_evidence_graph_from_events,
                     compute_evidence_graph_root,
+                    verify_trace_evidence_references,
                 )
+
+                for ref_failure in verify_trace_evidence_references(
+                    parsed_events_with_lines,
+                    executed_oracle_results=getattr(pkg, "executed_oracle_results", None)
+                    or (
+                        pkg.evaluation.get("executed_oracle_results")
+                        if isinstance(getattr(pkg, "evaluation", None), dict)
+                        else None
+                    ),
+                ):
+                    failures.append(ref_failure)
 
                 ev_graph = build_evidence_graph_from_events(effective_events_with_lines)
                 computed_root = compute_evidence_graph_root(ev_graph)
@@ -2237,7 +2310,10 @@ class VerificationAuthority:
             if not req:
                 continue
             if req not in executed_oracles_by_id:
-                failures.append(f"MissingRequiredOracles: required oracle '{req}' was not executed")
+                if requires_oracle_pass:
+                    failures.append(
+                        f"MissingRequiredOracles: required oracle '{req}' was not executed"
+                    )
                 continue
 
             for o_res in executed_oracles_by_id[req]:
@@ -2631,7 +2707,7 @@ class VerificationAuthority:
                         f"EvidenceRootMismatch: package={pkg.evidence_root_hash} "
                         f"actual={computed_root}"
                     )
-                if require_signature and not ev_graph.get("is_complete_provenance", True):
+                if not ev_graph.get("is_complete_provenance", True):
                     failures.append(
                         "DirectProvenanceViolation: Evidence graph contains unresolved "
                         "or carrier fallback provenance"
@@ -2862,7 +2938,10 @@ class VerificationAuthority:
             if not req:
                 continue
             if req not in executed_oracles_by_id:
-                failures.append(f"MissingRequiredOracles: required oracle '{req}' was not executed")
+                if requires_oracle_pass:
+                    failures.append(
+                        f"MissingRequiredOracles: required oracle '{req}' was not executed"
+                    )
                 continue
 
             for o_res in executed_oracles_by_id[req]:
@@ -3376,13 +3455,8 @@ class VerificationAuthority:
                 f"'live' or 'hybrid' execution mode, got '{exec_mode or 'undeclared'}'"
             )
 
-        man_provisional = (
-            canonical_manifest.get("provisional") if isinstance(canonical_manifest, dict) else False
-        )
         is_provisional = bool(
-            recorded_provisional
-            or man_provisional
-            or (pkg.metadata or {}).get("provisional") is True
+            recorded_provisional or (pkg.metadata or {}).get("provisional") is True
         )
         if is_provisional:
             failures.append(

@@ -136,7 +136,12 @@ def test_stream_returns_provider_events_and_closes_at_terminal_event(client, pro
 
 
 def test_verify_uses_provider_not_path_recovery(client, provider):
-    _seed_run(provider, "verify")
+    # A certified run (carries a certificate marker) whose provider-native verification fails.
+    _seed_run(
+        provider,
+        "verify",
+        manifest={"scenario_data": {"id": "scenario-a"}, "trace_hash": "sha3_256:00"},
+    )
     with patch(
         "eval_runner.verifier.TraceVerifier.verify_trace_bytes",
         return_value=False,

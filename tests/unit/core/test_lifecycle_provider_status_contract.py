@@ -37,3 +37,8 @@ def test_missing_or_non_mapping_provider_record_has_no_lifecycle_marker(record):
 @pytest.mark.parametrize("run_id", ["", "unknown"])
 def test_unassigned_run_write_probe_does_not_access_a_provider(run_id):
     assert can_write_trace(run_id, run_store=None) == (True, "")
+
+
+@pytest.mark.parametrize("run_id", ["", "unknown"])
+def test_unassigned_run_lifecycle_probe_does_not_access_a_provider(run_id):
+    assert get_run_lifecycle_state(run_id, run_store=None) == RunLifecycleState.OPEN

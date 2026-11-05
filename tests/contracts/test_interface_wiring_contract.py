@@ -770,8 +770,12 @@ async def test_all_extension_families_exclusive_injection_contract(tmp_path):
     )
 
     # 4. Custom SigningBackend Spy
+    from eval_runner.reference.signing import LocalEd25519SigningBackend
+
+    real_signing = LocalEd25519SigningBackend()
     mock_signing_backend = MagicMock(spec=SigningBackend)
-    mock_signing_backend.sign_payload.return_value = "a" * 128
+    mock_signing_backend.sign_payload.side_effect = real_signing.sign_payload
+    mock_signing_backend.verify_signature.side_effect = real_signing.verify_signature
 
     # 5. Custom ConfigResolver
     mock_resolver = MagicMock(spec=ConfigResolver)

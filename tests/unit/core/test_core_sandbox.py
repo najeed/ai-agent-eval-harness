@@ -220,6 +220,8 @@ async def test_sandbox_execute_shim_routing(base_scenario, tmp_path):
 def test_sanitize_path():
     assert ToolSandbox._sanitize_path("valid/path") == f"{config.SANDBOX_VFS_PREFIX}valid/path"
     assert ToolSandbox._sanitize_path("../../../etc/passwd") == f"{config.SANDBOX_VFS_PREFIX}passwd"
+    assert ToolSandbox._sanitize_path("safe_key") == "safe_key"
+    assert ToolSandbox._sanitize_path("plain_filename.txt") == "plain_filename.txt"
 
 
 def test_sanitize_value():

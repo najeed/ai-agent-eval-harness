@@ -24,6 +24,7 @@ from agentv_runtime.evidence_graph import (
 from agentv_runtime.finalization import EvaluatorFinalizationRecord
 from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
 from agentv_runtime.package import VerificationPackage
+from agentv_runtime.signatures import SignaturePolicy, fingerprint
 from eval_runner import config
 from eval_runner.identity import IdentityService
 from eval_runner.reference.local_run_store import LocalFileRunStore
@@ -71,6 +72,12 @@ def vault_context(tmp_path, monkeypatch):
     verification_service.reset()
     yield root
     verification_service.reset()
+
+
+def _policy_for(identity, private_key):
+    """Real external trust policy for an in-memory Ed25519 test identity."""
+    public_key = private_key.public_key()
+    return SignaturePolicy(identity, f"sha256:{fingerprint(public_key)}", public_key)
 
 
 def setup_vault(run_id, trace_name="run.jsonl"):
@@ -739,6 +746,7 @@ def test_core_trace_signer_sign_pqc_success(monkeypatch):
         patch("eval_runner.forensics.compute_shake256_digest", return_value=b"digest"),
     ):
         mock_id_svc.get_private_key.return_value = mock_private_key
+        mock_id_svc.get_signature_policy.return_value = _policy_for("system_id", mock_private_key)
         mock_id_svc.get_pqc_client.return_value = mock_pqc_client
 
         signer = CoreTraceSigner()
@@ -763,6 +771,7 @@ def test_core_trace_signer_pqc_client_unavailable_strict(monkeypatch):
 
     with patch("eval_runner.identity.IdentityService") as mock_id_svc:
         mock_id_svc.get_private_key.return_value = mock_private_key
+        mock_id_svc.get_signature_policy.return_value = _policy_for("system_id", mock_private_key)
         mock_id_svc.get_pqc_client.return_value = None
 
         signer = CoreTraceSigner()
@@ -784,6 +793,7 @@ def test_core_trace_signer_pqc_client_unavailable_non_strict(monkeypatch):
 
     with patch("eval_runner.identity.IdentityService") as mock_id_svc:
         mock_id_svc.get_private_key.return_value = mock_private_key
+        mock_id_svc.get_signature_policy.return_value = _policy_for("system_id", mock_private_key)
         mock_id_svc.get_pqc_client.return_value = None
 
         signer = CoreTraceSigner()
@@ -813,6 +823,7 @@ def test_core_trace_signer_pqc_sign_fails_strict(monkeypatch):
         patch("eval_runner.forensics.compute_shake256_digest", return_value=b"digest"),
     ):
         mock_id_svc.get_private_key.return_value = mock_private_key
+        mock_id_svc.get_signature_policy.return_value = _policy_for("system_id", mock_private_key)
         mock_id_svc.get_pqc_client.return_value = mock_pqc_client
 
         signer = CoreTraceSigner()
@@ -840,6 +851,7 @@ def test_core_trace_signer_pqc_sign_fails_non_strict(monkeypatch):
         patch("eval_runner.forensics.compute_shake256_digest", return_value=b"digest"),
     ):
         mock_id_svc.get_private_key.return_value = mock_private_key
+        mock_id_svc.get_signature_policy.return_value = _policy_for("system_id", mock_private_key)
         mock_id_svc.get_pqc_client.return_value = mock_pqc_client
 
         signer = CoreTraceSigner()
@@ -2350,7 +2362,11 @@ def test_verify_trace_rejects_legacy_staged_artifact_ledger(tmp_path, monkeypatc
         "timestamp": "2026-09-01T00:00:00Z",
     }
     to_sign = manifest_data.copy()
-    sig_hex = priv.sign(canonical_json_encode(to_sign)).hex()
+    from agentv_runtime.signatures import CERTIFICATE, sign_digest_envelope
+
+    sig_hex = sign_digest_envelope(
+        canonical_json_encode(to_sign), priv, identity="system_id", purpose=CERTIFICATE
+    )
     manifest_data["provenance_chain"] = [
         {"identity": "system_id", "signature": sig_hex, "algorithm": "ED25519"}
     ]
@@ -2408,7 +2424,11 @@ def test_verify_trace_skips_terminal_finalization_carrier(tmp_path, monkeypatch)
         "metadata": {"scenario_hash": scen_hash},
         "timestamp": "2026-09-01T00:00:00Z",
     }
-    sig_hex = priv.sign(canonical_json_encode(manifest_data)).hex()
+    from agentv_runtime.signatures import CERTIFICATE, sign_digest_envelope
+
+    sig_hex = sign_digest_envelope(
+        canonical_json_encode(manifest_data), priv, identity="system_id", purpose=CERTIFICATE
+    )
     manifest_data["provenance_chain"] = [
         {"identity": "system_id", "signature": sig_hex, "algorithm": "ED25519"}
     ]
@@ -2447,7 +2467,11 @@ def test_verify_trace_sealed_run_matching_run_log_dir(tmp_path, monkeypatch):
         "trace_hash": trace_hash,
         "timestamp": "2026-09-01T00:00:00Z",
     }
-    sig_hex = priv.sign(canonical_json_encode(manifest_data)).hex()
+    from agentv_runtime.signatures import CERTIFICATE, sign_digest_envelope
+
+    sig_hex = sign_digest_envelope(
+        canonical_json_encode(manifest_data), priv, identity="system_id", purpose=CERTIFICATE
+    )
     manifest_data["provenance_chain"] = [
         {"identity": "system_id", "signature": sig_hex, "algorithm": "ED25519"}
     ]
@@ -2484,9 +2508,22 @@ def test_verify_trace_trust_root_object_resolution(tmp_path, monkeypatch):
         "trace_hash": trace_hash,
         "timestamp": "2026-09-01T00:00:00Z",
     }
-    sig_hex = priv.sign(canonical_json_encode(manifest_data)).hex()
+    from agentv_runtime.signatures import CERTIFICATE, sign_digest_envelope
+
+    sign_digest_envelope(
+        canonical_json_encode(manifest_data), priv, identity="system_id", purpose=CERTIFICATE
+    )
     manifest_data["provenance_chain"] = [
-        {"identity": "custom_resolver_id", "signature": sig_hex, "algorithm": "ED25519"}
+        {
+            "identity": "custom_resolver_id",
+            "signature": sign_digest_envelope(
+                canonical_json_encode(manifest_data),
+                priv,
+                identity="custom_resolver_id",
+                purpose=CERTIFICATE,
+            ),
+            "algorithm": "ED25519",
+        }
     ]
 
     run_store = LocalFileRunStore(tmp_path)
@@ -2495,6 +2532,9 @@ def test_verify_trace_trust_root_object_resolution(tmp_path, monkeypatch):
 
     trust_root_obj = MagicMock()
     trust_root_obj.get_public_key.return_value = pub
+    trust_root_obj.get_signature_policy.return_value = SignaturePolicy(
+        "custom_resolver_id", f"sha256:{fingerprint(pub)}", pub
+    )
 
     ok = TraceVerifier.verify_trace(
         trace_file.read_bytes(),
@@ -2530,7 +2570,11 @@ def test_verify_trace_rejects_unsigned_verification_package(tmp_path):
     }
     to_sign = manifest_data.copy()
     to_sign.pop("provenance_chain", None)
-    sig_hex = priv.sign(canonical_json_encode(to_sign)).hex()
+    from agentv_runtime.signatures import CERTIFICATE, sign_digest_envelope
+
+    sig_hex = sign_digest_envelope(
+        canonical_json_encode(to_sign), priv, identity="system_id", purpose=CERTIFICATE
+    )
     manifest_data["provenance_chain"] = [
         {"identity": "system_id", "signature": sig_hex, "algorithm": "ED25519"}
     ]
@@ -2568,7 +2612,11 @@ def test_verify_trace_trust_root_directory_and_opaque_object_fallbacks(tmp_path,
         "timestamp": "2026-09-01T00:00:00Z",
     }
     to_sign = manifest_data.copy()
-    sig_hex = priv.sign(canonical_json_encode(to_sign)).hex()
+    from agentv_runtime.signatures import CERTIFICATE, sign_digest_envelope
+
+    sig_hex = sign_digest_envelope(
+        canonical_json_encode(to_sign), priv, identity="system_id", purpose=CERTIFICATE
+    )
     manifest_data["provenance_chain"] = [
         {"identity": "system_id", "signature": sig_hex, "algorithm": "ED25519"}
     ]

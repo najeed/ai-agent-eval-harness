@@ -19,6 +19,8 @@ import {
   filterEventsByTelemetryLevel,
   computeTelemetryDiagnostics,
   CANONICAL_TERMINAL_STATUSES,
+  normalizeRunStatus,
+  reduceRunLifecycle,
 } from '../lib/debuggerLogic';
 import type {
   LogEvent,
@@ -152,9 +154,24 @@ export const LiveDebugger: React.FC = () => {
   const seenTransportCursorsRef = useRef<Set<number>>(new Set());
   const seenSeqsRef = useRef<Set<number>>(new Set());
   const forensicHighestRef = useRef<number>(0);
-  // A persisted HITL pause is authoritative runtime evidence.  Keep it in a
-  // ref because EventSource.onerror closes over the initial React state.
-  const hitlPauseSeenRef = useRef<boolean>(false);
+  const lifecycleRef = useRef({ status: 'IDLE', sequence: 0 });
+  const streamGenerationRef = useRef(0);
+  const [providerUnavailable, setProviderUnavailable] = useState(false);
+
+  const applyProviderStatus = (value: unknown, reconcile = false) => {
+    const next = normalizeRunStatus(value);
+    const current = lifecycleRef.current;
+    if (CANONICAL_TERMINAL_STATUSES.has(next) ||
+      (!CANONICAL_TERMINAL_STATUSES.has(current.status) && (reconcile || current.sequence === 0))) {
+      lifecycleRef.current = { ...current, status: next };
+      setStatus(next);
+    }
+  };
+
+  const applyLifecycleEvent = (event: LogEvent) => {
+    lifecycleRef.current = reduceRunLifecycle(lifecycleRef.current, event);
+    setStatus(lifecycleRef.current.status);
+  };
   const cursorRef = useRef<number>(0);
   const contiguousCursorRef = useRef<number>(0);
   const explainReqIdRef = useRef<number>(0);
@@ -190,21 +207,24 @@ export const LiveDebugger: React.FC = () => {
   // Every async continuation is stale-guarded: a response for a run the
   // operator already left can never enter state.
   const checkStatus = async (rid: string) => {
+    const generation = streamGenerationRef.current;
     try {
       const res = await fetch(`/api/v1/runs/${rid}`);
-      if (streamCtlRef.current.run !== rid) return;
+      if (streamCtlRef.current.run !== rid || streamGenerationRef.current !== generation) return;
+      if (!res.ok) throw new Error(`Status check returned ${res.status}`);
       if (res.ok) {
         const data = await res.json();
-        setStatus(data.status || 'COMPLETED');
+        if (streamGenerationRef.current !== generation) return;
+        applyProviderStatus(data.status);
+        setProviderUnavailable(false);
         setSourcedFromMaster(!!data.sourced_from_master);
         if (data.scenario) {
           setActiveScenario(data.scenario);
         }
       }
     } catch (e) {
-      if (streamCtlRef.current.run !== rid) return;
-      setStatus('UNKNOWN');
-      setSourcedFromMaster(false);
+      if (streamCtlRef.current.run !== rid || streamGenerationRef.current !== generation) return;
+      setProviderUnavailable(true);
     }
   };
 
@@ -223,7 +243,7 @@ export const LiveDebugger: React.FC = () => {
           setActiveScenario(data.scenario);
           return;
         }
-        const runStatus = String(data.status || '').toUpperCase();
+        const runStatus = normalizeRunStatus(data.status);
         if (CANONICAL_TERMINAL_STATUSES.has(runStatus) && !isTerminalRefresh) {
           // Perform one mandatory terminal refresh
           setTimeout(() => {
@@ -369,7 +389,7 @@ export const LiveDebugger: React.FC = () => {
     // ONE authoritative integrity state: live SSE gaps and sequence provenance
     // participate in the verdict. An unreconciled gap or missing sequence can never coexist with
     // a green COMPLETE label.
-    if (!traceIntegrity.hasEvents) return 'UNKNOWN';
+    if (!traceIntegrity.hasEvents) return connectionStatus === 'FINISHED' ? 'NO_EVENTS+NO_END' : 'UNKNOWN';
     if (traceIntegrity.missingSequences && (!events.length || events.every(e => e._seq === undefined || e._seq === null))) {
       return 'UNKNOWN';
     }
@@ -378,7 +398,7 @@ export const LiveDebugger: React.FC = () => {
     if (traceIntegrity.recovered) flags.push('RECOVERED');
     if (traceIntegrity.reordered) flags.push('REORDERED');
     if (traceIntegrity.gaps || streamGaps.length > 0) flags.push('PARTIAL');
-    if (traceIntegrity.missingEnd) flags.push('NO_END');
+    if (traceIntegrity.missingEnd) flags.push(connectionStatus === 'FINISHED' ? 'NO_END' : 'AWAITING_END');
     return flags.length ? flags.join('+') : 'COMPLETE';
   })();
 
@@ -421,6 +441,7 @@ export const LiveDebugger: React.FC = () => {
   const posKey = (nodeId: string) => `${runId}::${scenarioHash}::${nodeId}`;
 
   const teardownStream = () => {
+    streamGenerationRef.current += 1;
     const ctl = streamCtlRef.current;
     if (ctl.timer) {
       clearTimeout(ctl.timer);
@@ -448,7 +469,9 @@ export const LiveDebugger: React.FC = () => {
     seenTransportCursorsRef.current.clear();
     seenSeqsRef.current.clear();
     forensicHighestRef.current = 0;
-    hitlPauseSeenRef.current = false;
+    lifecycleRef.current = { status: 'IDLE', sequence: 0 };
+    setStatus('IDLE');
+    setProviderUnavailable(false);
     streamCtlRef.current.scenarioEpoch += 1;
     if (streamCtlRef.current.scenarioTimer) {
       clearTimeout(streamCtlRef.current.scenarioTimer);
@@ -499,6 +522,7 @@ export const LiveDebugger: React.FC = () => {
         if (!key.startsWith(`${rid}::`)) nodePositionsRef.current.delete(key);
       }
     }
+    const generation = ++streamGenerationRef.current;
     setConnectionStatus('CONNECTING');
 
     checkStatus(rid);
@@ -515,6 +539,38 @@ export const LiveDebugger: React.FC = () => {
     source.onopen = () => {
       if (streamCtlRef.current.es !== source) return;
       setConnectionStatus('CONNECTED');
+    };
+
+    const reconcileClosure = async () => {
+      source.close();
+      if (streamCtlRef.current.es === source) streamCtlRef.current.es = null;
+      try {
+        const res = await fetch(`/api/v1/runs/${rid}`);
+        if (!res.ok) throw new Error(`Status check returned ${res.status}`);
+        const data = await res.json();
+        if (streamCtlRef.current.run !== rid || streamGenerationRef.current !== generation) return;
+        applyProviderStatus(data.status, true);
+        setProviderUnavailable(false);
+        setSourcedFromMaster(!!data.sourced_from_master);
+        const current = lifecycleRef.current.status;
+        if (CANONICAL_TERMINAL_STATUSES.has(current) || current === 'PAUSED_FOR_APPROVAL') {
+          stopScenarioRetries();
+          setConnectionStatus('FINISHED');
+          fetchScenarioWithRetry(rid, 0, true);
+        } else {
+          scheduleRetry(rid);
+        }
+      } catch {
+        if (streamCtlRef.current.run !== rid || streamGenerationRef.current !== generation) return;
+        setProviderUnavailable(true);
+        // Terminal evidence remains authoritative even during a provider outage.
+        if (CANONICAL_TERMINAL_STATUSES.has(lifecycleRef.current.status)) {
+          stopScenarioRetries();
+          setConnectionStatus('FINISHED');
+        } else {
+          scheduleRetry(rid);
+        }
+      }
     };
 
     source.onmessage = (event) => {
@@ -540,7 +596,7 @@ export const LiveDebugger: React.FC = () => {
       // but are NOT treated as certifying evidentiary trace records.
       if (data.event === 'timeout') {
         stopScenarioRetries();
-        setStatus('STALLED');
+        void checkStatus(rid);
         setConnectionStatus('FINISHED');
         if (streamCtlRef.current.es === source) {
           source.close();
@@ -558,7 +614,7 @@ export const LiveDebugger: React.FC = () => {
         // The server has proved that this registered run has neither durable
         // evidence nor a live writer.  This is a terminal persistence failure,
         // not a transport fault that retrying can repair.
-        setStatus(String((data as any).status || 'STALLED').toUpperCase());
+        void checkStatus(rid);
         setConnectionStatus('FINISHED');
         if (streamCtlRef.current.es === source) {
           source.close();
@@ -574,48 +630,9 @@ export const LiveDebugger: React.FC = () => {
       const hasEvidenceCursor =
         Number.isSafeInteger(Number((data as any)._transport_cursor)) &&
         Number((data as any)._transport_cursor) > 0;
-      if (data.event === 'stream_error' || (data.event === 'error' && !hasEvidenceCursor)) {
-        const errMsg = data.message || data.error || 'Stream error occurred';
-        console.warn('[LiveDebugger] Stream control error received:', errMsg);
-        setStatus(prev => (prev === 'IDLE' ? 'ERROR' : prev));
-        setConnectionStatus('DISCONNECTED');
-        if (streamCtlRef.current.es === source) {
-          source.close();
-          streamCtlRef.current.es = null;
-        }
-        fetch(`/api/v1/runs/${rid}`)
-          .then(res => res.json())
-          .then(runData => {
-            if (streamCtlRef.current.run !== rid) return;
-            if (runData.status) setStatus(runData.status);
-            if (CANONICAL_TERMINAL_STATUSES.has(String(runData.status || '').toUpperCase())) {
-              setConnectionStatus('FINISHED');
-            }
-          })
-          .catch(() => { });
-        return;
-      }
-      if (data.event === 'stream_end' || data.event === 'end') {
-        stopScenarioRetries();
-        setConnectionStatus('FINISHED');
-        if (streamCtlRef.current.es === source) {
-          source.close();
-          streamCtlRef.current.es = null;
-        }
-        fetchScenarioWithRetry(rid, 0, true);
-        return;
-      }
-      if (data.event === 'paused_for_approval') {
-        stopScenarioRetries();
-        // A durable HITL pause has no active writer. Closing this stream is
-        // expected and must not be treated as a transient SSE failure.
-        setStatus('PAUSED_FOR_APPROVAL');
-        setConnectionStatus('FINISHED');
-        if (streamCtlRef.current.es === source) {
-          source.close();
-          streamCtlRef.current.es = null;
-        }
-        fetchScenarioWithRetry(rid, 0, true);
+      if (data.event === 'stream_error' || (data.event === 'error' && !hasEvidenceCursor) ||
+        data.event === 'stream_end' || data.event === 'end' || data.event === 'paused_for_approval') {
+        void reconcileClosure();
         return;
       }
       if (
@@ -625,43 +642,19 @@ export const LiveDebugger: React.FC = () => {
       ) {
         stopScenarioRetries();
         // Synthetic terminal notification (e.g. process thread terminated abruptly / aborted)
-        setStatus(data.status ? String(data.status).toUpperCase() : 'ABORTED');
-        setConnectionStatus('FINISHED');
-        if (streamCtlRef.current.es === source) {
-          source.close();
-          streamCtlRef.current.es = null;
-        }
-        fetchScenarioWithRetry(rid, 0, true);
+        applyLifecycleEvent(data);
+        void reconcileClosure();
         return;
-      }
-
-      // A HITL pause is a terminal state for this EventSource.  Record it
-      // before validating the transport cursor: legacy persisted traces can
-      // legitimately omit that cursor, and retrying after this event only
-      // replays the same terminal stream.
-      if (data.event === 'hitl_pause') {
-        hitlPauseSeenRef.current = true;
-        setStatus('PAUSED_FOR_APPROVAL');
-      }
-
-      // A failed execution node is authoritative evidence that the run is
-      // finalizing a failure.  The provider-owned run record remains RUNNING
-      // until final trace records have been committed, so exposing RUNNING
-      // here falsely suggests useful work is still progressing.
-      if (
-        data.event === 'execution_graph_node' &&
-        (String(data.status || '').toLowerCase() === 'failed' || Boolean(data.failure_class))
-      ) {
-        setStatus(previous =>
-          CANONICAL_TERMINAL_STATUSES.has(String(previous).toUpperCase())
-            ? previous
-            : 'FAILING'
-        );
       }
 
       // Resume and dedupe exclusively with the opaque SSE cursor.
       const transportCursor = Number((data as any)._transport_cursor);
-      if (!Number.isSafeInteger(transportCursor) || transportCursor <= 0) return;
+      if (!Number.isSafeInteger(transportCursor) || transportCursor <= 0) {
+        // Legacy lifecycle evidence may lack an SSE cursor. It cannot advance
+        // delivery or certify trace completeness, but its forensic order still applies.
+        if (typeof data._seq === 'number') applyLifecycleEvent(data);
+        return;
+      }
       if (seenTransportCursorsRef.current.has(transportCursor)) return;
       seenTransportCursorsRef.current.add(transportCursor);
       cursorRef.current = Math.max(cursorRef.current, transportCursor);
@@ -686,6 +679,8 @@ export const LiveDebugger: React.FC = () => {
         if (seq > forensicHighestRef.current) forensicHighestRef.current = seq;
       }
 
+      applyLifecycleEvent(data);
+
       // Hydrate scenario topology directly from canonical event envelope if present
       if (data.event === 'run_start' || (data as any).name === 'run_start') {
         const inlineScenario = (data as any).scenario_data || (data as any).scenario_obj;
@@ -706,7 +701,7 @@ export const LiveDebugger: React.FC = () => {
 
       if (data.event === 'run_end' || (data as any).name === 'run_end') {
         stopScenarioRetries();
-        if (data.status) setStatus(String(data.status).toUpperCase());
+
         fetchScenarioWithRetry(rid, 0, true);
       }
 
@@ -723,49 +718,7 @@ export const LiveDebugger: React.FC = () => {
 
     source.onerror = () => {
       if (streamCtlRef.current.run !== rid || streamCtlRef.current.es !== source) return;
-      source.close();
-      streamCtlRef.current.es = null;
-
-      if (hitlPauseSeenRef.current) {
-        // The trace itself proves a durable HITL pause.  Do not let an older
-        // or stale run-index status (for example RUNNING) turn the expected
-        // stream close into an infinite reconnect loop.
-        stopScenarioRetries();
-        setStatus('PAUSED_FOR_APPROVAL');
-        setConnectionStatus('FINISHED');
-        fetchScenarioWithRetry(rid, 0, true);
-        return;
-      }
-
-      fetch(`/api/v1/runs/${rid}`)
-        .then(res => {
-          if (!res.ok) throw new Error(`Status check returned ${res.status}`);
-          return res.json();
-        })
-        .then(data => {
-          if (streamCtlRef.current.run !== rid) return;
-          const runStatus = data.status || 'UNKNOWN';
-          setStatus(runStatus);
-          setSourcedFromMaster(!!data.sourced_from_master);
-
-          if (CANONICAL_TERMINAL_STATUSES.has(runStatus)) {
-            // Explicit terminal state: the run is over; no retries are scheduled.
-            stopScenarioRetries();
-            setConnectionStatus('FINISHED');
-            fetchScenarioWithRetry(rid, 0, true);
-          } else if (String(runStatus).toUpperCase() === 'PAUSED_FOR_APPROVAL') {
-            // Compatibility with a server that closes a paused stream without
-            // the explicit paused_for_approval control frame.
-            stopScenarioRetries();
-            setConnectionStatus('FINISHED');
-            fetchScenarioWithRetry(rid, 0, true);
-          } else {
-            scheduleRetry(rid);
-          }
-        })
-        .catch(() => {
-          if (streamCtlRef.current.run === rid) scheduleRetry(rid);
-        });
+      void reconcileClosure();
     };
   };
 
@@ -1364,6 +1317,7 @@ export const LiveDebugger: React.FC = () => {
                 }`}>
                 {connectionStatus === 'RECONNECTING' ? `RECONNECTING (${reconnectCount}/8)` : connectionStatus}
               </span>
+              {providerUnavailable && <span role="status" className="text-amber-400 text-xs">Provider unavailable</span>}
               {(connectionStatus === 'DISCONNECTED' || connectionStatus === 'RECONNECTING') && (
                 <button
                   onClick={() => connectStream(runId)}

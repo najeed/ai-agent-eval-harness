@@ -120,11 +120,174 @@ def _canonical_row(row: Any) -> str:
     return canonical_json_dumps(row)
 
 
+def compute_evidence_reference_digest(content: Any) -> str:
+    """Recomputes the deterministic SHA3-256 hex digest of bounded reference content."""
+    return hashlib.sha3_256(canonical_json_encode(content)).hexdigest()
+
+
+def _normalize_digest_hex(value: str) -> str:
+    stripped = value.strip()
+    if stripped.startswith("sha3_256:"):
+        stripped = stripped[len("sha3_256:") :]
+    return stripped
+
+
+def _is_valid_sha3_hex(value: str) -> bool:
+    return len(value) == 64 and all(ch in "0123456789abcdefABCDEF" for ch in value)
+
+
+def verify_evidence_reference(
+    ref: Any,
+    *,
+    reference_hashes: Mapping[str, str] | None = None,
+) -> bool:
+    """Independently resolves an EvidenceReference and recomputes its content digest.
+
+    A reference is never trusted solely because ``source_id`` and ``result_hash``
+    keys exist. To resolve as valid direct provenance:
+    1. ``source_id`` and ``result_hash`` must be non-empty strings, and
+       ``result_hash`` must be a valid 64-hex SHA3-256 digest.
+    2. If ``result_count`` is present, it must be a non-negative integer (not bool).
+    3. If ``sampled_result`` is present, its recomputed SHA3-256 over canonical
+       JSON must equal ``result_hash``.
+    4. If ``reference_hashes`` is supplied, the reference must resolve against
+       ``reference_hashes`` with a matching digest.
+    5. At least one independent verification source (``sampled_result`` digest
+       recomputation or ``reference_hashes`` resolution) must succeed.
+    """
+    ref_dict = ref.to_dict() if hasattr(ref, "to_dict") else ref
+    if not isinstance(ref_dict, Mapping):
+        return False
+    source_id = ref_dict.get("source_id")
+    result_hash = ref_dict.get("result_hash")
+    if not isinstance(source_id, str) or not source_id.strip():
+        return False
+    if not isinstance(result_hash, str) or not result_hash.strip():
+        return False
+    norm_hash = _normalize_digest_hex(result_hash)
+    if not _is_valid_sha3_hex(norm_hash):
+        return False
+    if "result_count" in ref_dict and ref_dict["result_count"] is not None:
+        rc = ref_dict["result_count"]
+        if isinstance(rc, bool) or not isinstance(rc, int) or rc < 0:
+            return False
+    for hash_key in ("selector_hash", "query_or_operation_hash"):
+        if hash_key in ref_dict and ref_dict[hash_key] is not None:
+            hv = ref_dict[hash_key]
+            if not isinstance(hv, str) or not hv.strip():
+                return False
+
+    verified_by_content = False
+    if "sampled_result" in ref_dict and ref_dict["sampled_result"] is not None:
+        try:
+            recomputed = compute_evidence_reference_digest(ref_dict["sampled_result"])
+        except Exception:
+            return False
+        if recomputed.lower() != norm_hash.lower():
+            return False
+        verified_by_content = True
+
+    scope = ref_dict.get("scope")
+    if scope is not None and not isinstance(scope, str):
+        return False
+    verified_by_index = False
+    if reference_hashes is not None:
+        scope = scope or ""
+        source_ref = f"{source_id}#{scope}"
+        expected = reference_hashes.get(canonical_json_dumps([source_id, scope, norm_hash.lower()]))
+        if expected is None:
+            expected = reference_hashes.get(source_ref)
+        if not scope and expected is None:
+            expected = reference_hashes.get(source_id)
+        if not isinstance(expected, str) or not expected.strip():
+            return False
+        if _normalize_digest_hex(expected).lower() != norm_hash.lower():
+            return False
+        verified_by_index = True
+
+    return verified_by_content or verified_by_index
+
+
+def _iter_evidence_references(value: Any, path: str = ""):
+    """Visit both reference aliases independently, including nested carrier results."""
+    if isinstance(value, Mapping):
+        for key, child in value.items():
+            child_path = f"{path}.{key}" if path else str(key)
+            if key in ("evidence_reference", "reference"):
+                if child is not None:
+                    yield child_path, child
+            elif isinstance(child, (Mapping, list, tuple)):
+                yield from _iter_evidence_references(child, child_path)
+    elif isinstance(value, (list, tuple)):
+        for index, child in enumerate(value):
+            yield from _iter_evidence_references(child, f"{path}[{index}]")
+
+
+_REFERENCE_CARRIERS = frozenset(
+    {"run_end", "verification_decision", "session_decision", "evaluator_finalization"}
+)
+
+
+def index_evidence_references(
+    events_with_lines: Sequence[tuple[dict[str, Any], str] | dict[str, Any]],
+) -> dict[str, str]:
+    """Index content recomputed from recorded observations, never carrier declarations.
+
+    Multiple observations of one scope may have different results; each digest
+    is its own anchor. Canonical tuple keys prevent URI delimiter collisions.
+    """
+    index: dict[str, str] = {}
+    for item in events_with_lines:
+        event = item[0] if isinstance(item, tuple) else item
+        if not isinstance(event, Mapping) or event.get("event") in _REFERENCE_CARRIERS:
+            continue
+        for _, candidate in _iter_evidence_references(event):
+            ref = candidate.to_dict() if hasattr(candidate, "to_dict") else candidate
+            if not isinstance(ref, Mapping) or ref.get("sampled_result") is None:
+                continue
+            if not verify_evidence_reference(ref):
+                continue
+            digest = compute_evidence_reference_digest(ref["sampled_result"])
+            key = canonical_json_dumps([ref["source_id"], ref.get("scope") or "", digest])
+            index[key] = digest
+    return index
+
+
+def verify_trace_evidence_references(
+    events_with_lines: Sequence[tuple[dict[str, Any], str] | dict[str, Any]],
+    *,
+    executed_oracle_results: Sequence[Mapping[str, Any]] | None = None,
+    reference_hashes: Mapping[str, str] | None = None,
+) -> list[str]:
+    """Resolve every trace/package reference against independently hashed observations.
+
+    A self-consistent sample in a terminal or packaged assertion cannot establish
+    its own source. Carrier fields are scanned even when excluded from graph roots.
+    """
+    failures: list[str] = []
+    anchors = dict(reference_hashes or {})
+    anchors.update(index_evidence_references(events_with_lines))
+    records = []
+    for index, item in enumerate(events_with_lines, start=1):
+        event = item[0] if isinstance(item, tuple) else item
+        records.append((f"trace event #{index}", event))
+    records.append(("packaged oracles", executed_oracle_results or []))
+    for location, record in records:
+        for path, ref in _iter_evidence_references(record):
+            if not verify_evidence_reference(ref, reference_hashes=anchors):
+                failures.append(
+                    f"EvidenceReferenceVerificationFailed: invalid or unverified "
+                    f"evidence reference at {location}.{path}"
+                )
+    return failures
+
+
 def link_assertion(
     assertion: dict[str, Any],
     seq_index: dict[int, str],
     fallback_seq: int | None = None,
     artifact_hashes: dict[str, str] | None = None,
+    reference_hashes: Mapping[str, str] | None = None,
 ) -> dict[str, Any]:
     """
     Attaches evidentiary provenance to one assertion row.
@@ -207,10 +370,14 @@ def link_assertion(
     elif "actual_after" in assertion:
         node["actual"] = assertion["actual_after"]
 
-    ref = assertion.get("evidence_reference") or assertion.get("reference")
-    if ref:
+    ref = assertion.get("evidence_reference")
+    if ref is None:
+        ref = assertion.get("reference")
+    artifact_name = assertion.get("artifact")
+    explicit_seq = assertion.get("event_seq", assertion.get("_seq"))
+    if ref is not None:
         ref_dict = ref.to_dict() if hasattr(ref, "to_dict") else ref
-        if isinstance(ref_dict, dict) and "result_hash" in ref_dict and "source_id" in ref_dict:
+        if verify_evidence_reference(ref_dict, reference_hashes=reference_hashes):
             node.update(
                 {
                     "source_type": "evidence_reference",
@@ -223,9 +390,7 @@ def link_assertion(
             )
             node["row_hash"] = _sha3_hex(canonical_json_encode({**node, "assertion": assertion}))
             return node
-
-    artifact_name = assertion.get("artifact")
-    if artifact_name and artifact_hashes and artifact_name in artifact_hashes:
+    elif artifact_name and artifact_hashes and artifact_name in artifact_hashes:
         node.update(
             {
                 "source_type": "artifact",
@@ -237,9 +402,7 @@ def link_assertion(
         )
         node["row_hash"] = _sha3_hex(canonical_json_encode({**node, "assertion": assertion}))
         return node
-
-    explicit_seq = assertion.get("event_seq", assertion.get("_seq"))
-    if isinstance(explicit_seq, int) and explicit_seq in seq_index:
+    elif isinstance(explicit_seq, int) and explicit_seq in seq_index:
         node.update(
             {
                 "source_type": "trace_event",
@@ -251,8 +414,7 @@ def link_assertion(
         )
         node["row_hash"] = _sha3_hex(canonical_json_encode({**node, "assertion": assertion}))
         return node
-
-    if isinstance(fallback_seq, int) and fallback_seq in seq_index:
+    elif isinstance(fallback_seq, int) and fallback_seq in seq_index:
         node.update(
             {
                 "source_type": "carrier_fallback",
@@ -295,8 +457,15 @@ def build_evidence_graph(
     """
     seq_index = index_events_by_seq(events_with_lines)
 
+    reference_index = index_evidence_references(events_with_lines)
     nodes = [
-        link_assertion(a, seq_index, fallback_seq=carrier_seq, artifact_hashes=artifact_hashes)
+        link_assertion(
+            a,
+            seq_index,
+            fallback_seq=carrier_seq,
+            artifact_hashes=artifact_hashes,
+            reference_hashes=reference_index,
+        )
         for a in assertions
     ]
 
@@ -587,7 +756,11 @@ __all__ = [
     "build_evidence_graph",
     "build_evidence_graph_from_events",
     "compute_evidence_graph_root",
+    "compute_evidence_reference_digest",
     "hash_source_line",
     "index_events_by_seq",
+    "index_evidence_references",
     "link_assertion",
+    "verify_evidence_reference",
+    "verify_trace_evidence_references",
 ]

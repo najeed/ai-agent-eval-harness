@@ -800,13 +800,16 @@ async def test_session_hitl_interactive(base_scenario, tmp_path, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_session_hitl_non_interactive(base_scenario, tmp_path, monkeypatch):
+    from eval_runner.run_lifecycle import RunSuspendedForApproval
+
     session = SessionManager("test_run", base_scenario, log_root=tmp_path)
     agent_resp = {"prompt": "Confirm?"}
     monkeypatch.setenv("CI", "false")
 
     with patch("sys.stdin.isatty", return_value=False):
-        res = await session._handle_hitl(1, agent_resp, [], {}, MagicMock())
-        assert "non-interactive" in res
+        with pytest.raises(RunSuspendedForApproval) as exc_info:
+            await session._handle_hitl(1, agent_resp, [], {}, MagicMock())
+        assert exc_info.value.prompt == "Confirm?"
 
 
 def test_get_last_env_message(base_scenario, tmp_path):
@@ -1762,7 +1765,7 @@ async def test_session_hitl_non_interactive_approval_and_rejection(
     run_store = LocalFileRunStore(tmp_path / "runs")
     run_store.create_run("test_run", base_scenario["id"])
     session = SessionManager("test_run", base_scenario, log_root=tmp_path, run_store=run_store)
-    monkeypatch.setenv("FORCE_HITL_SUSPEND", "1")
+    monkeypatch.setenv("AGENTV_TEST_NON_DURABLE_HITL", "1")
     monkeypatch.delenv("CI", raising=False)
 
     turn_ctx = MagicMock(task_id="task_1")
@@ -3282,7 +3285,7 @@ async def test_session_teardown_and_external_receipts_edge_cases(tmp_path):
 async def test_session_hitl_cli_suspension_and_empty_response(tmp_path, monkeypatch):
     sess = _session_with_local_providers(tmp_path, "run_hitl_cli", {"id": "s_h"})
 
-    monkeypatch.setenv("FORCE_HITL_SUSPEND", "1")
+    monkeypatch.setenv("AGENTV_TEST_NON_DURABLE_HITL", "1")
     monkeypatch.delenv("CI", raising=False)
     turn_ctx = MagicMock(task_id="task_1")
 
@@ -3970,9 +3973,12 @@ async def test_session_hitl_resumption_token_mismatched_task_and_duration_fallba
         mock_store_getter.return_value = mock_store
 
         # With turn_ctx without start_time
+        from eval_runner.run_lifecycle import RunSuspendedForApproval
+
         ctx_no_start = MagicMock(spec=[])
-        resp = await sess._handle_hitl(1, {"prompt": "Prompt 1"}, [], {}, ctx_no_start)
-        assert "[HITL_UNRESOLVED]" in resp or "Skipped" in resp
+        with pytest.raises(RunSuspendedForApproval) as exc_info:
+            await sess._handle_hitl(1, {"prompt": "Prompt 1"}, [], {}, ctx_no_start)
+        assert exc_info.value.prompt == "Prompt 1"
 
     # 2. res_req approved but task_id doesn't match
     mock_req_mismatch = MagicMock(status="APPROVED", metadata={"task_id": "other_task"})
@@ -3983,10 +3989,11 @@ async def test_session_hitl_resumption_token_mismatched_task_and_duration_fallba
         mock_store.get_request.return_value = mock_req_mismatch
         mock_store_getter.return_value = mock_store
 
-        resp = await sess._handle_hitl(
-            1, {"prompt": "Prompt 2"}, [], {}, MagicMock(task_id="this_task")
-        )
-        assert "[HITL_UNRESOLVED]" in resp or "Skipped" in resp
+        with pytest.raises(RunSuspendedForApproval) as exc_info2:
+            await sess._handle_hitl(
+                1, {"prompt": "Prompt 2"}, [], {}, MagicMock(task_id="this_task")
+            )
+        assert exc_info2.value.prompt == "Prompt 2"
 
     # 3. res_req approved, task_id matches, but decided_at is None (created_at fallback)
     mock_req_created_only = MagicMock(

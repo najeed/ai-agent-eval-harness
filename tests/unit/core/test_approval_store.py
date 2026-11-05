@@ -1039,3 +1039,54 @@ class TestHitlResumeCliHandler:
                 store=None,
             )
             assert await handle_hitl_resume(args) == 1
+
+
+def test_get_request_skips_orphan_token_files_during_fallback(tmp_path: Path):
+    import json
+
+    store = FileApprovalStore(base_dir=tmp_path)
+    # Fast path looks for token_target_tok.json, which does not exist.
+    # Write a token file that has approval_token 'target_tok', but named 'token_other.json'
+    orphan = tmp_path / "token_other.json"
+    orphan.write_text(
+        json.dumps(
+            {
+                "approval_token": "target_tok",
+                "run_id": "orphan_run",
+                "turn_index": 1,
+                "status": "PENDING",
+                "prompt": "Orphan action",
+            }
+        )
+    )
+    # Fallback scan must skip token_other.json because it starts with token_!
+    assert store.get_request("target_tok") is None
+
+
+@pytest.mark.parametrize("store_cls", [FileApprovalStore, SQLiteApprovalStore])
+def test_system_scope_can_resolve_legacy_unscoped_request(tmp_path: Path, store_cls):
+    from agentv_runtime.scope import ScopeToken
+
+    store = (
+        FileApprovalStore(base_dir=tmp_path / "file_store")
+        if store_cls is FileApprovalStore
+        else SQLiteApprovalStore(db_path=str(tmp_path / "test.db"))
+    )
+    req = ApprovalRequest(
+        approval_token="tok_legacy_sys",
+        run_id="run_leg",
+        turn_index=1,
+        status="PENDING",
+        prompt="Legacy prompt",
+        scope={},
+        scope_digest="",
+    )
+    store.create_request(req)
+    system_scope = ScopeToken(tags={}, digest="", is_system=True)
+    resolved = store.resolve_request(
+        approval_token="tok_legacy_sys",
+        decision="APPROVED",
+        decided_by="admin@system",
+        scope=system_scope,
+    )
+    assert resolved.status == "APPROVED"

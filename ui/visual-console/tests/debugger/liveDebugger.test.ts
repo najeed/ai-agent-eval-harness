@@ -10,6 +10,8 @@ import assert from 'node:assert/strict';
 
 import {
   buildTraceGraph,
+  normalizeRunStatus,
+  reduceRunLifecycle,
   getGraphNodeDimensions,
   buildWaterfall,
   computeTelemetryDiagnostics,
@@ -782,4 +784,21 @@ test('buildTraceGraph retains completed status for HITL node after resumption an
   assert.equal(wfRow.splitDuration!.preMs, 40);
   assert.equal(wfRow.splitDuration!.waitMs, 93000);
   assert.equal(wfRow.splitDuration!.postMs, 560);
+});
+
+
+test('lifecycle reduction supersedes pauses in evidence order and never guesses unknown outcomes', () => {
+  let state = { status: 'IDLE', sequence: 0 };
+  state = reduceRunLifecycle(state, { event: 'hitl_pause', _seq: 39 });
+  assert.equal(state.status, 'PAUSED_FOR_APPROVAL');
+  state = reduceRunLifecycle(state, { event: 'run_start', _seq: 40 });
+  assert.equal(state.status, 'RUNNING');
+  state = reduceRunLifecycle(state, { event: 'hitl_pause', _seq: 39 });
+  assert.equal(state.status, 'RUNNING');
+  state = reduceRunLifecycle(state, { event: 'run_end', _seq: 74, status: 'success' });
+  assert.equal(state.status, 'COMPLETED');
+  assert.equal(reduceRunLifecycle(state, { event: 'hitl_pause', _seq: 80 }), state);
+  assert.equal(normalizeRunStatus('canceled'), 'CANCELLED');
+  assert.equal(normalizeRunStatus('unrecognized'), 'UNRECOGNIZED');
+  assert.equal(reduceRunLifecycle({ status: 'RUNNING', sequence: 1 }, { event: 'run_end', _seq: 2 }).status, 'UNKNOWN');
 });

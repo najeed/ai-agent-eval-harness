@@ -305,6 +305,21 @@ def download_run_report_pdf(run_id: str):
     if isinstance(candidate, dict):
         execution_manifest = candidate
 
+    verif_status = str(summary.get("verification_status") or "").upper()
+    status_val = str(summary.get("status") or "").upper()
+    is_passed = verif_status in {"VERIFIED", "CERTIFIED_PASS", "CERTIFIED"} or (
+        status_val in {"CERTIFIED", "PASSED"}
+        and verif_status not in {"ATTESTED_FAIL", "FAILED", "FAILED_VERIFICATION", "POLICY_BREACH"}
+    )
+
+    events = store.get_events(run_id, offset=0, limit=10_000, context=context) or []
+    analysis = {}
+    if events and not is_passed:
+        try:
+            analysis = explain_events(events)
+        except Exception as e:
+            logger.debug("Failed explaining events for run report %s: %s", run_id, e)
+
     report_data = {
         **summary,
         "run_id": run_id,
@@ -314,10 +329,12 @@ def download_run_report_pdf(run_id: str):
             or summary.get("scenario_id")
             or run_id
         ),
-        "passed": summary["status"] in {"CERTIFIED", "SEALED", "PASSED"},
+        "passed": is_passed,
         "has_certificate": summary["has_certificate"],
-        "is_certified": summary["status"] == "CERTIFIED",
+        "is_certified": status_val == "CERTIFIED" and is_passed,
         "verification_status": summary["verification_status"],
+        "analysis": analysis,
+        "events": events,
         **resolve_artifact_scope(manifest_data),
     }
 
@@ -404,11 +421,21 @@ def get_run_status(run_id):
         else:
             status = raw_status
         scenario = manifest.get("scenario_data") or run.get("scenario_data")
+        evidence_nodes = 0
+        try:
+            from agentv_runtime.evidence_graph import build_evidence_graph_from_events
+
+            ev_graph = build_evidence_graph_from_events(events)
+            evidence_nodes = ev_graph.get("total_nodes", 0)
+        except Exception:
+            evidence_nodes = 0
         return jsonify(
             {
                 "run_id": run_id,
                 "status": status,
                 "size": event_count,
+                "evidence_nodes": evidence_nodes,
+                "can_certify": evidence_nodes > 0,
                 "mtime": run.get("updated_at") or run.get("created_at"),
                 "has_certificate": bool(
                     manifest.get("verification_package")

@@ -47,12 +47,12 @@ class EvaluatorFinalizationRecord:
     finalized_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     terminal_seq: int = 0
     finalization_hash: str = ""
-    evaluator_signature: str | dict[str, Any] = ""
+    evaluator_signature: dict[str, Any] | None = None
     schema_version: str = FINALIZATION_SCHEMA_VERSION
     metadata: dict[str, Any] = field(default_factory=dict)
 
     @property
-    def signature(self) -> str | dict[str, Any]:
+    def signature(self) -> dict[str, Any] | None:
         """Convenience alias for evaluator_signature."""
         return self.evaluator_signature
 
@@ -300,14 +300,33 @@ class EvaluatorFinalizationRecord:
             )
 
         payload_bytes = self.canonical_payload_bytes()
+        from agentv_runtime.signatures import (
+            FINALIZATION,
+            sign_digest_envelope,
+            validate_signing_response,
+        )
+
+        pub_key = None
         if hasattr(signer, "sign") and callable(signer.sign):
-            sig_raw = signer.sign(payload_bytes)
+            if hasattr(signer, "public_key") and callable(signer.public_key):
+                pub_key = signer.public_key()
+                sig_raw = sign_digest_envelope(
+                    payload_bytes,
+                    signer,
+                    identity=self.evaluator_identity,
+                    purpose=FINALIZATION,
+                )
+            else:
+                sig_raw = signer.sign(payload_bytes)
         elif hasattr(signer, "sign_payload") and callable(signer.sign_payload):
             # Signing backends may hold non-exportable KMS/HSM key material.
             # Pass the evaluator identity as the opaque key selector rather
             # than resolving a PEM key in the runtime process.
-            from agentv_runtime.signatures import FINALIZATION
-
+            if hasattr(signer, "get_public_key") and callable(signer.get_public_key):
+                try:
+                    pub_key = signer.get_public_key(self.evaluator_identity)
+                except Exception:
+                    pub_key = None
             sig_raw = signer.sign_payload(
                 payload_bytes, self.evaluator_identity, purpose=FINALIZATION
             )
@@ -317,10 +336,13 @@ class EvaluatorFinalizationRecord:
         sig_hex = sig_raw.hex() if isinstance(sig_raw, bytes) else sig_raw
         if not sig_hex:
             raise ValueError("Signing backend returned an empty finalization signature")
-        from agentv_runtime.signatures import FINALIZATION, validate_signing_response
 
         sig_hex = validate_signing_response(
-            payload_bytes, sig_hex, identity=self.evaluator_identity, purpose=FINALIZATION
+            payload_bytes,
+            sig_hex,
+            identity=self.evaluator_identity,
+            purpose=FINALIZATION,
+            public_key=pub_key,
         )
         data = asdict(self)
         data["finalization_hash"] = self.compute_finalization_hash()

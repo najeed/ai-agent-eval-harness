@@ -125,7 +125,7 @@ def _serialize_number(val: int | float) -> str:
     return sign + res
 
 
-def canonical_json_dumps(obj: Any) -> str:
+def canonical_json_dumps(obj: Any, seen: set[int] | None = None) -> str:
     """
     Serializes a JSON-compatible Python object to an RFC 8785 canonical string.
     Keys are sorted by UTF-16 code units and formatted with zero superfluous whitespace.
@@ -138,27 +138,39 @@ def canonical_json_dumps(obj: Any) -> str:
         return _serialize_number(obj)
     if isinstance(obj, str):
         return _escape_string(obj)
-    if isinstance(obj, (list, tuple)) and not isinstance(obj, (bytes, bytearray)):
-        inner = ",".join(canonical_json_dumps(item) for item in obj)
-        return f"[{inner}]"
-    if isinstance(obj, Mapping):
-        # RFC 8785 property ordering: UTF-16 code unit lexicographical order
-        def _utf16_key(k: Any) -> bytes:
-            if not isinstance(k, str):
-                msg = f"RFC 8785 error: object keys must be strings, got {type(k).__name__}"
-                raise TypeError(msg)
-            return k.encode("utf-16-be")
 
-        sorted_keys = sorted(obj.keys(), key=_utf16_key)
-        pairs: list[str] = []
-        for k in sorted_keys:
-            k_escaped = _escape_string(k)
-            v_serialized = canonical_json_dumps(obj[k])
-            pairs.append(f"{k_escaped}:{v_serialized}")
-        return "{" + ",".join(pairs) + "}"
+    if seen is None:
+        seen = set()
+    obj_id = id(obj)
+    if obj_id in seen:
+        raise ValueError(
+            f"RFC 8785 circular reference detected for object of type {type(obj).__name__}"
+        )
+    seen.add(obj_id)
+    try:
+        if isinstance(obj, (list, tuple)) and not isinstance(obj, (bytes, bytearray)):
+            inner = ",".join(canonical_json_dumps(item, seen) for item in obj)
+            return f"[{inner}]"
+        if isinstance(obj, Mapping):
+            # RFC 8785 property ordering: UTF-16 code unit lexicographical order
+            def _utf16_key(k: Any) -> bytes:
+                if not isinstance(k, str):
+                    msg = f"RFC 8785 error: object keys must be strings, got {type(k).__name__}"
+                    raise TypeError(msg)
+                return k.encode("utf-16-be")
 
-    if hasattr(obj, "to_dict") and callable(obj.to_dict):
-        return canonical_json_dumps(obj.to_dict())
+            sorted_keys = sorted(obj.keys(), key=_utf16_key)
+            pairs: list[str] = []
+            for k in sorted_keys:
+                k_escaped = _escape_string(k)
+                v_serialized = canonical_json_dumps(obj[k], seen)
+                pairs.append(f"{k_escaped}:{v_serialized}")
+            return "{" + ",".join(pairs) + "}"
+
+        if hasattr(type(obj), "to_dict") and callable(obj.to_dict):
+            return canonical_json_dumps(obj.to_dict(), seen)
+    finally:
+        seen.remove(obj_id)
 
     raise TypeError(f"RFC 8785 unsupported type: {type(obj).__name__}")
 

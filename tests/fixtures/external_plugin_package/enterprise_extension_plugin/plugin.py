@@ -153,11 +153,16 @@ class EnterprisePolicyEvaluator(PolicyEvaluator):
 class EnterpriseSigningBackend(SigningBackend):
     def __init__(self):
         self.signed_payloads = []
+        from eval_runner.reference.signing import LocalEd25519SigningBackend
+
+        self._local = LocalEd25519SigningBackend()
 
     def sign_payload(
         self, payload: bytes, key_identifier: str | Path | Any = None, **kwargs: Any
-    ) -> str:
+    ) -> str | dict[str, Any]:
         self.signed_payloads.append(payload)
+        if kwargs.get("purpose"):
+            return self._local.sign_payload(payload, key_identifier, **kwargs)
         sig = hashlib.sha512(payload + b"::enterprise-kms-key").hexdigest()
         return sig
 
@@ -168,6 +173,8 @@ class EnterpriseSigningBackend(SigningBackend):
         public_key_identifier: str | Path | Any = None,
         **kwargs: Any,
     ) -> bool:
+        if isinstance(signature, dict) or kwargs.get("purpose"):
+            return self._local.verify_signature(payload, signature, public_key_identifier, **kwargs)
         expected = hashlib.sha512(payload + b"::enterprise-kms-key").hexdigest()
         return signature == expected
 

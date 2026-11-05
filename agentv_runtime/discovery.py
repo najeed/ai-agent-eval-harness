@@ -32,6 +32,7 @@ def resolve_extension(  # noqa: UP047
     explicit: T | None = None,
     env_var: str | None = None,
     default_factory: Callable[[], T],
+    fail_closed: bool = False,
 ) -> T:
     """
     Resolves an extension instance for a given family in strict priority order:
@@ -68,6 +69,8 @@ def resolve_extension(  # noqa: UP047
                         continue
                 discovered[ep.name] = ep
         except Exception as exc:
+            if fail_closed:
+                raise RuntimeError(f"Unable to discover {family} providers") from exc
             logger.warning("Failed to enumerate entry points for '%s': %s", entry_point_group, exc)
 
         instance: T | None = None
@@ -93,6 +96,8 @@ def resolve_extension(  # noqa: UP047
                 instance = provider_cls()
                 logger.info("Using default registered %s provider", family)
             except Exception as exc:
+                if fail_closed:
+                    raise RuntimeError(f"Default {family} provider failed to load") from exc
                 logger.warning("Failed to load default registered %s provider: %s", family, exc)
 
         if instance is None and len(discovered) == 1:
@@ -102,6 +107,8 @@ def resolve_extension(  # noqa: UP047
                 instance = provider_cls()
                 logger.info("Auto-bound single registered %s provider '%s'", family, name)
             except Exception as exc:
+                if fail_closed:
+                    raise RuntimeError(f"Registered {family} provider failed to load") from exc
                 logger.warning(
                     "Failed to load single registered %s provider '%s': %s", family, name, exc
                 )
@@ -110,6 +117,8 @@ def resolve_extension(  # noqa: UP047
             _extension_registry[family] = instance
             return instance
 
+        if fail_closed and discovered:
+            raise RuntimeError(f"No authoritative {family} provider selected")
         return default_factory()
 
 
