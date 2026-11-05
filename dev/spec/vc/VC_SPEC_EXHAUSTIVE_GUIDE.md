@@ -37,9 +37,9 @@ Additive field committing to the Merkle root hash of the decision's complete ass
 
 ---
 
-## Lesson 2: The Provenance Chain (Ed25519 & Post-Quantum Multi-Sig)
+## Lesson 2: The Provenance Chain (Digest Envelopes & Post-Quantum Multi-Sig)
 
-AgentV supports **Ed25519** (RFC 8032) and **ML-DSA-65** (NIST FIPS 204 Post-Quantum Cryptography). This provides high-throughput signing with quantum-resistant long-term non-repudiation for regulatory audit archives.
+AgentV enforces modern **Digest Signature Envelopes** (`agentv.signature.digest-envelope.v1`) for classical Ed25519 signing (RFC 8032) alongside optional **ML-DSA-65** (NIST FIPS 204 Post-Quantum Cryptography). This provides high-throughput signing with quantum-resistant long-term non-repudiation for regulatory audit archives without raw signature ambiguities.
 
 ### 1. Signature Schema
 The `provenance_chain` is an array of signature objects:
@@ -47,13 +47,19 @@ The `provenance_chain` is an array of signature objects:
 | :--- | :--- | :--- |
 | `identity` | String | The ID of the signer (resolved via `IdentityService` or KMS/HSM). |
 | `timestamp` | Date-Time | The ISO-8601 moment the signature was generated. |
-| `signature` | String | The hex-encoded Ed25519 or ML-DSA digital signature. |
-| `role` | Enum | The stakeholder's authority level: `Agent`, `Evaluator`, `Auditor`. |
+| `signature` | Object / String | For Ed25519: complete `agentv.signature.digest-envelope.v1` envelope object (`profile`, `envelope`, `signature`). For ML-DSA-65: raw PQC signature string. |
+| `role` | Enum | The stakeholder's authority level: `Agent`, `Evaluator`, `Auditor`, `PQC-Evaluator`. |
+| `algorithm` | String | Primitive cryptographic algorithm: `ED25519` or `ML-DSA-65`. |
+| `signature_profile` | String | Optional profile binding matching `profile` (`agentv.signature.digest-envelope.v1`). |
 
-### 2. Multi-Party Signing Lifecycle
-1. **Stage 1: Evaluator Attestation**: The runtime certification pipeline (`TraceVerifier.sign_trace`) signs the VC as the `Evaluator`.
+### 2. Envelope Non-Repudiation Architecture
+Under the Digest Signature Envelope specification (`spec/signatures/SIGNATURES_SPEC_EXHAUSTIVE_GUIDE.md`), signing backends return the complete versioned response and Core preserves that object in certificate provenance. It does not flatten a versioned response into a raw hex or base64 string. The envelope binds the canonical certificate digest (`payload_digest`), signing semantics, public key fingerprint, key ID, and purpose (`agentv.certificate`), preventing signature reuse across distinct artifacts or execution contexts.
+
+### 3. Multi-Party Signing Lifecycle
+1. **Stage 1: Evaluator Attestation**: The runtime certification pipeline (`TraceVerifier.sign_trace`) signs the VC as the `Evaluator` using `LocalEd25519SigningBackend` or a KMS-backed provider, generating a valid envelope.
 2. **Stage 2: Agent Non-Repudiation**: The evaluated autonomous agent signs the VC with its key to cryptographically commit to the recorded trajectory.
 3. **Stage 3: Auditor Verification**: In regulated fintech, aerospace, or clinical scenarios, an independent auditor appends a third signature after completing forensic verification.
+4. **Stage 4: Post-Quantum Extension**: When PQC is active, a hybrid ML-DSA-65 signature is appended under `role="PQC-Evaluator"`.
 
 ---
 

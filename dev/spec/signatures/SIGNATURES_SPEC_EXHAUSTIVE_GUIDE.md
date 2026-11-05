@@ -235,7 +235,7 @@ The response signature is exactly 64 Ed25519 bytes encoded as padded RFC 4648 ba
 3. Re-encode and require equality with the supplied string, rejecting alternate encodings and nonzero padding bits.
 4. Verify those bytes against the canonical envelope and external Ed25519 key.
 
-Hexadecimal is the legacy RAW signature encoding and the Core RAW backend interface encoding; it is not the v1 structured-result encoding. Do not interchange them by guessing from length.
+Hexadecimal is the Core low-level RAW backend interface encoding; it is not the v1 structured-result encoding. Do not interchange them by guessing from length.
 
 ## 8. Immutable Key Identity and External Trust
 
@@ -248,7 +248,7 @@ V1 supports these key-identity forms:
 
 Mutable aliases such as `alias/production`, alias ARNs, or a bare human-readable key nickname are not v1 immutable key identities. Resolve an alias during trusted discovery and pin the resulting key ARN and public key together.
 
-The external policy binds the logical signer identity to the immutable key identity, public key, permitted purposes/profiles, legacy policy, revocation state, and validity interval. The verifier recomputes the fingerprint from that external public key and compares it with the signed value. A signed fingerprint cannot bootstrap trust in an attacker-supplied key.
+The external policy binds the logical signer identity to the immutable key identity, public key, permitted purposes/profiles, revocation state, and validity interval. The verifier recomputes the fingerprint from that external public key and compares it with the signed value. A signed fingerprint cannot bootstrap trust in an attacker-supplied key.
 
 ### 8.1 File-backed Policy
 
@@ -267,7 +267,6 @@ Example policy, independently provisioned by the trust-store operator:
   "key_id": "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012",
   "permitted_profiles": ["agentv.signature.digest-envelope.v1"],
   "permitted_purposes": ["agentv.certificate", "agentv.verification-package"],
-  "allow_legacy_raw": false,
   "revoked": false,
   "not_before": "2026-10-30T00:00:00+00:00"
 }
@@ -275,7 +274,7 @@ Example policy, independently provisioned by the trust-store operator:
 
 `not_before` and `not_after` are optional, timezone-aware timestamps. Unknown policy fields, unsupported purpose/profile names, duplicate list entries, and malformed field types fail policy loading. Identity paths must remain inside the configured trust root.
 
-When no policy file exists, the defined default policy uses the external public-key fingerprint as key identity and permits v1 plus existing `ed25519-raw` evidence for the supported purposes. This compatibility default is explicit policy behavior, not proof that a deployment has adopted a hardware-only policy. KMS ARN bindings require explicit external configuration.
+When no policy file exists, the default policy uses the external public-key fingerprint as key identity and permits only `agentv.signature.digest-envelope.v1` for the supported purposes. KMS ARN bindings require explicit external configuration.
 
 ### 8.2 Resolver-backed Policy
 
@@ -289,7 +288,7 @@ Public profile helpers accept an Ed25519 public-key object or PEM public-key byt
 
 An alias rotating between discovery and signing must not change the pinned key silently. A response from another key fails signature verification, key-ID reconciliation, or fingerprint reconciliation.
 
-Current v1 policy checks apply at **verification time**. Revoked, expired, not-yet-valid, or disallowed keys fail, including in the legacy path. This profile does not define a trusted timestamp service or historical key-validity proof. Retaining old evidence does not imply accepting it after revocation or expiry. Historical acceptance requires an explicit external archival/trusted-time policy; an unsigned timestamp is insufficient.
+Current v1 policy checks apply at **verification time**. Revoked, expired, not-yet-valid, or disallowed keys fail. This profile does not define a trusted timestamp service or historical key-validity proof. Retaining old evidence does not imply accepting it after revocation or expiry. Historical acceptance requires an explicit external archival/trusted-time policy; an unsigned timestamp is insufficient.
 
 ## 9. Signing Provider Contract
 
@@ -362,9 +361,9 @@ The acceptance reviewer [`offline_digest_reviewer.py`](../../tests/acceptance/su
 
 ## 12. Compatibility and Downgrade Prevention
 
-Existing raw Ed25519 evidence signs the original canonical artifact projection directly and uses hexadecimal signatures. It is accepted only through the separately authorized `ed25519-raw` policy path with `allow_legacy_raw` enabled. Known historical raw transport wrappers are legacy representations, not v1 envelopes or permission to discard a failed envelope.
+Raw hexadecimal Ed25519 artifact signatures and unversioned transport wrappers are rejected. Certificates, verification packages, and evaluator finalizations require `agentv.signature.digest-envelope.v1`, including when signed locally or with a directly supplied Ed25519 private key.
 
-Set `allow_legacy_raw: false` and omit `ed25519-raw` from `permitted_profiles` to enforce an envelope-only deployment. Retain legacy allowances only where the external trust policy deliberately permits them.
+The former `allow_legacy_raw` field and `ed25519-raw` profile are unsupported. Remove them from existing external policy files; unknown policy fields fail closed. The low-level RAW signer remains available beneath `DigestEnvelopeSigningBackend` and signs canonical envelope bytes, rather than serving as an alternate artifact verification path.
 
 The verifier does not guess algorithms, reinterpret an envelope signature as Ed25519ph, or try the original payload after an envelope failure. Unknown profiles and malformed versioned objects remain rejected. A valid signature on canonical envelope bytes cannot verify as a legacy signature on different artifact bytes.
 
@@ -435,7 +434,7 @@ These are technical acceptance requirements. Local successes do not constitute r
 | SIG-08 | Unknown/missing profile, unsupported version, extra fields, aliases, malformed results, bad encoding/length, and missing bindings fail without downgrade |
 | SIG-09 | Ed25519ph, RAW/DIGEST interchange, and original-payload mislabeling fail |
 | SIG-10 | Independent signature-byte and signed-envelope corruption fails cryptographic verification |
-| SIG-11 | Known legacy raw evidence verifies only when permitted; invalid legacy signatures and rejected envelopes fail |
+| SIG-11 | Raw hexadecimal artifact signatures and rejected envelopes fail without downgrade |
 | SIG-12 | Every provider failure class fails certification in each signing branch, without successful publication/sealing or local fallback |
 | SIG-13 | Complete envelope/profile survives manifest and package serialization, publication, transport, reload, and independent verification |
 | SIG-14 | Configured hardware signing never consults available local private key material on failure |

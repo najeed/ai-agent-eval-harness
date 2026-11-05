@@ -98,15 +98,51 @@
             "format": "date-time"
           },
           "signature": {
-            "type": "string"
+            "oneOf": [
+              {
+                "type": "object",
+                "description": "AgentV versioned digest signature envelope conforming to agentv.signature.digest-envelope.v1",
+                "required": [
+                  "profile",
+                  "envelope",
+                  "signature"
+                ],
+                "properties": {
+                  "profile": {
+                    "type": "string",
+                    "const": "agentv.signature.digest-envelope.v1"
+                  },
+                  "envelope": {
+                    "type": "object"
+                  },
+                  "signature": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "type": "string",
+                "description": "Raw post-quantum digital signature (e.g. ML-DSA-65) or external classical anchor"
+              }
+            ]
           },
           "role": {
             "type": "string",
             "enum": [
               "Agent",
               "Evaluator",
-              "Auditor"
+              "Auditor",
+              "PQC-Evaluator"
             ]
+          },
+          "algorithm": {
+            "type": "string"
+          },
+          "signature_profile": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
           }
         }
       }
