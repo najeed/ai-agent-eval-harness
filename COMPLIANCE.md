@@ -17,7 +17,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | Package | Version | License | License File |
 | :--- | :--- | :--- | :--- |
 | **aiohttp** | 3.14.5 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **Authlib** | 1.9.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **Authlib** | 1.9.5 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **certifi** | 2026.10.23 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **cryptography** | 50,<51 | Apache 2.0 / BSD | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **Flask** | 3.1.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
@@ -30,12 +30,12 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **opentelemetry-sdk** | 1.45.2 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **Pillow** | 13.0.0 | HPND | [HPND.txt](LICENSES/HPND.txt) |
 | **psutil** | 7.2.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **pydantic** | 2.14.2 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **pydantic** | 2.14.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **PyJWT** | 2.15.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **python-dotenv** | 1.2.4 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **PyYAML** | 6.0.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **requests** | 2.34.2 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **sqlalchemy** | 2.1.7 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **sqlalchemy** | 2.1.8 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **urllib3** | 2.8.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **Werkzeug** | 3.1.9 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 
@@ -81,18 +81,18 @@ The following tables summarize the licenses of our core dependencies and optiona
 ### 2.6 Optional Ecosystem & Framework Integrations (`pyproject.toml [project.optional-dependencies]`)
 | Package | Version | License | License File |
 | :--- | :--- | :--- | :--- |
-| **ag2** | 1.2.2 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **ag2** | 1.3.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **cyclecore-pq** | 0.3.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **datasets** | 5.1.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **GitPython** | 3.2.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **google-genai** | 2.34.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **langchain** | 1.4.8 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langchain-anthropic** | 1.7.9 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langchain-core** | 1.7.4 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain** | 1.4.9 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-anthropic** | 1.7.10 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-core** | 1.7.6 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-google-genai** | 4.4.2 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **langchain-ollama** | 1.1.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langchain-openai** | 1.7.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langgraph** | 1.2.19 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-openai** | 1.7.4 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langgraph** | 1.2.20 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langserve** | 0.3.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langsmith** | 0.14.17 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **lxml** | 6.1.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
