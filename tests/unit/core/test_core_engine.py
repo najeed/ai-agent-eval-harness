@@ -974,11 +974,15 @@ def test_render_outbound_payload_interpolation_and_hash_binding():
 
     # 5. Fallback on canonical encoding failure
     with patch(
-        "agentv_runtime.canonical.canonical_json_encode", side_effect=Exception("mock fail")
+        "agentv_runtime.canonical.canonical_json_encode", side_effect=TypeError("unsupported value")
     ):
         payload4, hash4 = render_outbound_payload("Fallback test", None, "http")
         assert payload4 == {"task_description": "Fallback test"}
-        assert hash4.startswith("sha3_256:")
+        import hashlib
+        import json
+
+        expected = json.dumps(payload4, sort_keys=True, default=str).encode("utf-8")
+        assert hash4 == f"sha3_256:{hashlib.sha3_256(expected).hexdigest()}"
 
     # 6. OpenAPI protocol with empty or non-dict input_payload
     ctx_empty_openapi = SimpleNamespace(metadata={}, input_payload={})

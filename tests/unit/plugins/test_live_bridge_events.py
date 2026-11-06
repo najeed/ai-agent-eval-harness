@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
+import requests
 
 from eval_runner.live_bridge_plugin import RemoteBridgePlugin
 
@@ -50,7 +51,7 @@ def test_bridge_disables_on_exception(mock_config):
     plugin.active = True
 
     with patch("requests.post") as mock_post:
-        mock_post.side_effect = Exception("Network Down")
+        mock_post.side_effect = requests.ConnectionError("Network Down")
         plugin._post_event("test_event", {})
 
         assert plugin.active is False

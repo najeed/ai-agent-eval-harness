@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 
 from .. import config
@@ -87,6 +88,7 @@ async def calculate_luna_judge_score(
         except ValueError:
             print(f"      [Metrics] [Luna-Judge] Provider returned non-float: '{response_text}'")
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in calculate_luna_judge_score", exc_info=True)
         if isinstance(e, RuntimeError) and "Judge Configuration Error" in str(e):
             raise e
         print(f"      [Metrics] [Luna-Judge] Evaluation failed: {e}")

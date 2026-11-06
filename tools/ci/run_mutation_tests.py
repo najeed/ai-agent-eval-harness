@@ -47,7 +47,8 @@ from pathlib import Path
 from typing import Any
 
 BASE_DIR = Path(__file__).parent.parent.parent
-REPORT_DIR = BASE_DIR / "reports"
+# Local validation can keep all generated evidence in a dedicated temporary directory.
+REPORT_DIR = Path(os.environ.get("AGENTV_MUTATION_OUTPUT_DIR", str(BASE_DIR / "reports")))
 REPORT_PATH = REPORT_DIR / "mutation_scorecard.md"
 BASELINE_CACHE_PATH = REPORT_DIR / "mutation_baseline_cache.json"
 BASELINE_CACHE_VERSION = 2
@@ -267,57 +268,57 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
         },
         excluded_mutations=frozenset(
             {
-                ("sign_trace_bytes", 616, "and", "or"),
-                ("sign_trace_bytes", 616, "evidence_root_hash", "__mutation_missing_commitment__"),
-                ("sign_trace_bytes", 642, "evidence_root_hash", "__mutation_missing_commitment__"),
-                ("sign_trace_bytes", 645, "evidence_root_hash", "__mutation_missing_commitment__"),
-                ("verify_trace_certificate", 1680, "and", "or"),
-                ("verify_trace_certificate", 1688, "and", "or"),
-                ("verify_package_artifacts", 2200, "and", "or"),
-                ("verify_package", 2699, "and", "or"),
-                ("sign_trace_bytes", 862, "or", "and"),
+                ("sign_trace_bytes", 624, "and", "or"),
+                ("sign_trace_bytes", 624, "evidence_root_hash", "__mutation_missing_commitment__"),
+                ("sign_trace_bytes", 650, "evidence_root_hash", "__mutation_missing_commitment__"),
+                ("sign_trace_bytes", 653, "evidence_root_hash", "__mutation_missing_commitment__"),
+                ("verify_trace_certificate", 1797, "and", "or"),
+                ("verify_trace_certificate", 1805, "and", "or"),
+                ("verify_package_artifacts", 2351, "and", "or"),
+                ("verify_package", 2888, "and", "or"),
+                ("sign_trace_bytes", 879, "or", "and"),
             }
         ),
         exclusion_reasons={
-            ("sign_trace_bytes", 862, "or", "and"): (
-                "Provably equivalent redundant guard: CoreTraceSigner.sign (line 175) already "
+            ("sign_trace_bytes", 879, "or", "and"): (
+                "Provably equivalent redundant guard: CoreTraceSigner.sign already "
                 "validates that private_key is not None and has private_bytes for this identity "
-                "before package signing begins. An invalid key aborts at line 175; for any valid "
-                "key reaching line 862 both operands evaluate to False, so 'or' and 'and' produce "
-                "identical behavior."
+                "before package signing begins. An invalid key aborts there; for any valid "
+                "key reaching package signing both operands evaluate to False, so 'or' and 'and' "
+                "produce identical behavior."
             ),
-            ("sign_trace_bytes", 616, "evidence_root_hash", "__mutation_missing_commitment__"): (
+            ("sign_trace_bytes", 624, "evidence_root_hash", "__mutation_missing_commitment__"): (
                 "Equivalent extra-filter trigger: a missing lookup only runs the pure "
                 "fallback when the declared root already matches. The fallback adopts "
                 "only that same declared root, leaving the actual root comparison intact."
             ),
-            ("sign_trace_bytes", 642, "evidence_root_hash", "__mutation_missing_commitment__"): (
+            ("sign_trace_bytes", 650, "evidence_root_hash", "__mutation_missing_commitment__"): (
                 "Equivalent extra-filter fallback assignment: pre-finalization events "
                 "match graph computation; carrier exclusion leaves terminal comparison intact."
             ),
-            ("sign_trace_bytes", 645, "evidence_root_hash", "__mutation_missing_commitment__"): (
+            ("sign_trace_bytes", 653, "evidence_root_hash", "__mutation_missing_commitment__"): (
                 "Non-binding diagnostic lookup used only to format an already-raised "
                 "EvidenceRootMismatchError. The root comparison, signed commitments, "
                 "and successful verification paths are unchanged."
             ),
-            ("sign_trace_bytes", 616, "and", "or"): (
+            ("sign_trace_bytes", 624, "and", "or"): (
                 "Equivalent for supported JSON evidence: extra graph filtering changes the "
                 "stored root only when the filtered root equals the declared root; an "
                 "already-matching root is unchanged, and an absent hint cannot match a hash."
             ),
-            ("verify_trace_certificate", 1680, "and", "or"): (
+            ("verify_trace_certificate", 1797, "and", "or"): (
                 "Equivalent for supported JSON evidence: filtering is an extra fallback; "
                 "its result is adopted only if it matches the expected root already verified."
             ),
-            ("verify_trace_certificate", 1688, "and", "or"): (
+            ("verify_trace_certificate", 1805, "and", "or"): (
                 "Equivalent for supported JSON evidence: the extra fallback only replaces "
                 "the graph when its root equals the expected, already-matched root."
             ),
-            ("verify_package_artifacts", 2200, "and", "or"): (
+            ("verify_package_artifacts", 2351, "and", "or"): (
                 "Equivalent for graph-builder outputs (dict or None): both branches yield "
                 "the same nodes; an empty dict has no nodes and defaults to []."
             ),
-            ("verify_package", 2699, "and", "or"): (
+            ("verify_package", 2888, "and", "or"): (
                 "Equivalent redundant-parse guard: replacing and with or only recomputes the "
                 "canonical evidence graph when roots already match (adopting the identical root), "
                 "leaving EvidenceRootMismatch and package validity completely unchanged."
@@ -787,9 +788,9 @@ CRITICAL_MUTATION_TARGETS += (
                 "test_resolve_policy_with_none_public_key",
             ),
         },
-        excluded_mutations=frozenset({("verify_artifact_signature", 251, "or", "and")}),
+        excluded_mutations=frozenset({("verify_artifact_signature", 254, "or", "and")}),
         exclusion_reasons={
-            ("verify_artifact_signature", 251, "or", "and"): (
+            ("verify_artifact_signature", 254, "or", "and"): (
                 "Equivalent for JSON envelope values: the subsequent exact field-type and "
                 "canonical-byte equality checks still reject missing/extra fields. Non-object "
                 "JSON values fail those checks or the fail-closed exception boundary; no "
@@ -1790,7 +1791,7 @@ def evaluate_mutant(
     # 1. In-process AST syntax pre-check before touching disk or spawning subprocess
     try:
         compile(mutant_source, str(target_file), "exec")
-    except Exception as syntax_err:
+    except (SyntaxError, ValueError, TypeError) as syntax_err:
         sys.stderr.write(f"      [Mutant] Incompetent AST syntax: {syntax_err}\n")
         return "incompetent"
 
@@ -2108,7 +2109,7 @@ def _evaluate_target_module(
 
     try:
         tree = ast.parse(original_source)
-    except Exception as exc:
+    except (SyntaxError, ValueError, TypeError) as exc:
         print(f"  [FAIL] Failed to parse AST for {rel_path}: {exc}")
         sys.exit(1)
 

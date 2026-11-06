@@ -1,8 +1,11 @@
+import logging
 from datetime import UTC, datetime, timedelta
 
 from flask import jsonify, request
 
 from .demo_traces import DEMO_IDS
+
+logger = logging.getLogger(__name__)
 
 
 def _ts(offset_s=0):
@@ -24,7 +27,8 @@ def _write_trace(run_id: str, events: list) -> None:
             provider.update_run_status(
                 run_id, "COMPLETED" if terminal.get("status") == "success" else "FAILED"
             )
-    except Exception as exc:
+    except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError) as exc:
+        logger.debug("_write_trace failed", extra={"operation": "_write_trace"}, exc_info=True)
         print(f"[DemoLogic] Warning: provider trace write failed: {exc}", flush=True)
 
 

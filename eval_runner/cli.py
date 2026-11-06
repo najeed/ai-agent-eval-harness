@@ -8,6 +8,7 @@ Refactored to use a Unified Functional Dispatcher and dynamic Extension Discover
 import argparse
 import inspect
 import json
+import logging
 import os
 import sys
 from pathlib import Path
@@ -352,6 +353,7 @@ def get_parser(is_help: bool = False):
 
             available_protocols = engine.AgentAdapterRegistry.get_available_protocols(eager=False)
         except (ImportError, TypeError, Exception):
+            logging.getLogger(__name__).debug("Failure in get_parser", exc_info=True)
             available_protocols = STATIC_PROTOCOLS
     else:
         available_protocols = STATIC_PROTOCOLS
@@ -443,6 +445,7 @@ Usage: agentv <command> [options]
                 register_func = ep.load()
                 register_func(subparsers)
             except Exception as e:
+                logging.getLogger(__name__).debug("Failure in get_parser", exc_info=True)
                 sys.stderr.write(f"   [CLI] Warning: Failed to load extension {ep.name}: {e}\n")
 
     # --- CORE COMMANDS ---
@@ -901,6 +904,7 @@ def main():
         print("\n[CLI] Interrupted.")
         sys.exit(130)
     except Exception:
+        logging.getLogger(__name__).debug("Failure in main", exc_info=True)
         import traceback
 
         traceback.print_exc()

@@ -30,6 +30,7 @@ import hashlib
 import io
 import ipaddress
 import json
+import logging
 import os
 import re
 import socket
@@ -338,6 +339,7 @@ async def _resolve_commit_and_privacy(
     except AnalyzerUnavailableError:
         raise
     except Exception as e:  # noqa: BLE001 - best effort
+        logging.getLogger(__name__).debug("Failure in _resolve_commit_and_privacy", exc_info=True)
         print(f"   [Analyzer] Commit resolution skipped: {_redact(str(e))}")
     return resolved, is_private
 
@@ -416,6 +418,7 @@ async def _fetch_blob_text(
                     return None  # oversize candidate skipped, run continues
             return bytes(buf).decode("utf-8", errors="ignore")
     except Exception as e:  # noqa: BLE001 - one bad blob never kills the run
+        logging.getLogger(__name__).debug("Failure in _fetch_blob_text", exc_info=True)
         print(f"   [Analyzer] Blob fetch failed for {_redact(path)}: {_redact(str(e))}")
         return None
 

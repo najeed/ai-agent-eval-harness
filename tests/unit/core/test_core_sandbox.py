@@ -52,17 +52,22 @@ def test_resource_registry_cleanup(tmp_path):
     assert not d1.exists()
 
 
-def test_resource_registry_cleanup_error(tmp_path, capsys):
+def test_core_sandbox_resource_cleanup_failure_is_observable(tmp_path, capsys, caplog):
     registry = ResourceRegistry()
     d1 = tmp_path / "dir1"
     d1.mkdir()
     registry.register(d1)
 
-    with patch("eval_runner.utils.rmtree_resilient", side_effect=Exception("Disk locked")):
-        registry.cleanup()
+    with caplog.at_level("DEBUG", logger="eval_runner.tool_sandbox"):
+        with patch(
+            "eval_runner.utils.rmtree_resilient", side_effect=PermissionError("Disk locked")
+        ):
+            registry.cleanup()
 
     captured = capsys.readouterr()
     assert "Cleanup failed" in captured.err
+    record = next(r for r in caplog.records if getattr(r, "operation", None) == "cleanup")
+    assert record.exc_info[0] is PermissionError
 
 
 # --- Shared State Registry Tests ---

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 reporter.py
 
@@ -7,7 +5,10 @@ This module provides reporting utilities for AgentV.
 It generates summary reports, exports detailed trajectories, and generates Mermaid visualizations.
 """
 
+from __future__ import annotations
+
 import json  # noqa: E402
+import logging
 import os  # noqa: E402
 from datetime import datetime  # noqa: E402
 from pathlib import Path  # noqa: E402
@@ -187,6 +188,7 @@ def generate_html_report(
                     verification_pkg.verify_completeness() and verification_pkg.verify_signature()
                 )
             except Exception:
+                logging.getLogger(__name__).debug("Failure in generate_html_report", exc_info=True)
                 is_verified = False
         elif isinstance(verification_pkg, dict):
             if verification_pkg.get("verified") is True or verification_pkg.get("status") in (
@@ -612,6 +614,7 @@ def generate_report(
             summary_record["run_id"] = run_id
             lb_store.record_run_summary(run_id, summary_record)
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in generate_report", exc_info=True)
         import sys
 
         sys.stderr.write(
@@ -637,4 +640,7 @@ def cleanup_old_reports(days: int = 7):
                     f.unlink()
                     print(f"      [Reporter] Cleaned up old report: {f.name}")
                 except Exception as e:
+                    logging.getLogger(__name__).debug(
+                        "Failure in cleanup_old_reports", exc_info=True
+                    )
                     print(f"      [Reporter] Warning: Failed to clean up old report {f.name}: {e}")

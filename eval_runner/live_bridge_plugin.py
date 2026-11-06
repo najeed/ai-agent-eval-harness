@@ -35,7 +35,8 @@ def is_safe_url(url_str: str) -> bool:
             if ip.startswith(addr):
                 return False
         return True
-    except Exception:
+    except (OSError, ValueError, TypeError, AttributeError):
+        logger.debug("is_safe_url failed", extra={"operation": "is_safe_url"}, exc_info=True)
         return False
 
 
@@ -83,7 +84,9 @@ class RemoteBridgePlugin(BaseEvalPlugin):
                 ):
                     cred = provider.get_service_credential()
         except (ImportError, AttributeError, RuntimeError) as exc:
-            logger.debug("Failed resolving bridge credential from auth provider: %s", exc)
+            logger.debug(
+                "Failed resolving bridge credential from auth provider: %s", exc, exc_info=True
+            )
             cred = None
 
         # 2. Check deployment-secret variable SERVICE_API_KEY
@@ -154,7 +157,12 @@ class RemoteBridgePlugin(BaseEvalPlugin):
                 self._handle_denied_response(response.status_code)
                 return False
             self.active = response.status_code == 200
-        except Exception:
+        except (requests.RequestException, ValueError, TypeError):
+            logger.debug(
+                "_check_console_active failed",
+                extra={"operation": "_check_console_active"},
+                exc_info=True,
+            )
             self.active = False
         return self.active
 
@@ -178,8 +186,9 @@ class RemoteBridgePlugin(BaseEvalPlugin):
             )
             if response.status_code in (401, 403):
                 self._handle_denied_response(response.status_code)
-        except Exception:
+        except (requests.RequestException, ValueError, TypeError):
             # If the console dies, stop trying for this run
+            logger.debug("_post_event failed", extra={"operation": "_post_event"}, exc_info=True)
             self.active = False
 
     def before_evaluation(self, context, **kwargs):

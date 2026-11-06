@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 import uuid
@@ -61,7 +62,8 @@ def calculator(expr: str) -> str:
     try:
         tree = ast.parse(expr, mode="eval")
         return str(eval_node(tree.body))
-    except Exception as e:
+    except (SyntaxError, TypeError, ValueError, KeyError, ArithmeticError) as e:
+        logging.getLogger(__name__).debug("Failure in calculator", exc_info=True)
         return f"error: {str(e)}"
 
 
@@ -78,7 +80,8 @@ def loan_api(input_str: str) -> str:
             return f"REJECTED: {name} (low credit)"
         else:
             return f"MANUAL REVIEW: {name}"
-    except Exception as e:
+    except (IndexError, TypeError, ValueError, ArithmeticError) as e:
+        logging.getLogger(__name__).debug("Failure in loan_api", exc_info=True)
         return f"ERROR: {str(e)}"
 
 
@@ -191,6 +194,7 @@ def run():
         logger.log("output", output)
         status = "success"
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in run", exc_info=True)
         output = str(e)
         logger.log("error", output)
         status = "error"

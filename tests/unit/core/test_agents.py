@@ -23,6 +23,23 @@ from sample_agent import agent_app
 app = agent_app.app
 
 
+def test_sample_agent_execution_failure_records_traceback(monkeypatch, caplog):
+    def unavailable(*args):
+        raise ConnectionError("provider unavailable")
+
+    monkeypatch.setattr(agent_app, "healthcare", unavailable)
+    with caplog.at_level("DEBUG", logger="sample_agent.agent_app"):
+        response = app.test_client().post(
+            "/execute_task", json={"task_description": "check patient eligibility"}
+        )
+    assert response.status_code == 500
+    assert response.get_json()["action"] == "error"
+    assert any(
+        record.name == "sample_agent.agent_app" and record.exc_info is not None
+        for record in caplog.records
+    )
+
+
 def test_agent_health_check():
     """
     Test basic agent health and task execution functionality.

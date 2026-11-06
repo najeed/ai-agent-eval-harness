@@ -12,6 +12,8 @@ import logging
 from collections.abc import Mapping
 from typing import Any
 
+from cryptography.exceptions import InvalidSignature, UnsupportedAlgorithm
+
 from agentv_runtime.finalization import EvaluatorFinalizationRecord
 from eval_runner import config
 from eval_runner.certification_lock import PerRunCertificationLock
@@ -115,7 +117,21 @@ class CertificationService:
                     from eval_runner.identity import IdentityService
 
                     pub = IdentityService.get_public_key(evaluator_id, auto_provision=False)
-                except Exception:
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    InvalidSignature,
+                    UnsupportedAlgorithm,
+                ):
+                    logger.debug(
+                        "_finalization failed",
+                        extra={"operation": "_finalization", "run_id": run_id},
+                        exc_info=True,
+                    )
                     pub = None
                 if pub is None:
                     continue
@@ -123,7 +139,21 @@ class CertificationService:
                 finalization = EvaluatorFinalizationRecord.from_dict(
                     payload, require_authoritative=True, trust_root=config.TRUST_ROOT
                 )
-            except Exception as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                InvalidSignature,
+                UnsupportedAlgorithm,
+            ) as e:
+                logger.debug(
+                    "_finalization failed",
+                    extra={"operation": "_finalization", "run_id": run_id},
+                    exc_info=True,
+                )
                 if isinstance(e, ValueError) and "FinalizationRunIdMismatch" in str(e):
                     raise
                 continue
@@ -149,7 +179,21 @@ class CertificationService:
         try:
             run = run_store.get_run(run_id, context=context)
             trace_bytes = run_store.get_trace_bytes(run_id, context=context)
-        except Exception:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            InvalidSignature,
+            UnsupportedAlgorithm,
+        ):
+            logger.debug(
+                "read_run_truth_level failed",
+                extra={"operation": "read_run_truth_level", "run_id": run_id},
+                exc_info=True,
+            )
             return None, False
         if run is None:
             return None, False
@@ -158,6 +202,11 @@ class CertificationService:
         try:
             events = CertificationService.parse_trace_bytes(bytes(trace_bytes), run_id)
         except ValueError:
+            logger.debug(
+                "read_run_truth_level failed",
+                extra={"operation": "read_run_truth_level", "run_id": run_id},
+                exc_info=True,
+            )
             return "unknown", True
 
         for ev in events:
@@ -242,7 +291,21 @@ class CertificationService:
                 fin_rec = EvaluatorFinalizationRecord.from_dict(
                     payload, require_authoritative=True, trust_root=config.TRUST_ROOT
                 )
-            except Exception:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                InvalidSignature,
+                UnsupportedAlgorithm,
+            ):
+                logger.debug(
+                    "extract_computed_run_outcome failed",
+                    extra={"operation": "extract_computed_run_outcome"},
+                    exc_info=True,
+                )
                 return ("inconclusive", 0.0)
 
             for term_ev in terminal_events:
@@ -317,7 +380,6 @@ class CertificationService:
         from eval_runner.run_lifecycle import (
             RunLifecycleState,
             get_run_lifecycle_state,
-            rollback_run_lifecycle_to_open,
         )
 
         scoped_context = dict(context) if context is not None else None
@@ -387,11 +449,16 @@ class CertificationService:
             except Exception:
                 # Validation occurs under the lease too.  Restore an
                 # unsealed run if it failed before the atomic commit.
-                state = get_run_lifecycle_state(run_id, run_store=run_store, context=scoped_context)
-                if state != RunLifecycleState.SEALED:
-                    rollback_run_lifecycle_to_open(
-                        run_id, run_store=run_store, context=scoped_context
-                    )
+                logger.warning(
+                    "execute_industrial_certification failed",
+                    extra={
+                        "operation": "execute_industrial_certification",
+                        "run_id": run_id,
+                        "identity_id": identity_id,
+                    },
+                    exc_info=True,
+                )
+                cls._rollback_failed_certification(run_id, run_store, scoped_context)
                 raise
 
         lock = _certification_lock
@@ -570,7 +637,16 @@ class CertificationService:
                     isinstance(loaded, list) and len(loaded) > 0 and isinstance(loaded[0], Mapping)
                 ):
                     effective_scenario = loaded[0]
-            except Exception:
+            except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError):
+                logger.warning(
+                    "execute_industrial_certification failed",
+                    extra={
+                        "operation": "execute_industrial_certification",
+                        "run_id": run_id,
+                        "identity_id": identity_id,
+                    },
+                    exc_info=True,
+                )
                 effective_scenario = None
 
         if not isinstance(effective_scenario, Mapping) or not effective_scenario:
@@ -601,8 +677,14 @@ class CertificationService:
             execution = ExecutionManifest.from_dict(dict(execution_manifest_dict))
             actual_manifest_hash = execution.compute_manifest_hash()
         except ValueError:
+            logger.debug(
+                "Execution manifest validation failed", extra={"run_id": run_id}, exc_info=True
+            )
             raise
-        except Exception as e:
+        except (TypeError, KeyError, AttributeError) as e:
+            logger.debug(
+                "Execution manifest parsing failed", extra={"run_id": run_id}, exc_info=True
+            )
             raise ValueError("Invalid provider execution manifest") from e
 
         if (
@@ -848,9 +930,16 @@ class CertificationService:
             if not committed:
                 raise RuntimeError("RunStorageProvider rejected atomic certification commit")
         except Exception:
-            state = get_run_lifecycle_state(run_id, run_store=run_store, context=scoped_context)
-            if state != RunLifecycleState.SEALED:
-                rollback_run_lifecycle_to_open(run_id, run_store=run_store, context=scoped_context)
+            logger.warning(
+                "execute_industrial_certification failed",
+                extra={
+                    "operation": "execute_industrial_certification",
+                    "run_id": run_id,
+                    "identity_id": identity_id,
+                },
+                exc_info=True,
+            )
+            cls._rollback_failed_certification(run_id, run_store, scoped_context)
             raise
 
         from eval_runner.flight_recorder import FlightRecorderPlugin
@@ -868,6 +957,26 @@ class CertificationService:
             "package_hash": manifest.get("package_hash"),
             "verification_package": manifest.get("verification_package"),
         }
+
+    @staticmethod
+    def _rollback_failed_certification(run_id: str, run_store: Any, context: Any) -> None:
+        """Report cleanup failures without replacing the original certification error."""
+        from eval_runner.run_lifecycle import (
+            RunLifecycleState,
+            get_run_lifecycle_state,
+            rollback_run_lifecycle_to_open,
+        )
+
+        try:
+            state = get_run_lifecycle_state(run_id, run_store=run_store, context=context)
+            if state != RunLifecycleState.SEALED:
+                rollback_run_lifecycle_to_open(run_id, run_store=run_store, context=context)
+        except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError):
+            logger.warning(
+                "Certification rollback failed",
+                extra={"operation": "rollback_certification", "run_id": run_id},
+                exc_info=True,
+            )
 
     @classmethod
     def issue_certification(cls, run_id: str, **kwargs: Any) -> dict[str, Any]:

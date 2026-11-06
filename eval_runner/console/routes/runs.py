@@ -183,7 +183,8 @@ def explain_run(run_id):
                 "sourced_from_master": False,
             }
         )
-    except Exception as e:
+    except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError) as e:
+        logger.debug("explain_run failed", extra={"operation": "explain_run"}, exc_info=True)
         return jsonify({"error": str(e)}), 500
 
 
@@ -215,7 +216,8 @@ def list_runs():
             continue
         try:
             manifest = store.get_manifest(rid, context=context) or run.get("manifest") or {}
-        except Exception:
+        except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError):
+            logger.debug("list_runs failed", extra={"operation": "list_runs"}, exc_info=True)
             manifest = run.get("manifest") or {}
         summary = _summary_from_provider({**run, "manifest": manifest})
         if summary["has_certificate"]:
@@ -318,7 +320,7 @@ def download_run_report_pdf(run_id: str):
         try:
             analysis = explain_events(events)
         except Exception as e:
-            logger.debug("Failed explaining events for run report %s: %s", run_id, e)
+            logger.debug("Failed explaining events for run report %s: %s", run_id, e, exc_info=True)
 
     report_data = {
         **summary,
@@ -427,7 +429,10 @@ def get_run_status(run_id):
 
             ev_graph = build_evidence_graph_from_events(events)
             evidence_nodes = ev_graph.get("total_nodes", 0)
-        except Exception:
+        except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError):
+            logger.debug(
+                "get_run_status failed", extra={"operation": "get_run_status"}, exc_info=True
+            )
             evidence_nodes = 0
         return jsonify(
             {
@@ -579,7 +584,8 @@ def resume_run(run_id):
             run_store=run_store,
             context=run_context,
         )
-    except Exception as exc:
+    except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError) as exc:
+        logger.debug("resume_run failed", extra={"operation": "resume_run"}, exc_info=True)
         msg = str(exc).lower()
         if "unavailable" in msg or "missing" in msg or "not found" in msg or "checkpoint" in msg:
             resumed = None
@@ -642,7 +648,12 @@ def _extract_canonical_event_info(line: str, fallback_seq: int) -> tuple[int, bo
     """
     try:
         ev = json.loads(line)
-    except Exception:
+    except (ValueError, TypeError):
+        logger.debug(
+            "_extract_canonical_event_info failed",
+            extra={"operation": "_extract_canonical_event_info"},
+            exc_info=True,
+        )
         ev = None
 
     if isinstance(ev, dict):

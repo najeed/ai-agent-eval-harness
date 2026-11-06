@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import threading
 from typing import Any
 
@@ -348,6 +349,7 @@ def execute_task() -> Any:
         return jsonify(result), 200
 
     except Exception as exc:
+        logging.getLogger(__name__).debug("Failure in execute_task", exc_info=True)
         return jsonify(
             {
                 "action": "error",

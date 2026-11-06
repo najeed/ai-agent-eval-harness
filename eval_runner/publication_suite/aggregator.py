@@ -6,6 +6,7 @@ Processes provider-owned batch runs and computes publication metrics.
 """
 
 import json
+import logging
 import math
 from pathlib import Path
 from typing import Any
@@ -140,6 +141,9 @@ class Aggregator:
                         if duration < 0:
                             duration = 2.5  # Sanity check for clock drift
                 except Exception as e:
+                    logging.getLogger(__name__).debug(
+                        "Failure in Aggregator.process", exc_info=True
+                    )
                     print(f"      [Aggregator] Error parsing duration: {e}")
                     duration = 2.5
 

@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import platform
 import sys
 from typing import Any
@@ -102,6 +103,7 @@ def metric_registry_fingerprint() -> str:
             for m in (_metrics.MetricRegistry.list_metrics() or [])
         )
     except Exception:  # noqa: BLE001 - fingerprinting must never break a run
+        logging.getLogger(__name__).debug("Failure in metric_registry_fingerprint", exc_info=True)
         entries = []
     return _canonical_hash(entries)
 

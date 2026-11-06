@@ -4,6 +4,7 @@ handlers/environment.py
 Environment, utilities, and setup handlers.
 """
 
+import logging
 from pathlib import Path
 
 from .. import (
@@ -27,6 +28,7 @@ def list_industries() -> list[str]:
         registry = registry_sync.load_registry()
         reg_industries = list(registry.get("industries", {}).keys())
     except Exception:
+        logging.getLogger(__name__).debug("Failure in list_industries", exc_info=True)
         reg_industries = []
 
     # Merge with mapping
@@ -110,6 +112,7 @@ async def handle_analyze(args):
         )
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_analyze", exc_info=True)
         print(f"❌ [ERROR] Repository analysis FAILED: {e}")
         return 1
 
@@ -124,6 +127,7 @@ async def handle_auto_translate(args):
         auto_translate.save_scenario(scenario, Path(args.output or "translated_scenario.json"))
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_auto_translate", exc_info=True)
         print(f"❌ [ERROR] Auto-translation FAILED: {e}")
         return 1
 
@@ -137,6 +141,7 @@ async def handle_init(args):
             scaffold.scaffold_benchmark(args.dir, industry=args.industry, protocol=args.protocol)
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_init", exc_info=True)
         print(f"❌ [ERROR] Environment initialization FAILED: {e}")
         return 1
 
@@ -148,6 +153,7 @@ async def handle_install(args):
         ok = catalog.install_pack(args.pack)
         return 0 if ok else 1
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_install", exc_info=True)
         print(f"❌ [ERROR] Installation FAILED: {e}")
         return 1
 
@@ -158,6 +164,7 @@ async def handle_registry_sync(args):
         registry_sync.ensure_schema_sync(force=True)
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_registry_sync", exc_info=True)
         print(f"❌ [ERROR] Registry synchronization FAILED: {e}")
         return 1
 
@@ -173,6 +180,7 @@ async def handle_registry_add(args):
         )
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_registry_add", exc_info=True)
         print(f"❌ [ERROR] Registry registration FAILED: {e}")
         return 1
 
@@ -184,6 +192,7 @@ async def handle_registry_search(args):
 
         return await handle_catalog_search(args)
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_registry_search", exc_info=True)
         print(f"❌ [ERROR] Registry search FAILED: {e}")
         return 1
 
@@ -200,6 +209,7 @@ async def handle_plugin_list(args):
             print(f" - {p.__class__.__name__}")
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_plugin_list", exc_info=True)
         print(f"❌ [ERROR] Failed to list plugins: {e}")
         return 1
 
@@ -213,6 +223,7 @@ async def handle_plugin_register(args):
         print(f"✅ Registered plugin: {args.path}")
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_plugin_register", exc_info=True)
         print(f"❌ Error during registration: {e}")
         return 1
 
@@ -226,6 +237,7 @@ async def handle_plugin_unregister(args):
         print(f"✅ Unregistered plugin: {args.name}")
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_plugin_unregister", exc_info=True)
         print(f"❌ Error during unregistration: {e}")
         return 1
 
@@ -236,6 +248,7 @@ async def handle_doctor(args):
         await doctor.run_doctor(show_registry=getattr(args, "registry", False))
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_doctor", exc_info=True)
         print(f"❌ [ERROR] Doctor audit FAILED: {e}")
         return 1
 
@@ -246,6 +259,7 @@ async def handle_ci_generate(args):
         scaffold.generate_github_action()
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_ci_generate", exc_info=True)
         print(f"❌ [ERROR] CI generation FAILED: {e}")
         return 1
 
@@ -262,6 +276,7 @@ async def handle_cleanup_runs(args):
         )
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_cleanup_runs", exc_info=True)
         print(f"❌ [ERROR] Cleanup FAILED: {e}")
         return 1
 
@@ -272,6 +287,7 @@ async def handle_export(args):
         exporter.HFExporter.export(args.input, args.output)
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_export", exc_info=True)
         print(f"❌ [ERROR] Export FAILED: {e}")
         return 1
 
@@ -284,5 +300,6 @@ async def handle_failures_search(args):
         failure_corpus.search(args.query, run_store=resolve_run_store())
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_failures_search", exc_info=True)
         print(f"❌ [ERROR] Failures search FAILED: {e}")
         return 1

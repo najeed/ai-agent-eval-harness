@@ -259,6 +259,12 @@ score = metric_func(expected_list, actual_list)
 ### `loader.load_scenario`
 Authoritative scenario loader supporting local files and **Benchmark URIs** (`gaia://`, `assistantbench://`).
 
+Benchmark URIs identify an existing JSON, JSONL, or Parquet dataset, or an explicit
+`hf://owner/dataset?split=validation&config=...&revision=...` source. The optional
+`datasets` package enables HuggingFace input; remote loading is disabled in airgap mode.
+Questions and reference answers are required. Missing files raise `FileNotFoundError`;
+malformed or empty datasets raise `ValueError`. No synthetic substitute is returned.
+
 ---
 
 ## 🏛️ Public Runtime Extension Interface (`agentv_runtime`)

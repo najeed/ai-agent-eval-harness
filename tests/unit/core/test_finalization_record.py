@@ -22,6 +22,52 @@ from eval_runner import config
 from eval_runner.identity import IdentityService
 
 
+@pytest.mark.parametrize("failure", [OSError("trust store unavailable"), ValueError("corrupt key")])
+def test_finalization_trust_failure_is_observable(monkeypatch, caplog, failure):
+    rec = EvaluatorFinalizationRecord.from_dict(_valid_record_dict())
+
+    def unavailable(*args, **kwargs):
+        raise failure
+
+    monkeypatch.setattr(IdentityService, "get_public_key", unavailable)
+    with caplog.at_level("DEBUG", logger="agentv_runtime.finalization"):
+        assert rec.verify_signature() is False
+    diagnostic = next(
+        r for r in caplog.records if getattr(r, "operation", None) == "verify_signature"
+    )
+    assert diagnostic.identity_id == rec.evaluator_identity
+    assert diagnostic.exc_info[1] is failure
+
+
+def test_finalization_unexpected_trust_bug_propagates(monkeypatch):
+    rec = EvaluatorFinalizationRecord.from_dict(_valid_record_dict())
+
+    def broken(*args, **kwargs):
+        raise AssertionError("provider invariant violated")
+
+    monkeypatch.setattr(IdentityService, "get_public_key", broken)
+    with pytest.raises(AssertionError, match="provider invariant violated"):
+        rec.verify_signature()
+
+
+def test_finalization_invalid_crypto_signature_retains_traceback(caplog):
+    import base64
+
+    from cryptography.exceptions import InvalidSignature
+
+    key = ed25519.Ed25519PrivateKey.generate()
+    rec = EvaluatorFinalizationRecord.from_dict(_valid_record_dict()).sign(key)
+    signature = bytearray(base64.b64decode(rec.evaluator_signature["signature"]))
+    signature[0] ^= 1
+    rec.evaluator_signature["signature"] = base64.b64encode(signature).decode("ascii")
+    with caplog.at_level("DEBUG", logger="agentv_runtime.signatures"):
+        assert rec.verify_signature(public_key=key.public_key()) is False
+    diagnostic = next(
+        r for r in caplog.records if getattr(r, "operation", None) == "verify_artifact_signature"
+    )
+    assert diagnostic.exc_info[0] is InvalidSignature
+
+
 @pytest.fixture
 def trust_env(tmp_path, monkeypatch):
     trust_dir = tmp_path / "trust_root"

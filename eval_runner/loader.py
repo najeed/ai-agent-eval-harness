@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import csv
 import json
+import logging
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -220,6 +221,7 @@ def load_jsonl(file_path: Path) -> list[dict]:
     try:
         return load_events(file_path)
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in load_jsonl", exc_info=True)
         print(f"   [Loader] Error: Failed to load JSONL/JSON: {e}")
         return []
 
@@ -407,6 +409,7 @@ def load_dataset(file_path: str | Path, format_type: str | None = None) -> list[
                 print(f"      [Loader] Validation Error in {p}: {e.message}")
                 continue
             except Exception as e:
+                logging.getLogger(__name__).debug("Failure in load_dataset", exc_info=True)
                 print(f"      [Loader] unexpected Error in {p}: {e}")
                 continue
         return all_scenarios

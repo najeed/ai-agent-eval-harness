@@ -245,7 +245,12 @@ def get_canonical_scenario(scenario_id: str):
         except ValueError:
             try:
                 rel_path = str(abs_path.relative_to(config.PROJECT_ROOT)).replace("\\", "/")
-            except Exception:
+            except ValueError:
+                logger.debug(
+                    "get_canonical_scenario failed",
+                    extra={"operation": "get_canonical_scenario"},
+                    exc_info=True,
+                )
                 rel_path = str(abs_path).replace("\\", "/")
 
         return jsonify(
@@ -256,7 +261,7 @@ def get_canonical_scenario(scenario_id: str):
             }
         )
     except Exception as e:
-        logger.error(f"Failed to read scenario file {abs_path}: {e}")
+        logger.error(f"Failed to read scenario file {abs_path}: {e}", exc_info=True)
         return jsonify({"error": f"Failed to read canonical scenario: {e}"}), 500
 
 
@@ -609,12 +614,17 @@ def check_execution_readiness():
 
             loaded = eval_runner.loader.load_scenario(abs_path)
             scen_data = loaded[0] if isinstance(loaded, list) else loaded
-        except Exception:
+        except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError):
+            logger.debug(
+                "Scenario preflight loading failed",
+                extra={"operation": "check_execution_readiness"},
+                exc_info=True,
+            )
             try:
                 with open(abs_path, encoding="utf-8") as f:
                     scen_data = json.load(f)
-            except Exception as e:
-                logger.debug(f"Failed to read scenario file for preflight: {e}")
+            except (OSError, ValueError, TypeError) as e:
+                logger.debug(f"Failed to read scenario file for preflight: {e}", exc_info=True)
 
     if not scen_data:
         checks.append(
@@ -906,6 +916,11 @@ def check_execution_readiness():
                 ping()
             sim_healthy += 1
         except Exception as sim_err:
+            logger.debug(
+                "check_execution_readiness failed",
+                extra={"operation": "check_execution_readiness"},
+                exc_info=True,
+            )
             sim_failed_names.append(f"{sim_name}: {sim_err}")
     if not isinstance(sim_registry, dict):
         sim_healthy = sim_count
@@ -1207,7 +1222,10 @@ def save_scenario():
                     or "Draft"
                 )
                 meta["status"] = existing_status
-        except Exception:
+        except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError):
+            logger.debug(
+                "save_scenario failed", extra={"operation": "save_scenario"}, exc_info=True
+            )
             meta["status"] = "Draft"
     else:
         meta["status"] = "Draft"
@@ -1238,19 +1256,19 @@ def save_scenario():
                         409,
                     )
         except Exception as e:
-            logger.debug(f"Concurrency check bypass on read failure: {e}")
+            logger.debug(f"Concurrency check bypass on read failure: {e}", exc_info=True)
 
     try:
         with open(save_path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
     except Exception as e:
-        logger.error(f"Failed to save scenario {scen_id}: {e}")
+        logger.error(f"Failed to save scenario {scen_id}: {e}", exc_info=True)
         return jsonify({"error": f"Failed to save scenario: {str(e)}"}), 500
 
     try:
         ScenarioCatalog.get_instance().build_index()
     except Exception as idx_err:
-        logger.warning(f"ScenarioCatalog build_index notice: {idx_err}")
+        logger.warning(f"ScenarioCatalog build_index notice: {idx_err}", exc_info=True)
 
     try:
         rel_path = str(
@@ -1259,7 +1277,10 @@ def save_scenario():
     except ValueError:
         try:
             rel_path = str(save_path.relative_to(config.PROJECT_ROOT)).replace("\\", "/")
-        except Exception:
+        except ValueError:
+            logger.debug(
+                "save_scenario failed", extra={"operation": "save_scenario"}, exc_info=True
+            )
             rel_path = str(save_path).replace("\\", "/")
 
     return jsonify(
@@ -1313,7 +1334,12 @@ def transition_scenario_lifecycle(scenario_id):
     try:
         with open(abs_path, encoding="utf-8") as f:
             scen_data = json.load(f)
-    except Exception as e:
+    except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError) as e:
+        logger.debug(
+            "transition_scenario_lifecycle failed",
+            extra={"operation": "transition_scenario_lifecycle"},
+            exc_info=True,
+        )
         return jsonify({"error": f"Failed to load scenario: {e}"}), 500
 
     meta = scen_data.setdefault("metadata", {})
@@ -1377,7 +1403,12 @@ def transition_scenario_lifecycle(scenario_id):
     try:
         with open(abs_path, "w", encoding="utf-8") as f:
             json.dump(scen_data, f, indent=2, ensure_ascii=False)
-    except Exception as e:
+    except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError) as e:
+        logger.debug(
+            "transition_scenario_lifecycle failed",
+            extra={"operation": "transition_scenario_lifecycle"},
+            exc_info=True,
+        )
         return jsonify({"error": f"Failed to persist scenario transition: {e}"}), 500
 
     catalog.build_index()
@@ -1401,7 +1432,7 @@ def refresh_index():
             {"status": "success", "scenario_count": len(ScenarioCatalog.get_instance().scenarios)}
         )
     except Exception as e:
-        logger.error(f"Catalog refresh failed: {e}")
+        logger.error(f"Catalog refresh failed: {e}", exc_info=True)
         return jsonify({"error": str(e)}), 500
 
 
@@ -1443,7 +1474,7 @@ def evaluate_scenario():
     try:
         scen = eval_runner.loader.load_scenario(path)
     except Exception as e:
-        logger.error(f"Scenario load failed: {e}")
+        logger.error(f"Scenario load failed: {e}", exc_info=True)
         return jsonify({"error": f"Failed to load scenario: {str(e)}", "message": str(e)}), 500
 
     identifier = Path(path).stem
@@ -1740,7 +1771,10 @@ def mutate_scenario():
         eval_runner.mutator.InvalidPromptInjectionSpecError,
     ) as e:
         return jsonify({"status": "error", "error": "unsupported_mutation", "message": str(e)}), 400
-    except Exception as e:
+    except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError) as e:
+        logger.debug(
+            "mutate_scenario failed", extra={"operation": "mutate_scenario"}, exc_info=True
+        )
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
@@ -1780,7 +1814,8 @@ def spec_to_eval():
             eval_runner.spec_parser.save_scenario_json(scenario, Path(output_path))
 
         return jsonify({"status": "success", "scenario": scenario})
-    except Exception as e:
+    except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError) as e:
+        logger.debug("spec_to_eval failed", extra={"operation": "spec_to_eval"}, exc_info=True)
         return jsonify({"status": "error", "message": str(e)}), 500
 
 

@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 import sys
 from pathlib import Path
@@ -22,6 +23,7 @@ async def check_agent_reachable(url: str):
             ) as response:
                 return response.status == 200 or response.status == 400
     except Exception:
+        logging.getLogger(__name__).debug("Failure in check_agent_reachable", exc_info=True)
         return False
 
 
@@ -63,6 +65,7 @@ def check_security_health():
         else:
             print("  ❌ PBAC Permission Nodes are misconfigured")
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in check_security_health", exc_info=True)
         print(f"  ❌ Auth Provider Error: {str(e)}")
 
     # 3. Session Security (Secret Key)
@@ -75,6 +78,7 @@ def check_security_health():
             if derived:
                 print("  ✔ Session SECRET_KEY derivation is functional")
         except Exception:
+            logging.getLogger(__name__).debug("Failure in check_security_health", exc_info=True)
             print("  ❌ Session Crypto Error")
     else:
         print("  ⚠ Session Security cannot be verified without an API Key")
@@ -155,6 +159,7 @@ def show_registry_report():
                 print(f"    ✔ [Extensions] {config.SHIM_RESOURCES_D_DIR.name}/")
 
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in show_registry_report", exc_info=True)
         print(f"  ❌ Registry Diagnostic Error: {e}")
 
 

@@ -27,6 +27,31 @@ from eval_runner.services.certification import (
 from eval_runner.verifier import CertificationFailedError, TraceVerifier
 
 
+def test_certification_rollback_failure_preserves_signing_error(provider, monkeypatch, caplog):
+    run_id = "rollback-observability"
+    scenario = _seed_run(provider, run_id)
+    signing_error = RuntimeError("signing unavailable")
+
+    def fail_signing(*args, **kwargs):
+        raise signing_error
+
+    def fail_rollback(*args, **kwargs):
+        raise OSError("rollback unavailable")
+
+    monkeypatch.setattr(TraceVerifier, "sign_trace_bytes", fail_signing)
+    monkeypatch.setattr("eval_runner.run_lifecycle.rollback_run_lifecycle_to_open", fail_rollback)
+    with caplog.at_level("DEBUG", logger="eval_runner.services.certification"):
+        with pytest.raises(RuntimeError, match="signing unavailable") as caught:
+            execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+    assert caught.value is signing_error
+    diagnostic = next(
+        r for r in caplog.records if getattr(r, "operation", None) == "rollback_certification"
+    )
+    assert diagnostic.run_id == run_id
+    assert diagnostic.exc_info[0] is OSError
+    assert get_run_lifecycle_state(run_id, run_store=provider) != RunLifecycleState.SEALED
+
+
 @pytest.fixture
 def provider(tmp_path, monkeypatch):
     """A local provider with explicitly provisioned certification identities."""

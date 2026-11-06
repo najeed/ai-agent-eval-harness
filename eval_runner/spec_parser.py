@@ -1,12 +1,13 @@
-from __future__ import annotations
-
 """
 spec_parser.py
 
-Utility for parsing Markdown PRDs into validated JSON scenario stubs for the AgentV.
+Utility for parsing Markdown PRDs into JSON scenario templates for AgentV.
 """
 
+from __future__ import annotations
+
 import json  # noqa: E402
+import logging
 import re  # noqa: E402
 import uuid  # noqa: E402
 from pathlib import Path  # noqa: E402
@@ -178,6 +179,9 @@ async def parse_markdown_to_scenario(markdown_text: str) -> dict[str, Any]:
                                     }
                                 )
                     except Exception as e:
+                        logging.getLogger(__name__).debug(
+                            "Failure in parse_markdown_to_scenario", exc_info=True
+                        )
                         print(
                             f"   [SpecParser] Critical: LLM Synthesis failed and no manual tasks found: {e}"  # noqa: E501
                         )
@@ -224,7 +228,10 @@ async def parse_markdown_to_scenario(markdown_text: str) -> dict[str, Any]:
                     # Try to parse as JSON if it looks like a dict
                     try:
                         p_val = json.loads(p_val_str.replace("'", '"'))
-                    except:  # noqa: E722
+                    except (json.JSONDecodeError, TypeError, ValueError):
+                        logging.getLogger(__name__).debug(
+                            "Failure in parse_markdown_to_scenario", exc_info=True
+                        )
                         p_val = {"max_limit": 100}  # Default
                     policies[p_name] = p_val
             if policies:
@@ -295,6 +302,7 @@ async def synthesize_tasks_from_prd(markdown_text: str) -> list[dict[str, Any]]:
         tasks = json.loads(content)
         return tasks
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in synthesize_tasks_from_prd", exc_info=True)
         print(f"   [SpecParser] Warning: LLM Task Synthesis failed - {e}")
         return []
 
@@ -304,8 +312,4 @@ def save_scenario_json(scenario: dict[str, Any], output_path: Path):
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(scenario, f, indent=4)
-    print(f"   [SpecParser] Stub saved to: {output_path}")
-
-
-# Backward compatibility alias
-save_scenario_stub = save_scenario_json
+    print(f"   [SpecParser] Scenario template saved to: {output_path}")

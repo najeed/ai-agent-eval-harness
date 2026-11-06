@@ -139,6 +139,9 @@ class RegistryManager:
                     if content:
                         registry = RegistryManager._deep_merge(registry, content)
             except Exception as e:
+                logging.getLogger(__name__).debug(
+                    "Failure in RegistryManager.get_resolved_registry", exc_info=True
+                )
                 print(f"      [Config] Warning: Failed to load internal baseline: {e}")
 
         # 2. Universal Config Discovery (.aes/config/*)
@@ -219,6 +222,9 @@ class RegistryManager:
                 env_override = json.loads(env_json)
                 registry = RegistryManager._deep_merge(registry, env_override)
             except Exception as e:
+                logging.getLogger(__name__).debug(
+                    "Failure in RegistryManager.get_resolved_registry", exc_info=True
+                )
                 print(f"      [Config] Warning: Failed to parse AES_SHIM_RESOURCES_JSON: {e}")
 
         _SHIM_REGISTRY_CACHE = registry
@@ -523,6 +529,7 @@ def get_safe_tmp_dir() -> Path:
         return primary
     except Exception:
         # 2. Fallback to OS default if project root is read-only (unlikely in dev)
+        logging.getLogger(__name__).debug("Failure in get_safe_tmp_dir", exc_info=True)
         import tempfile
 
         fallback = Path(tempfile.gettempdir()) / "aes_eval"

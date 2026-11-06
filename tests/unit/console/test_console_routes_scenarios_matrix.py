@@ -919,7 +919,7 @@ def test_get_canonical_scenario_relative_path_fallbacks(client, tmp_path):
         with patch.object(
             Path,
             "relative_to",
-            side_effect=[ValueError("outside"), Exception("fallback failed")],
+            side_effect=[ValueError("outside"), ValueError("fallback failed")],
         ):
             res = client.get("/scenarios/outside_sc")
             assert res.status_code == 200
@@ -1437,7 +1437,7 @@ def test_scenario_save_hoisting_and_filesystem_fallbacks(client, tmp_path):
     with patch.object(
         Path,
         "relative_to",
-        side_effect=[ValueError("relative_to failed"), Exception("fallback failed")],
+        side_effect=[ValueError("relative_to failed"), ValueError("fallback failed")],
     ):
         res_rel_fb = client.post(
             "/scenarios",

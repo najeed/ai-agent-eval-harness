@@ -1,3 +1,3 @@
 """
-Telecom industry mock data provider.
+Telecom evaluation scenarios and sample datasets.
 """

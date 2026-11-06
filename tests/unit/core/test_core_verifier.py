@@ -44,6 +44,23 @@ from eval_runner.verifier import (
 # --- 1. Fixtures & Scaffolding ---
 
 
+def test_verifier_malformed_trace_is_rejected_with_traceback(caplog):
+    pkg = VerificationPackage.from_dict({"scenario_id": "observability"})
+    with caplog.at_level("DEBUG", logger="eval_runner.verifier"):
+        result = VerificationAuthority.verify_package_artifacts(
+            pkg, raw_trace_bytes=b"{invalid", require_signature=False
+        )
+    assert result["verified"] is False
+    assert any("TraceStreamParsingFailed" in failure for failure in result["failures"])
+    diagnostic = next(
+        r
+        for r in caplog.records
+        if getattr(r, "operation", None) == "verify_package_artifacts"
+        and r.exc_info[0] is json.JSONDecodeError
+    )
+    assert diagnostic.exc_info[1] is not None
+
+
 @pytest.fixture(autouse=True)
 def vault_context(tmp_path, monkeypatch):
     """Setup a controlled test environment with isolated trust and run vaults."""

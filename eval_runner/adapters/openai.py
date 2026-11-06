@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 import os
 import re
 from collections.abc import AsyncIterator
@@ -235,6 +236,9 @@ class OpenAIAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             }
 
         except Exception as exc:
+            logging.getLogger(__name__).debug(
+                "Failure in OpenAIAdapterPlugin.execute_openai_query", exc_info=True
+            )
             emit(
                 "adapter_error",
                 {
@@ -1062,6 +1066,9 @@ class OpenAIAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             try:
                 body = await response.text()
             except Exception:
+                logging.getLogger(__name__).debug(
+                    "Failure in OpenAIAdapterPlugin._read_json_or_error", exc_info=True
+                )
                 body = ""
 
             return {

@@ -384,7 +384,8 @@ class SessionManager:
                     self.plugin_manager.load(prov["path"])
                 except Exception as e:
                     logger.warning(
-                        f"   [Session] Failed to re-load ad-hoc plugin {class_name}: {e}"
+                        f"   [Session] Failed to re-load ad-hoc plugin {class_name}: {e}",
+                        exc_info=True,
                     )
 
         # 2. Forensic Archiving: Preserve logic for non-repudiation
@@ -396,7 +397,8 @@ class SessionManager:
                     self.forensics.archive_plugin(Path(prov["path"]))
                 except Exception as e:
                     logger.warning(
-                        f"   [Session] Failed to archive ad-hoc plugin {class_name}: {e}"
+                        f"   [Session] Failed to archive ad-hoc plugin {class_name}: {e}",
+                        exc_info=True,
                     )
 
         # 3. Provenance Injection: Ensure all plugins are recorded in the session metadata
@@ -716,7 +718,10 @@ class SessionManager:
                 try:
                     proj = node_def.get("state_projection") if isinstance(node_def, dict) else None
                     state_before = await self._acquire_bounded_state(branch_sandbox, proj or [])
-                except Exception:  # noqa: BLE001 - evidence capture must not break execution
+                except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError):  # noqa: BLE001 - evidence capture must not break execution
+                    logger.debug(
+                        "_executor failed", extra={"operation": "_executor"}, exc_info=True
+                    )
                     state_before = None
                 if state_before is not None:
                     state_before_map[exec_id] = copy.deepcopy(state_before)
@@ -789,7 +794,10 @@ class SessionManager:
                         state_after = await self._acquire_bounded_state(
                             sandbox, node_def.get("state_projection") or []
                         )
-                    except Exception:  # noqa: BLE001 - evidence capture must not break execution
+                    except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError):  # noqa: BLE001 - evidence capture must not break execution
+                        logger.debug(
+                            "_executor failed", extra={"operation": "_executor"}, exc_info=True
+                        )
                         state_after = None
                     recon = build_reconciliation_record(
                         node_id=node_id_local,
@@ -972,6 +980,9 @@ class SessionManager:
         except RunSuspendedForApproval:
             raise
         except Exception as e:
+            logger.debug(
+                "execute_tasks failed", extra={"operation": "execute_tasks"}, exc_info=True
+            )
             err_msg = f"Forensic Exception during node execution: {str(e)}"
             import traceback
 
@@ -1100,6 +1111,11 @@ class SessionManager:
             try:
                 LLMProviderFactory.create(provider_name)
             except Exception as e:
+                logger.debug(
+                    "_evaluate_consensus failed",
+                    extra={"operation": "_evaluate_consensus"},
+                    exc_info=True,
+                )
                 votes.append({"judge": name, "status": "UNAVAILABLE", "error": str(e)[:200]})
                 continue
 
@@ -1722,6 +1738,9 @@ class SessionManager:
                 node_success = False
                 break
             except Exception as e:
+                logger.debug(
+                    "_execute_node failed", extra={"operation": "_execute_node"}, exc_info=True
+                )
                 err_msg = f"Agent Node Error: {str(e)}"
                 self.event_bus.emit(
                     CoreEvents.ERROR,
@@ -1780,7 +1799,10 @@ class SessionManager:
             try:
                 proj = node.get("state_projection") if isinstance(node, dict) else None
                 state_after_for_hash = await self._acquire_bounded_state(sandbox, proj or [])
-            except Exception:  # noqa: BLE001
+            except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError):  # noqa: BLE001
+                logger.debug(
+                    "_execute_node failed", extra={"operation": "_execute_node"}, exc_info=True
+                )
                 state_after_for_hash = None
 
             def _hash_state(v: Any) -> str | None:
@@ -2348,7 +2370,12 @@ class SessionManager:
             }
             try:
                 c_bytes = canonical_json_encode(receipt_data)
-            except Exception:
+            except (ValueError, TypeError, OverflowError):
+                logger.debug(
+                    "_ingest_external_tool_receipts failed",
+                    extra={"operation": "_ingest_external_tool_receipts"},
+                    exc_info=True,
+                )
                 c_bytes = json.dumps(receipt_data, sort_keys=True, default=str).encode("utf-8")
 
             receipt_hash = f"sha3_256:{hashlib.sha3_256(c_bytes).hexdigest()}"
@@ -2761,7 +2788,7 @@ class SessionManager:
                         )
                         return resolved_msg
             except Exception as _chk_err:
-                logger.debug("Resumption approval store check failed: %s", _chk_err)
+                logger.debug("Resumption approval store check failed: %s", _chk_err, exc_info=True)
 
         # Calculate pause timing up front, but do not emit a pause until an
         # approval is actually accepted.  A policy/mutation rejection here is
@@ -3046,6 +3073,7 @@ class SessionManager:
                 logger.debug(
                     "Failed checking resumption token approval in gate check: %s",
                     _chk_err,
+                    exc_info=True,
                 )
 
         mode = str(node.get("interaction_mode") or "").strip().lower()
@@ -3224,7 +3252,7 @@ class SessionManager:
             # Standard: Appends current turn telemetry to the pre-initialized CSV.
             self.forensics.record_telemetry(metrics)
         except Exception as e:
-            logger.warning(f"   [Session] Telemetry capture failed: {e}")
+            logger.warning(f"   [Session] Telemetry capture failed: {e}", exc_info=True)
 
 
 # Public Session alias

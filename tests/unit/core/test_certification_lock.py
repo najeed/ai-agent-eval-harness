@@ -138,7 +138,7 @@ def test_verify_active_failure_modes(tmp_path, monkeypatch):
         lock.release()
 
 
-def test_heartbeat_renewal_failure_and_stolen(tmp_path, monkeypatch):
+def test_heartbeat_renewal_failure_and_stolen(tmp_path, monkeypatch, caplog):
     store = LocalFileRunStore(tmp_path)
     store.create_run("run-hb", "scenario")
     lock = PerRunCertificationLock("run-hb", timeout_seconds=1.0, run_store=store)
@@ -167,6 +167,11 @@ def test_heartbeat_renewal_failure_and_stolen(tmp_path, monkeypatch):
     assert isinstance(lock._lease_failure, RuntimeError)
     assert "CertificationLeaseRenewalFailed" in str(lock._lease_failure)
     assert isinstance(lock._lease_failure.__cause__, ConnectionError)
+    diagnostic = next(
+        r for r in caplog.records if getattr(r, "operation", None) == "renew_certification_lease"
+    )
+    assert diagnostic.run_id == "run-hb"
+    assert diagnostic.exc_info[0] is ConnectionError
 
     # 3. Test heartbeat unrenewed (stolen)
     lock._lease_failure = None
@@ -259,6 +264,32 @@ def test_acquire_failure_after_registration_and_release_failure(tmp_path, monkey
     assert "run-registered-fail" not in PerRunCertificationLock._active_locks
 
 
+@pytest.mark.parametrize("body_fails", [False, True])
+def test_lease_exit_failure_is_observable_and_preserves_body_error(
+    tmp_path, monkeypatch, caplog, body_fails
+):
+    store = LocalFileRunStore(tmp_path)
+    run_id = "lease-exit-observability"
+    store.create_run(run_id, "scenario")
+    lock = PerRunCertificationLock(run_id, run_store=store)
+
+    def fail_release(*args, **kwargs):
+        raise OSError("lease release unavailable")
+
+    monkeypatch.setattr(store, "release_certification_lease", fail_release)
+    expected = ValueError if body_fails else OSError
+    with caplog.at_level("DEBUG", logger="eval_runner.certification_lock"):
+        with pytest.raises(expected):
+            with lock:
+                if body_fails:
+                    raise ValueError("original certification failure")
+    diagnostic = next(r for r in caplog.records if getattr(r, "operation", None) == "release_lease")
+    assert diagnostic.run_id == run_id
+    assert diagnostic.exc_info[0] is OSError
+    assert not lock._acquired
+    assert run_id not in PerRunCertificationLock._active_locks
+
+
 def test_context_manager_protocol(tmp_path):
     store = LocalFileRunStore(tmp_path)
     store.create_run("run-ctx", "scenario")
@@ -269,6 +300,20 @@ def test_context_manager_protocol(tmp_path):
 
     assert not lock._acquired
     assert not store.is_certification_leased("run-ctx")
+
+
+def test_provider_rejected_lease_release_is_observable(tmp_path, monkeypatch, caplog):
+    store = LocalFileRunStore(tmp_path)
+    run_id = "lease-release-rejected"
+    store.create_run(run_id, "scenario")
+    lock = PerRunCertificationLock(run_id, run_store=store)
+    lock.acquire()
+    monkeypatch.setattr(store, "release_certification_lease", lambda *args, **kwargs: False)
+    lock.release()
+    diagnostic = next(r for r in caplog.records if getattr(r, "operation", None) == "release_lease")
+    assert diagnostic.run_id == run_id
+    assert "rejected" in diagnostic.message
+    assert not lock._acquired
 
 
 def test_concurrent_certification_caller_times_out_then_acquires_after_release(tmp_path):

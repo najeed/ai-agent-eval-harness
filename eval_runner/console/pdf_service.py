@@ -41,7 +41,8 @@ if (
     except (ImportError, OSError) as e:
         logger.warning(
             f"WeasyPrint or its GTK dependencies not available. "
-            f"Using ReportLab as fallback engine. Error: {e}"
+            f"Using ReportLab as fallback engine. Error: {e}",
+            exc_info=True,
         )
 
 # Try importing ReportLab
@@ -60,7 +61,7 @@ try:
 
     REPORTLAB_AVAILABLE = True
 except ImportError as e:
-    logger.error(f"ReportLab is not available: {e}")
+    logger.error(f"ReportLab is not available: {e}", exc_info=True)
 
 
 def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
@@ -278,7 +279,9 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
             logger.info(f"WeasyPrint compiled PDF successfully at: {output_path}")
             return True
         except Exception as e:
-            logger.error(f"WeasyPrint execution failed, falling back to ReportLab: {e}")
+            logger.error(
+                f"WeasyPrint execution failed, falling back to ReportLab: {e}", exc_info=True
+            )
 
     # 3. Fallback to ReportLab
     if REPORTLAB_AVAILABLE:
@@ -416,7 +419,7 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
             logger.info(f"ReportLab compiled PDF successfully at: {output_path}")
             return True
         except Exception as e:
-            logger.error(f"ReportLab generation failed: {e}")
+            logger.error(f"ReportLab generation failed: {e}", exc_info=True)
 
     # If both failed or are unavailable, write a text layout report
     try:
@@ -440,7 +443,7 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
         output_path.write_bytes(txt_path.read_bytes())
         return True
     except Exception as e:
-        logger.error(f"Last fallback text report generator failed: {e}")
+        logger.error(f"Last fallback text report generator failed: {e}", exc_info=True)
         return False
 
 
@@ -523,7 +526,7 @@ def generate_bundle_pdf(suite_data: dict, run_list: list, output_path: Path) -> 
             weasyprint.HTML(string=html_content).write_pdf(str(output_path))
             return True
         except Exception as e:
-            logger.error(f"WeasyPrint companion PDF generation failed: {e}")
+            logger.error(f"WeasyPrint companion PDF generation failed: {e}", exc_info=True)
 
     # 3. Fallback to ReportLab
     if REPORTLAB_AVAILABLE:
@@ -643,7 +646,7 @@ def generate_bundle_pdf(suite_data: dict, run_list: list, output_path: Path) -> 
             doc.build(story)
             return True
         except Exception as e:
-            logger.error(f"ReportLab companion PDF generation failed: {e}")
+            logger.error(f"ReportLab companion PDF generation failed: {e}", exc_info=True)
 
     # Fallback to Text report
     try:
@@ -660,5 +663,5 @@ def generate_bundle_pdf(suite_data: dict, run_list: list, output_path: Path) -> 
         output_path.write_bytes(txt_path.read_bytes())
         return True
     except Exception as e:
-        logger.error(f"Failed to generate fallback txt summary report: {e}")
+        logger.error(f"Failed to generate fallback txt summary report: {e}", exc_info=True)
         return False

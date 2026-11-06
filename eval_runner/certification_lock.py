@@ -100,6 +100,11 @@ class PerRunCertificationLock:
             try:
                 renewed = self._renew_lease()
             except Exception as exc:  # provider failures must fail certification closed
+                logger.warning(
+                    "Certification lease heartbeat failed",
+                    extra={"operation": "renew_certification_lease", "run_id": self.run_id},
+                    exc_info=True,
+                )
                 self._lease_failure = RuntimeError(
                     f"CertificationLeaseRenewalFailed: {self.run_id}"
                 )
@@ -179,7 +184,12 @@ class PerRunCertificationLock:
                         context=self.context,
                     )
                 except Exception as lease_err:
-                    logger.debug("Failed to release certification lease on abort: %s", lease_err)
+                    logger.warning(
+                        "Failed to release certification lease on abort: %s",
+                        lease_err,
+                        extra={"operation": "release_lease_on_abort", "run_id": self.run_id},
+                        exc_info=True,
+                    )
             self._thread_lock.release()
             raise
 
@@ -195,12 +205,24 @@ class PerRunCertificationLock:
             return
         try:
             self._stop_heartbeat()
-            self.run_store.release_certification_lease(
+            released = self.run_store.release_certification_lease(
                 self.run_id,
                 owner_id=self.owner_id,
                 fencing_token=self.fencing_token,
                 context=self.context,
             )
+            if not released:
+                logger.warning(
+                    "Provider rejected certification lease release",
+                    extra={"operation": "release_lease", "run_id": self.run_id},
+                )
+        except (OSError, RuntimeError, ValueError, TypeError, AttributeError):
+            logger.warning(
+                "Certification lease release failed",
+                extra={"operation": "release_lease", "run_id": self.run_id},
+                exc_info=True,
+            )
+            raise
         finally:
             with self._meta_lock:
                 self._active_locks.discard(self.run_id)
@@ -212,7 +234,16 @@ class PerRunCertificationLock:
         return self
 
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
-        self.release()
+        try:
+            self.release()
+        except (OSError, RuntimeError, ValueError, TypeError, AttributeError):
+            if exc_val is None:
+                raise
+            logger.debug(
+                "Preserving certification failure after lease cleanup failed",
+                extra={"operation": "exit_certification_lease", "run_id": self.run_id},
+                exc_info=True,
+            )
 
 
 __all__ = ["PerRunCertificationLock"]

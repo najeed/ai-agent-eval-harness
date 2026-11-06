@@ -4,6 +4,7 @@ utils.py
 Architectural utilities for the AgentV harness.
 """
 
+import logging
 import os
 import shutil
 import stat
@@ -65,7 +66,8 @@ def is_path_safe(target: str | Path, base: str | Path) -> bool:
                 return True
 
         return False
-    except Exception as e:
+    except (OSError, ValueError, TypeError, RuntimeError) as e:
+        logging.getLogger(__name__).debug("Failure in is_path_safe", exc_info=True)
         import sys
 
         sys.stderr.write(f"   [Utils] CRITICAL: Path resolution error (Fail-Closed): {e}\n")
@@ -123,7 +125,10 @@ def rmtree_resilient(path: str | Path, retries: int = 5, delay: float = 0.2):
         try:
             os.chmod(path, stat.S_IWRITE)
             func(path)
-        except Exception as e:
+        except OSError as e:
+            logging.getLogger(__name__).debug(
+                "Failure in rmtree_resilient.handle_errors", exc_info=True
+            )
             import sys
 
             sys.stderr.write(f"   [Utils] Warning: Failed to force R/W bits on {path}: {e}\n")
@@ -140,7 +145,8 @@ def rmtree_resilient(path: str | Path, retries: int = 5, delay: float = 0.2):
                     temp_name = p.parent / f"{p.name}.deleted.{int(time.time())}"
                     p.rename(temp_name)
                     shutil.rmtree(temp_name, ignore_errors=True)
-                except Exception as e:
+                except OSError as e:
+                    logging.getLogger(__name__).debug("Failure in rmtree_resilient", exc_info=True)
                     import sys
 
                     sys.stderr.write(

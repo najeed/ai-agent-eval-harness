@@ -253,7 +253,7 @@ def test_evaluate_scenario_load_fail(client, console_jail):
     scen_path = console_jail["root"] / "broken.json"
     scen_path.write_text("{}", encoding="utf-8")
 
-    with patch("eval_runner.loader.load_scenario", side_effect=Exception("Corrupt Spec")):
+    with patch("eval_runner.loader.load_scenario", side_effect=ValueError("Corrupt Spec")):
         res = client.post("/api/v1/evaluate", json={"path": str(scen_path)})
         assert res.status_code == 500
         assert "Corrupt Spec" in res.get_json()["error"]

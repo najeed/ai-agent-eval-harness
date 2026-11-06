@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 import pytest
+import requests
 
 from eval_runner.events import CoreEvents
 from eval_runner.live_bridge_plugin import RemoteBridgePlugin
@@ -41,7 +42,7 @@ def test_plugin_check_console_active(plugin):
     with patch("requests.get") as mock_get:
         # Reset and force failure
         plugin.active = None
-        mock_get.side_effect = Exception("Down")
+        mock_get.side_effect = requests.ConnectionError("Down")
         plugin._check_console_active()
         assert plugin.active is False
 
@@ -69,7 +70,7 @@ def test_plugin_disables_on_failure(plugin):
     plugin.active = True
 
     with patch("requests.post") as mock_post:
-        mock_post.side_effect = Exception("Console died")
+        mock_post.side_effect = requests.ConnectionError("Console died")
         plugin.on_agent_turn_start(context)
 
         assert plugin.active is False

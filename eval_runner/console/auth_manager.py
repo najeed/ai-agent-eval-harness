@@ -1,5 +1,6 @@
 import importlib
 import json
+import logging
 import os
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -13,6 +14,8 @@ from agentv_runtime.scope import (
 )
 from eval_runner.interfaces.auth import AuthorizationBackend, AuthPrincipal
 from eval_runner.runtime_services import resolve_authorization_backend
+
+logger = logging.getLogger(__name__)
 
 
 class Permission:
@@ -324,6 +327,7 @@ class StaticKeyProvider(AuthManager):
             return normalize_entitlements(user)
         except Exception:
             # Denial, malformed provider data and outages all fail closed.
+            logger.debug("authenticate failed", extra={"operation": "authenticate"}, exc_info=True)
             return None
 
     def verify_token(self, token: str) -> dict | None:
@@ -358,6 +362,9 @@ class StaticKeyProvider(AuthManager):
             )
             return self.backend.check_permission(principal, permission_node, "") is True
         except Exception:
+            logger.debug(
+                "has_permission failed", extra={"operation": "has_permission"}, exc_info=True
+            )
             return False
 
     def get_service_credential(self) -> str | None:
@@ -365,6 +372,11 @@ class StaticKeyProvider(AuthManager):
             credential = self.backend.get_service_credential()
             return credential if isinstance(credential, str) and credential else None
         except Exception:
+            logger.debug(
+                "get_service_credential failed",
+                extra={"operation": "get_service_credential"},
+                exc_info=True,
+            )
             return None
 
 

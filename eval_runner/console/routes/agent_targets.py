@@ -220,7 +220,7 @@ def _probe_endpoint(protocol: str, endpoint: str, timeout: float = 5.0) -> dict[
             "message": f"Endpoint responded HTTP {e.code} (server-side status, transport OK).",
         }
     except Exception as e:
-        logger.debug("Agent target probe failed for %s: %s", endpoint, e)
+        logger.debug("Agent target probe failed for %s: %s", endpoint, e, exc_info=True)
         return {
             "reachable": False,
             "tier": "UNREACHABLE",
@@ -252,7 +252,9 @@ class AgentTargetStore:
             targets = data.get("targets") if isinstance(data, dict) else None
             return targets if isinstance(targets, dict) else {}
         except Exception as e:
-            logger.warning("Agent target registry unreadable at %s: %s", self._path, e)
+            logger.warning(
+                "Agent target registry unreadable at %s: %s", self._path, e, exc_info=True
+            )
             return {}
 
     def _save_unlocked(self, targets: dict[str, dict[str, Any]]) -> None:
@@ -359,7 +361,7 @@ def save_agent_target():
     except AgentTargetValidationError as e:
         return jsonify({"error": str(e)}), 400
     except Exception as e:
-        logger.error("Failed to persist agent target: %s", e)
+        logger.error("Failed to persist agent target: %s", e, exc_info=True)
         return jsonify({"error": "Failed to persist agent target."}), 500
     return jsonify(target), 201
 

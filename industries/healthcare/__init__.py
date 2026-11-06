@@ -1,3 +1,3 @@
 """
-Healthcare industry mock data provider.
+Healthcare evaluation scenarios and sample datasets.
 """

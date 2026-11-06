@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import glob
+import logging
 import os
 import sys
 
@@ -293,6 +294,7 @@ def extract(
             click.echo("Pipeline completed but produced no results.")
 
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in extract", exc_info=True)
         click.echo(f"Error: Pipeline failed gracefully. Reason: {str(e)}")
         sys.exit(1)
 

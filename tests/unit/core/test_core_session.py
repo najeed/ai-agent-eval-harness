@@ -1460,7 +1460,7 @@ def test_session_ingest_external_tool_receipts(base_scenario, tmp_path):
 
     # 7. Fallback on canonical json failure
     with patch(
-        "agentv_runtime.canonical.canonical_json_encode", side_effect=Exception("encode fail")
+        "agentv_runtime.canonical.canonical_json_encode", side_effect=ValueError("encode fail")
     ):
         receipts_fallback = session._ingest_external_tool_receipts(
             agent_response={"tool_calls": [{"tool": "t_fb", "arguments": {}}]},

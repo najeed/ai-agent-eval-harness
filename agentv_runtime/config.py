@@ -413,6 +413,9 @@ class RuntimeWorkerConfigConsumer:
                 diagnostics=[],
             )
         except Exception as exc:
+            logging.getLogger(__name__).debug(
+                "Failure in RuntimeWorkerConfigConsumer.consume_and_reload", exc_info=True
+            )
             return InstanceObservation(
                 instance_id=self.instance_id,
                 consumed_fingerprint="",

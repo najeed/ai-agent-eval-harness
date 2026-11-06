@@ -25,6 +25,66 @@ from eval_runner.storage_resolver import (
 )
 
 
+def test_run_store_corrupt_json_retains_failure_diagnostics(tmp_path, monkeypatch, caplog):
+    path = tmp_path / "corrupt.json"
+    path.write_text("{incomplete", encoding="utf-8")
+    monkeypatch.setattr("eval_runner.reference.local_run_store.time.sleep", lambda _: None)
+    with caplog.at_level("DEBUG", logger="eval_runner.reference.local_run_store"):
+        assert LocalFileRunStore._read_json(path) is None
+    diagnostic = next(r for r in caplog.records if getattr(r, "operation", None) == "_read_json")
+    assert diagnostic.exc_info[0] is json.JSONDecodeError
+
+
+def test_cleanup_failure_is_not_suppressed_by_unrelated_callers_exception(tmp_path, monkeypatch):
+    target = tmp_path / "artifact.json"
+
+    def denied_cleanup(*args, **kwargs):
+        raise PermissionError("cleanup unavailable")
+
+    monkeypatch.setattr(Path, "unlink", denied_cleanup)
+    try:
+        raise ValueError("unrelated caller error")
+    except ValueError:
+        with pytest.raises(PermissionError, match="cleanup unavailable"):
+            LocalFileRunStore._write_bytes_durable(target, b"published")
+    assert target.read_bytes() == b"published"
+
+
+@pytest.mark.parametrize("write_fails", [False, True])
+def test_durable_write_cleanup_failure_is_observable_without_masking_write(
+    tmp_path, monkeypatch, caplog, write_fails
+):
+    target = tmp_path / "artifact.json"
+    target.write_bytes(b"original")
+    unlink = Path.unlink
+    original_error = OSError("durable write failed")
+
+    def denied_cleanup(path, *args, **kwargs):
+        if path.suffix == ".tmp":
+            raise PermissionError("staging cleanup denied")
+        return unlink(path, *args, **kwargs)
+
+    def fail_write(*args, **kwargs):
+        raise original_error
+
+    monkeypatch.setattr(Path, "unlink", denied_cleanup)
+    if write_fails:
+        monkeypatch.setattr("eval_runner.reference.local_run_store.os.fsync", fail_write)
+    expected = OSError if write_fails else PermissionError
+    with caplog.at_level("DEBUG", logger="eval_runner.reference.local_run_store"):
+        with pytest.raises(expected) as caught:
+            LocalFileRunStore._write_bytes_durable(target, b"replacement")
+    diagnostic = next(
+        r for r in caplog.records if getattr(r, "operation", None) == "cleanup_durable_write"
+    )
+    assert diagnostic.exc_info[0] is PermissionError
+    if write_fails:
+        assert caught.value is original_error
+        assert target.read_bytes() == b"original"
+    else:
+        assert target.read_bytes() == b"replacement"
+
+
 @pytest.fixture(autouse=True)
 def isolated_provider():
     reset_run_storage_provider()

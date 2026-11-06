@@ -137,6 +137,9 @@ class UnstructuredProvider(BaseProvider):
 
                             content = pytesseract.image_to_string(Image.open(path))
                         except Exception:
+                            logging.getLogger(__name__).debug(
+                                "Failure in UnstructuredProvider.extract", exc_info=True
+                            )
                             import easyocr
 
                             reader = easyocr.Reader(["en"])

@@ -421,10 +421,18 @@ def test_forensics_extended_coverage_matrix(tmp_path):
 
     # 6. _bound_interaction_payload: canonical_json_encode exception fallback
     with patch(
-        "agentv_runtime.canonical.canonical_json_encode", side_effect=Exception("Encode err")
+        "agentv_runtime.canonical.canonical_json_encode", side_effect=TypeError("unsupported value")
     ):
         res_fallback = _bound_interaction_payload({"large": "y" * 1000}, max_bytes=50)
         assert "__BOUNDED_INTERACTION__" in res_fallback
+        import hashlib
+        import json
+
+        expected_bytes = json.dumps({"large": "y" * 1000}, default=str).encode("utf-8")
+        assert res_fallback["__BOUNDED_INTERACTION__"]["content_hash"] == (
+            f"sha3_256:{hashlib.sha3_256(expected_bytes).hexdigest()}"
+        )
+        assert res_fallback["__BOUNDED_INTERACTION__"]["byte_length"] == len(expected_bytes)
 
     # 7. _bound_interaction_payload: outer exception returns original data
     with patch("json.dumps", side_effect=TypeError("Not serializable")):
@@ -434,14 +442,14 @@ def test_forensics_extended_coverage_matrix(tmp_path):
     # 8. list_diff: not old and len(new) > MAX_INLINE_ITEMS with canonical fallback
     big_new = [f"val_{i}" for i in range(150)]
     with patch(
-        "agentv_runtime.canonical.canonical_json_encode", side_effect=Exception("Encode err")
+        "agentv_runtime.canonical.canonical_json_encode", side_effect=TypeError("unsupported value")
     ):
         bounded_res = list_diff([], big_new)
         assert "__LIST_DIFF_BOUNDED__" in bounded_res
 
     # 9. list_diff: non-dict items exceeding MAX_INLINE_ITEMS with canonical fallback
     with patch(
-        "agentv_runtime.canonical.canonical_json_encode", side_effect=Exception("Encode err")
+        "agentv_runtime.canonical.canonical_json_encode", side_effect=TypeError("unsupported value")
     ):
         bounded_nondict = list_diff([1, 2], [i for i in range(120)])
         assert "__LIST_DIFF_BOUNDED__" in bounded_nondict
@@ -450,7 +458,7 @@ def test_forensics_extended_coverage_matrix(tmp_path):
     unkeyed_old = [{"name": f"n_{i}"} for i in range(5)]
     unkeyed_new = [{"name": f"n_{i}"} for i in range(120)]
     with patch(
-        "agentv_runtime.canonical.canonical_json_encode", side_effect=Exception("Encode err")
+        "agentv_runtime.canonical.canonical_json_encode", side_effect=TypeError("unsupported value")
     ):
         bounded_unkeyed = list_diff(unkeyed_old, unkeyed_new)
         assert "__LIST_DIFF_BOUNDED__" in bounded_unkeyed
@@ -459,7 +467,7 @@ def test_forensics_extended_coverage_matrix(tmp_path):
     pk_old = [{"id": i, "val": i} for i in range(120)]
     pk_new = [{"id": i, "val": i + 1} for i in range(120)]
     with patch(
-        "agentv_runtime.canonical.canonical_json_encode", side_effect=Exception("Encode err")
+        "agentv_runtime.canonical.canonical_json_encode", side_effect=TypeError("unsupported value")
     ):
         bounded_mutations = list_diff(pk_old, pk_new)
         assert "__LIST_DIFF_BOUNDED__" in bounded_mutations
@@ -497,7 +505,7 @@ def test_forensics_extended_coverage_matrix(tmp_path):
     # 15. ForensicCollector.snapshot_state: oversized snapshot with canonical fallback
     big_state = {f"k_{i}": "v" * 10000 for i in range(60)}
     with patch(
-        "agentv_runtime.canonical.canonical_json_encode", side_effect=Exception("Encode err")
+        "agentv_runtime.canonical.canonical_json_encode", side_effect=TypeError("unsupported value")
     ):
         collector.snapshot_state(big_state, turn=2)
         assert store.get_artifact("test_run_branch", "forensics/state_turn_002_diff.json")

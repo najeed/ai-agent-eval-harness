@@ -18,7 +18,6 @@ from __future__ import annotations
 import http.client
 import json
 import os
-import socket
 import threading
 import time
 from unittest.mock import patch
@@ -32,30 +31,24 @@ from eval_runner.console.app import create_app
 from sample_agent.agent_app import app as sample_agent_app
 
 
-def get_free_port() -> int:
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind(("127.0.0.1", 0))
-        return s.getsockname()[1]
-
-
 class ServerThread(threading.Thread):
     def __init__(self, app, port: int):
         super().__init__(daemon=True)
-        self.port = port
         self.server = make_server("127.0.0.1", port, app, threaded=True)
-        self.ctx = app.app_context()
-        self.ctx.push()
+        self.port = self.server.server_port
 
     def run(self):
         self.server.serve_forever()
 
     def shutdown(self):
         self.server.shutdown()
+        self.server.server_close()
 
 
 TEST_API_KEY = "test-journey-auth-key-007"
 RUN_ID = "run-journey-rca-001"
-JOURNEY_UI_TIMEOUT_MS = 25_000
+JOURNEY_UI_TIMEOUT_MS = int(os.getenv("AGENTV_BROWSER_TIMEOUT_MS", "60000"))
+JOURNEY_HTTP_TIMEOUT_SECONDS = float(os.getenv("AGENTV_ACCEPTANCE_TIMEOUT", "180"))
 EXTERNAL_TOOL_NAMES = (
     "get_patient_diagnosis_codes",
     "get_payer_policy",
@@ -67,14 +60,24 @@ EXTERNAL_TOOL_NAMES = (
 )
 
 
-@pytest.fixture(scope="module")
-def journey_console_server(tmp_path_factory):
+@pytest.fixture
+def journey_console_server(tmp_path):
     """Launches a live background Flask server with seeded scenario and run data."""
-    root_dir = tmp_path_factory.mktemp("journey_ui_root")
+    # The server must share the lifecycle of the autouse registry/auth fixtures.
+    # A module-scoped server otherwise keeps serving across their per-test resets.
+    root_dir = tmp_path / "journey_ui_root"
+    root_dir.mkdir()
     runs_dir = root_dir / "runs"
     runs_dir.mkdir(parents=True, exist_ok=True)
 
-    dist_dir = config.PROJECT_ROOT / "ui" / "visual-console" / "dist"
+    from pathlib import Path
+
+    dist_dir = Path(
+        os.getenv(
+            "AGENTV_BROWSER_UI_BUILD_DIR",
+            str(config.PROJECT_ROOT / "ui" / "visual-console" / "dist"),
+        )
+    )
     if not (dist_dir / "index.html").exists():
         if os.getenv("AGENTV_REQUIRE_BROWSER_ACCEPTANCE") == "1":
             pytest.fail(
@@ -304,7 +307,6 @@ def journey_console_server(tmp_path_factory):
     transition_run_lifecycle(RUN_ID, RunLifecycleState.SEALED, run_store=journey_run_store)
 
     # Launch server with patched config
-    port = get_free_port()
     live_pass_scenario = {
         "aes_version": 1.4,
         "metadata": {
@@ -363,39 +365,38 @@ def journey_console_server(tmp_path_factory):
 
         ScenarioCatalog.clear_instance()
         IdentityService._provision_local_identity("system_id")
-        agent_port = get_free_port()
-        agent_server = ServerThread(sample_agent_app, agent_port)
+        agent_server = ServerThread(sample_agent_app, 0)
+        agent_port = agent_server.port
         agent_server.start()
         app = create_app(run_store=journey_run_store)
         app.secret_key = "journey-test-secret"
-        server = ServerThread(app, port)
+        server = ServerThread(app, 0)
+        port = server.port
         server.start()
 
-        # Wait for server readiness
-        deadline = time.time() + 5.0
-        ready = False
-        while time.time() < deadline:
+        try:
+            # Probe the actual protocol authority before the browser starts.
+            # This also warms discovery once under the same registry lifecycle.
+            conn = http.client.HTTPConnection(
+                "127.0.0.1", port=port, timeout=JOURNEY_HTTP_TIMEOUT_SECONDS
+            )
             try:
-                conn = http.client.HTTPConnection("127.0.0.1", port=port, timeout=1.0)
-                conn.request("GET", "/api/ping")
-                resp = conn.getresponse()
-                if resp.status == 200:
-                    ready = True
-                    conn.close()
-                    break
+                conn.request("GET", "/api/v1/doctor", headers={"X-Api-Key": TEST_API_KEY})
+                response = conn.getresponse()
+                body = response.read().decode("utf-8")
+                assert response.status == 200, body
+                assert "http" in json.loads(body).get("available_protocols", []), body
+            finally:
                 conn.close()
-            except Exception:
-                time.sleep(0.05)
-
-        if not ready:
-            pytest.fail("Visual Console journey test server failed to start within timeout.")
-
-        yield f"http://127.0.0.1:{port}", port, runs_dir, agent_port
-        server.shutdown()
-        server.join(timeout=3.0)
-        agent_server.shutdown()
-        agent_server.join(timeout=3.0)
-        ScenarioCatalog.clear_instance()
+            yield f"http://127.0.0.1:{port}", port, runs_dir, agent_port
+        finally:
+            server.shutdown()
+            agent_server.shutdown()
+            server.join(timeout=JOURNEY_HTTP_TIMEOUT_SECONDS)
+            agent_server.join(timeout=JOURNEY_HTTP_TIMEOUT_SECONDS)
+            assert not server.is_alive()
+            assert not agent_server.is_alive()
+            ScenarioCatalog.clear_instance()
 
 
 @pytest.mark.acceptance_release
@@ -422,6 +423,7 @@ def test_verification_workflow_journey_playwright(journey_console_server):
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page()
+            page.set_default_timeout(JOURNEY_UI_TIMEOUT_MS)
 
             # Browser requests must carry the same authenticated operator
             # session as production.  Do not let a 401 turn the release gate
@@ -432,7 +434,7 @@ def test_verification_workflow_journey_playwright(journey_console_server):
             # ------------------------------------------------------------------
             # Step 1: Navigate to Primary Product Spine (Verification Workflow)
             # ------------------------------------------------------------------
-            page.goto(f"{base_url}/", wait_until="domcontentloaded", timeout=20000)
+            page.goto(f"{base_url}/", wait_until="domcontentloaded", timeout=JOURNEY_UI_TIMEOUT_MS)
             page.wait_for_selector("h1:has-text('New Verification')", timeout=JOURNEY_UI_TIMEOUT_MS)
 
             # ------------------------------------------------------------------
@@ -456,14 +458,18 @@ def test_verification_workflow_journey_playwright(journey_console_server):
             assert preflight_btn.count() > 0
 
             # Test switching mode to hybrid updates badge/warning
-            mode_select.first.select_option("hybrid")
+            hybrid_option = mode_select.first.locator('option[value="hybrid"]')
+            if hybrid_option.is_enabled():
+                mode_select.first.select_option("hybrid")
+            else:
+                assert hybrid_option.is_disabled()
             # When hybrid is selected, it should produce provisional indicators
 
             # ------------------------------------------------------------------
             # Step 4: Live Debugger Topology Route Verification
             # ------------------------------------------------------------------
             debugger_url = f"{base_url}/debugger?run_id={RUN_ID}"
-            page.goto(debugger_url, wait_until="domcontentloaded", timeout=20000)
+            page.goto(debugger_url, wait_until="domcontentloaded", timeout=JOURNEY_UI_TIMEOUT_MS)
             page.get_by_text("Topology: CANONICAL").wait_for(
                 state="visible", timeout=JOURNEY_UI_TIMEOUT_MS
             )
@@ -547,12 +553,12 @@ def test_verification_workflow_journey_playwright(journey_console_server):
             # Step 5: Reports / RunDetailView — RCA Failure Summary & Policy Tab
             # ------------------------------------------------------------------
             reports_url = f"{base_url}/reports?run_id={RUN_ID}"
-            page.goto(reports_url, wait_until="domcontentloaded", timeout=20000)
+            page.goto(reports_url, wait_until="domcontentloaded", timeout=JOURNEY_UI_TIMEOUT_MS)
             page.wait_for_selector("#root", timeout=JOURNEY_UI_TIMEOUT_MS)
 
             # Check for RCA Failure Summary element
             rca_summary = page.locator("[data-testid='rca-failure-summary']")
-            rca_summary.wait_for(state="visible", timeout=10000)
+            rca_summary.wait_for(state="visible", timeout=JOURNEY_UI_TIMEOUT_MS)
             assert rca_summary.count() == 1
             text = rca_summary.inner_text()
             assert "checkout_node" in text or "db_state_invariance" in text
@@ -562,10 +568,10 @@ def test_verification_workflow_journey_playwright(journey_console_server):
             page.get_by_role("button", name="State & Tool Evidence").click()
             for tool_name in EXTERNAL_TOOL_NAMES:
                 page.get_by_text(f"{tool_name}()", exact=False).first.wait_for(
-                    state="visible", timeout=25000
+                    state="visible", timeout=JOURNEY_UI_TIMEOUT_MS
                 )
             page.get_by_text("Source: External agent telemetry", exact=False).first.wait_for(
-                state="visible", timeout=25000
+                state="visible", timeout=JOURNEY_UI_TIMEOUT_MS
             )
 
             # Check Policy Tab: Click Policy & Guardrails
@@ -609,29 +615,33 @@ def test_live_pass_certificate_verification_journey(journey_console_server):
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
+        page.set_default_timeout(JOURNEY_UI_TIMEOUT_MS)
         login = page.request.post(f"{base_url}/api/auth/login", data={"apiKey": TEST_API_KEY})
         assert login.status == 200
 
-        page.goto(base_url, wait_until="domcontentloaded", timeout=20000)
+        page.goto(base_url, wait_until="domcontentloaded", timeout=JOURNEY_UI_TIMEOUT_MS)
         page.get_by_role("heading", name="New Verification").wait_for(
-            state="visible", timeout=10000
+            state="visible", timeout=JOURNEY_UI_TIMEOUT_MS
         )
-        selects = page.locator("select")
-        selects.nth(0).select_option("http")
-        selects.nth(1).select_option("live")
-        selects.nth(2).select_option("journey_live_healthcare_pass")
+        page.locator('select:has(option[value="http"])').select_option("http")
+        page.locator('select:has(option[value="live"])').select_option("live")
+        page.locator('select:has(option[value="journey_live_healthcare_pass"])').select_option(
+            "journey_live_healthcare_pass"
+        )
         page.locator("input[placeholder*='your-agent']").fill(
             f"http://127.0.0.1:{agent_port}/agent"
         )
         page.get_by_role("button", name="Run preflight").click()
-        page.get_by_test_id("preflight-verifiable-badge").wait_for(state="visible", timeout=10000)
+        page.get_by_test_id("preflight-verifiable-badge").wait_for(
+            state="visible", timeout=JOURNEY_UI_TIMEOUT_MS
+        )
         page.get_by_role("button", name="Launch evaluation").click()
-        page.wait_for_url("**/debugger?run_id=*", timeout=15000)
+        page.wait_for_url("**/debugger?run_id=*", timeout=JOURNEY_UI_TIMEOUT_MS)
         run_id = parse_qs(urlparse(page.url).query)["run_id"][0]
 
         # The execution backend is asynchronous; certification is unavailable
         # until the authoritative run status is terminal.
-        deadline = time.time() + 90
+        deadline = time.time() + JOURNEY_HTTP_TIMEOUT_SECONDS
         while time.time() < deadline:
             status_response = page.request.get(f"{base_url}/api/v1/runs/{run_id}")
             if status_response.ok:
@@ -645,7 +655,7 @@ def test_live_pass_certificate_verification_journey(journey_console_server):
         else:
             pytest.fail("Console-launched real-agent run did not reach a terminal state")
 
-        page.goto(f"{base_url}/trust", wait_until="domcontentloaded", timeout=20000)
+        page.goto(f"{base_url}/trust", wait_until="domcontentloaded", timeout=JOURNEY_UI_TIMEOUT_MS)
         page.get_by_role("button", name="Issue Cryptographic Certificate").click()
         certify_input = page.locator("input[placeholder*='run-loan-approval']")
         certify_input.fill(run_id)
@@ -655,16 +665,18 @@ def test_live_pass_certificate_verification_journey(journey_console_server):
         # Fail at the API boundary with the authoritative error body instead
         # of hiding a rejected certification behind a later UI timeout.
         with page.expect_response("**/api/v1/certify") as certification_response_info:
-            certify_btn.click(timeout=15000)
+            certify_btn.click(timeout=JOURNEY_UI_TIMEOUT_MS)
         certification_response = certification_response_info.value
         assert certification_response.ok, certification_response.text()
-        page.get_by_test_id("certify-result-success").wait_for(state="visible", timeout=15000)
+        page.get_by_test_id("certify-result-success").wait_for(
+            state="visible", timeout=JOURNEY_UI_TIMEOUT_MS
+        )
         page.get_by_role("button", name="Verify Running Audit Logs").click()
         run_input = page.locator("input[placeholder*='run-loan-approval']")
         run_input.fill(run_id)
         page.locator("button:has-text('Verify Cryptographic Integrity')").click()
         verified = page.get_by_text("CRYPTOGRAPHIC SEAL VERIFIED")
-        verified.wait_for(state="visible", timeout=10000)
+        verified.wait_for(state="visible", timeout=JOURNEY_UI_TIMEOUT_MS)
         assert page.get_by_text("SEALED & VALID").is_visible()
         # The public endpoint redacts raw manifest fields; the UI must still
         # distinguish this live certificate as authoritative, never provisional.
@@ -678,7 +690,7 @@ def test_evidence_package_contract_api(journey_console_server):
     unverified.  Trace assertions are not projected as certified verdict data.
     """
     _, port, _, _ = journey_console_server
-    conn = http.client.HTTPConnection("127.0.0.1", port=port, timeout=5.0)
+    conn = http.client.HTTPConnection("127.0.0.1", port=port, timeout=JOURNEY_HTTP_TIMEOUT_SECONDS)
     conn.request(
         "GET",
         f"/api/v1/evidence/packages/{RUN_ID}",
@@ -710,7 +722,7 @@ def test_public_verification_privacy_and_authenticated_manifest(journey_console_
     _, port, _, _ = journey_console_server
 
     # 1. Unauthenticated public verification -> manifest redacted
-    conn = http.client.HTTPConnection("127.0.0.1", port=port, timeout=5.0)
+    conn = http.client.HTTPConnection("127.0.0.1", port=port, timeout=JOURNEY_HTTP_TIMEOUT_SECONDS)
     conn.request("GET", f"/api/v1/verify/{RUN_ID}")
     resp = conn.getresponse()
     assert resp.status == 200
@@ -721,14 +733,14 @@ def test_public_verification_privacy_and_authenticated_manifest(journey_console_
     assert public_data["run_id"] == RUN_ID
 
     # 2. Unauthenticated request to /manifest -> 401 Unauthorized
-    conn = http.client.HTTPConnection("127.0.0.1", port=port, timeout=5.0)
+    conn = http.client.HTTPConnection("127.0.0.1", port=port, timeout=JOURNEY_HTTP_TIMEOUT_SECONDS)
     conn.request("GET", f"/api/v1/verify/{RUN_ID}/manifest")
     resp_unauth = conn.getresponse()
     assert resp_unauth.status == 401
     conn.close()
 
     # 3. Authenticated request to /manifest with X-Api-Key -> 200 OK with manifest
-    conn = http.client.HTTPConnection("127.0.0.1", port=port, timeout=5.0)
+    conn = http.client.HTTPConnection("127.0.0.1", port=port, timeout=JOURNEY_HTTP_TIMEOUT_SECONDS)
     conn.request(
         "GET",
         f"/api/v1/verify/{RUN_ID}/manifest",

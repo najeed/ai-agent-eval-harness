@@ -56,6 +56,32 @@ def revision_service(tmp_path: Path) -> ConfigurationRevisionService:
     return ConfigurationRevisionService(storage_root=tmp_path / "aes_revisions")
 
 
+@pytest.mark.parametrize(
+    "operation", ["list_revisions", "_load_record_locked", "_load_active_revision_locked"]
+)
+def test_corrupt_revision_data_is_observable_and_not_adopted(
+    revision_service, sample_scope, caplog, operation
+):
+    scope = derive_verified_scope(sample_scope)
+    revision_dir = revision_service._scope_dir(scope)
+    revision_dir.mkdir(parents=True, exist_ok=True)
+    path = (
+        revision_service._active_pointer_file(scope)
+        if operation == "_load_active_revision_locked"
+        else revision_service._record_file(scope, "rev_corrupt")
+    )
+    path.write_text("{corrupt", encoding="utf-8")
+    with caplog.at_level("DEBUG", logger="eval_runner.services.config_revision"):
+        if operation == "list_revisions":
+            assert revision_service.list_revisions(sample_scope) == []
+        elif operation == "_load_record_locked":
+            assert revision_service._load_record_locked(scope, "rev_corrupt") is None
+        else:
+            assert revision_service._load_active_revision_locked(scope) is None
+    record = next(r for r in caplog.records if getattr(r, "operation", None) == operation)
+    assert record.exc_info[0] is json.JSONDecodeError
+
+
 # ---------------------------------------------------------------------------
 # Section 1: Mandate Authority Clarification & Participation
 # ---------------------------------------------------------------------------

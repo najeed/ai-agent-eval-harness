@@ -1,3 +1,3 @@
 """
-Industries package for mock data collections.
+Industry-specific evaluation scenarios and sample data collections.
 """

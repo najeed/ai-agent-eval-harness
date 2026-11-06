@@ -197,7 +197,7 @@ def test_system_route_info_agent_providers(client):
 def test_system_route_cleanup_runs_exception(client):
     """Test cleanup_runs error branch"""
     with patch(
-        "eval_runner.console.routes.system.get_run_store", side_effect=Exception("Disk locked")
+        "eval_runner.console.routes.system.get_run_store", side_effect=OSError("Disk locked")
     ):
         res = client.post("/api/cleanup-runs")
         assert res.status_code == 500
@@ -205,10 +205,10 @@ def test_system_route_cleanup_runs_exception(client):
 
 
 def test_system_route_doctor_audit_exception(client):
-    """Test doctor audit error branch (Lines 300-301)"""
+    """Test doctor audit error branch"""
     with patch(
         "eval_runner.console.routes.system.get_simulator_registry",
-        side_effect=Exception("Doctor audit failed"),
+        side_effect=RuntimeError("Doctor audit failed"),
     ):
         res = client.get("/api/v1/doctor")
         assert res.status_code == 500

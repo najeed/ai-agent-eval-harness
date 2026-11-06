@@ -163,7 +163,8 @@ def scan_python_packages(
                 match = re.match(r"^([a-zA-Z0-9_\-\.]+)(?:==|>=|<=|~=|>|<)?(.*)$", clean_line)
                 if match:
                     names.append((match.group(1).strip(), match.group(2).strip() or "latest"))
-        except Exception:
+        except (tomllib.TOMLDecodeError, OSError, KeyError, TypeError, ValueError) as exc:
+            sys.stderr.write(f"  [WARN] TOML parse fallback for {source_file.name}: {exc}\n")
             # Fallback regex parsing
             in_deps = False
             for line in text.splitlines():
@@ -253,8 +254,10 @@ def scan_python_optional_packages(
                     if pkg_name.lower() not in existing_names:
                         names.append((pkg_name, match.group(2).strip() or "latest"))
                         existing_names.add(pkg_name.lower())
-    except Exception:
-        pass
+    except (tomllib.TOMLDecodeError, OSError, KeyError, TypeError, ValueError) as exc:
+        sys.stderr.write(
+            f"  [WARN] Failed to parse optional dependencies from {source_file.name}: {exc}\n"
+        )
 
     seen = set()
     for name, req_ver in names:
@@ -294,7 +297,15 @@ def check_or_sync_requirements(
     try:
         data = tomllib.loads(pyproject_path.read_text(encoding="utf-8"))
         pyproject_deps = data.get("project", {}).get("dependencies", [])
-    except Exception:
+    except (
+        tomllib.TOMLDecodeError,
+        OSError,
+        UnicodeDecodeError,
+        KeyError,
+        TypeError,
+        ValueError,
+    ) as exc:
+        sys.stderr.write(f"  [WARN] Failed to read dependencies from {pyproject_path}: {exc}\n")
         return False
 
     existing_deps: list[str] = []
@@ -330,7 +341,17 @@ def check_composite_extras_drift(pyproject_path: Path) -> bool:
     try:
         data = tomllib.loads(pyproject_path.read_text(encoding="utf-8"))
         opt_deps: dict[str, list[str]] = data.get("project", {}).get("optional-dependencies", {})
-    except Exception:
+    except (
+        tomllib.TOMLDecodeError,
+        OSError,
+        UnicodeDecodeError,
+        KeyError,
+        TypeError,
+        ValueError,
+    ) as exc:
+        sys.stderr.write(
+            f"  [WARN] Failed to read optional-dependencies from {pyproject_path}: {exc}\n"
+        )
         return False
 
     composite_groups = {"all", "frameworks", "langchain-all"}

@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from pathlib import Path
 from urllib.parse import urlparse
@@ -25,6 +26,9 @@ from .routes import (
     system_bp,
     trust_bp,
 )
+
+logger = logging.getLogger(__name__)
+
 
 # Ensure environment variables are loaded before ANY other configuration usage (R6)
 load_dotenv()
@@ -235,7 +239,8 @@ def create_app(*, run_store=None):
                         f"bootstrap.key: {chmod_err}",
                         flush=True,
                     )
-            except Exception as e:
+            except (OSError, ValueError) as e:
+                logger.debug("create_app failed", extra={"operation": "create_app"}, exc_info=True)
                 print(f"   [Console][WARN] Could not write bootstrap.key: {e}", flush=True)
 
         config.SERVICE_API_KEY = bootstrap_key
@@ -506,6 +511,7 @@ def create_app(*, run_store=None):
             try:
                 method(app, nav_registry)
             except Exception as e:
+                logger.debug("create_app failed", extra={"operation": "create_app"}, exc_info=True)
                 err_msg = str(e)
                 print(
                     f"   [Console] Warning: Route registration failed for "
@@ -727,7 +733,10 @@ def manage_pid_file():
                                 proc.wait(timeout=5)
                             except psutil.TimeoutExpired:
                                 proc.kill()
-        except Exception as e:
+        except (OSError, ValueError, TypeError, psutil.Error) as e:
+            logger.debug(
+                "manage_pid_file failed", extra={"operation": "manage_pid_file"}, exc_info=True
+            )
             sys.stderr.write(f"   [Guard] PID cleanup warning: {e}\n")
 
     # Register current PID
@@ -748,7 +757,10 @@ def manage_pid_file():
 
                 if should_unlink:
                     pid_path.unlink()
-            except Exception as e:
+            except (OSError, ValueError, TypeError) as e:
+                logger.debug(
+                    "cleanup_pid failed", extra={"operation": "cleanup_pid"}, exc_info=True
+                )
                 import sys
 
                 sys.stderr.write(f"   [Guard] PID cleanup failed: {e}\n")

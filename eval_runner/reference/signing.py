@@ -3,14 +3,17 @@ eval_runner.reference.signing
 OSS Reference Implementations: LocalEd25519SigningBackend, NullSigningBackend, and PQCSigningBackend
 """
 
+import logging
 from pathlib import Path
 from typing import Any
 
-from cryptography.exceptions import InvalidSignature
+from cryptography.exceptions import InvalidSignature, UnsupportedAlgorithm
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
 from eval_runner.interfaces.signing import SigningBackend
+
+logger = logging.getLogger(__name__)
 
 
 class LocalEd25519SigningBackend(SigningBackend):
@@ -103,6 +106,7 @@ class LocalEd25519SigningBackend(SigningBackend):
                 else:
                     return False
             except (OSError, ValueError):
+                logger.debug("Public key input could not be read as a file", exc_info=True)
                 pub_bytes = (
                     public_key_identifier.encode("utf-8")
                     if isinstance(public_key_identifier, str)
@@ -139,7 +143,16 @@ class LocalEd25519SigningBackend(SigningBackend):
             sig_bytes = bytes.fromhex(signature)
             public_key.verify(sig_bytes, payload)
             return True
-        except (InvalidSignature, ValueError, TypeError, Exception):
+        except (
+            InvalidSignature,
+            UnsupportedAlgorithm,
+            ValueError,
+            TypeError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+        ):
+            logger.debug("Local signature verification failed", exc_info=True)
             return False
 
 

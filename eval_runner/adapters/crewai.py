@@ -1500,7 +1500,8 @@ def _stringify_jsonable(
             ensure_ascii=False,
             sort_keys=True,
         )
-    except Exception:
+    except (TypeError, ValueError, OverflowError, RecursionError):
+        logger.debug("Failure in _stringify_jsonable", exc_info=True)
         return str(safe)
 
 

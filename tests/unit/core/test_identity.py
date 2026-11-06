@@ -366,3 +366,14 @@ def test_identity_service_corrupt_public_key(tmp_path):
             IdentityService.get_public_key(identity_id, auto_provision=False)
     finally:
         config.TRUST_ROOT = original_root
+
+
+def test_identity_malformed_environment_key_is_observable(tmp_path, monkeypatch, caplog):
+    identity = "observability_missing_key"
+    monkeypatch.setattr(config, "TRUST_ROOT", tmp_path)
+    monkeypatch.setenv(f"AES_PUBLIC_KEY_{identity.upper()}", "invalid-pem")
+    with caplog.at_level("DEBUG", logger="eval_runner.identity"):
+        assert IdentityService.get_public_key(identity, auto_provision=False) is None
+    diagnostic = next(r for r in caplog.records if "environment variable" in r.message)
+    assert diagnostic.exc_info[0] is ValueError
+    assert "invalid-pem" not in caplog.text

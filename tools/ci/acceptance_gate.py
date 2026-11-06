@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import logging
 import os
 import sys
 from dataclasses import asdict, dataclass
@@ -250,7 +251,8 @@ def main() -> int:
     try:
         with open(summary_file, encoding="utf-8") as f:
             summary = json.load(f)
-    except Exception as e:
+    except (OSError, ValueError) as e:
+        logging.getLogger(__name__).debug("Acceptance summary could not be read", exc_info=True)
         print(f"[ACCEPTANCE GATE] ERROR: Failed to parse summary: {e}", file=sys.stderr)
         return 1
 
@@ -259,7 +261,8 @@ def main() -> int:
         manifest_path = (REPO_ROOT / manifest_path).resolve()
     try:
         suite = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
-    except Exception as exc:
+    except (OSError, ValueError, yaml.YAMLError) as exc:
+        logging.getLogger(__name__).debug("Acceptance manifest could not be read", exc_info=True)
         print(f"[ACCEPTANCE GATE] ERROR: Invalid suite manifest: {exc}", file=sys.stderr)
         return 1
     decision = evaluate_summary(summary, suite)

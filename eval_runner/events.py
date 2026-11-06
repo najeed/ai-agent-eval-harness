@@ -91,6 +91,9 @@ def _execute_subscriber_with_context(sub, event, otel_ctx):
         else:
             sub(event)
     except Exception as e:
+        logging.getLogger(__name__).debug(
+            "Failure in _execute_subscriber_with_context", exc_info=True
+        )
         print(f"   [Events] Error in subscriber callback: {e}")
     finally:
         if token is not None:
@@ -161,6 +164,7 @@ class EventEmitter:
                     sub.__self__.close_all()
             except Exception as e:
                 # Forensic Transparency: Log cleanup failures for auditing
+                logging.getLogger(__name__).debug("Failure in EventEmitter.reset", exc_info=True)
                 print(f"   [Events] Warning: Subscriber cleanup failure: {e}")
         self._subscribers = []
         self._keyed_subscribers = {}
@@ -219,6 +223,7 @@ class EventEmitter:
                                 logger.debug("OTel detach skipped: %s", _e, exc_info=True)
                 except Exception as e:
                     # Core stays stable even if subscribers fail
+                    logging.getLogger(__name__).debug("Failure in EventEmitter.emit", exc_info=True)
                     print(f"   [Events] Error in subscriber for {name}: {e}")
             return
 
@@ -273,6 +278,7 @@ class EventEmitter:
                     with self._lock:
                         self._pending_futures.append(future)
             except Exception as e:
+                logging.getLogger(__name__).debug("Failure in EventEmitter.emit", exc_info=True)
                 print(f"   [Events] Error scheduling subscriber for {name}: {e}")
 
     # --- Lifecycle Management ---

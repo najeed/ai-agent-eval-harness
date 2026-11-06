@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 import aiohttp
 
@@ -40,6 +41,7 @@ async def run_playground(agent_url: str):
                     else:
                         print(f"❌ Error {response.status}")
             except Exception as e:
+                logging.getLogger(__name__).debug("Failure in run_playground", exc_info=True)
                 print(f"❌ Connection Error: {e}")
             print("-" * 30 + "\n")
 

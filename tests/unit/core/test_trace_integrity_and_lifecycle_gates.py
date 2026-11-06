@@ -987,7 +987,7 @@ def test_scenarios_readiness_loader_fallback_and_error(tmp_path, monkeypatch):
 
         # 1. When loader.load_scenario fails, fallback to json.load succeeds
         with patch(
-            "eval_runner.loader.load_scenario", side_effect=Exception("Simulated loader failure")
+            "eval_runner.loader.load_scenario", side_effect=ValueError("Simulated loader failure")
         ):
             res = client.post(
                 "/api/scenarios/readiness",
@@ -1002,7 +1002,7 @@ def test_scenarios_readiness_loader_fallback_and_error(tmp_path, monkeypatch):
 
         # 2. When both loader and json.load fail, logger.debug is called and check fails
         with (
-            patch("eval_runner.loader.load_scenario", side_effect=Exception("Loader fail")),
+            patch("eval_runner.loader.load_scenario", side_effect=ValueError("Loader fail")),
             patch("builtins.open", side_effect=OSError("Read fail")),
         ):
             res2 = client.post(

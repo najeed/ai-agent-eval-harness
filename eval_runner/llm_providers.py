@@ -1,4 +1,6 @@
+import logging
 from abc import ABC, abstractmethod
+from typing import Any
 
 import aiohttp
 
@@ -14,6 +16,106 @@ from .llm_resilience import (
     classify_llm_error,
     execute_with_resilience,
 )
+
+logger = logging.getLogger(__name__)
+
+
+async def _discover_models(
+    endpoint: str,
+    api_key: str | None,
+    headers: dict[str, str],
+    provider: str,
+    catalog: list[dict[str, Any]],
+    *,
+    paginated: bool = False,
+) -> list[dict[str, Any]]:
+    """Discover an authenticated catalog; only missing credentials/transport outages fall back."""
+    from eval_runner.adapters.common import assert_airgap_safe_endpoint
+
+    assert_airgap_safe_endpoint(endpoint)
+    if not api_key:
+        return catalog
+
+    async def request_catalog():
+        models = []
+        seen_cursors = set()
+        params = {}
+        async with aiohttp.ClientSession() as session:
+            while True:
+                try:
+                    async with session.get(
+                        endpoint,
+                        headers=headers,
+                        params=params,
+                        allow_redirects=False,
+                        timeout=aiohttp.ClientTimeout(total=30),
+                    ) as response:
+                        if response.status != 200:
+                            # Classify status without logging credentials or response bodies.
+                            raise classify_llm_error(
+                                aiohttp.ClientResponseError(
+                                    response.request_info,
+                                    response.history,
+                                    status=response.status,
+                                    message="Model discovery failed",
+                                ),
+                                provider=provider,
+                            )
+                        payload = await response.json()
+                except aiohttp.ClientSSLError as exc:
+                    raise LLMInvalidRequestError(
+                        "Model discovery TLS verification failed", provider=provider
+                    ) from exc
+                except (ValueError, aiohttp.ContentTypeError) as exc:
+                    raise LLMInvalidRequestError(
+                        "Invalid JSON model catalog", provider=provider
+                    ) from exc
+                except (aiohttp.ClientConnectionError, TimeoutError) as exc:
+                    raise LLMTransientError(
+                        "Model discovery transport unavailable",
+                        provider=provider,
+                        raw_error=exc,
+                    ) from exc
+                if not isinstance(payload, dict) or not isinstance(payload.get("data"), list):
+                    raise LLMInvalidRequestError("Malformed model catalog", provider=provider)
+                for model in payload["data"]:
+                    if (
+                        not isinstance(model, dict)
+                        or not isinstance(model.get("id"), str)
+                        or not model["id"]
+                    ):
+                        raise LLMInvalidRequestError("Malformed model entry", provider=provider)
+                    models.append(
+                        {
+                            **model,
+                            "name": model.get("display_name") or model.get("name") or model["id"],
+                        }
+                    )
+                more = payload.get("has_more", False)
+                if not paginated or more is False:
+                    return models
+                cursor = payload.get("last_id")
+                if (
+                    more is not True
+                    or not isinstance(cursor, str)
+                    or not cursor
+                    or cursor in seen_cursors
+                ):
+                    raise LLMInvalidRequestError("Invalid model pagination", provider=provider)
+                seen_cursors.add(cursor)
+                params = {"after_id": cursor}
+
+    try:
+        return await execute_with_resilience(request_catalog, provider=provider)
+    except LLMTransientError as exc:
+        if not isinstance(exc.raw_error, (aiohttp.ClientConnectionError, TimeoutError)):
+            raise
+        logger.warning(
+            "Model discovery offline; using configured catalog",
+            extra={"operation": "list_models", "provider": provider},
+            exc_info=True,
+        )
+        return catalog
 
 
 class LLMProvider(ABC):
@@ -115,7 +217,15 @@ class OllamaProvider(LLMProvider):
                         return data.get("models", [])
                     else:
                         return []
-            except:  # noqa: E722
+            except (
+                aiohttp.ClientError,
+                TimeoutError,
+                ValueError,
+                TypeError,
+                AttributeError,
+                Exception,
+            ):
+                logger.debug("Failure in OllamaProvider.list_models", exc_info=True)
                 return []
 
 
@@ -194,7 +304,15 @@ class OpenAIProvider(LLMProvider):
                         return future_models + data.get("data", [])
                     else:
                         return future_models
-            except:  # noqa: E722
+            except (
+                aiohttp.ClientError,
+                TimeoutError,
+                ValueError,
+                TypeError,
+                AttributeError,
+                Exception,
+            ):
+                logger.debug("Failure in OpenAIProvider.list_models", exc_info=True)
                 return future_models
 
 
@@ -258,9 +376,18 @@ class AnthropicProvider(LLMProvider):
 
     async def list_models(self) -> list:
         """Lists available models for Anthropic."""
-        return [
+        catalog = [
             {"id": "claude-opus-5", "name": "Claude Opus 5"},
         ]
+        base = self.base_url.rstrip("/").removesuffix("/messages")
+        return await _discover_models(
+            f"{base}/models",
+            self.api_key,
+            {"x-api-key": self.api_key or "", "anthropic-version": config.ANTHROPIC_VERSION},
+            "anthropic",
+            catalog,
+            paginated=True,
+        )
 
 
 class GeminiProvider(LLMProvider):
@@ -343,6 +470,9 @@ class GeminiProvider(LLMProvider):
                 models.append({"id": m.name, "name": m.display_name or m.name})
             return models
         except Exception as e:
+            logging.getLogger(__name__).debug(
+                "Failure in GeminiProvider.list_models", exc_info=True
+            )
             print(f"      [Gemini] Failed to list models: {e}")
             return []
 
@@ -365,12 +495,19 @@ class GrokProvider(LLMProvider):
         return await provider.generate(prompt, **kwargs)
 
     async def list_models(self) -> list:
-        """Lists available models for Grok (future series)."""
-        return [
+        """List the models authorized for the configured xAI account."""
+        catalog = [
             {"id": "grok-4.20-beta-0309", "name": "Grok 4.20 Beta"},
             {"id": "grok-4-fast", "name": "Grok 4 Fast"},
             {"id": "grok-4-mini", "name": "Grok 4 Mini"},
         ]
+        return await _discover_models(
+            f"{config.XAI_BASE_URL.rstrip('/')}/models",
+            self.api_key,
+            {"Authorization": f"Bearer {self.api_key or ''}"},
+            "grok",
+            catalog,
+        )
 
 
 class LLMProviderFactory:

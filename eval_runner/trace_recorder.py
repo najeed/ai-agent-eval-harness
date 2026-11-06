@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from datetime import datetime
 from pathlib import Path
 
@@ -80,6 +81,9 @@ async def record_interaction(agent_url: str, *, run_store=None, context: dict | 
                         else:
                             print(f"  ❌ Error: Agent returned status {response.status}")
                 except Exception as e:
+                    logging.getLogger(__name__).debug(
+                        "Failure in record_interaction", exc_info=True
+                    )
                     print(f"  ❌ Error: Failed to contact agent: {e}")
 
     finally:
@@ -101,8 +105,6 @@ async def record_interaction(agent_url: str, *, run_store=None, context: dict | 
                 for e in events:
                     f.write(json.dumps(e, cls=AESJsonEncoder) + "\n")
         except OSError as exc:
-            import logging
-
             logging.getLogger("eval_runner.trace_recorder").warning(
                 "Could not mirror trace to legacy path: %s", exc
             )

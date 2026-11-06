@@ -10,12 +10,18 @@ and evidence graph root, rather than manufacturing trust from loose trace events
 from __future__ import annotations
 
 import hashlib
+import logging
 from collections.abc import Mapping
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from typing import Any
 
+from cryptography.exceptions import InvalidSignature, UnsupportedAlgorithm
+
 from agentv_runtime.canonical import canonical_json_encode
+
+logger = logging.getLogger(__name__)
+
 
 FINALIZATION_SCHEMA_VERSION = "1.0.0"
 
@@ -289,7 +295,16 @@ class EvaluatorFinalizationRecord:
                 signer = IdentityService.get_private_key(
                     self.evaluator_identity, auto_provision=True
                 )
-            except Exception as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                InvalidSignature,
+                UnsupportedAlgorithm,
+            ) as e:
                 raise ValueError(
                     f"Could not resolve private key for '{self.evaluator_identity}': {e}"
                 ) from e
@@ -325,7 +340,21 @@ class EvaluatorFinalizationRecord:
             if hasattr(signer, "get_public_key") and callable(signer.get_public_key):
                 try:
                     pub_key = signer.get_public_key(self.evaluator_identity)
-                except Exception:
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    InvalidSignature,
+                    UnsupportedAlgorithm,
+                ):
+                    logger.debug(
+                        "sign failed",
+                        extra={"operation": "sign", "identity_id": self.evaluator_identity},
+                        exc_info=True,
+                    )
                     pub_key = None
             sig_raw = signer.sign_payload(
                 payload_bytes, self.evaluator_identity, purpose=FINALIZATION
@@ -373,14 +402,28 @@ class EvaluatorFinalizationRecord:
                     public_key = IdentityService.get_public_key(
                         self.evaluator_identity, auto_provision=False
                     )
-            except Exception:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                InvalidSignature,
+                UnsupportedAlgorithm,
+            ):
+                logger.debug(
+                    "verify_signature failed",
+                    extra={"operation": "verify_signature", "identity_id": self.evaluator_identity},
+                    exc_info=True,
+                )
                 public_key = None
 
         if not public_key:
             return False
 
-        payload_bytes = self.canonical_payload_bytes()
         try:
+            payload_bytes = self.canonical_payload_bytes()
             from agentv_runtime.signatures import (
                 FINALIZATION,
                 resolve_policy,
@@ -391,7 +434,21 @@ class EvaluatorFinalizationRecord:
             return verify_artifact_signature(
                 payload_bytes, self.evaluator_signature, policy, FINALIZATION
             )
-        except Exception:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            InvalidSignature,
+            UnsupportedAlgorithm,
+        ):
+            logger.debug(
+                "verify_signature failed",
+                extra={"operation": "verify_signature", "identity_id": self.evaluator_identity},
+                exc_info=True,
+            )
             return False
 
 

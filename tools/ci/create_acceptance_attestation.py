@@ -61,7 +61,8 @@ def resolve_commit_sha(explicit: str | None = None) -> str:
             ["git", "rev-parse", "HEAD"], cwd=REPO_ROOT, text=True
         ).strip()
         return out
-    except Exception:
+    except (OSError, subprocess.SubprocessError) as exc:
+        sys.stderr.write(f"[create_acceptance_attestation] Warning: git rev-parse failed: {exc}\n")
         return "0000000000000000000000000000000000000000"
 
 

@@ -82,6 +82,9 @@ def load_plugins_from_args(args):
             try:
                 registry.load(p.strip())
             except Exception as e:
+                logging.getLogger(__name__).debug(
+                    "Failure in load_plugins_from_args", exc_info=True
+                )
                 print(f"   [CLI] Warning: Failed to load plugin {p}: {e}")
 
 
@@ -129,6 +132,7 @@ async def handle_evaluate(args):
         )
 
     except Exception:
+        logging.getLogger(__name__).debug("Failure in handle_evaluate", exc_info=True)
         print("❌ Error loading dataset:")
         traceback.print_exc()
         return 1
@@ -174,6 +178,7 @@ async def handle_evaluate(args):
 
         return 0
     except Exception:
+        logging.getLogger(__name__).debug("Failure in handle_evaluate", exc_info=True)
         print("❌ Error during evaluation execution:")
         traceback.print_exc()
         return 1
@@ -183,6 +188,7 @@ async def handle_evaluate(args):
 
             await AdapterSessionManager.close_all()
         except Exception as e:
+            logging.getLogger(__name__).debug("Failure in handle_evaluate", exc_info=True)
             print(f"   [CLI] Warning: Failed to close adapter sessions: {e}")
 
 
@@ -268,6 +274,7 @@ async def handle_run(args):
         )
         return 0
     except Exception:
+        logging.getLogger(__name__).debug("Failure in handle_run", exc_info=True)
         print("❌ Error during evaluation:")
         traceback.print_exc()
         return 1
@@ -277,6 +284,7 @@ async def handle_run(args):
 
             await AdapterSessionManager.close_all()
         except Exception as e:
+            logging.getLogger(__name__).debug("Failure in handle_run", exc_info=True)
             print(f"   [CLI] Warning: Failed to close adapter sessions: {e}")
 
 
@@ -292,6 +300,7 @@ async def handle_record(args):
         await trace_recorder.record_interaction(args.agent, run_store=resolve_run_store())
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_record", exc_info=True)
         print(f"❌ [ERROR] Recording FAILED: {e}")
         return 1
 
@@ -306,6 +315,7 @@ async def handle_playground(args):
         await playground.run_playground(args.agent)
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_playground", exc_info=True)
         print(f"❌ [ERROR] Playground FAILED: {e}")
         return 1
 
@@ -352,6 +362,7 @@ async def handle_replay(args):
 
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_replay", exc_info=True)
         print(f"❌ [ERROR] Replay FAILED: {e}")
         return 1
 
@@ -391,6 +402,7 @@ async def handle_verify(args):
             print("      [CRITICAL] FAILED: Trace integrity compromised!")
             return 1
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_verify", exc_info=True)
         print(f"❌ [ERROR] Verification FAILED: {e}")
         return 1
 
@@ -480,6 +492,7 @@ async def handle_verify_package(args):
                 print(f"    - Failure: {failure}")
             return 1
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_verify_package", exc_info=True)
         print(f"❌ Error during package verification: {e}")
         return 1
 
@@ -533,6 +546,7 @@ async def handle_gate(args):
         return 0
 
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_gate", exc_info=True)
         print(f"[GATE] FAILURE: Unexpected failure during gating: {e}")
         return 1
 
@@ -589,6 +603,7 @@ async def handle_certify(args):
         return 0
 
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_certify", exc_info=True)
         print(f"❌ Error during certification: {e}")
         return 1
 
@@ -715,5 +730,6 @@ async def handle_hitl_resume(args):
         return 0
 
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_hitl_resume", exc_info=True)
         print(f"❌ Error during hitl-resume: {e}")
         return 1

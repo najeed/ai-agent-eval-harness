@@ -24,6 +24,44 @@ from agentv_runtime.package import VerificationPackage
 from eval_runner.verifier import VerificationAuthority
 
 
+def test_package_trust_provider_outage_is_observable(caplog):
+    class UnavailableTrustRoot:
+        def get_public_key(self, identity):
+            raise OSError("trust provider unavailable")
+
+    pkg = VerificationPackage.from_dict({"scenario_id": "observability"}).sign(MockEd25519Signer())
+    with caplog.at_level("DEBUG", logger="agentv_runtime.package"):
+        assert pkg.verify_signature(trust_root=UnavailableTrustRoot()) is False
+    diagnostic = next(
+        r for r in caplog.records if getattr(r, "operation", None) == "verify_signature"
+    )
+    assert diagnostic.identity_id == pkg.signer_identity
+    assert diagnostic.exc_info[0] is OSError
+
+
+def test_package_unreadable_trust_file_is_observable(tmp_path, monkeypatch, caplog):
+    from pathlib import Path
+
+    pkg = VerificationPackage.from_dict({"scenario_id": "observability"}).sign(MockEd25519Signer())
+    key_file = tmp_path / pkg.signer_identity / "public_key.pem"
+    key_file.parent.mkdir()
+    key_file.write_text(pkg.public_key_pem, encoding="utf-8")
+    read_text = Path.read_text
+
+    def denied(path, *args, **kwargs):
+        if path == key_file:
+            raise PermissionError("trust file denied")
+        return read_text(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "read_text", denied)
+    with caplog.at_level("DEBUG", logger="agentv_runtime.package"):
+        assert pkg.verify_signature(trust_root=tmp_path) is False
+    diagnostic = next(
+        r for r in caplog.records if getattr(r, "operation", None) == "verify_signature"
+    )
+    assert diagnostic.exc_info[0] is PermissionError
+
+
 class MockEd25519Signer:
     def __init__(self, identity: str = "auditor-node-01"):
         self.private_key = ed25519.Ed25519PrivateKey.generate()

@@ -469,7 +469,7 @@ def test_cleanup_runs_missing_directory_returns_zero(client):
 def test_cleanup_runs_exception_returns_500(client):
     """Verify cleanup_runs returns 500 on store error."""
     with patch(
-        "eval_runner.console.routes.system.get_run_store", side_effect=Exception("Disk locked")
+        "eval_runner.console.routes.system.get_run_store", side_effect=OSError("Disk locked")
     ):
         res = client.post("/api/cleanup-runs")
         assert res.status_code == 500

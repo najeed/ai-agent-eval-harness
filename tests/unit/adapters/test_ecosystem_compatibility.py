@@ -7,10 +7,18 @@ from eval_runner import loader, plugins
 from eval_runner.exporter import HFExporter
 
 
-def test_benchmark_uri_loading():
-    """Test that gaia:// URIs are correctly caught and rejected by the loader."""
-    with pytest.raises(NotImplementedError):
-        loader.load_scenario("gaia://test_2023")
+def test_benchmark_uri_loading(tmp_path):
+    """Benchmark dispatch reads real records and rejects an absent dataset."""
+    dataset = tmp_path / "gaia.jsonl"
+    dataset.write_text(
+        json.dumps({"task_id": "task-2023", "Question": "What is 2 + 2?", "Final answer": "4"}),
+        encoding="utf-8",
+    )
+    scenarios = loader.load_scenario(f"gaia://{dataset.as_posix()}")
+    assert scenarios[0]["metadata"]["benchmark"]["source_id"] == "task-2023"
+    assert scenarios[0]["workflow"]["nodes"][0]["expected_outcome"][0]["expected"] == "4"
+    with pytest.raises(FileNotFoundError):
+        loader.load_scenario(f"gaia://{(tmp_path / 'missing.jsonl').as_posix()}")
 
 
 def test_adapter_plugin_loading():

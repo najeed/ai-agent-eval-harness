@@ -1,3 +1,3 @@
 """
-Finance industry mock data provider.
+Finance evaluation scenarios and sample datasets.
 """

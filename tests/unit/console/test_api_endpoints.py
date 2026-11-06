@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
+import requests
 from flask import Flask
 
 from eval_runner import config
@@ -116,8 +117,8 @@ def test_console_repro_routing_error_handling_boost():
     sys.modules.pop("eval_runner.console.repro_routing", None)
 
     with (
-        patch("requests.post", side_effect=Exception("Connection refused")),
-        patch("requests.get", side_effect=Exception("Connection refused")),
+        patch("requests.post", side_effect=requests.ConnectionError("Connection refused")),
+        patch("requests.get", side_effect=requests.ConnectionError("Connection refused")),
         patch("builtins.print") as mock_print,
     ):
         import eval_runner.console.repro_routing  # noqa: F401

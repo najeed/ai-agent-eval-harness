@@ -1,4 +1,5 @@
 import json
+import logging
 import sys
 import uuid
 from pathlib import Path
@@ -43,7 +44,8 @@ def _get_aes_registry(schema_path: Path, root_schema: dict):
 
                     registry = registry.with_resource(def_uri, def_resource)
                     registry = registry.with_resource(rel_uri, def_resource)
-            except Exception:
+            except (OSError, json.JSONDecodeError, UnicodeDecodeError, ValueError, TypeError):
+                logging.getLogger(__name__).debug("Failure in _get_aes_registry", exc_info=True)
                 continue
     return registry
 
@@ -147,6 +149,7 @@ def generate_interactive():
             print(f"❌ Internal Validation Error for {identifier}: {ve.message}")
             continue
         except Exception as e:
+            logging.getLogger(__name__).debug("Failure in generate_interactive", exc_info=True)
             print(f"⚠ Warning: Could not perform internal validation: {e}")
 
         filename = f"{identifier}.json"

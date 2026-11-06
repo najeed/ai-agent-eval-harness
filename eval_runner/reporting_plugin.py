@@ -5,6 +5,7 @@ Handles evaluation reports, reproduction scripts, and notifications.
 Moved out of the core to allow Enterprise hot-swapping.
 """
 
+import logging
 from datetime import datetime
 from pathlib import Path
 
@@ -58,10 +59,6 @@ class ReportingPlugin(BaseEvalPlugin):
         if isinstance(last_content, dict):
             return last_content.get("summary") or last_content.get("content") or ""
         return str(last_content)
-
-    def on_register_commands(self, registry):
-        """Plugins now use a secure namespace registry instead of extend_cli"""
-        pass
 
     def after_evaluation(self, context: EvaluationContext, results: list):
         """Automatically called when evaluation finishes."""
@@ -189,4 +186,7 @@ agentv run --scenario {scenario_path}
                     else:
                         print(f"   [ReportingPlugin] Webhook failed: {response.status}")
         except Exception as e:
+            logging.getLogger(__name__).debug(
+                "Failure in ReportingPlugin.dispatch_notifications", exc_info=True
+            )
             print(f"   [ReportingPlugin] Error dispatching notification: {e}")

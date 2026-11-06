@@ -174,6 +174,7 @@ def _unwrap_graph_output(value: Any) -> Any:
             try:
                 candidate = getattr(value, attr)
             except Exception:
+                logging.getLogger(__name__).debug("Failure in _unwrap_graph_output", exc_info=True)
                 continue
 
             if candidate is not None:
@@ -674,6 +675,9 @@ class LangGraphAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             )
 
         except Exception as exc:
+            logging.getLogger(__name__).debug(
+                "Failure in LangGraphAdapterPlugin.execute_langgraph_node", exc_info=True
+            )
             return self._error_result(
                 node_id=node_id,
                 message=f"LangGraph execution failed: {exc}",
@@ -1231,6 +1235,9 @@ class LangGraphAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                 try:
                     state["values"] = json_safe(snapshot.values)
                 except Exception as exc:
+                    logging.getLogger(__name__).debug(
+                        "Failure in LangGraphAdapterPlugin._read_state", exc_info=True
+                    )
                     state["values_error"] = {
                         "type": type(exc).__name__,
                         "message": bounded_text(

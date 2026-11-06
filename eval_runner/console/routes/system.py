@@ -504,7 +504,10 @@ def get_system_info():
 
     try:
         store_name = type(get_run_store()).__name__
-    except Exception:
+    except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError):
+        logger.debug(
+            "get_system_info failed", extra={"operation": "get_system_info"}, exc_info=True
+        )
         store_name = "unavailable"
 
     return jsonify(
@@ -538,7 +541,7 @@ def cleanup_runs():
                 try:
                     plugin.on_cleanup_runs()
                 except Exception as ex:
-                    logger.warning("Plugin cleanup hook error: %s", ex)
+                    logger.warning("Plugin cleanup hook error: %s", ex, exc_info=True)
 
         store = get_run_store()
         context = active_runtime_context()
@@ -550,7 +553,8 @@ def cleanup_runs():
         return jsonify(
             {"status": "success", "message": f"Pruned {count} historical traces.", "count": count}
         )
-    except Exception as e:
+    except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError) as e:
+        logger.debug("cleanup_runs failed", extra={"operation": "cleanup_runs"}, exc_info=True)
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
@@ -593,7 +597,10 @@ def _runtime_health() -> dict[str, Any]:
         store.list_runs(limit=1)
         dependencies["run_vault"] = "HEALTHY"
         dependencies["run_store"] = "HEALTHY"
-    except Exception as exc:  # noqa: BLE001
+    except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError) as exc:  # noqa: BLE001
+        logger.debug(
+            "_runtime_health failed", extra={"operation": "_runtime_health"}, exc_info=True
+        )
         dependencies["run_vault"] = "FAILED"
         dependencies["run_store"] = "FAILED"
         details.append(f"Run store unavailable: {exc}")
@@ -603,7 +610,10 @@ def _runtime_health() -> dict[str, Any]:
         scenarios_root = Path(config.PROJECT_ROOT) / "scenarios"
         scenarios_root.mkdir(exist_ok=True)
         dependencies["scenario_catalog"] = "HEALTHY"
-    except Exception as exc:  # noqa: BLE001
+    except OSError as exc:  # noqa: BLE001
+        logger.debug(
+            "_runtime_health failed", extra={"operation": "_runtime_health"}, exc_info=True
+        )
         dependencies["scenario_catalog"] = "FAILED"
         details.append(f"Scenario catalog unavailable: {exc}")
 
@@ -694,7 +704,10 @@ def get_doctor_audit():
             "pid": os.getpid(),
         }
         return jsonify(audit)
-    except Exception as e:
+    except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError) as e:
+        logger.debug(
+            "get_doctor_audit failed", extra={"operation": "get_doctor_audit"}, exc_info=True
+        )
         return jsonify({"status": "UNREACHABLE", "error": str(e)}), 500
 
 
@@ -745,7 +758,10 @@ def debugger_state():
         try:
             if ".." in run_id or not is_path_safe(run_id, Path(".")):
                 return jsonify({"error": "Path traversal detected"}), 400
-        except Exception:
+        except (OSError, ValueError, TypeError):
+            logger.debug(
+                "debugger_state failed", extra={"operation": "debugger_state"}, exc_info=True
+            )
             return jsonify({"error": "Path traversal detected"}), 400
         if not re.match(r"^[a-zA-Z0-9_\-]+$", str(run_id)):
             return jsonify({"error": "Invalid run_id format: must be alphanumeric"}), 400
@@ -756,7 +772,10 @@ def debugger_state():
 
             if config.ENABLE_DEMO and current_app.debug:
                 demo_trace = get_demo_trace(run_id)
-        except Exception:
+        except (ImportError, ValueError, TypeError, KeyError):
+            logger.debug(
+                "debugger_state failed", extra={"operation": "debugger_state"}, exc_info=True
+            )
             demo_trace = None
 
         if demo_trace:
@@ -769,7 +788,10 @@ def debugger_state():
                     limit=10_000_000,
                     context=active_runtime_context(),
                 )
-            except Exception as e:
+            except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError) as e:
+                logger.debug(
+                    "debugger_state failed", extra={"operation": "debugger_state"}, exc_info=True
+                )
                 if (
                     "corrupt" in str(e).lower()
                     or "malformed" in str(e).lower()
@@ -835,8 +857,8 @@ def ollama_status():
                             m.get("name") for m in resp_data.get("models", []) if m.get("name")
                         ]
                     except Exception as e:
-                        logger.debug(f"Ollama models parse error: {e}")
+                        logger.debug(f"Ollama models parse error: {e}", exc_info=True)
     except Exception as e:
-        logger.debug(f"Ollama connection error: {e}")
+        logger.debug(f"Ollama connection error: {e}", exc_info=True)
 
     return jsonify({"available": available, "endpoint": endpoint, "models": models})

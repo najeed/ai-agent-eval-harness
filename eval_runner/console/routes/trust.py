@@ -69,12 +69,14 @@ def certify_run():
         )
         return jsonify(result)
     except FileNotFoundError as e:
-        logger.error("Certification signing material unavailable for run %s: %s", run_id, e)
+        logger.error(
+            "Certification signing material unavailable for run %s: %s", run_id, e, exc_info=True
+        )
         return jsonify({"error": f"Internal certification failure: {e}"}), 500
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception as e:
-        logger.error(f"Certification error for run {run_id}: {e}")
+        logger.error(f"Certification error for run {run_id}: {e}", exc_info=True)
         return jsonify({"error": f"Internal certification failure: {e}"}), 500
 
 
@@ -176,7 +178,7 @@ def public_verify_run(run_id):
             }
         )
     except Exception as e:
-        logger.exception("Verification error for run %s: %s", run_id, e)
+        logger.exception("Verification error for run %s: %s", run_id, e, exc_info=True)
         return jsonify({"error": f"Verification failed: {str(e)}", "verified": False}), 500
 
 
@@ -204,7 +206,12 @@ def get_verified_run_manifest(run_id):
         if manifest is None:
             return jsonify({"error": "Manifest not found for run."}), 404
         return jsonify(manifest), 200
-    except Exception as e:
+    except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError) as e:
+        logger.debug(
+            "get_verified_run_manifest failed",
+            extra={"operation": "get_verified_run_manifest"},
+            exc_info=True,
+        )
         return jsonify({"error": f"Failed to load manifest: {e}"}), 500
 
 
@@ -223,7 +230,7 @@ def get_identity_public_key(identity_id):
         ).decode("utf-8")
         return jsonify({"identity_id": identity_id, "public_key": pem})
     except Exception as e:
-        logger.error(f"Failed to resolve public key for {identity_id}: {e}")
+        logger.error(f"Failed to resolve public key for {identity_id}: {e}", exc_info=True)
         return jsonify(
             {"error": f"Identity {identity_id} not found or key resolution failed."}
         ), 404
@@ -302,7 +309,7 @@ def sign_extension_manifest():
         signer = resolve_signing_backend()
         signature_hex = signer.sign_payload(canonical, pem)
     except Exception as e:
-        logger.error(f"[Extensions] Signing failed for '{identity_id}': {e}")
+        logger.error(f"[Extensions] Signing failed for '{identity_id}': {e}", exc_info=True)
         return jsonify({"error": f"Signing failed: {e}"}), 500
 
     return jsonify(
@@ -341,7 +348,7 @@ def publish_extension_bundle():
             activate=bool(data.get("activate", False)),
         )
     except (OSError, ValueError) as exc:
-        logger.warning("[Extensions] publish rejected: %s", exc)
+        logger.warning("[Extensions] publish rejected: %s", exc, exc_info=True)
         return jsonify({"error": str(exc)}), 400
     return jsonify(descriptor), 201
 
@@ -360,7 +367,7 @@ def unpublish_extension_bundle():
     try:
         return jsonify(unpublish_extension(extension_id=extension_id, version=version))
     except (OSError, ValueError) as exc:
-        logger.warning("[Extensions] unpublish rejected: %s", exc)
+        logger.warning("[Extensions] unpublish rejected: %s", exc, exc_info=True)
         return jsonify({"error": str(exc)}), 400
 
 
@@ -408,7 +415,7 @@ def repair_extension_bundle():
             )
         )
     except (OSError, ValueError) as exc:
-        logger.warning("[Extensions] repair rejected: %s", exc)
+        logger.warning("[Extensions] repair rejected: %s", exc, exc_info=True)
         return jsonify({"error": str(exc)}), 400
 
 
@@ -432,7 +439,7 @@ def activate_extension_bundle():
         )
         return jsonify(res), 200
     except (OSError, ValueError) as exc:
-        logger.warning("[Extensions] activate rejected: %s", exc)
+        logger.warning("[Extensions] activate rejected: %s", exc, exc_info=True)
         return jsonify({"error": str(exc)}), 400
 
 
@@ -456,7 +463,7 @@ def rollback_extension_bundle():
         )
         return jsonify(res), 200
     except (OSError, ValueError) as exc:
-        logger.warning("[Extensions] rollback rejected: %s", exc)
+        logger.warning("[Extensions] rollback rejected: %s", exc, exc_info=True)
         return jsonify({"error": str(exc)}), 400
 
 

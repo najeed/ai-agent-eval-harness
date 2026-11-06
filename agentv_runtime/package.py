@@ -10,12 +10,18 @@ into one signed canonical root hash.
 from __future__ import annotations
 
 import hashlib
+import logging
 from collections.abc import Mapping
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
+from cryptography.exceptions import InvalidSignature, UnsupportedAlgorithm
+
 from agentv_runtime.canonical import canonical_json_encode
+
+logger = logging.getLogger(__name__)
+
 
 PACKAGE_SCHEMA_VERSION = "1.0.0"
 
@@ -204,7 +210,21 @@ class VerificationPackage:
             if hasattr(signer, "get_public_key") and callable(signer.get_public_key):
                 try:
                     pub_obj = signer.get_public_key(signer_id)
-                except Exception:
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    InvalidSignature,
+                    UnsupportedAlgorithm,
+                ):
+                    logger.debug(
+                        "sign failed",
+                        extra={"operation": "sign", "identity_id": self.signer_identity},
+                        exc_info=True,
+                    )
                     pub_obj = None
             sig_raw = signer.sign_payload(payload_bytes, signer_id, purpose=PACKAGE)
             sig_raw = validate_signing_response(
@@ -292,16 +312,45 @@ class VerificationPackage:
                             encoding=serialization.Encoding.PEM,
                             format=serialization.PublicFormat.SubjectPublicKeyInfo,
                         ).decode("utf-8")
-                except Exception:
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    InvalidSignature,
+                    UnsupportedAlgorithm,
+                ):
+                    logger.debug(
+                        "verify_signature failed",
+                        extra={
+                            "operation": "verify_signature",
+                            "identity_id": self.signer_identity,
+                        },
+                        exc_info=True,
+                    )
                     anchored_pem = None
             elif isinstance(trust_root, (str, Path)):
-                root_path = Path(trust_root)
-                for target_id in (self.signer_identity, self.key_id):
-                    if target_id and not str(target_id).startswith(("sha256:", "arn:")):
-                        candidate = root_path / str(target_id) / "public_key.pem"
-                        if candidate.is_file():
-                            anchored_pem = candidate.read_text(encoding="utf-8")
-                            break
+                try:
+                    root_path = Path(trust_root)
+                    for target_id in (self.signer_identity, self.key_id):
+                        if target_id and not str(target_id).startswith(("sha256:", "arn:")):
+                            candidate = root_path / str(target_id) / "public_key.pem"
+                            if candidate.is_file():
+                                anchored_pem = candidate.read_text(encoding="utf-8")
+                                break
+                except (OSError, ValueError, TypeError):
+                    logger.debug(
+                        "Package trust anchor could not be read",
+                        extra={
+                            "operation": "verify_signature",
+                            "identity_id": self.signer_identity,
+                        },
+                        exc_info=True,
+                    )
+                    return False
+
         else:
             # Check default IdentityService trust root
             try:
@@ -320,7 +369,21 @@ class VerificationPackage:
                         encoding=serialization.Encoding.PEM,
                         format=serialization.PublicFormat.SubjectPublicKeyInfo,
                     ).decode("utf-8")
-            except Exception:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                InvalidSignature,
+                UnsupportedAlgorithm,
+            ):
+                logger.debug(
+                    "verify_signature failed",
+                    extra={"operation": "verify_signature", "identity_id": self.signer_identity},
+                    exc_info=True,
+                )
                 anchored_pem = None
 
         # Fail closed: No external trust anchor means UNVERIFIED
@@ -342,7 +405,21 @@ class VerificationPackage:
                     format=serialization.PublicFormat.SubjectPublicKeyInfo,
                 ):
                     return False
-            except Exception:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                InvalidSignature,
+                UnsupportedAlgorithm,
+            ):
+                logger.debug(
+                    "verify_signature failed",
+                    extra={"operation": "verify_signature", "identity_id": self.signer_identity},
+                    exc_info=True,
+                )
                 return False
 
         try:
@@ -363,7 +440,21 @@ class VerificationPackage:
                 return verify_artifact_signature(
                     self.canonical_payload_bytes(), self.signature, policy, PACKAGE
                 )
-        except Exception:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            InvalidSignature,
+            UnsupportedAlgorithm,
+        ):
+            logger.debug(
+                "verify_signature failed",
+                extra={"operation": "verify_signature", "identity_id": self.signer_identity},
+                exc_info=True,
+            )
             return False
 
         return False

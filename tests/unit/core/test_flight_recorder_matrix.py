@@ -297,8 +297,8 @@ def test_freeze_run_and_utility_hooks(tmp_path):
     assert rec.close_execution_writes("r") is None
     rec.on_cleanup_runs()
     rec.after_evaluation(MagicMock(run_id="r"), [])
-    assert rec.rotate_logs() is None
-    assert rec.flush() is None
+    assert not hasattr(rec, "rotate_logs")
+    assert not hasattr(rec, "flush")
 
 
 def test_flight_recorder_uncovered_branches(tmp_path, monkeypatch):

@@ -216,6 +216,9 @@ class OIDCAuthorizationBackend(AuthorizationBackend):
             metadata = normalize_entitlements(metadata)
             return AuthPrincipal(subject, roles=roles, permissions=permissions, metadata=metadata)
         except Exception:
+            logging.getLogger(__name__).debug(
+                "Failure in OIDCAuthorizationBackend.validate_token", exc_info=True
+            )
             return None
 
     def check_permission(self, principal: AuthPrincipal, resource: str, action: str = "") -> bool:

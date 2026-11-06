@@ -1,4 +1,9 @@
+import logging
+
 import requests
+
+logger = logging.getLogger(__name__)
+
 
 # Test the endpoints
 base_url = "http://127.0.0.1:5000"
@@ -18,5 +23,6 @@ for path, method in endpoints:
         else:
             resp = requests.get(url, timeout=2)
         print(f"{method} {path} -> Status: {resp.status_code}")
-    except Exception as e:
+    except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError) as e:
+        logger.debug("module failed", extra={"operation": "module"}, exc_info=True)
         print(f"{method} {path} -> Error: {e}")

@@ -1,3 +1,4 @@
+import logging
 import re
 from typing import Any
 
@@ -61,4 +62,5 @@ def search(
         if len(matches) > 10:
             print(f"  ... and {len(matches) - 10} more.")
     except Exception as exc:
+        logging.getLogger(__name__).debug("Failure in search", exc_info=True)
         print(f"Error searching corpus: {exc}")

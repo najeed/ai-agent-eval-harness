@@ -252,7 +252,7 @@ The harness supports multiple ways to talk to your agent. Use the `--protocol` f
 - **Schema-Driven Core Registry**: Decoupled environmental state management using declarative manifests (`shim_resources.json`) with **Async Simulation Hardening** for non-blocking non-linear evaluations.
 - **PBAC & Operational Governance**: Granular **Permission-Based Access Control** (v1.2.3) and **Operational Throttling** (`EVAL_TURN_THROTTLE`) for regulated enterprise environments.
 - **Zero-Touch Hot-Swap Architecture**: Dynamically register and swap simulators via plugins without core code modifications.
-- **Benchmark Ecosystem**: Native loaders for GAIA (HuggingFace Integration) and AssistantBench. Supports benchmark URI schemes (e.g., `gaia://2023`, `assistantbench://v1`) for zero-config execution.
+- **Benchmark Ecosystem**: Load real GAIA and AssistantBench datasets from JSON, JSONL, or Parquet (e.g., `gaia://datasets/gaia.jsonl`, `assistantbench://datasets/assistantbench.json`). Optional HuggingFace loading uses explicit `hf://` sources. Missing or malformed data fails closed; no benchmark scenarios are fabricated.
 - **Native Framework Adapters**: Full industrial-grade support for **LangChain**, **LangGraph**, **Microsoft AutoGen** (via `ag2://`), and **CrewAI** via a dynamic plugin-discovery system.
 - **High-Fidelity Industry Metrics**: Modular, pluggable evaluators for Defense (ROE, C2, Intelligence Fusion), Healthcare, and Finance. Features high-precision numerical extraction and domain-specific LLM rubrics.
 - **Tool Sandbox**: Governance-controlled execution with full VFS-aware state parity verification and TOCTOU barrier race protection.

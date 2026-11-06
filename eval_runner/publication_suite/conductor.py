@@ -7,6 +7,7 @@ Orchestrates eval-harness CLI runs and captures Flight Recorder logs.
 
 import argparse
 import json
+import logging
 import os
 import subprocess
 from datetime import datetime
@@ -73,6 +74,7 @@ def run_worker(task):
         }
 
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in run_worker", exc_info=True)
         return {"run_id": run_id, "success": False, "error": str(e)}
 
 

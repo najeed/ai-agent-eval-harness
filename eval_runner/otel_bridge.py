@@ -62,6 +62,9 @@ class OTelTelemetryBridge(BaseEvalPlugin):
             provider.add_span_processor(processor)
             trace.set_tracer_provider(provider)
         except Exception as e:
+            logging.getLogger(__name__).debug(
+                "Failure in OTelTelemetryBridge._initialize_otel", exc_info=True
+            )
             sys.stderr.write(f"   [OTel Bridge] OTLP Initialization failed: {e}\n")
 
     def handle_event(self, event: Event):

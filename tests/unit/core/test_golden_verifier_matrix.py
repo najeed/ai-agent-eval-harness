@@ -2146,9 +2146,7 @@ def test_verify_trace_certificate_scenario_exception(certified_manifest):
     """Scenario hash computation throws exception."""
     manifest = certified_manifest["manifest"].copy()
     manifest["scenario_hash"] = "sha3_256:expected"
-    with patch(
-        "agentv_runtime.manifest.compute_scenario_hash", side_effect=RuntimeError("Scen err")
-    ):
+    with patch("agentv_runtime.manifest.compute_scenario_hash", side_effect=ValueError("Scen err")):
         res = verify_trace_certificate(
             certified_manifest["run_id"],
             certified_manifest["trace_bytes"],
@@ -2710,7 +2708,7 @@ def test_verify_trace_evidence_root_mismatch_and_exception(clean_vault_setup):
     with (
         patch(
             "agentv_runtime.evidence_graph.compute_evidence_graph_root",
-            side_effect=RuntimeError("graph error"),
+            side_effect=ValueError("graph error"),
         ),
         patch.object(IdentityService, "get_public_key", return_value=None),
     ):
@@ -2956,7 +2954,7 @@ def test_verifier_certificate_evidence_graph_exception(tmp_path):
     }
     with patch(
         "agentv_runtime.evidence_graph.build_evidence_graph_from_events",
-        side_effect=RuntimeError("Graph build error"),
+        side_effect=ValueError("Graph build error"),
     ):
         res = verify_trace_certificate(run_id, trace_bytes, manifest)
         assert res["verified"] is False
@@ -3103,7 +3101,7 @@ def test_verify_trace_certificate_evidence_root_exception_fails(clean_vault_setu
         patch.object(IdentityService, "get_public_key", return_value=pub_key),
         patch(
             "agentv_runtime.evidence_graph.compute_evidence_graph_root",
-            side_effect=RuntimeError("Graph corruption"),
+            side_effect=ValueError("Graph corruption"),
         ),
     ):
         res = verify_trace_certificate(
@@ -3238,7 +3236,7 @@ def test_verify_trace_evidence_root_exception_fails_verification(clean_vault_set
 
     with patch(
         "agentv_runtime.evidence_graph.build_evidence_graph_from_events",
-        side_effect=RuntimeError("Graph engine failure"),
+        side_effect=ValueError("Graph engine failure"),
     ):
         assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
 
@@ -3838,7 +3836,7 @@ def test_verify_package_artifacts_manifest_types_and_errors():
         # 5. canonical_manifest raises exception
         class ExplodingManifest:
             def compute_manifest_hash(self):
-                raise RuntimeError("Manifest calculation exploded")
+                raise ValueError("Manifest calculation exploded")
 
         res_err = VerificationAuthority.verify_package_artifacts(
             package=pkg,
@@ -3916,7 +3914,7 @@ def test_verify_package_artifacts_events_and_provenance_branches():
         # 3. Evidence reconstruction raises exception
         with patch(
             "agentv_runtime.evidence_graph.build_evidence_graph_from_events",
-            side_effect=RuntimeError("Graph build error"),
+            side_effect=ValueError("Graph build error"),
         ):
             res_ev_err = VerificationAuthority.verify_package_artifacts(
                 package=pkg,
@@ -4024,7 +4022,7 @@ def test_verify_package_artifacts_scenario_decision_oracle_and_sig_branches():
             patch.object(VerificationPackage, "verify_signature", return_value=True),
             patch(
                 "agentv_runtime.manifest.compute_scenario_hash",
-                side_effect=RuntimeError("Scen compute error"),
+                side_effect=ValueError("Scen compute error"),
             ),
         ):
             res_scen_err = VerificationAuthority.verify_package_artifacts(
@@ -4284,7 +4282,7 @@ def test_verify_package_manifest_and_scenario_branches():
     # 6. Manifest computation exception
     class BadManifest:
         def compute_manifest_hash(self):
-            raise RuntimeError("Manifest crash")
+            raise ValueError("Manifest crash")
 
     res_exc = VerificationAuthority.verify_package(
         pkg,
@@ -4305,7 +4303,7 @@ def test_verify_package_manifest_and_scenario_branches():
     # 8. Scenario computation exception
     with patch(
         "agentv_runtime.manifest.compute_scenario_hash",
-        side_effect=RuntimeError("Scenario calculation failed"),
+        side_effect=ValueError("Scenario calculation failed"),
     ):
         res_scen_exc = VerificationAuthority.verify_package(
             pkg,
@@ -5224,7 +5222,7 @@ def test_verifier_remaining_branches_matrix(clean_vault_setup):
     )
     with patch(
         "agentv_runtime.canonical.canonical_json_encode",
-        side_effect=Exception("Encode failure"),
+        side_effect=ValueError("Encode failure"),
     ):
         res_vh_err = VerificationAuthority.verify_package_artifacts(
             pkg_verif,
@@ -5320,7 +5318,7 @@ def test_verifier_remaining_branches_matrix(clean_vault_setup):
 
     with patch(
         "agentv_runtime.canonical.canonical_json_encode",
-        side_effect=Exception("Cert encode failure"),
+        side_effect=ValueError("Cert encode failure"),
     ):
         res_ch_err = VerificationAuthority.verify_package_artifacts(
             pkg_cert,
@@ -5433,7 +5431,7 @@ def test_verifier_remaining_branches_matrix(clean_vault_setup):
     )
     with patch(
         "agentv_runtime.canonical.canonical_json_encode",
-        side_effect=Exception("Encode fail"),
+        side_effect=ValueError("Encode fail"),
     ):
         res_v_fail = VerificationAuthority.verify_package(
             pkg_verif_match,
@@ -5479,7 +5477,7 @@ def test_verifier_remaining_branches_matrix(clean_vault_setup):
     )
     with patch(
         "agentv_runtime.canonical.canonical_json_encode",
-        side_effect=Exception("Cert encode fail"),
+        side_effect=ValueError("Cert encode fail"),
     ):
         res_c_fail = VerificationAuthority.verify_package(
             pkg_cert_match,

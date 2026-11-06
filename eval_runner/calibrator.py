@@ -5,6 +5,7 @@ Supports internal trace events (metadata.human = True) and external golden manif
 """
 
 import json
+import logging
 from pathlib import Path
 
 
@@ -158,6 +159,7 @@ def run_calibration_events(events: list[dict], golden_path: str | None = None, p
         except ImportError:
             print("[WARNING] matplotlib/numpy missing. Plotting skipped.")
         except Exception as e:
+            logging.getLogger(__name__).debug("Failure in run_calibration_events", exc_info=True)
             print(f"[ERROR] Failed to generate plot: {e}")
 
 

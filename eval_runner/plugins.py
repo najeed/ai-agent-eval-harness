@@ -319,8 +319,9 @@ class PluginManager:
                 "origin": origin,
                 "trusted": origin in ["CORE", "MEMBER"],  # Default trust for internal/member
             }
-        except Exception:
+        except (OSError, TypeError, ValueError):
             # Fallback for built-in or dynamically generated classes without physical files
+            logger.debug("Failure in PluginManager._record_provenance", exc_info=True)
             self.provenance_map[class_name] = {
                 "path": "builtin",
                 "hash": "unknown",
@@ -357,6 +358,9 @@ class PluginManager:
                         self._record_provenance(instance, origin="MEMBER")
                 except Exception as e:
                     # Forensic Transparency: Log all entry-point failures
+                    logging.getLogger(__name__).debug(
+                        "Failure in PluginManager.load_plugins", exc_info=True
+                    )
                     print(
                         f"   [PluginManager] Warning: Entry-point load failure "
                         f"({entry_point.name}): {e}"
@@ -383,6 +387,9 @@ class PluginManager:
                     validator.validate(instance=registry_data)
                 except Exception as ve:
                     # Registry Drift detected: This is a critical forensic warning
+                    logging.getLogger(__name__).debug(
+                        "Failure in PluginManager.load_plugins", exc_info=True
+                    )
                     msg = (
                         f"   [PluginManager] CRITICAL: Registry Drift in {PERSISTENT_PLUGINS_PATH}"
                     )
@@ -409,6 +416,9 @@ class PluginManager:
                                 plugin_def.get("trusted", False)
                             )
                     except (Exception, SystemExit) as e:
+                        logging.getLogger(__name__).debug(
+                            "Failure in PluginManager.load_plugins", exc_info=True
+                        )
                         msg = (
                             f"   [PluginManager] Failed to load plugin "
                             f"{plugin_def.get('module') if isinstance(plugin_def, dict) else '?'}: "
@@ -529,6 +539,9 @@ class PluginManager:
                 self.register(PluginClass(), origin="CORE")
             except Exception as e:
                 # Log isolated failure without crashing the manager
+                logging.getLogger(__name__).debug(
+                    "Failure in PluginManager.load_plugins", exc_info=True
+                )
                 print(f"   [PluginManager] Isolated Failure loading {PluginClass.__name__}: {e}")
 
         self._loaded = True
@@ -563,6 +576,9 @@ class PluginManager:
                     else:
                         _invoke_with_timeout(hook, *args, **kwargs)
                 except Exception as e:
+                    logging.getLogger(__name__).debug(
+                        "Failure in PluginManager.trigger", exc_info=True
+                    )
                     print(
                         f"   [PluginManager] Error in {hook_name} for {plugin.__class__.__name__}: {e}"  # noqa: E501
                     )
@@ -581,6 +597,9 @@ class PluginManager:
                 try:
                     plugin.finalize_run()
                 except Exception as e:
+                    logging.getLogger(__name__).debug(
+                        "Failure in PluginManager.finalize", exc_info=True
+                    )
                     print(
                         f"   [PluginManager] Finalization Error ({plugin.__class__.__name__}): {e}"
                     )
@@ -589,6 +608,9 @@ class PluginManager:
                 try:
                     plugin.cleanup()
                 except Exception as e:
+                    logging.getLogger(__name__).debug(
+                        "Failure in PluginManager.finalize", exc_info=True
+                    )
                     print(f"   [PluginManager] Cleanup Error ({plugin.__class__.__name__}): {e}")
 
     def trigger_interceptor(self, hook_name: str, *args, **kwargs) -> bool | dict:
@@ -652,6 +674,9 @@ class PluginManager:
                             return False
 
                 except Exception as e:
+                    logging.getLogger(__name__).debug(
+                        "Failure in PluginManager.trigger_interceptor", exc_info=True
+                    )
                     required_hooks = set(getattr(plugin, "required_interceptor_hooks", ()))
                     if getattr(plugin, "is_mandatory", False) or hook_name in required_hooks:
                         raise RuntimeError(
@@ -725,6 +750,9 @@ class PluginManager:
                         if not class_name:
                             class_name = heuristic_base
                 except Exception as e:
+                    logging.getLogger(__name__).debug(
+                        "Failure in PluginManager.register_persistent", exc_info=True
+                    )
                     if "Ambiguous" in str(e):
                         raise
                     # Fallback to the first heuristic if introspection is inconclusive

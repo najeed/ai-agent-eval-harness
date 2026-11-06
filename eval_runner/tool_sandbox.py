@@ -9,6 +9,7 @@ from __future__ import annotations
 import contextvars
 import copy
 import json
+import logging
 import threading
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Coroutine
@@ -20,6 +21,8 @@ from eval_runner.interfaces.policy import PolicyEvaluator
 from eval_runner.utils.path_resolver import PathResolver
 
 from . import config
+
+logger = logging.getLogger(__name__)
 
 
 class ResourceRegistry:
@@ -43,7 +46,8 @@ class ResourceRegistry:
                     from .utils import rmtree_resilient
 
                     rmtree_resilient(path)
-            except Exception as e:
+            except (OSError, RuntimeError) as e:
+                logger.debug("cleanup failed", extra={"operation": "cleanup"}, exc_info=True)
                 import sys
 
                 sys.stderr.write(
@@ -198,7 +202,9 @@ class AbstractSandbox(ABC):
                 except Exception as e:
                     import logging
 
-                    logging.getLogger(__name__).warning(f"Failed simulator cleanup for {sim}: {e}")
+                    logging.getLogger(__name__).warning(
+                        f"Failed simulator cleanup for {sim}: {e}", exc_info=True
+                    )
             sim_count = len(self._simulator_cache)
             print(f"      [Sandbox] All {sim_count} simulators cleaned up (Registry Teardown).")
         self.resources.cleanup()
@@ -324,7 +330,9 @@ class ToolSandboxService:
 
                         cls_name = interceptor.__class__.__name__
                         logging.error(
-                            f"[ToolSandboxService] Interceptor '{cls_name}' failed: {e}. Bypassing."
+                            f"[ToolSandboxService] Interceptor '{cls_name}' failed: {e}. "
+                            "Bypassing.",
+                            exc_info=True,
                         )
                         return await make_next(index + 1, depth + 1)(data)
                 else:
@@ -412,7 +420,8 @@ class ToolSandbox(AbstractSandbox):
                             import logging
 
                             logging.getLogger(__name__).error(
-                                f"Error during quiescence for {simulator.__class__.__name__}: {e}"
+                                f"Error during quiescence for {simulator.__class__.__name__}: {e}",
+                                exc_info=True,
                             )
                     from .simulators import ShimResultProxy
 
@@ -709,6 +718,11 @@ class ToolSandbox(AbstractSandbox):
                     instance.sandbox = self
                     active_registry[shim_name] = instance
                 except Exception as e:
+                    logger.debug(
+                        "get_active_simulators failed",
+                        extra={"operation": "get_active_simulators"},
+                        exc_info=True,
+                    )
                     sys.stderr.write(
                         f"      [Sandbox] Error: Failed to instantiate '{shim_name}': {e}\n"
                     )

@@ -44,8 +44,8 @@ async def test_git_simulator_logic(tmp_path):
     git = simulators.GitSimulator()
     git.terminal_jail = tmp_path
 
-    # Push (Simulated)
-    assert (await git.execute("git_push", {}))["status"] == "success"
+    # A push cannot succeed without an active repository.
+    assert (await git.execute("git_push", {}))["status"] == "error"
 
     # Error: No URL
     res = await git.execute("git_clone", {})
@@ -460,6 +460,7 @@ async def test_terminal_simulator_jail_cleanup_exceptions():
     sim2 = TerminalSimulator()
     sim2.set_jail_provider(CrashingJailProvider())
     await sim2.cleanup()  # should log error but not crash
+    assert sim2.state["cleaned_up"] is False
 
 
 @pytest.mark.asyncio
@@ -670,3 +671,201 @@ async def test_miscellaneous_shims_on_poll_and_execute():
     iot = simulators.IoTSimulator()
     res = await iot.execute("unknown", {})
     assert res["status"] == "error"
+
+
+@pytest.mark.asyncio
+async def test_simulator_stateful_queries_snapshots_and_cleanup(tmp_path):
+    """Verify stateful simulator filtering, scoring, snapshots, and resource cleanup."""
+    # 1. GitSimulator stateful push & active repo validation
+    git = simulators.GitSimulator()
+    git.terminal_jail = tmp_path
+    err_push = await git.execute("git_push", {"require_repo": True})
+    assert err_push["status"] == "error"
+    assert (await git.execute("git_push", {"remote": "", "branch": "main"}))["status"] == "error"
+
+    with patch("git.Repo") as mock_repo_cls:
+        mock_repo = mock_repo_cls.return_value
+        mock_commit = MagicMock()
+        mock_commit.hexsha = "deadbeef1234"
+        mock_commit.author = "dev@agentv.ai"
+        mock_repo.index.commit.return_value = mock_commit
+        mock_repo.head.commit = mock_commit
+        mock_repo.commit.return_value = mock_commit
+        git._repo = mock_repo
+
+        await git.execute("git_add", {"files": ["src/main.py"]})
+        assert "src/main.py" in git.state["staged_files"]
+        await git.execute("git_commit", {"message": "feat: stateful git"})
+        assert git.state["staged_files"] == []
+        assert git.state["history"][-1]["commit_sha"] == "deadbeef1234"
+
+        push_res = await git.execute(
+            "git_push", {"remote": "origin", "branch": "release", "require_repo": True}
+        )
+        assert push_res["status"] == "success"
+        assert git.state["pushes"][-1]["branch"] == "release"
+        assert git.state["pushes"][-1]["commit_sha"] == "deadbeef1234"
+        assert git.state["pushes"][-1]["repo_active"] is True
+
+    # 2. KnowledgeBaseSimulator query/keyword/tag/limit filtering
+    kb = simulators.KnowledgeBaseSimulator()
+    kb.state["docs"] = [
+        {
+            "id": "D1",
+            "title": "Onboarding Guide",
+            "content": "Welcome to engineering",
+            "tags": ["hr", "onboarding"],
+        },
+        {
+            "id": "D2",
+            "title": "Incident Response Runbook",
+            "content": "Escalation and pager rotation",
+            "tags": ["sre", "security"],
+        },
+    ]
+    kb_res = await kb.execute("kb_search", {"query": "escalation pager"})
+    assert kb_res["status"] == "success"
+    assert [d["id"] for d in kb_res["results"]] == ["D2"]
+    kb_tag = await kb.execute("kb_search", {"tag": "hr", "limit": 1})
+    assert [d["id"] for d in kb_tag["results"]] == ["D1"]
+
+    # 3. VectorDBSimulator cosine scoring, text matching, metadata filtering, and top_k
+    vdb = simulators.VectorDBSimulator()
+    await vdb.execute(
+        "vector_upsert",
+        {
+            "vectors": [
+                {
+                    "id": "vec_alpha",
+                    "values": [1.0, 0.0],
+                    "text": "cryptographic verification envelope",
+                    "metadata": {"domain": "security"},
+                },
+                {
+                    "id": "vec_beta",
+                    "values": [0.0, 1.0],
+                    "text": "ui console layout",
+                    "metadata": {"domain": "frontend"},
+                },
+            ]
+        },
+    )
+    v_res = await vdb.execute("vector_query", {"vector": [1.0, 0.0], "top_k": 1})
+    assert v_res["status"] == "success"
+    assert len(v_res["matches"]) == 1
+    assert v_res["matches"][0]["id"] == "vec_alpha"
+    assert v_res["matches"][0]["score"] == 1.0
+
+    v_meta = await vdb.execute(
+        "vector_query", {"query": "console", "filter": {"domain": "frontend"}}
+    )
+    assert [m["id"] for m in v_meta["matches"]] == ["vec_beta"]
+
+    # 4. EmailSimulator & JiraSimulator filtering
+    email = simulators.EmailSimulator()
+    await email.execute(
+        "email_send", {"from": "agent@corp.com", "to": "ops@corp.com", "subject": "Deploy Ready"}
+    )
+    sent_list = await email.execute("email_list", {"folder": "sent", "to": "ops@corp.com"})
+    assert len(sent_list["messages"]) == 1
+    assert sent_list["messages"][0]["subject"] == "Deploy Ready"
+
+    jira = simulators.JiraSimulator()
+    created = await jira.execute(
+        "jira_create", {"summary": "Fix auth timeout", "assignee": "alice", "project": "SEC"}
+    )
+    await jira.execute("jira_update", {"id": created["id"], "status": "In Review"})
+    filtered_jira = await jira.execute(
+        "jira_list", {"status": "In Review", "assignee": "alice", "project": "SEC"}
+    )
+    assert [i["id"] for i in filtered_jira["issues"]] == [created["id"]]
+
+    # 5. BrowserSimulator snapshot, TerminalSimulator cleanup, DatabaseSimulator quiesce
+    browser = simulators.BrowserSimulator()
+    browser.state["url"] = "https://agentv.ai/docs"
+    browser.state["title"] = "Docs"
+    b_snap = await browser.get_snapshot()
+    assert b_snap["url"] == "https://agentv.ai/docs"
+    assert b_snap["browser_active"] is False
+    await browser.cleanup()
+
+    term = simulators.TerminalSimulator(config={"run_id": "run_test_1"})
+    term.terminal_jail = tmp_path
+    await term.execute("terminal_execute", {"cmd": f"{sys.executable} -c \"print('ok')\""})
+    await term.cleanup()
+    assert term.state.get("cleaned_up") is True
+
+    db = simulators.DatabaseSimulator()
+    db.terminal_jail = tmp_path
+    await db.execute("database_query", {"query": "SELECT * FROM users"})
+    await db.quiesce()
+    assert db.state.get("quiesced") is True
+    await db.cleanup()
+
+
+@pytest.mark.asyncio
+async def test_git_push_records_real_branch_and_rejects_fabricated_commit(tmp_path):
+    from git import Actor, Repo
+
+    repository = Repo.init(tmp_path / "repo", initial_branch="main")
+    try:
+        (tmp_path / "repo" / "note.txt").write_text("content", encoding="utf-8")
+        repository.index.add(["note.txt"])
+        actor = Actor("Test", "test@example.invalid")
+        commit = repository.index.commit("Initial", author=actor, committer=actor)
+        simulator = simulators.GitSimulator()
+        simulator.terminal_jail = tmp_path
+        result = await simulator.execute("git_push", {"branch": "main"})
+        assert result["status"] == "success"
+        assert result["push"]["commit_sha"] == commit.hexsha
+        for params in ({"branch": "missing"}, {"branch": "main", "commit_sha": "fabricated"}):
+            assert (await simulator.execute("git_push", params))["status"] == "error"
+        assert len(simulator.state["pushes"]) == 1
+        await simulator.cleanup()
+    finally:
+        repository.close()
+
+
+@pytest.mark.asyncio
+async def test_vector_search_empty_state_never_fabricates_matches():
+    simulator = simulators.VectorDBSimulator()
+    assert (await simulator.execute("vector_query", {"vector": [1, 0]}))["matches"] == []
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "query",
+    [
+        {"vector": [1]},
+        {"vector": [0, 0]},
+        {"vector": [float("nan"), 1]},
+        {"vector": [1, 0], "min_score": float("inf")},
+        {"vector": [1, 0], "top_k": "bad"},
+        {"vector": [1, 0], "top_k": -1},
+        {"vector": [1, 0], "filter": "bad"},
+        {},
+    ],
+)
+async def test_vector_search_rejects_invalid_queries_without_synthetic_scores(query):
+    simulator = simulators.VectorDBSimulator()
+    simulator.state["vectors"] = [{"id": "stored", "values": [1, 0]}]
+    result = await simulator.execute("vector_query", query)
+    assert result["status"] == "error"
+    assert not result.get("matches")
+
+
+@pytest.mark.asyncio
+async def test_database_quiesce_failure_preserves_error_and_releases_pool(caplog):
+    simulator = simulators.DatabaseSimulator()
+    engine = MagicMock()
+    engine.connect.side_effect = OSError("checkpoint unavailable")
+    engine.dispose.side_effect = ValueError("dispose unavailable")
+    simulator._engine = engine
+    with caplog.at_level("DEBUG"), pytest.raises(OSError, match="checkpoint unavailable"):
+        await simulator.quiesce()
+    engine.dispose.assert_called_once()
+    assert simulator.state["quiesced"] is False
+    assert simulator._is_quiesced is False
+    assert sum(record.exc_info is not None for record in caplog.records) >= 2
+    simulator._engine = None
+    await simulator.cleanup()

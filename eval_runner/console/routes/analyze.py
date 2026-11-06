@@ -108,7 +108,7 @@ def get_leaderboard():
         rows = _provider_leaderboard_rows()
         return jsonify({"leaderboard": rows, "total": len(rows)})
     except Exception as e:
-        logger.error(f"[Leaderboard] Failed to generate leaderboard: {e}")
+        logger.error(f"[Leaderboard] Failed to generate leaderboard: {e}", exc_info=True)
         return jsonify({"error": str(e)}), 500
 
 
@@ -144,7 +144,7 @@ def export_leaderboard_html():
             download_name="agentv_leaderboard.html",
         )
     except Exception as e:
-        logger.error(f"[Leaderboard] HTML export failed: {e}")
+        logger.error(f"[Leaderboard] HTML export failed: {e}", exc_info=True)
         return jsonify({"error": str(e)}), 500
 
 
@@ -219,7 +219,7 @@ def search_failures():
                         }
                     )
     except Exception as e:
-        logger.error(f"[Failure Search] Failed: {e}")
+        logger.error(f"[Failure Search] Failed: {e}", exc_info=True)
         return jsonify({"error": str(e)}), 500
 
     total = len(matches)
@@ -287,7 +287,7 @@ def run_triage(run_id: str):
 
         return jsonify({"run_id": run_id, "results": enriched, "total": len(enriched)})
     except Exception as e:
-        logger.error(f"[Triage] Failed for run {run_id}: {e}")
+        logger.error(f"[Triage] Failed for run {run_id}: {e}", exc_info=True)
         return jsonify({"error": str(e)}), 500
 
 
@@ -315,7 +315,7 @@ def get_compliance(run_id: str):
             }
         )
     except Exception as e:
-        logger.error(f"[Compliance] Failed for run {run_id}: {e}")
+        logger.error(f"[Compliance] Failed for run {run_id}: {e}", exc_info=True)
         return jsonify({"error": str(e)}), 500
 
 
@@ -353,7 +353,7 @@ def get_compliance_summary():
                 classical_only += 1
             details.append({"run_id": run_id, **status})
         except Exception as e:
-            logger.warning(f"[Compliance Summary] Skipping {run_id}: {e}")
+            logger.warning(f"[Compliance Summary] Skipping {run_id}: {e}", exc_info=True)
             continue
 
     pct_safe = round((quantum_safe / total_certified * 100), 1) if total_certified > 0 else 0.0
@@ -418,5 +418,5 @@ def forensic_diff():
             }
         )
     except Exception as e:
-        logger.error(f"[Forensics] Diff failed: {e}")
+        logger.error(f"[Forensics] Diff failed: {e}", exc_info=True)
         return jsonify({"error": str(e)}), 500

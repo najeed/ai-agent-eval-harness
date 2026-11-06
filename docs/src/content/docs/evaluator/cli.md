@@ -70,7 +70,7 @@ agentv run \
 ```
 
 #### Options:
-- `--path`, `--scenario` *(required)*: Path to scenario file or Benchmark URI (e.g., `gaia://2023_all`).
+- `--path`, `--scenario` *(required)*: Path to a scenario file or a benchmark dataset URI (e.g., `gaia://datasets/gaia.jsonl`). Benchmark inputs must contain real questions and reference answers.
 - `--agent`: Target agent endpoint.
 - `--protocol`: Protocol adapter (`http`, `local`, `socket`, `langgraph`, `crewai`, `ag2`, etc.).
 - `--attempts`: Number of evaluation trials.

@@ -394,6 +394,9 @@ class ArtifactPlugin(BaseEvalPlugin):
                         "manifest": manifest,
                     }
             except Exception as e:
+                logging.getLogger(__name__).debug(
+                    "Failure in ArtifactPlugin.verify_integrity", exc_info=True
+                )
                 return {
                     "is_valid": False,
                     "status": "UNVERIFIED",
@@ -418,6 +421,9 @@ class ArtifactPlugin(BaseEvalPlugin):
                 "signer_identity": signer_id,
             }
         except Exception as e:
+            logging.getLogger(__name__).debug(
+                "Failure in ArtifactPlugin.verify_integrity", exc_info=True
+            )
             return {
                 "is_valid": False,
                 "status": "INVALID_SIGNATURE",

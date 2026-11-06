@@ -52,7 +52,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
                 run_store = resolve_run_store()
             except Exception as exc:
-                logger.debug("Failed resolving run store in init: %s", exc)
+                logger.debug("Failed resolving run store in init: %s", exc, exc_info=True)
                 run_store = None
         self._lock = threading.RLock()
         self._run_states: dict[str, str] = {}
@@ -180,7 +180,12 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                 with self._lock:
                     self._default_run_store = default_run_store
                     self._has_explicit_default_run_store = True
-            except Exception:
+            except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError):
+                logger.debug(
+                    "_provider_for_run failed",
+                    extra={"operation": "_provider_for_run"},
+                    exc_info=True,
+                )
                 default_run_store = None
         if self._has_explicit_default_run_store and default_run_store is not None:
             return default_run_store, None
@@ -264,6 +269,9 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                 run_store, run_context = self._provider_for_run(run_id)
                 assert_can_write_trace(run_id, run_store=run_store, context=run_context)
             except Exception as w_err:
+                logger.debug(
+                    "handle_event failed", extra={"operation": "handle_event"}, exc_info=True
+                )
                 with self._lock:
                     self._run_states[run_id] = "CERTIFICATION_FAILED"
                     self._failed_runs.add(run_id)
@@ -319,6 +327,9 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                 )
                 data["_sig"] = self.signing_backend.sign_payload(payload, key_id)
             except Exception as e:
+                logger.debug(
+                    "handle_event failed", extra={"operation": "handle_event"}, exc_info=True
+                )
                 data["_sig_error"] = str(e)
                 msg = (
                     f"   [FlightRecorder] [ERROR] Cryptographic signing failed for "
@@ -341,6 +352,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             # recorder never maintains an alternate filesystem/master-log copy.
             run_store.append_events(run_id, [data], context=run_context)
         except Exception as e:
+            logger.debug("handle_event failed", extra={"operation": "handle_event"}, exc_info=True)
             sys.stderr.write(f"   [FlightRecorder] [ERROR] File I/O Error: {e}\n")
             with self._lock:
                 if run_id and run_id != "unknown":
@@ -450,7 +462,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                     overwrite=True,
                 )
             except Exception as e:
-                logger.debug(f"Artifact store finalize seal error: {e}")
+                logger.debug(f"Artifact store finalize seal error: {e}", exc_info=True)
                 if self.is_certification_mode(run_id):
                     with self._lock:
                         self._run_states[run_id] = "CERTIFICATION_FAILED"
@@ -476,6 +488,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                     context=self._provider_for_run(run_id)[1],
                 )
             except Exception as lc_err:
+                logger.debug("freeze_run failed", extra={"operation": "freeze_run"}, exc_info=True)
                 self._run_states[run_id] = "CERTIFICATION_FAILED"
                 self._failed_runs.add(run_id)
                 raise RuntimeError(
@@ -507,14 +520,6 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         certification transaction is the sole lifecycle owner for final sealing.
         """
         self.close_execution_writes(run_id=getattr(context, "run_id", None))
-
-    def rotate_logs(self, is_new_run: bool = False):
-        """Deprecated: retention is a provider responsibility."""
-        return None
-
-    def flush(self):
-        """Compatibility hook; providers own stream flushing and durability."""
-        return None
 
     # Note: methods like before_evaluation are still available if needed
     # but handle_event covers most needs for the Flight Recorder.

@@ -5,6 +5,7 @@ Logic for scenario-related commands (AES, lint, inspect, etc.)
 """
 
 import json
+import logging
 import os
 from pathlib import Path
 
@@ -81,6 +82,7 @@ def classify_scenario(scenario: dict) -> dict:
         }
     except Exception:
         # Fallback to generic if ML components are missing or fail
+        logging.getLogger(__name__).debug("Failure in classify_scenario", exc_info=True)
         return {"industry": "generic", "confidence": 0.0}
 
 
@@ -146,10 +148,12 @@ async def handle_aes_validate(args):
                         yaml.safe_dump(data, yf, sort_keys=False, indent=2)
                     print(f"⚙ Exported stabilized AES.YAML to: {export_path}")
             except Exception as e:
+                logging.getLogger(__name__).debug("Failure in handle_aes_validate", exc_info=True)
                 print(f"✘ {f_path.name}: Invalid - {str(e)}")
 
         return 0 if success_count == len(files) else 1
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_aes_validate", exc_info=True)
         print(f"❌ [ERROR] AES Validation FAILED: {e}")
         return 1
 
@@ -175,6 +179,7 @@ async def handle_inspect(args):
         print("=" * 60)
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_inspect", exc_info=True)
         print(f"❌ [ERROR] Failed to inspect scenario: {e}")
         return 1
 
@@ -188,6 +193,7 @@ async def handle_lint(args):
         linter.run_lint(args.target)
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_lint", exc_info=True)
         print(f"❌ [ERROR] Linting FAILED: {e}")
         return 1
 
@@ -206,6 +212,7 @@ async def handle_list(args):
         catalog.list_scenarios(query=getattr(args, "search", None))
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_list", exc_info=True)
         print(f"❌ [ERROR] Failed to list scenarios: {e}")
         return 1
 
@@ -222,6 +229,7 @@ async def handle_catalog_search(args):
             print(f" - {r.get('id', 'unknown')}: {r.get('title', 'Untitled')}")
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_catalog_search", exc_info=True)
         print(f"❌ [ERROR] Catalog search FAILED: {e}")
         return 1
 
@@ -261,6 +269,7 @@ async def handle_mutate(args):
         print(f"✅ Mutation complete! Variant saved to: {output_path}")
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_mutate", exc_info=True)
         print(f"❌ [ERROR] Mutation FAILED: {e}")
         return 1
 
@@ -282,6 +291,7 @@ async def handle_spec_to_eval(args):
         print(f"✅ Conversion complete! Scenario saved to: {output_path}")
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_spec_to_eval", exc_info=True)
         print(f"❌ [ERROR] Conversion FAILED: {e}")
         return 1
 
@@ -296,6 +306,7 @@ async def handle_import_drift(args):
         drift_importer.import_trace_as_scenario(Path(args.input), args.industry, out_dir)
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_import_drift", exc_info=True)
         print(f"❌ [ERROR] Drift import FAILED: {e}")
         return 1
 
@@ -309,6 +320,7 @@ async def handle_scenario_generate(args):
         scaffold.generate_interactive()
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_scenario_generate", exc_info=True)
         print(f"❌ [ERROR] Scenario generation FAILED: {e}")
         return 1
 
@@ -324,5 +336,6 @@ async def handle_catalog_refresh(args):
         print("✅ Catalog index refreshed.")
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_catalog_refresh", exc_info=True)
         print(f"❌ [ERROR] Catalog refresh FAILED: {e}")
         return 1

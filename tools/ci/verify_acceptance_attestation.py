@@ -47,7 +47,8 @@ def verify_attestation(
     try:
         with open(attestation_path, encoding="utf-8") as f:
             data = json.load(f)
-    except Exception as exc:
+    except (OSError, json.JSONDecodeError, UnicodeDecodeError) as exc:
+        sys.stderr.write(f"[verify_acceptance_attestation] Warning: parse failed: {exc}\n")
         return False, [f"Failed to parse attestation JSON: {exc}"]
 
     if SCHEMA_PATH.exists():

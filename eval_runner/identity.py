@@ -9,6 +9,7 @@ Supports Local PEM files by default, extensible to Vault or AWS KMS.
 import logging
 import os
 
+from cryptography.exceptions import UnsupportedAlgorithm
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
@@ -143,10 +144,23 @@ class IdentityService:
                             sig_bytes = base64.b64decode(signature)
                             if len(sig_bytes) < 100:
                                 raise ValueError()
-                        except Exception:
+                        except (ValueError, TypeError):
+                            logger.debug(
+                                "verify_digest failed",
+                                extra={"operation": "verify_digest", "identity_id": identity_id},
+                                exc_info=True,
+                            )
                             try:
                                 sig_bytes = bytes.fromhex(signature)
-                            except Exception:
+                            except (ValueError, TypeError):
+                                logger.debug(
+                                    "verify_digest failed",
+                                    extra={
+                                        "operation": "verify_digest",
+                                        "identity_id": identity_id,
+                                    },
+                                    exc_info=True,
+                                )
                                 sig_bytes = signature.encode()
                     else:
                         sig_bytes = signature
@@ -155,7 +169,9 @@ class IdentityService:
                         result = cls._pqc_client.verify(digest, sig_bytes)
                         return result.valid
                     except Exception as e:
-                        logger.error(f"   [Identity] PQC Verification exception: {e}")
+                        logger.error(
+                            f"   [Identity] PQC Verification exception: {e}", exc_info=True
+                        )
                         return False
 
                 cls._pqc_client.sign_digest = sign_digest
@@ -168,10 +184,13 @@ class IdentityService:
             except ImportError:
                 logger.error(
                     "   [Identity] FAIL: 'cyclecore-pq' package not found. "
-                    "Please install it to use PQC features."
+                    "Please install it to use PQC features.",
+                    exc_info=True,
                 )
             except Exception as e:
-                logger.error(f"   [Identity] FAIL: Failed to initialize CycleCore Client: {e}")
+                logger.error(
+                    f"   [Identity] FAIL: Failed to initialize CycleCore Client: {e}", exc_info=True
+                )
         else:
             logger.warning(f"   [Identity] Unsupported PQC Provider: {config.PQC_PROVIDER}")
 
@@ -193,8 +212,10 @@ class IdentityService:
         if env_key:
             try:
                 return serialization.load_pem_private_key(env_key.encode(), password=None)
-            except Exception as e:
-                logger.warning(f"Failed to load key from environment variable {env_var}: {e}")
+            except (OSError, ValueError, TypeError, AttributeError, UnsupportedAlgorithm) as e:
+                logger.warning(
+                    f"Failed to load key from environment variable {env_var}: {e}", exc_info=True
+                )
 
         # Security Check: Prevent path traversal in identity_id
         target_path = (config.TRUST_ROOT / identity_id).resolve()
@@ -219,8 +240,8 @@ class IdentityService:
             try:
                 with open(key_path, "rb") as f:
                     return serialization.load_pem_private_key(f.read(), password=None)
-            except Exception as e:
-                logger.error(f"Failed to load private key from {key_path}: {e}")
+            except (OSError, ValueError, TypeError, AttributeError, UnsupportedAlgorithm) as e:
+                logger.error(f"Failed to load private key from {key_path}: {e}", exc_info=True)
                 raise
 
         # Security Guardrail: Block auto-provisioning for certification identities in production
@@ -255,9 +276,10 @@ class IdentityService:
         if env_key:
             try:
                 return serialization.load_pem_public_key(env_key.encode())
-            except Exception as e:
+            except (OSError, ValueError, TypeError, AttributeError, UnsupportedAlgorithm) as e:
                 logger.warning(
-                    f"Failed to load public key from environment variable {env_var}: {e}"
+                    f"Failed to load public key from environment variable {env_var}: {e}",
+                    exc_info=True,
                 )
 
         target_path = (config.TRUST_ROOT / identity_id).resolve()
@@ -278,8 +300,8 @@ class IdentityService:
             try:
                 with open(key_path, "rb") as f:
                     return serialization.load_pem_public_key(f.read())
-            except Exception as e:
-                logger.error(f"Failed to load public key from {key_path}: {e}")
+            except (OSError, ValueError, TypeError, AttributeError, UnsupportedAlgorithm) as e:
+                logger.error(f"Failed to load public key from {key_path}: {e}", exc_info=True)
                 raise
 
         # Fallback to derivation from private key if public is missing
@@ -287,8 +309,10 @@ class IdentityService:
             priv = IdentityService.get_private_key(identity_id, auto_provision=False)
             if priv:
                 return priv.public_key()
-        except Exception as e:
-            logger.debug(f"Public key derivation fallback failed for {identity_id}: {e}")
+        except (OSError, ValueError, TypeError, AttributeError, UnsupportedAlgorithm) as e:
+            logger.debug(
+                f"Public key derivation fallback failed for {identity_id}: {e}", exc_info=True
+            )
 
         # Auto-provision identity only if explicitly requested
         if not auto_provision:

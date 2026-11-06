@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 from collections.abc import Mapping, Sequence
 from typing import Any
 
@@ -182,6 +183,7 @@ def verify_evidence_reference(
         try:
             recomputed = compute_evidence_reference_digest(ref_dict["sampled_result"])
         except Exception:
+            logging.getLogger(__name__).debug("Failure in verify_evidence_reference", exc_info=True)
             return False
         if recomputed.lower() != norm_hash.lower():
             return False

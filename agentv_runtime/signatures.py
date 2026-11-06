@@ -7,19 +7,22 @@ Payload projection is performed by the artifact owner before calling this module
 from __future__ import annotations
 
 import base64
-import binascii
 import hashlib
 import json
+import logging
 import re
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Any
 
+from cryptography.exceptions import InvalidSignature, UnsupportedAlgorithm
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
 from agentv_runtime.canonical import canonical_json_encode
 from agentv_runtime.interfaces import SigningBackend
+
+logger = logging.getLogger(__name__)
 
 PROFILE = "agentv.signature.digest-envelope.v1"
 CERTIFICATE = "agentv.certificate"
@@ -263,10 +266,22 @@ def verify_artifact_signature(
             return False
         public_key_object(policy.public_key).verify(signature, signed)
         return True
-    except (ValueError, TypeError, KeyError, binascii.Error, OverflowError):
-        return False
-    except Exception:
-        # cryptography.InvalidSignature and malformed external trust material fail closed.
+    except (
+        ValueError,
+        TypeError,
+        KeyError,
+        AttributeError,
+        OverflowError,
+        InvalidSignature,
+        UnsupportedAlgorithm,
+        OSError,
+        RuntimeError,
+    ):
+        logger.debug(
+            "Artifact signature verification failed",
+            extra={"operation": "verify_artifact_signature", "purpose": purpose},
+            exc_info=True,
+        )
         return False
 
 

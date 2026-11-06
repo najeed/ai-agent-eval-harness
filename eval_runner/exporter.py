@@ -1,5 +1,6 @@
 # eval_runner/exporter.py
 import json
+import logging
 from pathlib import Path
 
 from . import config
@@ -21,7 +22,8 @@ class HFExporter:
             commit = (
                 subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode().strip()
             )
-        except:  # noqa: E722
+        except (OSError, subprocess.SubprocessError, UnicodeDecodeError, Exception):
+            logging.getLogger(__name__).debug("Failure in HFExporter.export", exc_info=True)
             commit = "unknown"
 
         canonical_meta = {
@@ -51,6 +53,7 @@ class HFExporter:
                     }
                 )
         except Exception as e:
+            logging.getLogger(__name__).debug("Failure in HFExporter.export", exc_info=True)
             print(f"      [Exporter] Error: Failed to load events: {e}")
             return
 
@@ -136,6 +139,7 @@ If you use this dataset in your research, please cite AgentV.
                 "      [HINT] Run 'pip install huggingface_hub' and 'huggingface-cli login' to enable this feature."  # noqa: E501
             )
         except Exception as e:
+            logging.getLogger(__name__).debug("Failure in HFExporter.push_to_hf", exc_info=True)
             print(f"      [Exporter] Failed to push to HF Hub: {e}")
             if "not logged in" in str(e).lower() or "unauthorized" in str(e).lower():
                 print("      [HINT] Please run 'huggingface-cli login' to authenticate.")

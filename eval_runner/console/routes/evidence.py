@@ -136,7 +136,12 @@ def build_verification_package(
     raw_trace_bytes = run_store.get_trace_bytes(run_id, context=context)
     try:
         manifest_data = run_store.get_manifest(run_id, context=context) or {}
-    except Exception:
+    except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError):
+        logger.debug(
+            "build_verification_package failed",
+            extra={"operation": "build_verification_package"},
+            exc_info=True,
+        )
         manifest_data = {}
     if run is None or raw_trace_bytes is None:
         return None
@@ -172,7 +177,7 @@ def build_verification_package(
             events.append(ev)
             events_with_lines.append((ev, text))
         except Exception as err:
-            logger.debug("Skipping unparseable trace event line: %s", err)
+            logger.debug("Skipping unparseable trace event line: %s", err, exc_info=True)
             corrupt_line_offsets.append(line_start_offset)
 
     # [E3] Corruption policy: unparseable trace content means the evidence
@@ -254,7 +259,9 @@ def build_verification_package(
                 "verify_trace_certificate not available; signature not verified."
             )
         except Exception as err:
-            logger.warning("Cryptographic verification failed for %s: %s", run_id, err)
+            logger.warning(
+                "Cryptographic verification failed for %s: %s", run_id, err, exc_info=True
+            )
             crypto_verification["errors"].append(str(err))
 
     # Authoritative Verdict — determined by real verification and finalization,
@@ -540,7 +547,12 @@ def _verify_package_request(*, authoritative: bool):
 
         try:
             raw_trace_bytes = base64.b64decode(raw_trace_b64)
-        except Exception as b64_err:
+        except (ValueError, TypeError) as b64_err:
+            logger.debug(
+                "_verify_package_request failed",
+                extra={"operation": "_verify_package_request"},
+                exc_info=True,
+            )
             return jsonify({"error": f"Invalid base64 trace payload: {b64_err}"}), 400
 
     if authoritative and data.get("require_signature") is False:

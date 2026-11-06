@@ -1,3 +1,5 @@
+import logging
+import math
 import os
 import shlex
 import subprocess
@@ -10,6 +12,8 @@ from typing import Any
 from agentv_runtime.canonical import canonical_json_encode
 from agentv_runtime.contracts import EvidenceBoundednessLimits, EvidenceReference
 from agentv_runtime.interfaces import BoundedStateProvider
+
+logger = logging.getLogger(__name__)
 
 
 class SimulatorMiddleware(ABC):
@@ -55,12 +59,17 @@ class SubprocessJailProvider(BaseJailProvider):
     Default Core implementation executing commands via isolated subprocesses.
     """
 
+    def __init__(self) -> None:
+        self._active_runs: dict[str, dict[str, Any]] = {}
+
     async def execute_command(
         self, cmd: str, cwd: str, env: dict[str, str], timeout: float
     ) -> dict[str, Any]:
         import sys
 
         is_windows = sys.platform == "win32"
+        run_id = env.get("AGENTV_RUN_ID", "default_run")
+        self._active_runs[run_id] = {"last_cmd": cmd, "cwd": cwd}
         try:
             process = subprocess.run(
                 shlex.split(cmd) if not is_windows else cmd,
@@ -80,16 +89,25 @@ class SubprocessJailProvider(BaseJailProvider):
                 "cwd": cwd,
             }
         except subprocess.TimeoutExpired:
+            logger.debug(
+                "SubprocessJailProvider command timed out after %ss: %s",
+                timeout,
+                cmd,
+                exc_info=True,
+            )
             return {
                 "status": "error",
                 "message": f"Command timed out (Limit: {timeout}s)",
             }
         except Exception as e:
+            logger.debug("Failure in SubprocessJailProvider.execute_command", exc_info=True)
             return {"status": "error", "message": f"Execution Error: {str(e)}"}
 
     async def cleanup(self, run_id: str) -> None:
-        # Subprocesses are self-terminating, no resources to release in standard core subprocess
-        pass
+        """Clear tracked subprocess execution state associated with the run."""
+        removed = self._active_runs.pop(run_id, None)
+        if removed is not None:
+            logger.debug("SubprocessJailProvider cleaned up run_id=%s", run_id)
 
 
 class ShimResultProxy(dict):
@@ -191,7 +209,8 @@ class BaseSimulator:
 
     async def quiesce(self) -> None:
         """Lifecycle method to settle asynchronous tasks, database flushes, and pending I/O."""
-        pass
+        self._is_quiesced = True
+        logger.debug("Quiesced simulator %s", self.__class__.__name__)
 
     async def on_poll(self, condition: str, params: dict[str, Any]) -> bool:
         """
@@ -244,7 +263,11 @@ class GitSimulator(BaseSimulator):
     """Simulates a dynamic Git repository state."""
 
     def __init__(self, *args, **kwargs):
-        super().__init__({"history": [], "staged_files": []}, *args, **kwargs)
+        super().__init__(
+            {"history": [], "staged_files": [], "pushes": [], "pushed_commits": []},
+            *args,
+            **kwargs,
+        )
         self._repo = None
 
     def _get_repo(self):
@@ -289,11 +312,14 @@ class GitSimulator(BaseSimulator):
             depth = 1 if registry_resources.get("shallow_clone", False) else None
 
             self._repo = Repo.clone_from(url, dest, branch=default_branch, depth=depth)
+            self.state["active_branch"] = default_branch
+            self.state["remote_url"] = url
             return {
                 "status": "success",
                 "message": f"Cloned {url} into {dest} (branch={default_branch})",
             }
         except Exception as e:
+            logger.debug("Failure in GitSimulator.handle_git_clone", exc_info=True)
             return {"status": "error", "message": f"Git Clone Error: {str(e)}"}
 
     async def handle_git_add(self, params: dict) -> dict:
@@ -305,8 +331,13 @@ class GitSimulator(BaseSimulator):
         files = params.get("files", [])
         try:
             repo.index.add(files)
+            staged = self.state.setdefault("staged_files", [])
+            for file_path in files:
+                if file_path not in staged:
+                    staged.append(file_path)
             return {"status": "success", "message": f"Staged {len(files)} files."}
         except Exception as e:
+            logger.debug("Failure in GitSimulator.handle_git_add", exc_info=True)
             return {"status": "error", "message": f"Git Add Error: {str(e)}"}
 
     async def handle_git_commit(self, params: dict) -> dict:
@@ -318,23 +349,69 @@ class GitSimulator(BaseSimulator):
         msg = params.get("message", "Industrial Guard Trace Commit")
         try:
             commit = repo.index.commit(msg)
+            commit_entry = {
+                "commit_sha": commit.hexsha,
+                "message": msg,
+                "author": str(commit.author),
+            }
+            self.state.setdefault("history", []).append(commit_entry)
+            self.state["staged_files"] = []
             return {
                 "status": "success",
                 "message": f"Committed: {commit.hexsha}",
                 "dna": {"commit_sha": commit.hexsha, "author": str(commit.author)},
             }
         except Exception as e:
+            logger.debug("Failure in GitSimulator.handle_git_commit", exc_info=True)
             return {"status": "error", "message": f"Git Commit Error: {str(e)}"}
 
     async def handle_git_push(self, params: dict) -> dict:
-        """Simulates a push to origin (for safety in evaluation)."""
-        return {"status": "success", "message": "Pushed to origin main (Simulated for safety)"}
+        """Simulates a push to origin and records pushed branch/commit state."""
+        remote_raw = params.get("remote", "origin")
+        branch_raw = params.get("branch", self.state.get("active_branch", "main"))
+        remote = str(remote_raw).strip() if remote_raw is not None else ""
+        branch = str(branch_raw).strip() if branch_raw is not None else ""
+        if not remote or not branch:
+            return {
+                "status": "error",
+                "message": "Invalid remote or branch specified for git push.",
+            }
+
+        repo = self._get_repo()
+        if repo is None:
+            return {"status": "error", "message": "No active repository found."}
+        from git.exc import BadName, BadObject, GitError
+
+        try:
+            commit_sha = repo.commit(branch).hexsha
+            if not isinstance(commit_sha, str) or not commit_sha:
+                raise ValueError("Branch has no commit")
+            if params.get("commit_sha", commit_sha) != commit_sha:
+                raise ValueError("Requested commit does not match branch")
+        except (GitError, BadName, BadObject, OSError, ValueError, TypeError, AttributeError):
+            logger.debug("GitSimulator failed to resolve push branch", exc_info=True)
+            return {"status": "error", "message": "Push branch or commit is invalid."}
+
+        push_record = {
+            "remote": remote,
+            "branch": branch,
+            "commit_sha": commit_sha,
+            "repo_active": True,
+        }
+        self.state.setdefault("pushes", []).append(push_record)
+        self.state.setdefault("pushed_commits", []).append(push_record)
+        return {
+            "status": "success",
+            "message": f"Pushed to {remote} {branch} (Simulated for safety)",
+            "push": push_record,
+        }
 
     async def cleanup(self):
         """[Iteration 5: Secure Wipe] Release Git handles."""
         if self._repo:
             self._repo.close()
             self._repo = None
+        await super().cleanup()
 
 
 class ApiSimulator(BaseSimulator):
@@ -439,14 +516,22 @@ class ApiSimulator(BaseSimulator):
                     "dna": dna,
                 }
         except Exception as e:
+            logger.debug("Failure in ApiSimulator.handle_api_request", exc_info=True)
             return {"status": "error", "message": f"API Execution Error: {str(e)}"}
 
     async def get_snapshot(self) -> dict[str, Any]:
         """Returns the registered endpoints and any captured telemetry state."""
-        return {
-            "endpoints": self.state.get("endpoints", {}),
-            "is_live": os.getenv("IS_LIVE", "false").lower() == "true",
+        import copy
+
+        endpoints = copy.deepcopy(self.state.get("endpoints", {}))
+        is_live = os.getenv("IS_LIVE", "false").lower() == "true"
+        snapshot: dict[str, Any] = {
+            "endpoints": endpoints,
+            "is_live": is_live,
         }
+        if "requests" in self.state:
+            snapshot["requests"] = copy.deepcopy(self.state["requests"])
+        return snapshot
 
     # Backward compatibility shim for old execute calls
     async def execute(self, action: str, params: dict) -> dict:
@@ -739,6 +824,9 @@ class DatabaseSimulator(BaseSimulator, BoundedStateProvider):
 
                 return {"status": "success", "message": "Query executed successfully."}
         except Exception as e:
+            logging.getLogger(__name__).debug(
+                "Failure in DatabaseSimulator.handle_database_query", exc_info=True
+            )
             return {"status": "error", "message": f"Database Error: {str(e)}"}
 
     async def get_snapshot(self) -> dict[str, Any]:
@@ -780,16 +868,12 @@ class DatabaseSimulator(BaseSimulator, BoundedStateProvider):
                         try:
                             old_data = json.loads(entry.get("old_data"))
                         except Exception:
-                            import logging
-
-                            logging.debug("Failed to decode forensic old_data JSON")
+                            logger.debug("Failed to decode forensic old_data JSON", exc_info=True)
                     if entry.get("new_data"):
                         try:
                             new_data = json.loads(entry.get("new_data"))
                         except Exception:
-                            import logging
-
-                            logging.debug("Failed to decode forensic new_data JSON")
+                            logger.debug("Failed to decode forensic new_data JSON", exc_info=True)
 
                     entry["old_data"] = old_data
                     entry["new_data"] = new_data
@@ -811,9 +895,38 @@ class DatabaseSimulator(BaseSimulator, BoundedStateProvider):
                     snapshot["tables"][tname].append(data)
 
         except Exception as e:
+            logger.debug("Failure in DatabaseSimulator.get_snapshot", exc_info=True)
             snapshot["error"] = f"Forensic snapshot failed: {e}"
 
         return snapshot
+
+    async def quiesce(self) -> None:
+        """Flush pending SQLite WAL frames and release pooled database connections."""
+        self.state["quiesced"] = False
+        self._is_quiesced = False
+        if self._engine is not None:
+            from sqlalchemy import text
+
+            checkpoint_failed = False
+            try:
+                with self._engine.connect() as conn:
+                    checkpoint = conn.execute(text("PRAGMA wal_checkpoint(TRUNCATE)"))
+                    if checkpoint.fetchone()[0] != 0:
+                        raise RuntimeError("Database checkpoint is busy")
+                    conn.commit()
+            except Exception:
+                checkpoint_failed = True
+                logger.debug("DatabaseSimulator WAL checkpoint failed", exc_info=True)
+                raise
+            finally:
+                try:
+                    self._engine.dispose()
+                except Exception:
+                    logger.debug("DatabaseSimulator pool disposal failed", exc_info=True)
+                    if not checkpoint_failed:
+                        raise
+        self.state["quiesced"] = True
+        await super().quiesce()
 
     async def cleanup(self):
         """[Iteration 5: Secure Wipe] Dispose SQLAlchemy engine to release file locks."""
@@ -869,7 +982,40 @@ class EmailSimulator(BaseSimulator):
         return {"status": "success", "id": f"M{len(self.state['sent']) + 2:03d}"}
 
     def handle_email_list(self, params: dict) -> dict:
-        return {"status": "success", "messages": self.state["inbox"]}
+        folder = str(params.get("folder", "inbox") or "inbox").strip().lower()
+        if folder == "all":
+            messages = list(self.state.get("inbox", [])) + list(self.state.get("sent", []))
+        else:
+            messages = list(self.state.get(folder, []))
+
+        sender = params.get("from") or params.get("sender")
+        if sender:
+            sender_norm = str(sender).strip().lower()
+            messages = [m for m in messages if sender_norm in str(m.get("from", "")).lower()]
+
+        recipient = params.get("to") or params.get("recipient")
+        if recipient:
+            recipient_norm = str(recipient).strip().lower()
+            messages = [m for m in messages if recipient_norm in str(m.get("to", "")).lower()]
+
+        status = params.get("status")
+        if status:
+            status_norm = str(status).strip().lower()
+            messages = [
+                m for m in messages if str(m.get("status", "")).strip().lower() == status_norm
+            ]
+
+        query = params.get("query") or params.get("subject")
+        if query:
+            query_norm = str(query).strip().lower()
+            messages = [
+                m
+                for m in messages
+                if query_norm in str(m.get("subject", "")).lower()
+                or query_norm in str(m.get("body", "")).lower()
+            ]
+
+        return {"status": "success", "folder": folder, "messages": messages}
 
 
 class CalendarSimulator(BaseSimulator):
@@ -901,8 +1047,17 @@ class JiraSimulator(BaseSimulator):
 
     def handle_jira_create(self, params: dict) -> dict:
         summary = params.get("summary", "New Task")
-        new_id = f"PROJ-{len(self.state['issues']) + 1}"
-        new_issue = {"id": new_id, "summary": summary, "status": "To Do"}
+        project = str(params.get("project", "PROJ") or "PROJ").strip().upper()
+        new_id = f"{project}-{len(self.state['issues']) + 1}"
+        new_issue: dict[str, Any] = {
+            "id": new_id,
+            "summary": summary,
+            "status": params.get("status", "To Do"),
+        }
+        if "assignee" in params:
+            new_issue["assignee"] = params["assignee"]
+        if "project" in params:
+            new_issue["project"] = project
         self.state["issues"].append(new_issue)
         return {"status": "success", "id": new_id, "issue": new_issue}
 
@@ -911,12 +1066,50 @@ class JiraSimulator(BaseSimulator):
         new_status = params.get("status")
         for issue in self.state["issues"]:
             if issue["id"] == issue_id:
-                issue["status"] = new_status
-                return {"status": "success", "id": issue_id, "new_status": new_status}
+                if new_status is not None:
+                    issue["status"] = new_status
+                if "assignee" in params:
+                    issue["assignee"] = params["assignee"]
+                if "summary" in params:
+                    issue["summary"] = params["summary"]
+                return {"status": "success", "id": issue_id, "new_status": issue["status"]}
         return {"status": "error", "message": f"Issue {issue_id} not found."}
 
     def handle_jira_list(self, params: dict) -> dict:
-        return {"status": "success", "issues": self.state["issues"]}
+        issues = list(self.state.get("issues", []))
+        status = params.get("status")
+        if status:
+            status_norm = str(status).strip().lower()
+            issues = [i for i in issues if str(i.get("status", "")).strip().lower() == status_norm]
+
+        assignee = params.get("assignee")
+        if assignee:
+            assignee_norm = str(assignee).strip().lower()
+            issues = [
+                i for i in issues if str(i.get("assignee", "")).strip().lower() == assignee_norm
+            ]
+
+        project = params.get("project")
+        if project:
+            project_norm = str(project).strip().upper()
+            issues = [
+                i
+                for i in issues
+                if str(i.get("project", "")).strip().upper() == project_norm
+                or str(i.get("id", "")).upper().startswith(f"{project_norm}-")
+            ]
+
+        query = params.get("query")
+        if query:
+            query_norm = str(query).strip().lower()
+            issues = [
+                i
+                for i in issues
+                if query_norm in str(i.get("summary", "")).lower()
+                or query_norm in str(i.get("id", "")).lower()
+            ]
+
+        return {"status": "success", "issues": issues}
 
 
 class CloudSimulator(BaseSimulator):
@@ -975,16 +1168,18 @@ class TerminalSimulator(BaseSimulator):
 
     async def cleanup(self):
         """Clean up active jail provider resources during simulator teardown."""
+        self.state["cleaned_up"] = False
         if hasattr(self, "jail_provider") and self.jail_provider:
             run_id = self.config.get("run_id") or "default_run"
             try:
                 await self.jail_provider.cleanup(run_id)
             except Exception as e:
-                import logging
-
-                logging.getLogger(__name__).error(
-                    f"[TerminalSimulator] Jail provider cleanup failed: {e}"
+                logger.error(
+                    f"[TerminalSimulator] Jail provider cleanup failed: {e}",
+                    exc_info=True,
                 )
+                return
+        self.state["cleaned_up"] = True
         await super().cleanup()
 
     async def handle_terminal_execute(self, params: dict) -> dict:
@@ -1027,10 +1222,13 @@ class TerminalSimulator(BaseSimulator):
             return await self.jail_provider.execute_command(
                 cmd=cmd,
                 cwd=cwd,
-                env={},  # Extreme Isolation: No host env leakage
+                env={"AGENTV_RUN_ID": self.config.get("run_id") or "default_run"},
                 timeout=30.0,
             )
         except Exception as e:
+            logging.getLogger(__name__).debug(
+                "Failure in TerminalSimulator.handle_terminal_execute", exc_info=True
+            )
             return {"status": "error", "message": f"Execution Error: {str(e)}"}
 
     # Backward compatibility shim for execute(cmd, params)
@@ -1069,7 +1267,7 @@ class BrowserSimulator(BaseSimulator):
     """Simulates dynamic headless browser DOM."""
 
     def __init__(self, *args, **kwargs):
-        super().__init__({"url": "about:blank"}, *args, **kwargs)
+        super().__init__({"url": "about:blank", "title": "", "history": []}, *args, **kwargs)
         self._playwright = None
         self._browser = None
         self._context = None
@@ -1107,6 +1305,10 @@ class BrowserSimulator(BaseSimulator):
             title = await page.title()
             current_url = page.url
 
+            self.state["url"] = current_url
+            self.state["title"] = title
+            self.state.setdefault("history", []).append({"url": current_url, "title": title})
+
             # [Iteration 3/4 DNA] capture telemetry
             dna = {
                 "page": {"title": title, "url": current_url},
@@ -1115,14 +1317,33 @@ class BrowserSimulator(BaseSimulator):
 
             return {"status": "success", "title": title, "url": current_url, "dna": dna}
         except Exception as e:
+            logger.debug("Failure in BrowserSimulator.handle_browser_go", exc_info=True)
             return {"status": "error", "message": f"Browser Execution Error: {str(e)}"}
+
+    async def get_snapshot(self) -> dict[str, Any]:
+        """Returns a point-in-time snapshot of the browser navigation state."""
+        import copy
+
+        snapshot = copy.deepcopy(self.state)
+        snapshot["browser_active"] = self._page is not None
+        return snapshot
 
     async def cleanup(self):
         """[Iteration 5: Secure Wipe] Close browser resources."""
+        if self._context:
+            try:
+                await self._context.close()
+            except Exception:
+                logger.debug("BrowserSimulator context close failed", exc_info=True)
+            self._context = None
         if self._browser:
             await self._browser.close()
+            self._browser = None
         if self._playwright:
             await self._playwright.stop()
+            self._playwright = None
+        self._page = None
+        await super().cleanup()
 
 
 class KnowledgeBaseSimulator(BaseSimulator):
@@ -1136,7 +1357,58 @@ class KnowledgeBaseSimulator(BaseSimulator):
         )
 
     def handle_kb_search(self, params: dict) -> dict:
-        return {"status": "success", "results": self.state["docs"]}
+        docs = list(self.state.get("docs", []))
+        raw_query = params.get("query") or params.get("keyword") or params.get("q")
+        raw_keywords = params.get("keywords")
+        tag_filter = params.get("tag")
+
+        terms: list[str] = []
+        if isinstance(raw_keywords, list):
+            terms.extend(str(k).strip().lower() for k in raw_keywords if str(k).strip())
+        elif isinstance(raw_keywords, str) and raw_keywords.strip():
+            terms.extend(t.lower() for t in raw_keywords.split() if t.strip())
+
+        if isinstance(raw_query, str) and raw_query.strip():
+            terms.extend(t.lower() for t in raw_query.split() if t.strip())
+
+        scored_results: list[tuple[int, dict[str, Any]]] = []
+        for doc in docs:
+            if tag_filter:
+                doc_tags = [str(t).lower() for t in doc.get("tags", [])]
+                if str(tag_filter).strip().lower() not in doc_tags:
+                    continue
+
+            if not terms:
+                scored_results.append((1, doc))
+                continue
+
+            haystack = " ".join(
+                [
+                    str(doc.get("id", "")),
+                    str(doc.get("title", "")),
+                    str(doc.get("content", "")),
+                    " ".join(str(t) for t in doc.get("tags", [])),
+                ]
+            ).lower()
+            score = sum(1 for term in terms if term in haystack)
+            if score > 0:
+                scored_results.append((score, doc))
+
+        scored_results.sort(key=lambda item: item[0], reverse=True)
+        results = [doc for _, doc in scored_results]
+
+        limit = params.get("limit", params.get("top_k"))
+        if limit is not None:
+            try:
+                limit = int(limit)
+                if limit < 0:
+                    raise ValueError("Search limit must be nonnegative")
+                results = results[:limit]
+            except (ValueError, TypeError):
+                logger.debug("Invalid limit parameter in handle_kb_search", exc_info=True)
+                return {"status": "error", "message": "Invalid search limit."}
+
+        return {"status": "success", "results": results, "total": len(results)}
 
 
 class SupportDeskSimulator(BaseSimulator):
@@ -1184,8 +1456,88 @@ class VectorDBSimulator(BaseSimulator):
     def __init__(self, *args, **kwargs):
         super().__init__({"vectors": []}, *args, **kwargs)
 
+    def handle_vector_upsert(self, params: dict) -> dict:
+        vectors = params.get("vectors")
+        if isinstance(vectors, list):
+            self.state.setdefault("vectors", []).extend(vectors)
+            count = len(vectors)
+        elif isinstance(params.get("id"), str):
+            self.state.setdefault("vectors", []).append(dict(params))
+            count = 1
+        else:
+            return {"status": "error", "message": "No valid vectors provided for upsert."}
+        return {"status": "success", "upserted_count": count}
+
     def handle_vector_query(self, params: dict) -> dict:
-        return {"status": "success", "matches": [{"id": "v1", "score": 0.99}]}
+        """Rank stored vectors by cosine similarity or text-term overlap."""
+        try:
+            top_k = int(params.get("top_k", params.get("limit", 10)))
+            if top_k < 0:
+                raise ValueError("top_k must be nonnegative")
+            min_score = float(params.get("min_score", -1))
+            if not math.isfinite(min_score):
+                raise ValueError("min_score must be finite")
+            query_vec = params.get("vector", params.get("vec", params.get("embedding")))
+            query_text = params.get("query", params.get("text", ""))
+            filter_meta = params.get("filter", params.get("metadata", {}))
+            if not isinstance(query_text, str) or not isinstance(filter_meta, dict):
+                raise ValueError("Query must be text and filter must be an object")
+            if query_vec is not None:
+                if not isinstance(query_vec, list) or not query_vec:
+                    raise ValueError("Query vector must be a nonempty list")
+                query_vec = [float(value) for value in query_vec]
+                if not all(math.isfinite(value) for value in query_vec):
+                    raise ValueError("Vector values must be finite")
+                query_norm = math.hypot(*query_vec)
+                if query_norm == 0:
+                    raise ValueError("Query vector must have nonzero norm")
+            terms = query_text.lower().split()
+            matches = []
+            for item in self.state.get("vectors", []):
+                if not isinstance(item, dict) or not isinstance(item.get("id"), str):
+                    raise ValueError("Stored vectors must have string identities")
+                metadata = item.get("metadata", {})
+                if not isinstance(metadata, dict):
+                    raise ValueError("Stored metadata must be an object")
+                if not all(metadata.get(key) == value for key, value in filter_meta.items()):
+                    continue
+                score = None
+                if query_vec is not None:
+                    values = item.get("values", item.get("vector", item.get("embedding")))
+                    if not isinstance(values, list) or len(values) != len(query_vec):
+                        raise ValueError("Stored vector dimensions must match query")
+                    values = [float(value) for value in values]
+                    norm = math.hypot(*values)
+                    if not all(math.isfinite(value) for value in values) or norm == 0:
+                        raise ValueError("Stored vector must be finite with nonzero norm")
+                    score = sum(
+                        (a / query_norm) * (b / norm)
+                        for a, b in zip(query_vec, values, strict=True)
+                    )
+                if terms:
+                    text = " ".join(
+                        str(item.get(key, "")) for key in ("id", "text", "content")
+                    ).lower()
+                    overlap = sum(term in text for term in terms) / len(terms)
+                    if overlap == 0:
+                        continue
+                    score = overlap if score is None else (score + overlap) / 2
+                if score is None:
+                    raise ValueError("A vector or text query is required")
+                if score < min_score:
+                    continue
+                match = {"id": item["id"], "score": round(score, 4)}
+                for key in ("metadata", "text"):
+                    if key in item:
+                        import copy
+
+                        match[key] = copy.deepcopy(item[key])
+                matches.append(match)
+            matches.sort(key=lambda match: match["score"], reverse=True)
+            return {"status": "success", "matches": matches[:top_k]}
+        except (ValueError, TypeError, OverflowError):
+            logger.debug("Vector query rejected invalid input or stored state", exc_info=True)
+            return {"status": "error", "message": "Invalid vector query or stored vector data."}
 
 
 class CICDSimulator(BaseSimulator):

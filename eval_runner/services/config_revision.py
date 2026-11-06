@@ -417,7 +417,12 @@ class ConfigurationRevisionService:
                     # Verify scope match
                     if rec.target_scope == scope:
                         recs.append(rec)
-                except Exception:
+                except (OSError, ValueError, TypeError, KeyError, AttributeError):
+                    logger.debug(
+                        "list_revisions failed",
+                        extra={"operation": "list_revisions", "revision_file": f.name},
+                        exc_info=True,
+                    )
                     continue
 
             recs.sort(key=lambda r: r.created_at, reverse=True)
@@ -442,7 +447,12 @@ class ConfigurationRevisionService:
             if rec.target_scope != scope:
                 return None
             return rec
-        except Exception:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError):
+            logger.debug(
+                "_load_record_locked failed",
+                extra={"operation": "_load_record_locked", "revision_id": revision_id},
+                exc_info=True,
+            )
             return None
 
     def _save_record_locked(
@@ -468,7 +478,12 @@ class ConfigurationRevisionService:
             if not active_id:
                 return None
             return self._load_record_locked(scope, active_id)
-        except Exception:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError):
+            logger.debug(
+                "_load_active_revision_locked failed",
+                extra={"operation": "_load_active_revision_locked"},
+                exc_info=True,
+            )
             return None
 
     def _set_active_pointer_locked(

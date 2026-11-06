@@ -98,7 +98,7 @@ def _safe_default(obj: Any) -> str:
         try:
             obj.close()
         except (RuntimeError, TypeError, AttributeError) as exc:
-            logger.debug("Failed closing unawaited coroutine: %s", exc)
+            logger.debug("Failed closing unawaited coroutine: %s", exc, exc_info=True)
     return str(obj)
 
 
@@ -145,7 +145,12 @@ def bound_state_snapshot(
     # Step 2: Compute full canonical SHA3-256 digest
     try:
         c_bytes = canonical_json_encode(projected_state)
-    except Exception:
+    except (ValueError, TypeError, OverflowError):
+        logger.debug(
+            "bound_state_snapshot failed",
+            extra={"operation": "bound_state_snapshot"},
+            exc_info=True,
+        )
         c_bytes = json.dumps(projected_state, sort_keys=True, default=_safe_default).encode("utf-8")
     full_digest = f"sha3_256:{hashlib.sha3_256(c_bytes).hexdigest()}"
 
@@ -271,7 +276,7 @@ class HttpStateAuthorityConnector(StateAuthorityConnector):
 
                     return payload
             except (aiohttp.ClientError, TimeoutError, OSError) as exc:
-                logger.error(f"[StateAuthority] Network error querying {url}: {exc}")
+                logger.error(f"[StateAuthority] Network error querying {url}: {exc}", exc_info=True)
                 raise ConnectionError(
                     f"Failed to query external state authority {url}: {exc}"
                 ) from exc

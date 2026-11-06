@@ -633,6 +633,9 @@ class OpenAPIAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                     candidate,
                 )
             except Exception:
+                logging.getLogger(__name__).debug(
+                    "Failure in OpenAPIAdapterPlugin._load_spec", exc_info=True
+                )
                 continue
 
         return None, None
@@ -1116,6 +1119,10 @@ class OpenAPIAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                     document_url=document_url,
                 )
             except Exception:
+                logging.getLogger(__name__).debug(
+                    "Failure in OpenAPIAdapterPlugin._match_against_server_relative_path",
+                    exc_info=True,
+                )
                 continue
 
             if not isinstance(
@@ -1250,7 +1257,8 @@ class OpenAPIAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                     for token in []
                 ),
             )
-        except Exception:
+        except (OpenAPIResolutionError, KeyError, IndexError, TypeError, ValueError):
+            logger.debug("Failure in OpenAPIAdapterPlugin._resolve_operation_ref", exc_info=True)
             raw_path_item = target_spec.get("paths", {}).get(path)
 
         if raw_path_item is None:
@@ -2358,6 +2366,9 @@ class OpenAPIAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                 )
 
             except Exception as exc:
+                logging.getLogger(__name__).debug(
+                    "Failure in OpenAPIAdapterPlugin._get_auth_context", exc_info=True
+                )
                 last_error = exc
                 continue
 
@@ -4603,7 +4614,10 @@ class OpenAPIAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                     response_body,
                     pointer,
                 )
-            except Exception:
+            except (OpenAPIResolutionError, KeyError, IndexError, TypeError, ValueError):
+                logger.debug(
+                    "Failure in OpenAPIAdapterPlugin._evaluate_runtime_expression", exc_info=True
+                )
                 return None
 
         if expression == "$response.body":

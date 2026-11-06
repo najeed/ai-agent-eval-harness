@@ -564,6 +564,15 @@ def test_mutation_progress_reports_failure_details_immediately():
     assert "[SURVIVED] verify_run: missing provider guard" in stream.getvalue()
 
 
+def test_mutation_output_directory_can_be_isolated_from_runtime_folders(monkeypatch, tmp_path):
+    output = tmp_path / "mutation-results"
+    monkeypatch.setenv("AGENTV_MUTATION_OUTPUT_DIR", str(output))
+    sentinel = _load_sentinel_module()
+    assert sentinel.REPORT_DIR == output
+    assert sentinel.REPORT_PATH == output / "mutation_scorecard.md"
+    assert sentinel.BASELINE_CACHE_PATH == output / "mutation_baseline_cache.json"
+
+
 def test_mutation_exclusions_have_reasons_and_match_current_source():
     sentinel = _load_sentinel_module()
     for target in sentinel.CRITICAL_MUTATION_TARGETS:

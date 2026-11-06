@@ -181,12 +181,11 @@ def test_debugger_historical_exception(client, tmp_path):
     runs_dir.mkdir()
     (runs_dir / "x.jsonl").write_text("bad data", encoding="utf-8")
 
-    # Force a strange exception during open or read if needed, but normally
-    # routes.py has try-except. Let's force an actual Exception in json.loads
+    # Corrupt JSON must report the parser error without returning historical state.
     with (
         patch("eval_runner.console.routes.config.RUN_LOG_DIR", runs_dir),
         patch(
-            "eval_runner.console.routes.system.json.loads", side_effect=Exception("Corrupt format")
+            "eval_runner.console.routes.system.json.loads", side_effect=ValueError("Corrupt format")
         ),
     ):
         res = client.get("/api/debugger/state?run_id=x")

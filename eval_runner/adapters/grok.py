@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 import os
 import re
 from typing import Any
@@ -185,6 +186,9 @@ class GrokAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                 endpoint=endpoint,
             )
         except Exception as exc:
+            logging.getLogger(__name__).debug(
+                "Failure in GrokAdapterPlugin.execute_grok_query", exc_info=True
+            )
             return self._error_response(
                 f"Grok request failed: {self._sanitize_exception(exc)}",
                 error_type=type(exc).__name__,

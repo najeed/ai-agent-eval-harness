@@ -32,7 +32,7 @@ agentv run \
 
 # Evaluate Claude 3.7 Sonnet on GAIA benchmarks
 agentv run \
-  --scenario gaia://level1 \
+  --scenario gaia://datasets/gaia.jsonl \
   --protocol claude \
   --agent "claude://claude-3-7-sonnet-20250219"
 ```

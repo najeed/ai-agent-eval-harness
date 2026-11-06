@@ -342,6 +342,9 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         except asyncio.CancelledError:
             raise
         except Exception as exc:
+            logging.getLogger(__name__).debug(
+                "Failure in LangChainAdapterPlugin._execute_local", exc_info=True
+            )
             self._emit_error(
                 task_id=task_id,
                 mode=f"local_{requested_mode}",
@@ -532,6 +535,9 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         except asyncio.CancelledError:
             raise
         except Exception as exc:
+            logging.getLogger(__name__).debug(
+                "Failure in LangChainAdapterPlugin._execute_remote", exc_info=True
+            )
             self._emit_error(
                 task_id=task_id,
                 mode=f"remote_{mode}",
@@ -1125,6 +1131,9 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             try:
                 return self._extract_text(text_attr())
             except Exception:
+                logging.getLogger(__name__).debug(
+                    "Failure in LangChainAdapterPlugin._extract_text", exc_info=True
+                )
                 return ""
 
         if text_attr is not None:

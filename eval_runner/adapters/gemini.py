@@ -258,6 +258,9 @@ class GeminiAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             )
 
         except Exception as exc:
+            logging.getLogger(__name__).debug(
+                "Failure in GeminiAdapterPlugin.execute_gemini_query", exc_info=True
+            )
             status_code = self._extract_status_code(exc)
 
             error_metadata = {
@@ -282,6 +285,9 @@ class GeminiAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                 try:
                     await client.aio.aclose()
                 except Exception as exc:
+                    logging.getLogger(__name__).debug(
+                        "Failure in GeminiAdapterPlugin.execute_gemini_query", exc_info=True
+                    )
                     print(f"      [Gemini] Client cleanup warning: {exc}")
 
     # ------------------------------------------------------------------
@@ -2722,7 +2728,8 @@ class GeminiAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                 for key, item in vars(value).items()
                 if not key.startswith("_")
             }
-        except Exception:
+        except (TypeError, AttributeError, ValueError, RecursionError):
+            logger.debug("Failure in GeminiAdapterPlugin._serialize", exc_info=True)
             return str(value)
 
     @classmethod

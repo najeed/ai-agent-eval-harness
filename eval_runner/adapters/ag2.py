@@ -219,6 +219,9 @@ class AG2AdapterPlugin(BaseEvalPlugin, BaseAdapter):
                 span_context=span_context,
             )
         except Exception as exc:
+            logging.getLogger(__name__).debug(
+                "Failure in AG2AdapterPlugin._execute_native", exc_info=True
+            )
             emit(
                 CoreEvents.ERROR,
                 {
@@ -504,6 +507,9 @@ class AG2AdapterPlugin(BaseEvalPlugin, BaseAdapter):
                 span_context=span_context,
             )
         except Exception as exc:
+            logging.getLogger(__name__).debug(
+                "Failure in AG2AdapterPlugin._execute_remote_a2a", exc_info=True
+            )
             self._conversations.pop(conversation_key, None)
 
             emit(
@@ -969,6 +975,9 @@ class AG2AdapterPlugin(BaseEvalPlugin, BaseAdapter):
                     events = list(raw_events)
 
             except Exception as exc:
+                logging.getLogger(__name__).debug(
+                    "Failure in AG2AdapterPlugin._collect_reply_events", exc_info=True
+                )
                 emit(
                     CoreEvents.ADAPTER_DEBUG,
                     {
@@ -1099,6 +1108,9 @@ class AG2AdapterPlugin(BaseEvalPlugin, BaseAdapter):
             events = await get_events()
             return len(events)
         except Exception:
+            logging.getLogger(__name__).debug(
+                "Failure in AG2AdapterPlugin._history_length", exc_info=True
+            )
             return 0
 
     @staticmethod
@@ -1621,7 +1633,8 @@ class AG2AdapterPlugin(BaseEvalPlugin, BaseAdapter):
                 ensure_ascii=False,
                 default=str,
             )
-        except Exception:
+        except (TypeError, ValueError, OverflowError, RecursionError):
+            logger.debug("Failure in AG2AdapterPlugin._stringify", exc_info=True)
             return str(value)
 
     @staticmethod

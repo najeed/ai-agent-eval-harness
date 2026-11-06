@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 import time
 from typing import Any
 from urllib.parse import urlsplit, urlunsplit
@@ -181,6 +182,9 @@ class OllamaAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         except asyncio.CancelledError:
             raise
         except Exception as exc:
+            logging.getLogger(__name__).debug(
+                "Failure in OllamaAdapterPlugin.execute_ollama_query", exc_info=True
+            )
             latency_ms = round((time.perf_counter() - started) * 1000.0, 3)
 
             endpoint = self._safe_endpoint_for_metadata(
@@ -306,7 +310,10 @@ class OllamaAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                     "",
                 )
             )
-        except Exception:
+        except (ValueError, TypeError):
+            logging.getLogger(__name__).debug(
+                "Failure in OllamaAdapterPlugin._safe_endpoint_for_metadata", exc_info=True
+            )
             return "<invalid-endpoint>"
 
     @staticmethod
@@ -757,6 +764,9 @@ class OllamaAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         try:
             return await response.text()
         except Exception:
+            logging.getLogger(__name__).debug(
+                "Failure in OllamaAdapterPlugin._safe_response_text", exc_info=True
+            )
             return "<unavailable>"
 
     # ------------------------------------------------------------------
@@ -968,6 +978,9 @@ class OllamaAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         try:
             safe = json_safe(response_data)
         except Exception:
+            logging.getLogger(__name__).debug(
+                "Failure in OllamaAdapterPlugin._safe_raw_response", exc_info=True
+            )
             return "<unserializable-response>"
 
         try:
@@ -978,6 +991,9 @@ class OllamaAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                 separators=(",", ":"),
             )
         except Exception:
+            logging.getLogger(__name__).debug(
+                "Failure in OllamaAdapterPlugin._safe_raw_response", exc_info=True
+            )
             return "<unserializable-response>"
 
         if len(encoded) <= cls._MAX_RAW_RESPONSE_CHARS:

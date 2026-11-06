@@ -28,7 +28,7 @@ class ContributeWizard:
         target_path = target_dir / filename
 
         print(f"\n[Scaffold] Creating {filename}...")
-        stub = {
+        scenario_template = {
             "id": id_val,
             "title": title,
             "description": f"Evaluation for {title} in the {industry} industry.",
@@ -48,7 +48,7 @@ class ContributeWizard:
         }
 
         with open(target_path, "w", encoding="utf-8") as f:
-            json.dump(stub, f, indent=2)
+            json.dump(scenario_template, f, indent=2)
 
         # 2. Linting & Quality Check
         print("\n" + "-" * 60)
@@ -76,7 +76,7 @@ class ContributeWizard:
         )
         if do_mutate == "y":
             print("[Mutator] Generating typo variant...")
-            mutated = mutator.mutate_scenario(stub, "typo")
+            mutated = mutator.mutate_scenario(scenario_template, "typo")
             mutated_path = target_path.parent / f"{target_path.stem}_typo.json"
             mutator.save_mutated_scenario(mutated, mutated_path)
             print(f"   -> Saved to {mutated_path.name}")

@@ -919,7 +919,7 @@ export interface GraphNodeDimensions {
  * The estimate deliberately uses the same text fields shown in the node,
  * expands the width for ordinary labels, and wraps only after the maximum
  * readable width is reached.  Dagre therefore receives dimensions close to
- * the rendered box instead of the former fixed 180x70 placeholder.
+ * the rendered box using its measured dimensions.
  */
 export const getGraphNodeDimensions = (
   data: Pick<FlowNodeData, 'id' | 'label' | 'statusLabel'> &

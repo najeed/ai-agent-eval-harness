@@ -336,6 +336,7 @@ class DefaultRunner(BaseRunner):
 
             otel_ctx = trace.set_span_in_context(span, parent_context)
         except Exception as e:
+            logger.debug("run failed", extra={"operation": "run"}, exc_info=True)
             import sys
 
             sys.stderr.write(f"   [Telemetry] Warning: Failed to initialize OTel span: {e}\n")
@@ -767,6 +768,7 @@ class DefaultRunner(BaseRunner):
                 # of the execution contract.  Continuing after a failed
                 # adoption would produce evidence for a configuration the
                 # worker did not prove it used.
+                logger.debug("run failed", extra={"operation": "run"}, exc_info=True)
                 raise RuntimeError(
                     "ScopedConfigurationAdoptionFailed: unable to adopt and "
                     "bind the active scoped configuration revision"
@@ -1103,6 +1105,7 @@ class DefaultRunner(BaseRunner):
                         "Evaluation run %s suspended for approval (token: %s)",
                         effective_run_id,
                         susp.approval_token,
+                        exc_info=True,
                     )
                     transition_run_lifecycle(
                         effective_run_id,
@@ -1151,7 +1154,7 @@ class DefaultRunner(BaseRunner):
 
                 tb = traceback.format_exc()
                 post_process_error = f"Evaluator post-processing / statistics failure: {e}"
-                logger.error("Runner Post-Process Error: %s\n%s", e, tb)
+                logger.error("Runner Post-Process Error: %s\n%s", e, tb, exc_info=True)
                 events.emit(
                     events.CoreEvents.ERROR,
                     {
@@ -1279,7 +1282,7 @@ class DefaultRunner(BaseRunner):
                     except TypeError:
                         raw_bytes = self.run_store.get_trace_bytes(effective_run_id)
                     except Exception as b_err:
-                        logger.debug("Provider get_trace_bytes failed: %s", b_err)
+                        logger.debug("Provider get_trace_bytes failed: %s", b_err, exc_info=True)
 
                 if raw_bytes:
                     for line_str in raw_bytes.decode("utf-8").splitlines():
@@ -1289,7 +1292,8 @@ class DefaultRunner(BaseRunner):
                             rec = json.loads(line_str)
                             if isinstance(rec, dict):
                                 trace_events.append((rec, line_str))
-                        except Exception:
+                        except (ValueError, TypeError):
+                            logger.debug("run failed", extra={"operation": "run"}, exc_info=True)
                             continue
                 else:
                     try:
@@ -1315,7 +1319,11 @@ class DefaultRunner(BaseRunner):
                     trace_read_error = "RunStorageProvider returned no trace events."
             except Exception as read_err:
                 trace_read_error = f"RunStorageProvider event retrieval failed: {read_err}"
-                logger.debug("Failed reading provider trace for evidence graph root: %s", read_err)
+                logger.debug(
+                    "Failed reading provider trace for evidence graph root: %s",
+                    read_err,
+                    exc_info=True,
+                )
 
             # [Item 2: P0 Physical Trace Exclusivity]
             if is_certification and (trace_read_error is not None or not trace_events):
@@ -1424,7 +1432,7 @@ class DefaultRunner(BaseRunner):
                     logger.error(sign_err_msg)
             except Exception as key_err:
                 sign_err_msg = str(key_err)
-                logger.error("Evaluator private key retrieval error: %s", key_err)
+                logger.error("Evaluator private key retrieval error: %s", key_err, exc_info=True)
 
             # Campaign acceptance policy:
             # 1. Reject incomplete campaigns (truncated by cancellation or early termination).
@@ -1480,7 +1488,7 @@ class DefaultRunner(BaseRunner):
                         sign_err_msg = "Signature missing after signing attempt"
             except Exception as sign_err:
                 sign_err_msg = str(sign_err)
-                logger.error("Evaluator signing error in runner: %s", sign_err)
+                logger.error("Evaluator signing error in runner: %s", sign_err, exc_info=True)
 
             if sign_err_msg:
                 # Terminate authoritative evaluation finalization path immediately (P1 Fix)
@@ -1550,7 +1558,11 @@ class DefaultRunner(BaseRunner):
                             effective_run_id, failed_manifest, context=runtime_context
                         )
                     except Exception as err:
-                        logger.debug("Failed saving failed run manifest on signing error: %s", err)
+                        logger.debug(
+                            "Failed saving failed run manifest on signing error: %s",
+                            err,
+                            exc_info=True,
+                        )
                 return EvaluationResult(
                     run_id=effective_run_id,
                     scenario_id=str(scenario.get("id", "unknown")),
@@ -1631,7 +1643,7 @@ class DefaultRunner(BaseRunner):
                         effective_run_id, manifest_data, context=runtime_context
                     )
                 except Exception as e:
-                    logger.debug(f"Failed to save manifest to RunStore: {e}")
+                    logger.debug(f"Failed to save manifest to RunStore: {e}", exc_info=True)
 
             result_metadata = dict(ctx.metadata) if isinstance(ctx.metadata, Mapping) else {}
             result_metadata["execution_mode"] = str(execution_mode)
@@ -1661,6 +1673,7 @@ class DefaultRunner(BaseRunner):
                     if span:
                         span.end()
                 except Exception as e:
+                    logger.debug("run failed", extra={"operation": "run"}, exc_info=True)
                     import sys
 
                     sys.stderr.write(f"   [Telemetry] Warning: Failed to clean up OTel span: {e}\n")

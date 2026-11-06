@@ -18,6 +18,126 @@ from eval_runner.llm_providers import (
 )
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "provider_class,base,key_header",
+    [
+        (AnthropicProvider, "https://api.anthropic.com/v1/models", "x-api-key"),
+        (GrokProvider, "https://api.x.ai/v1/models", "Authorization"),
+    ],
+)
+async def test_authenticated_discovery_uses_live_catalog(
+    mock_session, monkeypatch, provider_class, base, key_header
+):
+    from eval_runner import config
+
+    monkeypatch.setattr(config, "ANTHROPIC_BASE_URL", "https://api.anthropic.com/v1/messages")
+    monkeypatch.setattr(config, "XAI_BASE_URL", "https://api.x.ai/v1")
+    response = mock_session.get.return_value.__aenter__.return_value
+    response.status = 200
+    response.json = AsyncMock(
+        return_value={"data": [{"id": "actual-model", "display_name": "Actual"}]}
+    )
+    models = await provider_class(api_key="test-discovery-key").list_models()
+    assert models == [{"id": "actual-model", "display_name": "Actual", "name": "Actual"}]
+    assert mock_session.get.call_args.args[0] == base
+    assert key_header in mock_session.get.call_args.kwargs["headers"]
+    assert mock_session.get.call_args.kwargs["allow_redirects"] is False
+
+
+@pytest.mark.asyncio
+async def test_anthropic_discovery_paginates_and_rejects_repeated_cursor(mock_session, monkeypatch):
+    from eval_runner.llm_resilience import LLMInvalidRequestError
+
+    monkeypatch.setattr("eval_runner.config.LLM_MAX_RETRIES", 0)
+    response = mock_session.get.return_value.__aenter__.return_value
+    response.status = 200
+    first = {"data": [{"id": "one"}], "has_more": True, "last_id": "one"}
+    response.json = AsyncMock(side_effect=[first, {"data": [{"id": "two"}], "has_more": False}])
+    provider = AnthropicProvider(api_key="test-key")
+    assert [model["id"] for model in await provider.list_models()] == ["one", "two"]
+    assert mock_session.get.call_args.kwargs["params"] == {"after_id": "one"}
+    response.json = AsyncMock(side_effect=[first, first])
+    with pytest.raises(LLMInvalidRequestError, match="pagination"):
+        await provider.list_models()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("status", [401, 403, 429, 500])
+async def test_discovery_http_denials_do_not_become_catalog_success(
+    mock_session, monkeypatch, status
+):
+    from eval_runner.llm_resilience import LLMError
+
+    monkeypatch.setattr("eval_runner.config.LLM_MAX_RETRIES", 0)
+    response = mock_session.get.return_value.__aenter__.return_value
+    response.status = status
+    with pytest.raises(LLMError):
+        await AnthropicProvider(api_key="test-key").list_models()
+
+
+@pytest.mark.asyncio
+async def test_discovery_transport_outage_has_observable_catalog_fallback(
+    mock_session, monkeypatch, caplog
+):
+    import aiohttp
+
+    monkeypatch.setattr("eval_runner.config.LLM_MAX_RETRIES", 0)
+    mock_session.get.side_effect = aiohttp.ClientConnectionError("offline")
+    assert await GrokProvider(api_key="test-key").list_models()
+    assert any(
+        getattr(record, "operation", None) == "list_models" and record.exc_info
+        for record in caplog.records
+    )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "payload", [None, [], {}, {"data": {}}, {"data": [None]}, {"data": [{"id": ""}]}]
+)
+async def test_discovery_malformed_catalog_is_not_replaced_by_defaults(
+    mock_session, monkeypatch, payload
+):
+    from eval_runner.llm_resilience import LLMInvalidRequestError
+
+    monkeypatch.setattr("eval_runner.config.LLM_MAX_RETRIES", 0)
+    response = mock_session.get.return_value.__aenter__.return_value
+    response.status = 200
+    response.json = AsyncMock(return_value=payload)
+    with pytest.raises(LLMInvalidRequestError, match="Malformed"):
+        await GrokProvider(api_key="test-key").list_models()
+
+
+@pytest.mark.asyncio
+async def test_discovery_invalid_json_and_tls_do_not_claim_offline_success(
+    mock_session, monkeypatch
+):
+    import aiohttp
+
+    from eval_runner.llm_resilience import LLMInvalidRequestError
+
+    monkeypatch.setattr("eval_runner.config.LLM_MAX_RETRIES", 0)
+    response = mock_session.get.return_value.__aenter__.return_value
+    response.status = 200
+    response.json = AsyncMock(side_effect=ValueError("invalid JSON"))
+    with pytest.raises(LLMInvalidRequestError, match="Invalid JSON"):
+        await GrokProvider(api_key="test-key").list_models()
+    mock_session.get.side_effect = aiohttp.ClientSSLError(None, OSError("TLS failure"))
+    with pytest.raises(LLMInvalidRequestError, match="TLS"):
+        await GrokProvider(api_key="test-key").list_models()
+
+
+@pytest.mark.asyncio
+async def test_discovery_rechecks_airgap_before_network(mock_session, monkeypatch):
+    from eval_runner.exceptions import AirgappedConfigurationError
+
+    provider = GrokProvider(api_key="test-key")
+    monkeypatch.setattr("eval_runner.config.is_airgapped", lambda: True)
+    with pytest.raises(AirgappedConfigurationError):
+        await provider.list_models()
+    mock_session.get.assert_not_called()
+
+
 @pytest.fixture
 def mock_aiohttp():
     with patch("aiohttp.ClientSession.post") as mock_post:
@@ -197,7 +317,8 @@ async def test_anthropic_malformed_json(mock_session):
 
 
 @pytest.mark.asyncio
-async def test_anthropic_list_models():
+async def test_anthropic_list_models(monkeypatch):
+    monkeypatch.setattr("eval_runner.config.ANTHROPIC_API_KEY", "")
     p = AnthropicProvider()
     models = await p.list_models()
     assert len(models) > 0
@@ -256,7 +377,8 @@ async def test_gemini_list_models_no_key(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_grok_list_models():
+async def test_grok_list_models(monkeypatch):
+    monkeypatch.setattr("eval_runner.config.XAI_API_KEY", "")
     p = GrokProvider()
     models = await p.list_models()
     assert models[0]["id"] == "grok-4.20-beta-0309"

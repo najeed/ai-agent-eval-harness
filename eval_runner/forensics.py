@@ -44,7 +44,8 @@ def _bound_interaction_payload(
 
         try:
             canonical_bytes = canonical_json_encode(data)
-        except Exception:
+        except (TypeError, ValueError):
+            logger.debug("Failure in _bound_interaction_payload", exc_info=True)
             canonical_bytes = raw_str.encode("utf-8")
 
         digest = f"sha3_256:{hashlib.sha3_256(canonical_bytes).hexdigest()}"
@@ -84,7 +85,8 @@ def list_diff(old: list, new: list) -> list | dict:
 
             try:
                 c_bytes = canonical_json_encode(new)
-            except Exception:
+            except (TypeError, ValueError):
+                logger.debug("Failure in list_diff", exc_info=True)
                 c_bytes = json.dumps(new, default=str).encode("utf-8")
             digest = f"sha3_256:{hashlib.sha3_256(c_bytes).hexdigest()}"
             return {
@@ -107,7 +109,8 @@ def list_diff(old: list, new: list) -> list | dict:
 
             try:
                 c_bytes = canonical_json_encode(new)
-            except Exception:
+            except (TypeError, ValueError):
+                logger.debug("Failure in list_diff", exc_info=True)
                 c_bytes = json.dumps(new, default=str).encode("utf-8")
             digest = f"sha3_256:{hashlib.sha3_256(c_bytes).hexdigest()}"
             return {
@@ -135,7 +138,8 @@ def list_diff(old: list, new: list) -> list | dict:
 
             try:
                 c_bytes = canonical_json_encode(new)
-            except Exception:
+            except (TypeError, ValueError):
+                logger.debug("Failure in list_diff", exc_info=True)
                 c_bytes = json.dumps(new, default=str).encode("utf-8")
             digest = f"sha3_256:{hashlib.sha3_256(c_bytes).hexdigest()}"
             return {
@@ -183,7 +187,8 @@ def list_diff(old: list, new: list) -> list | dict:
 
         try:
             diff_bytes = canonical_json_encode(diff)
-        except Exception:
+        except (TypeError, ValueError):
+            logger.debug("Failure in list_diff", exc_info=True)
             diff_bytes = json.dumps(diff, default=str).encode("utf-8")
         diff_hash = f"sha3_256:{hashlib.sha3_256(diff_bytes).hexdigest()}"
         return {
@@ -407,6 +412,9 @@ class ForensicCollector:
                 "threads": process.num_threads(),
             }
         except Exception:
+            logging.getLogger(__name__).debug(
+                "Failure in ForensicCollector.resource_telemetry", exc_info=True
+            )
             return {"timestamp": time.time(), "status": "telemetry_unavailable"}
 
     def register_artifact(self, path: Path, alias: str):
@@ -498,7 +506,8 @@ class ForensicCollector:
 
             try:
                 c_bytes = canonical_json_encode(content)
-            except Exception:
+            except (TypeError, ValueError):
+                logger.debug("Failure in ForensicCollector.snapshot_state", exc_info=True)
                 c_bytes = raw_content.encode("utf-8")
 
             snap_hash = f"sha3_256:{hashlib.sha3_256(c_bytes).hexdigest()}"

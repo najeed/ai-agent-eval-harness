@@ -5,6 +5,7 @@ Automated quality scoring and linting for AES scenarios.
 """
 
 import json
+import logging
 from pathlib import Path
 from typing import Any
 
@@ -53,6 +54,7 @@ class ScenarioLinter:
                 else:
                     data = json.load(f)
         except Exception as e:
+            logging.getLogger(__name__).debug("Failure in ScenarioLinter.lint", exc_info=True)
             results["status"] = "fail"
             results["errors"].append(f"Invalid JSON: {str(e)}")
             results["score"] = 0
@@ -236,7 +238,17 @@ class ScenarioLinter:
                     duplicates.append({"original": hashes[signature], "duplicate": str(p)})
                 else:
                     hashes[signature] = str(p)
-            except Exception:
+            except (
+                OSError,
+                json.JSONDecodeError,
+                UnicodeDecodeError,
+                TypeError,
+                ValueError,
+                AttributeError,
+            ):
+                logging.getLogger(__name__).debug(
+                    "Failure in ScenarioLinter.find_duplicates", exc_info=True
+                )
                 continue
         return duplicates
 

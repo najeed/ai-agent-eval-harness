@@ -5,6 +5,7 @@ Industrial JSONPath-lite utility for resolving nested property paths
 in mixed dictionary/list structures. Supports dot notation and bracket indexing.
 """
 
+import logging
 import re
 from typing import Any
 
@@ -64,7 +65,8 @@ class PathResolver:
 
                 if current is None:
                     return None
-            except Exception:
+            except (KeyError, IndexError, TypeError, ValueError, AttributeError):
+                logging.getLogger(__name__).debug("Failure in PathResolver.resolve", exc_info=True)
                 return None
 
         return current

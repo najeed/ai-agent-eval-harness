@@ -121,13 +121,22 @@ agentv evaluate --path scenarios/finance/ --attempts 5 --limit 20
 
 ## 🌐 Community Benchmarks & URI Protocol
 
-AgentV natively supports pulling and evaluating on standard global AI benchmarks on-the-fly via URI schemes:
+AgentV converts explicitly selected benchmark datasets into scenarios through URI schemes:
 
-- **GAIA Benchmark**: `gaia://2023_all`, `gaia://level1`, `gaia://level2`, `gaia://level3`
-- **AssistantBench**: `assistantbench://val`, `assistantbench://test`
+- **GAIA Benchmark**: `gaia://datasets/gaia.jsonl`
+- **AssistantBench**: `assistantbench://datasets/assistantbench.json`
+
+Provide an existing JSON, JSONL, or Parquet dataset containing questions and reference answers.
+GAIA accepts `Question` / `Final answer`; AssistantBench accepts `task` / `answer`.
+Each row becomes an AES scenario with its original answer and a SHA3-256 row digest.
+Missing files, empty datasets, duplicate identities, and malformed records raise errors.
+
+For HuggingFace, install the optional `datasets` package and select the source explicitly:
+`gaia://hf://gaia-benchmark/GAIA?config=2023_all&split=validation&revision=<commit>`.
+Remote loading is disabled in airgap mode. Local Parquet input requires pandas and a Parquet engine.
 
 ```bash
-agentv run --scenario gaia://level1 --agent http://localhost:5001/execute_task
+agentv run --scenario gaia://datasets/gaia.jsonl --agent http://localhost:5001/execute_task
 ```
 
 ---

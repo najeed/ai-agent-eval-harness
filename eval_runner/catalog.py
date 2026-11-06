@@ -8,6 +8,7 @@ import datetime
 import hashlib
 import io
 import json
+import logging
 import os
 import shutil
 import tarfile
@@ -216,6 +217,9 @@ class ScenarioCatalog:
                             }
                         )
                     except Exception as e:
+                        logging.getLogger(__name__).debug(
+                            "Failure in ScenarioCatalog.build_index", exc_info=True
+                        )
                         self._log("indexing_error", path=str(p), error=str(e))
                         continue
 
@@ -283,6 +287,9 @@ class ScenarioCatalog:
 
                 self._log("indexing_complete", count=disk_count)
             except Exception as write_err:
+                logging.getLogger(__name__).debug(
+                    "Failure in ScenarioCatalog.build_index", exc_info=True
+                )
                 self._log("index_write_failure", error=str(write_err))
 
     def check_for_updates(self, force: bool = False) -> bool:
@@ -351,6 +358,9 @@ class ScenarioCatalog:
                         self._disk_count = self.manifest.get("last_scanned_count", 0)
                         self._log("cache_hydrated", count=len(self.scenarios))
             except Exception as e:
+                logging.getLogger(__name__).debug(
+                    "Failure in ScenarioCatalog.load_index", exc_info=True
+                )
                 self._log("cache_load_failure", error=str(e))
                 self.build_index()
                 return
@@ -763,6 +773,7 @@ def install_pack(pack_name: str):
         return True
 
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in install_pack", exc_info=True)
         print(f"   [Catalog] ❌ Installation Failed: {e}")
         try:
             if target_dir.exists() and not any(target_dir.iterdir()):

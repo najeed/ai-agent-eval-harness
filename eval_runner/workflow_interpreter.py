@@ -27,6 +27,7 @@ Semantics implemented:
 from __future__ import annotations
 
 import asyncio
+import logging
 import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
@@ -44,6 +45,9 @@ from .execution_ir import (
     evaluate_predicate,
 )
 from .run_lifecycle import RunSuspendedForApproval
+
+logger = logging.getLogger(__name__)
+
 
 NodeExecutor = Callable[[Any, str, str | None], Awaitable[dict[str, Any]]]
 ContextProvider = Callable[[], Awaitable[dict[str, Any]]]
@@ -604,6 +608,9 @@ class WorkflowInterpreter:
             # boundary exception before an external agent can enter HITL.  Do
             # not flatten it into an opaque interpreter error: its category
             # is the operator-visible root cause and drives failure routing.
+            logger.debug(
+                "_execute_item failed", extra={"operation": "_execute_item"}, exc_info=True
+            )
             details = getattr(exc, "details", None)
             if exc.__class__.__name__ == "ApprovalBoundaryRejected" and isinstance(details, dict):
                 rejection = dict(details)
@@ -1097,7 +1104,8 @@ class WorkflowInterpreter:
             from .events import CoreEvents
 
             name = CoreEvents.EXECUTION_GRAPH_NODE
-        except Exception:  # noqa: BLE001
+        except (ImportError, AttributeError):
+            logger.debug("_emit_node failed", extra={"operation": "_emit_node"}, exc_info=True)
             name = "execution_graph_node"
         self.event_bus.emit(name, payload)
 

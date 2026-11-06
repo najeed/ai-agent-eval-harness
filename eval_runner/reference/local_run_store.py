@@ -79,6 +79,9 @@ def _process_is_alive(pid: int) -> bool:
         try:
             os.kill(pid, 0)
         except OSError:
+            logger.debug(
+                "_process_is_alive failed", extra={"operation": "_process_is_alive"}, exc_info=True
+            )
             return False
         return True
 
@@ -145,6 +148,9 @@ class LocalFileRunStore(RunStore):
         try:
             return float(payload.get("expires_at", 0)) <= time.time()
         except (TypeError, ValueError):
+            logger.debug(
+                "_lease_expired failed", extra={"operation": "_lease_expired"}, exc_info=True
+            )
             return True
 
     @staticmethod
@@ -153,6 +159,7 @@ class LocalFileRunStore(RunStore):
         # concurrently. Each writer must own its staging file through rename.
         descriptor, name = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
         temporary = Path(name)
+        write_succeeded = False
         try:
             with os.fdopen(descriptor, "wb") as stream:
                 stream.write(content)
@@ -163,13 +170,28 @@ class LocalFileRunStore(RunStore):
                     temporary.replace(path)
                     break
                 except PermissionError:
+                    logger.debug(
+                        "_write_bytes_durable failed",
+                        extra={"operation": "_write_bytes_durable"},
+                        exc_info=True,
+                    )
                     if attempt < 4:
                         time.sleep(0.01 * (attempt + 1))
                         continue
                     raise
             LocalFileRunStore._sync_directory(path.parent)
+            write_succeeded = True
         finally:
-            temporary.unlink(missing_ok=True)
+            try:
+                temporary.unlink(missing_ok=True)
+            except OSError:
+                logger.warning(
+                    "Durable write staging cleanup failed",
+                    extra={"operation": "cleanup_durable_write", "path": str(temporary)},
+                    exc_info=True,
+                )
+                if write_succeeded:
+                    raise
 
     @staticmethod
     def _sync_directory(directory: Path) -> None:
@@ -177,6 +199,9 @@ class LocalFileRunStore(RunStore):
         try:
             descriptor = os.open(str(directory), os.O_RDONLY)
         except OSError:
+            logger.debug(
+                "_sync_directory failed", extra={"operation": "_sync_directory"}, exc_info=True
+            )
             return
         try:
             os.fsync(descriptor)
@@ -184,6 +209,9 @@ class LocalFileRunStore(RunStore):
             # Windows commonly does not allow fsync on a directory.  The
             # individual file writes above remain durable; providers with a
             # stronger transactional substrate implement their own commit.
+            logger.debug(
+                "_sync_directory failed", extra={"operation": "_sync_directory"}, exc_info=True
+            )
             pass
         finally:
             os.close(descriptor)
@@ -253,6 +281,11 @@ class LocalFileRunStore(RunStore):
             try:
                 self._unlink_durable(lease)
             except OSError:
+                logger.debug(
+                    "acquire_certification_lease failed",
+                    extra={"operation": "acquire_certification_lease", "run_id": run_id},
+                    exc_info=True,
+                )
                 pass
         elif legacy_lock.exists():
             try:
@@ -262,8 +295,8 @@ class LocalFileRunStore(RunStore):
                     if _process_is_alive(pid):
                         return False
                     legacy_lock.unlink(missing_ok=True)
-            except Exception as e:
-                logger.debug("Failed checking legacy lock: %s", e)
+            except (OSError, ValueError, TypeError, AttributeError) as e:
+                logger.debug("Failed checking legacy lock: %s", e, exc_info=True)
         deadline = time.monotonic() + timeout_seconds
         ttl_seconds = max(float(timeout_seconds), 60.0)
         while True:
@@ -289,14 +322,29 @@ class LocalFileRunStore(RunStore):
                     }
                     legacy_lock.write_text(json.dumps(legacy_payload), encoding="utf-8")
                 except OSError:
+                    logger.debug(
+                        "acquire_certification_lease failed",
+                        extra={"operation": "acquire_certification_lease", "run_id": run_id},
+                        exc_info=True,
+                    )
                     pass
                 return True
             except FileExistsError:
+                logger.debug(
+                    "acquire_certification_lease failed",
+                    extra={"operation": "acquire_certification_lease", "run_id": run_id},
+                    exc_info=True,
+                )
                 current = self._read_json(lease) or {}
                 if self._lease_expired(current):
                     try:
                         self._unlink_durable(lease)
                     except OSError:
+                        logger.debug(
+                            "acquire_certification_lease failed",
+                            extra={"operation": "acquire_certification_lease", "run_id": run_id},
+                            exc_info=True,
+                        )
                         pass
                     continue
                 if time.monotonic() >= deadline:
@@ -341,6 +389,11 @@ class LocalFileRunStore(RunStore):
             self._write_json_durable(lease, payload)
             return True
         except OSError:
+            logger.debug(
+                "renew_certification_lease failed",
+                extra={"operation": "renew_certification_lease", "run_id": run_id},
+                exc_info=True,
+            )
             return False
 
     def release_certification_lease(
@@ -362,6 +415,11 @@ class LocalFileRunStore(RunStore):
                 legacy_lock.unlink(missing_ok=True)
             return True
         except OSError:
+            logger.debug(
+                "release_certification_lease failed",
+                extra={"operation": "release_certification_lease", "run_id": run_id},
+                exc_info=True,
+            )
             return False
 
     def is_certification_leased(
@@ -375,6 +433,11 @@ class LocalFileRunStore(RunStore):
             try:
                 self._unlink_durable(lease)
             except OSError:
+                logger.debug(
+                    "is_certification_leased failed",
+                    extra={"operation": "is_certification_leased", "run_id": run_id},
+                    exc_info=True,
+                )
                 pass
             return False
         return lease.exists()
@@ -399,11 +462,13 @@ class LocalFileRunStore(RunStore):
                 value = json.loads(path.read_text(encoding="utf-8"))
                 return value if isinstance(value, dict) else None
             except PermissionError:
+                logger.debug("_read_json failed", extra={"operation": "_read_json"}, exc_info=True)
                 if attempt < 9:
                     time.sleep(0.01 * (attempt + 1))
                     continue
                 return None
             except (OSError, ValueError, json.JSONDecodeError):
+                logger.debug("_read_json failed", extra={"operation": "_read_json"}, exc_info=True)
                 if attempt < 9:
                     time.sleep(0.01 * (attempt + 1))
                     continue
@@ -417,12 +482,22 @@ class LocalFileRunStore(RunStore):
         try:
             raw = marker.read_text(encoding="utf-8").strip()
         except OSError:
+            logger.debug(
+                "_read_lifecycle_status failed",
+                extra={"operation": "_read_lifecycle_status"},
+                exc_info=True,
+            )
             return ""
         if not raw:
             return ""
         try:
             decoded = json.loads(raw)
         except (ValueError, json.JSONDecodeError):
+            logger.debug(
+                "_read_lifecycle_status failed",
+                extra={"operation": "_read_lifecycle_status"},
+                exc_info=True,
+            )
             return raw.upper()
         if isinstance(decoded, dict):
             return str(
@@ -557,6 +632,9 @@ class LocalFileRunStore(RunStore):
         try:
             run_vault = self._get_run_vault(run_id, create=False)
         except (ValueError, PermissionError):
+            logger.debug(
+                "get_run failed", extra={"operation": "get_run", "run_id": run_id}, exc_info=True
+            )
             run_vault = None
 
         corrupted_manifest = False
@@ -602,10 +680,20 @@ class LocalFileRunStore(RunStore):
                             else:
                                 marker_status = "INVALID"
                         except (ValueError, json.JSONDecodeError):
+                            logger.debug(
+                                "get_run failed",
+                                extra={"operation": "get_run", "run_id": run_id},
+                                exc_info=True,
+                            )
                             marker_status = marker_val
                     else:
                         marker_status = "INVALID"
                 except OSError:
+                    logger.debug(
+                        "get_run failed",
+                        extra={"operation": "get_run", "run_id": run_id},
+                        exc_info=True,
+                    )
                     return {
                         "run_id": run_id,
                         "status": "INVALID",
@@ -665,6 +753,11 @@ class LocalFileRunStore(RunStore):
                                 "status": "SEALED" if self._is_sealed(run_vault) else "OPEN",
                             }
                     except (OSError, UnicodeDecodeError):
+                        logger.debug(
+                            "get_run failed",
+                            extra={"operation": "get_run", "run_id": run_id},
+                            exc_info=True,
+                        )
                         return None
             elif marker_status and record.get("status") != marker_status:
                 record["status"] = marker_status
@@ -734,6 +827,11 @@ class LocalFileRunStore(RunStore):
                                         timestamp = ev.get("timestamp") or data_obj.get("timestamp")
                                 break
                 except (OSError, UnicodeDecodeError):
+                    logger.debug(
+                        "get_run failed",
+                        extra={"operation": "get_run", "run_id": run_id},
+                        exc_info=True,
+                    )
                     pass
 
             if not scenario:
@@ -779,7 +877,12 @@ class LocalFileRunStore(RunStore):
                             if context and not context_allows_record(data, context):
                                 return None
                             break
-            except Exception:
+            except (OSError, ValueError, TypeError, AttributeError):
+                logger.debug(
+                    "get_run failed",
+                    extra={"operation": "get_run", "run_id": run_id},
+                    exc_info=True,
+                )
                 continue
             if not found_event:
                 continue
@@ -860,6 +963,11 @@ class LocalFileRunStore(RunStore):
         try:
             vault = self._get_run_vault(run_id)
         except (ValueError, PermissionError):
+            logger.debug(
+                "get_manifest failed",
+                extra={"operation": "get_manifest", "run_id": run_id},
+                exc_info=True,
+            )
             return None
         if context:
             record = self._read_json(self._record_path(vault)) or {}
@@ -872,8 +980,8 @@ class LocalFileRunStore(RunStore):
                 manifest = json.loads(raw)
                 if not isinstance(manifest, dict):
                     return None
-            except Exception as e:
-                logger.debug("Failed reading manifest: %s", e)
+            except (OSError, ValueError, TypeError, AttributeError) as e:
+                logger.debug("Failed reading manifest: %s", e, exc_info=True)
                 return None
         else:
             manifest = {}
@@ -909,6 +1017,11 @@ class LocalFileRunStore(RunStore):
                 if cand.is_file():
                     return cand
         except (ValueError, PermissionError):
+            logger.debug(
+                "_resolve_trace_file failed",
+                extra={"operation": "_resolve_trace_file", "run_id": run_id},
+                exc_info=True,
+            )
             pass
         frag = self.log_dir / f"{run_id}.jsonl"
         if frag.is_file():
@@ -933,6 +1046,11 @@ class LocalFileRunStore(RunStore):
                     event = self._read_event_strict(raw, line_number)
                     events.append(event)
         except OSError:
+            logger.debug(
+                "get_events failed",
+                extra={"operation": "get_events", "run_id": run_id},
+                exc_info=True,
+            )
             return []
         return events[max(offset, 0) : max(offset, 0) + max(limit, 0)]
 
@@ -950,6 +1068,11 @@ class LocalFileRunStore(RunStore):
         try:
             return trace.read_bytes() if trace.exists() else None
         except OSError:
+            logger.debug(
+                "get_trace_bytes failed",
+                extra={"operation": "get_trace_bytes", "run_id": run_id},
+                exc_info=True,
+            )
             return None
 
     @staticmethod
@@ -968,6 +1091,7 @@ class LocalFileRunStore(RunStore):
             value = json.loads(line)
             return value if isinstance(value, dict) else None
         except (ValueError, json.JSONDecodeError):
+            logger.debug("_read_event failed", extra={"operation": "_read_event"}, exc_info=True)
             return None
 
     def append_events(
@@ -1035,11 +1159,21 @@ class LocalFileRunStore(RunStore):
         try:
             self._write_bytes_durable(run_vault / ".run_lifecycle", status.encode("utf-8"))
         except OSError:
+            logger.debug(
+                "update_run_status failed",
+                extra={"operation": "update_run_status", "run_id": run_id},
+                exc_info=True,
+            )
             return False
         if status == "SEALED":
             try:
                 self._write_bytes_durable(run_vault / ".sealed", b"sealed\n")
             except OSError:
+                logger.debug(
+                    "update_run_status failed",
+                    extra={"operation": "update_run_status", "run_id": run_id},
+                    exc_info=True,
+                )
                 return False
         return True
 
@@ -1052,6 +1186,11 @@ class LocalFileRunStore(RunStore):
         try:
             run_vault = self._get_run_vault(run_id, create=False)
         except (ValueError, PermissionError):
+            logger.debug(
+                "list_manifest_revisions failed",
+                extra={"operation": "list_manifest_revisions", "run_id": run_id},
+                exc_info=True,
+            )
             return []
         rev_dir = run_vault / "manifest_revisions"
         if not rev_dir.exists():
@@ -1085,7 +1224,12 @@ class LocalFileRunStore(RunStore):
                 with open(target, encoding="utf-8") as f:
                     existing = json.load(f)
                 existing_digest = _canonical_digest(existing)
-            except Exception:
+            except (OSError, ValueError, TypeError, AttributeError):
+                logger.debug(
+                    "save_run_manifest failed",
+                    extra={"operation": "save_run_manifest", "run_id": run_id},
+                    exc_info=True,
+                )
                 existing = None
                 existing_digest = None
 
@@ -1184,6 +1328,11 @@ class LocalFileRunStore(RunStore):
         try:
             run_vault = self._get_run_vault(run_id, create=False)
         except (ValueError, PermissionError):
+            logger.debug(
+                "delete_run failed",
+                extra={"operation": "delete_run", "run_id": run_id},
+                exc_info=True,
+            )
             return False
 
         if self._is_sealed(run_vault):

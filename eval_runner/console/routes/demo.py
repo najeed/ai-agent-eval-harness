@@ -164,5 +164,19 @@ def execute_demo_command():
                 "code": result.returncode,
             }
         )
-    except Exception as e:
+    except (
+        OSError,
+        RuntimeError,
+        ValueError,
+        TypeError,
+        KeyError,
+        AttributeError,
+        IndexError,
+        subprocess.SubprocessError,
+    ) as e:
+        logger.debug(
+            "execute_demo_command failed",
+            extra={"operation": "execute_demo_command"},
+            exc_info=True,
+        )
         return jsonify({"error": str(e)}), 500

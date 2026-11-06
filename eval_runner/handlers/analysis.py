@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+
 from .. import calibrator, leaderboard_generator, reporter, taxonomy
 from ..explainer import explain_run
 from ..trace_utils import reconstruct_results_from_events
@@ -45,6 +47,7 @@ async def handle_report(args):
         print(f"[OK] HTML Report generated: {output}")
         return 0
     except Exception as exc:
+        logging.getLogger(__name__).debug("Failure in handle_report", exc_info=True)
         print(f"[ERROR] Report generation failed: {exc}")
         return 1
 
@@ -60,6 +63,7 @@ async def handle_explain(args):
         print(explain_run(run_id, run_store=resolve_run_store()))
         return 0
     except Exception as exc:
+        logging.getLogger(__name__).debug("Failure in handle_explain", exc_info=True)
         print(f"[ERROR] Explanation failed: {exc}")
         return 1
 
@@ -81,6 +85,7 @@ async def handle_calibrate(args):
             or 0
         )
     except Exception as exc:
+        logging.getLogger(__name__).debug("Failure in handle_calibrate", exc_info=True)
         print(f"❌ [ERROR] Calibration FAILED: {exc}")
         return 1
 
@@ -92,6 +97,7 @@ async def handle_leaderboard(args):
         leaderboard_generator.run_leaderboard(resolve_run_store(), args.output)
         return 0
     except Exception as exc:
+        logging.getLogger(__name__).debug("Failure in handle_leaderboard", exc_info=True)
         print(f"[ERROR] Leaderboard generation failed: {exc}")
         return 1
 
@@ -108,6 +114,7 @@ async def handle_taxonomy(args):
         print("=" * 40)
         return 0
     except Exception as exc:
+        logging.getLogger(__name__).debug("Failure in handle_taxonomy", exc_info=True)
         print(f"[ERROR] Taxonomy display failed: {exc}")
         return 1
 
@@ -120,6 +127,7 @@ async def handle_list_metrics(args):
         print("\n".join(MetricRegistry.list_metrics()))
         return 0
     except Exception as exc:
+        logging.getLogger(__name__).debug("Failure in handle_list_metrics", exc_info=True)
         print(f"[ERROR] Metric listing failed: {exc}")
         return 1
 
@@ -171,5 +179,6 @@ async def handle_trend(args):
         print("\n[OK] Trend analysis completed successfully.")
         return 0
     except Exception as e:
+        logging.getLogger(__name__).debug("Failure in handle_trend", exc_info=True)
         print(f"❌ [ERROR] Trend analysis FAILED: {e}")
         return 1

@@ -90,22 +90,18 @@ export const MetricsLeaderboard: React.FC = () => {
       Object.entries(row.metrics).forEach(([key, val]) => {
         item[key] = val * 100; // standard 0-100 scale for visual charting
       });
-      // Fallbacks if backend metrics have custom names, populate standard families
+      // When detailed metrics are absent, display the measured pass rate alone.
       if (Object.keys(row.metrics).length === 0) {
-        // mock structure with real mathematical averages if empty
-        item['Accuracy'] = row.pass_rate;
-        item['Planning'] = Math.max(20, row.pass_rate - 5);
-        item['Technical'] = Math.min(100, row.pass_rate + 8);
-        item['Defense'] = Math.max(10, row.pass_rate - 15);
+        item['Pass rate'] = row.pass_rate;
       }
       return item;
     });
 
   // Extract all metric keys present across all rows
   const allMetricKeys = Array.from(
-    new Set(data.flatMap((row) => Object.keys(row.metrics)))
+    new Set(data.flatMap((row) => Object.keys(row.metrics).length > 0 ? Object.keys(row.metrics) : ['Pass rate']))
   );
-  const metricKeysToShow = allMetricKeys.length > 0 ? allMetricKeys : ['Accuracy', 'Planning', 'Technical', 'Defense'];
+  const metricKeysToShow = allMetricKeys;
 
   // Curated color palette for Recharts bars
   const barColors = ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6'];

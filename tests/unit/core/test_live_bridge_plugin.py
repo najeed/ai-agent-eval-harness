@@ -9,6 +9,7 @@ check branches, _post_event dispatch, and all event hook methods.
 from unittest.mock import MagicMock, patch
 
 import pytest
+import requests
 
 from eval_runner.live_bridge_plugin import RemoteBridgePlugin, is_safe_url
 
@@ -70,9 +71,17 @@ class TestIsSafeUrl:
         result = is_safe_url("http://:8080/api")
         assert result is False
 
-    def test_dns_error_returns_false(self):
-        with patch("socket.gethostbyname", side_effect=OSError("DNS failure")):
-            assert is_safe_url("http://bad-host.internal/api") is False
+    def test_dns_error_returns_false(self, caplog):
+        with caplog.at_level("DEBUG", logger="eval_runner.live_bridge_plugin"):
+            with patch("socket.gethostbyname", side_effect=OSError("DNS failure")):
+                assert is_safe_url("http://bad-host.internal/api") is False
+        record = next(r for r in caplog.records if getattr(r, "operation", None) == "is_safe_url")
+        assert record.exc_info[0] is OSError
+
+    def test_unexpected_dns_programming_bug_is_not_suppressed(self):
+        with patch("socket.gethostbyname", side_effect=AssertionError("resolver invariant")):
+            with pytest.raises(AssertionError, match="resolver invariant"):
+                is_safe_url("https://example.com/api")
 
     def test_empty_string_returns_false(self):
         assert is_safe_url("") is False
@@ -210,7 +219,7 @@ class TestCheckConsoleActive:
 
         with patch("eval_runner.events.EventEmitter.get_global", return_value=mock_emitter):
             with patch("eval_runner.config.DASHBOARD_API_KEY", ""):
-                with patch("requests.get", side_effect=ConnectionError("Refused")):
+                with patch("requests.get", side_effect=requests.ConnectionError("Refused")):
                     result = plugin._check_console_active()
 
         assert result is False
@@ -468,7 +477,7 @@ class TestPostEvent:
     def test_post_network_error_disables_plugin(self):
         plugin = self._make_active_plugin()
         with patch("eval_runner.config.DASHBOARD_API_KEY", ""):
-            with patch("requests.post", side_effect=ConnectionError("Timeout")):
+            with patch("requests.post", side_effect=requests.ConnectionError("Timeout")):
                 plugin._post_event("TEST_EVENT", {})
         assert plugin.active is False
 

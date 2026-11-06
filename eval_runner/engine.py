@@ -91,7 +91,8 @@ def render_outbound_payload(
 
     try:
         c_bytes = canonical_json_encode(payload)
-    except Exception:
+    except (TypeError, ValueError):
+        logger.debug("Failure in render_outbound_payload", exc_info=True)
         c_bytes = json.dumps(payload, sort_keys=True, default=str).encode("utf-8")
 
     payload_hash = f"sha3_256:{hashlib.sha3_256(c_bytes).hexdigest()}"

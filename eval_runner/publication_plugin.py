@@ -6,6 +6,7 @@ Supports A/B testing and regression detection.
 """
 
 import json
+import logging
 import math
 from datetime import datetime
 from pathlib import Path
@@ -33,7 +34,10 @@ class PublicationPlugin(BaseEvalPlugin):
                 if p.exists():
                     with open(p) as f:
                         return yaml.safe_load(f)
-            except Exception:
+            except (OSError, yaml.YAMLError, ValueError):
+                logging.getLogger(__name__).debug(
+                    "Failure in PublicationPlugin._load_config", exc_info=True
+                )
                 continue
         return {"pricing": {}, "confidence_level": 0.95}
 
@@ -177,6 +181,3 @@ class PublicationPlugin(BaseEvalPlugin):
             logging.getLogger(__name__).debug(
                 f"   [PublicationPlugin] Could not compute regression against baseline: {reg_err}"
             )
-
-    def on_register_commands(self, registry):
-        pass

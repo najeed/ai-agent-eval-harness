@@ -8,6 +8,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from cryptography.exceptions import InvalidSignature, UnsupportedAlgorithm
+
 from agentv_runtime.versions import VC_SCHEMA_VERSION as VC_V3_SCHEMA_VERSION
 
 from . import config, forensics
@@ -234,7 +236,9 @@ class CoreTraceSigner(TraceVerificationInterceptor):
                         )
                         logger.info("      [Identity] Hybrid PQC Signature attached (ML-DSA-65)")
                     except Exception as e:
-                        logger.warning(f"      [Identity] PQC Signing failed (API Error): {e}")
+                        logger.warning(
+                            f"      [Identity] PQC Signing failed (API Error): {e}", exc_info=True
+                        )
                         if config.PQC_STRICT_MODE:
                             raise RuntimeError(
                                 f"PQC_STRICT_MODE Violation: Failed to secure PQC signature: {e}"
@@ -250,7 +254,9 @@ class CoreTraceSigner(TraceVerificationInterceptor):
             # error barrier below must never swallow this into a warning.
             raise
         except Exception as e:
-            logger.error(f"Could not cryptographically sign trace as '{identity_id}': {e}")
+            logger.error(
+                f"Could not cryptographically sign trace as '{identity_id}': {e}", exc_info=True
+            )
             raise CertificationFailedError(
                 f"CoreTraceSigner failed to sign manifest for '{identity_id}': {e}"
             ) from e
@@ -343,7 +349,8 @@ class VerificationService:
                             logger.error(
                                 f"[VerificationService] Mandatory interceptor "
                                 f"'{interceptor.__class__.__name__}' failed: {e}. "
-                                "Failing certification (fail-closed)."
+                                "Failing certification (fail-closed).",
+                                exc_info=True,
                             )
                             raise CertificationFailedError(
                                 f"Mandatory verification interceptor "
@@ -352,7 +359,8 @@ class VerificationService:
                         logger.warning(
                             f"[VerificationService] Optional interceptor "
                             f"'{interceptor.__class__.__name__}' failed: {e}. "
-                            "Gracefully bypassing to next handler."
+                            "Gracefully bypassing to next handler.",
+                            exc_info=True,
                         )
                         return make_next(index + 1, depth + 1)(m)
                 else:
@@ -582,8 +590,8 @@ class TraceVerifier:
                         m_scen = raw_m.get("scenario_data")
                         if m_scen:
                             scenario_data = m_scen
-            except Exception as exc:
-                logger.debug("Scenario data resolution fallback: %s", exc)
+            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
+                logger.debug("Scenario data resolution fallback: %s", exc, exc_info=True)
         if execution_manifest is None and run_store is not None and run_id:
             try:
                 if hasattr(run_store, "get_manifest"):
@@ -592,8 +600,8 @@ class TraceVerifier:
                         m_exec = raw_m.get("execution_manifest")
                         if m_exec:
                             execution_manifest = m_exec
-            except Exception as exc:
-                logger.debug("Execution manifest resolution fallback: %s", exc)
+            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
+                logger.debug("Execution manifest resolution fallback: %s", exc, exc_info=True)
         if scenario_data is not None:
             manifest["scenario_data"] = dict(scenario_data)
         if execution_manifest is not None:
@@ -694,7 +702,16 @@ class TraceVerifier:
                 from agentv_runtime.manifest import ExecutionManifest
 
                 m_h_val = ExecutionManifest.from_dict(execution_manifest).compute_manifest_hash()
-            except Exception:
+            except (ValueError, TypeError, KeyError, AttributeError):
+                logger.debug(
+                    "sign_trace_bytes failed",
+                    extra={
+                        "operation": "sign_trace_bytes",
+                        "run_id": run_id,
+                        "identity_id": identity_id,
+                    },
+                    exc_info=True,
+                )
                 enc_bytes = canonical_json_encode(execution_manifest)
                 m_h_val = f"sha3_256:{hashlib.sha3_256(enc_bytes).hexdigest()}"
         ev_root_val = manifest.get("evidence_root_hash") or ""
@@ -1085,7 +1102,12 @@ class TraceVerifier:
             run = run_store.get_run(run_id, context=context)
             manifest = run_store.get_manifest(run_id, context=context)
             trace_bytes = run_store.get_trace_bytes(run_id, context=context)
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as e:
+            logger.debug(
+                "verify_run failed",
+                extra={"operation": "verify_run", "run_id": run_id},
+                exc_info=True,
+            )
             return {
                 "run_id": run_id,
                 "verification_status": "FAILED_VERIFICATION",
@@ -1188,7 +1210,12 @@ class TraceVerifier:
                 trace_only=False,
                 **verify_kwargs,
             )
-        except Exception as exc:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
+            logger.debug(
+                "verify_run failed",
+                extra={"operation": "verify_run", "run_id": run_id},
+                exc_info=True,
+            )
             valid, failure_reason = False, f"Verification error: {exc}"
         else:
             failure_reason = (
@@ -1342,7 +1369,12 @@ def verify_trace_certificate(
                         f"Scenario hash mismatch: expected={expected_scen_hash!r}, "
                         f"computed={computed_scen!r}"
                     )
-        except Exception as scen_err:
+        except (ValueError, TypeError, KeyError, AttributeError) as scen_err:
+            logger.debug(
+                "verify_trace_certificate failed",
+                extra={"operation": "verify_trace_certificate", "run_id": run_id},
+                exc_info=True,
+            )
             result["errors"].append(f"Scenario hash check failed: {scen_err}")
 
     # 3. Signature verification \u2014 validate the Ed25519 provenance chain.
@@ -1465,7 +1497,19 @@ def verify_trace_certificate(
                     continue
                 sig_count += 1
                 continue
-            except Exception as pqc_err:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+            ) as pqc_err:
+                logger.debug(
+                    "verify_trace_certificate failed",
+                    extra={"operation": "verify_trace_certificate", "run_id": run_id},
+                    exc_info=True,
+                )
                 result["errors"].append(f"ML-DSA-65 signature check error: {pqc_err}")
                 all_signatures_valid = False
                 continue
@@ -1493,13 +1537,39 @@ def verify_trace_certificate(
                     if cand.is_file():
                         try:
                             anchor_pk = load_pem_public_key(cand.read_bytes())
-                        except Exception:
+                        except (
+                            ValueError,
+                            TypeError,
+                            KeyError,
+                            AttributeError,
+                            OSError,
+                            RuntimeError,
+                            InvalidSignature,
+                            UnsupportedAlgorithm,
+                        ):
+                            logger.debug(
+                                "verify_trace_certificate failed",
+                                extra={"operation": "verify_trace_certificate", "run_id": run_id},
+                                exc_info=True,
+                            )
                             anchor_pk = None
             if anchor_pk is None:
                 try:
                     anchor_pk = IdentityService.get_public_key(identity_id, auto_provision=False)
-                except Exception as id_lookup_err:
-                    logger.debug(f"IdentityService lookup error for {identity_id}: {id_lookup_err}")
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    InvalidSignature,
+                    UnsupportedAlgorithm,
+                ) as id_lookup_err:
+                    logger.debug(
+                        f"IdentityService lookup error for {identity_id}: {id_lookup_err}",
+                        exc_info=True,
+                    )
                     result["errors"].append(
                         f"Signature check error for '{identity_id}': "
                         f"IdentityService error: {id_lookup_err}"
@@ -1537,8 +1607,17 @@ def verify_trace_certificate(
                             )
                             all_signatures_valid = False
                             continue
-                except Exception as pk_cmp_err:
-                    logger.debug(f"Public key comparison error: {pk_cmp_err}")
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    InvalidSignature,
+                    UnsupportedAlgorithm,
+                ) as pk_cmp_err:
+                    logger.debug(f"Public key comparison error: {pk_cmp_err}", exc_info=True)
                     result["errors"].append(
                         f"Signature check error for '{identity_id}': "
                         f"No public key available ({pk_cmp_err})"
@@ -1595,7 +1674,21 @@ def verify_trace_certificate(
                     public_key.verify(sig_bytes, m_cand)
                     verified = True
                     break
-                except Exception as ex:
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    InvalidSignature,
+                    UnsupportedAlgorithm,
+                ) as ex:
+                    logger.debug(
+                        "verify_trace_certificate failed",
+                        extra={"operation": "verify_trace_certificate", "run_id": run_id},
+                        exc_info=True,
+                    )
                     last_err = ex
 
             if verified:
@@ -1607,8 +1700,19 @@ def verify_trace_certificate(
                     f"Ed25519 signature verification failed for '{identity_id}': {last_err}"
                 )
                 all_signatures_valid = False
-        except Exception as sig_err:
-            logger.debug("Signature check error for %s/%s: %s", run_id, identity_id, sig_err)
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            InvalidSignature,
+            UnsupportedAlgorithm,
+        ) as sig_err:
+            logger.debug(
+                "Signature check error for %s/%s: %s", run_id, identity_id, sig_err, exc_info=True
+            )
             result["errors"].append(f"Signature check error for '{identity_id}': {sig_err}")
             all_signatures_valid = False
 
@@ -1632,6 +1736,11 @@ def verify_trace_certificate(
                 try:
                     trace_str = trace_bytes.decode("utf-8")
                 except UnicodeDecodeError as uerr:
+                    logger.debug(
+                        "verify_trace_certificate failed",
+                        extra={"operation": "verify_trace_certificate", "run_id": run_id},
+                        exc_info=True,
+                    )
                     result["errors"].append(f"Trace file is not valid UTF-8: {uerr}")
 
                 if trace_str:
@@ -1649,6 +1758,14 @@ def verify_trace_certificate(
                                 UnicodeDecodeError,
                                 ValueError,
                             ) as line_err:
+                                logger.debug(
+                                    "verify_trace_certificate failed",
+                                    extra={
+                                        "operation": "verify_trace_certificate",
+                                        "run_id": run_id,
+                                    },
+                                    exc_info=True,
+                                )
                                 has_line_error = True
                                 result["errors"].append(
                                     f"Malformed trace record at line {line_idx}: {line_err}"
@@ -1729,10 +1846,11 @@ def verify_trace_certificate(
                                 f"Evidence root hash mismatch: expected={expected_ev_root!r}, "
                                 f"computed={computed_ev_root!r}"
                             )
-            except Exception as ev_check_err:
+            except (ValueError, TypeError, KeyError, AttributeError) as ev_check_err:
                 logger.debug(
                     "Evidence root check failed in verify_trace_certificate: %s",
                     ev_check_err,
+                    exc_info=True,
                 )
                 result["errors"].append(f"Evidence root check failed: {ev_check_err}")
                 evidence_root_valid = False
@@ -1895,7 +2013,12 @@ class VerificationAuthority:
                     # Preserve all JSON whitespace from the recorded line; the
                     # evidence graph commits to raw JSONL, not a reserialization.
                     parsed_events_with_lines.append((evt, line.rstrip("\r\n")))
-            except Exception as parse_err:
+            except (ValueError, TypeError, AttributeError) as parse_err:
+                logger.debug(
+                    "verify_package_artifacts failed",
+                    extra={"operation": "verify_package_artifacts"},
+                    exc_info=True,
+                )
                 failures.append(f"TraceStreamParsingFailed: {parse_err}")
 
         # Derive authoritative event stream from parsed raw trace bytes
@@ -2002,10 +2125,18 @@ class VerificationAuthority:
                         from agentv_runtime.manifest import ExecutionManifest
 
                         m_obj = ExecutionManifest.from_dict(source or canonical_manifest)
-                    except Exception as exc:
+                    except (
+                        ValueError,
+                        TypeError,
+                        KeyError,
+                        AttributeError,
+                        OSError,
+                        RuntimeError,
+                    ) as exc:
                         logger.debug(
                             "Failed to instantiate ExecutionManifest from dict: %s",
                             exc,
+                            exc_info=True,
                         )
                 elif hasattr(canonical_manifest, "scenario_id"):
                     m_obj = canonical_manifest
@@ -2047,7 +2178,12 @@ class VerificationAuthority:
                             f"ManifestIdMismatch: manifest={m_obj.manifest_id} "
                             f"package={pkg.manifest_id}"
                         )
-            except Exception as m_err:
+            except (ValueError, TypeError, KeyError, AttributeError) as m_err:
+                logger.debug(
+                    "verify_package_artifacts failed",
+                    extra={"operation": "verify_package_artifacts"},
+                    exc_info=True,
+                )
                 failures.append(f"ManifestVerificationFailed: {m_err}")
 
         # 3. Evidence root binding & reconstruction from stream events
@@ -2087,7 +2223,12 @@ class VerificationAuthority:
                         "DirectProvenanceViolation: Evidence graph contains unresolved "
                         "or carrier fallback provenance"
                     )
-            except Exception as ev_err:
+            except (ValueError, TypeError, KeyError, AttributeError) as ev_err:
+                logger.debug(
+                    "verify_package_artifacts failed",
+                    extra={"operation": "verify_package_artifacts"},
+                    exc_info=True,
+                )
                 failures.append(f"EvidenceReconstructionFailed: {ev_err}")
 
         # 4. Trace seal integrity check
@@ -2124,6 +2265,11 @@ class VerificationAuthority:
                             f"but actual trace contains {len(effective_events)} evidence events"
                         )
                 except (ValueError, TypeError):
+                    logger.debug(
+                        "verify_package_artifacts failed",
+                        extra={"operation": "verify_package_artifacts"},
+                        exc_info=True,
+                    )
                     pass
 
         # 5. Scenario artifact binding check
@@ -2182,7 +2328,12 @@ class VerificationAuthority:
                         f"ScenarioVersionMismatch: package={pkg.scenario_version} "
                         f"actual={scen_ver_in_data}"
                     )
-            except Exception as s_err:
+            except (ValueError, TypeError, KeyError, AttributeError) as s_err:
+                logger.debug(
+                    "verify_package_artifacts failed",
+                    extra={"operation": "verify_package_artifacts"},
+                    exc_info=True,
+                )
                 failures.append(f"ScenarioVerificationFailed: {s_err}")
 
         # 6. Behavioral outcome is distinct from cryptographic evidence validity.
@@ -2360,7 +2511,21 @@ class VerificationAuthority:
                         f"SignatureVerificationFailed: Signature for identity "
                         f"'{pkg.signer_identity}' failed verification"
                     )
-            except Exception as sig_err:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                InvalidSignature,
+                UnsupportedAlgorithm,
+            ) as sig_err:
+                logger.debug(
+                    "verify_package_artifacts failed",
+                    extra={"operation": "verify_package_artifacts"},
+                    exc_info=True,
+                )
                 failures.append(f"SignatureVerificationFailed: {sig_err}")
         elif require_signature:
             failures.append("UnsignedPackage: package signature is required")
@@ -2399,7 +2564,12 @@ class VerificationAuthority:
                         f"VerificationHashMismatch: package={pkg.verification_hash} "
                         f"actual={actual_verif_hash}"
                     )
-            except Exception as vh_err:
+            except (ValueError, TypeError, KeyError, AttributeError) as vh_err:
+                logger.debug(
+                    "verify_package_artifacts failed",
+                    extra={"operation": "verify_package_artifacts"},
+                    exc_info=True,
+                )
                 failures.append(f"VerificationHashError: {vh_err}")
 
         if pkg.certificate_hash and canonical_manifest is not None:
@@ -2433,7 +2603,12 @@ class VerificationAuthority:
                             f"CertificateHashMismatch: package={pkg.certificate_hash} "
                             f"actual={actual_cert_hash}"
                         )
-            except Exception as ch_err:
+            except (ValueError, TypeError, KeyError, AttributeError) as ch_err:
+                logger.debug(
+                    "verify_package_artifacts failed",
+                    extra={"operation": "verify_package_artifacts"},
+                    exc_info=True,
+                )
                 failures.append(f"CertificateHashError: {ch_err}")
 
         is_valid = len(failures) == 0
@@ -2524,7 +2699,10 @@ class VerificationAuthority:
                         raise ValueError("Trace record must be a JSON object")
                     parsed_events.append(evt)
                     parsed_events_with_lines.append((evt, trimmed))
-            except Exception as parse_err:
+            except (ValueError, TypeError, AttributeError) as parse_err:
+                logger.debug(
+                    "verify_package failed", extra={"operation": "verify_package"}, exc_info=True
+                )
                 failures.append(f"TraceStreamParsingFailed: {parse_err}")
         elif require_signature:
             failures.append("TraceBytesMissing: artifact verification requires raw trace bytes")
@@ -2627,10 +2805,18 @@ class VerificationAuthority:
                         from agentv_runtime.manifest import ExecutionManifest
 
                         m_obj = ExecutionManifest.from_dict(source or canonical_manifest)
-                    except Exception as exc:
+                    except (
+                        ValueError,
+                        TypeError,
+                        KeyError,
+                        AttributeError,
+                        OSError,
+                        RuntimeError,
+                    ) as exc:
                         logger.debug(
                             "Failed to instantiate ExecutionManifest from dict: %s",
                             exc,
+                            exc_info=True,
                         )
                 elif hasattr(canonical_manifest, "scenario_id"):
                     m_obj = canonical_manifest
@@ -2672,7 +2858,10 @@ class VerificationAuthority:
                             f"ManifestIdMismatch: manifest={m_obj.manifest_id} "
                             f"package={pkg.manifest_id}"
                         )
-            except Exception as m_err:
+            except (ValueError, TypeError, KeyError, AttributeError) as m_err:
+                logger.debug(
+                    "verify_package failed", extra={"operation": "verify_package"}, exc_info=True
+                )
                 failures.append(f"ManifestVerificationFailed: {m_err}")
         elif not pkg.manifest_hash or not pkg.manifest_id:
             failures.append("ManifestMissing: package does not bind a valid manifest hash")
@@ -2712,8 +2901,8 @@ class VerificationAuthority:
                         "DirectProvenanceViolation: Evidence graph contains unresolved "
                         "or carrier fallback provenance"
                     )
-            except Exception as ev_err:
-                logger.debug("Evidence graph calculation failed: %s", ev_err)
+            except (ValueError, TypeError, KeyError, AttributeError) as ev_err:
+                logger.debug("Evidence graph calculation failed: %s", ev_err, exc_info=True)
                 failures.append(f"EvidenceReconstructionFailed: {ev_err}")
 
         # 4b. Trace seal verification
@@ -2748,6 +2937,11 @@ class VerificationAuthority:
                             f"but actual trace contains {len(effective_events)} events"
                         )
                 except (ValueError, TypeError):
+                    logger.debug(
+                        "verify_package failed",
+                        extra={"operation": "verify_package"},
+                        exc_info=True,
+                    )
                     pass
 
             # Trace seal trust binding verification
@@ -2785,7 +2979,21 @@ class VerificationAuthority:
                                         encoding=serialization.Encoding.PEM,
                                         format=serialization.PublicFormat.SubjectPublicKeyInfo,
                                     ).decode("utf-8")
-                            except Exception:
+                            except (
+                                ValueError,
+                                TypeError,
+                                KeyError,
+                                AttributeError,
+                                OSError,
+                                RuntimeError,
+                                InvalidSignature,
+                                UnsupportedAlgorithm,
+                            ):
+                                logger.debug(
+                                    "verify_package failed",
+                                    extra={"operation": "verify_package"},
+                                    exc_info=True,
+                                )
                                 seal_pub_pem = None
                         elif isinstance(trust_root, Mapping):
                             seal_pub_pem = trust_root.get(str(seal_signer_id)) or (
@@ -2812,7 +3020,21 @@ class VerificationAuthority:
                                     encoding=serialization.Encoding.PEM,
                                     format=serialization.PublicFormat.SubjectPublicKeyInfo,
                                 ).decode("utf-8")
-                        except Exception:
+                        except (
+                            ValueError,
+                            TypeError,
+                            KeyError,
+                            AttributeError,
+                            OSError,
+                            RuntimeError,
+                            InvalidSignature,
+                            UnsupportedAlgorithm,
+                        ):
+                            logger.debug(
+                                "verify_package failed",
+                                extra={"operation": "verify_package"},
+                                exc_info=True,
+                            )
                             seal_pub_pem = None
 
                     if not seal_pub_pem:
@@ -2841,7 +3063,21 @@ class VerificationAuthority:
                                     "TraceSealUnsupportedKeyType: expected Ed25519 for "
                                     f"signer '{seal_signer_id}'"
                                 )
-                        except Exception as seal_v_err:
+                        except (
+                            ValueError,
+                            TypeError,
+                            KeyError,
+                            AttributeError,
+                            OSError,
+                            RuntimeError,
+                            InvalidSignature,
+                            UnsupportedAlgorithm,
+                        ) as seal_v_err:
+                            logger.debug(
+                                "verify_package failed",
+                                extra={"operation": "verify_package"},
+                                exc_info=True,
+                            )
                             failures.append(
                                 f"TraceSealSignatureInvalid: signature verification failed for "
                                 f"trace seal: {seal_v_err}"
@@ -2896,7 +3132,10 @@ class VerificationAuthority:
                         f"ScenarioVersionMismatch: package={pkg.scenario_version} "
                         f"actual={scen_ver_in_data}"
                     )
-            except Exception as s_err:
+            except (ValueError, TypeError, KeyError, AttributeError) as s_err:
+                logger.debug(
+                    "verify_package failed", extra={"operation": "verify_package"}, exc_info=True
+                )
                 failures.append(f"ScenarioVerificationFailed: {s_err}")
         elif require_scenario_binding:
             failures.append(
@@ -2988,7 +3227,19 @@ class VerificationAuthority:
                         f"SignatureVerificationFailed: Signature for identity "
                         f"'{pkg.signer_identity}' failed verification"
                     )
-            except Exception as sig_err:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                InvalidSignature,
+                UnsupportedAlgorithm,
+            ) as sig_err:
+                logger.debug(
+                    "verify_package failed", extra={"operation": "verify_package"}, exc_info=True
+                )
                 failures.append(f"SignatureVerificationFailed: {sig_err}")
         elif require_signature:
             failures.append("UnsignedPackage: package signature is required")
@@ -3032,7 +3283,10 @@ class VerificationAuthority:
                         f"VerificationHashMismatch: package={pkg.verification_hash} "
                         f"actual={actual_verif_hash}"
                     )
-            except Exception as vh_err:
+            except (ValueError, TypeError, KeyError, AttributeError) as vh_err:
+                logger.debug(
+                    "verify_package failed", extra={"operation": "verify_package"}, exc_info=True
+                )
                 failures.append(f"VerificationHashError: {vh_err}")
 
         if pkg.certificate_hash and canonical_manifest is not None:
@@ -3067,7 +3321,10 @@ class VerificationAuthority:
                             f"CertificateHashMismatch: package={pkg.certificate_hash} "
                             f"actual={actual_cert_hash}"
                         )
-            except Exception as ch_err:
+            except (ValueError, TypeError, KeyError, AttributeError) as ch_err:
+                logger.debug(
+                    "verify_package failed", extra={"operation": "verify_package"}, exc_info=True
+                )
                 failures.append(f"CertificateHashError: {ch_err}")
 
         is_valid = len(failures) == 0
@@ -3160,7 +3417,12 @@ class VerificationAuthority:
                         if not isinstance(event, dict):
                             raise ValueError("Trace record must be a JSON object")
                         parsed_events.append(event)
-            except Exception as parse_err:
+            except (ValueError, TypeError, AttributeError) as parse_err:
+                logger.debug(
+                    "verify_certification_artifact failed",
+                    extra={"operation": "verify_certification_artifact"},
+                    exc_info=True,
+                )
                 failures.append(f"TraceStreamParsingFailed: {parse_err}")
 
         # Never substitute caller-supplied events for the recorded raw JSONL.
@@ -3200,7 +3462,21 @@ class VerificationAuthority:
                         fin_data, require_authoritative=True
                     )
                     break
-                except Exception as fin_err:
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    InvalidSignature,
+                    UnsupportedAlgorithm,
+                ) as fin_err:
+                    logger.debug(
+                        "verify_certification_artifact failed",
+                        extra={"operation": "verify_certification_artifact"},
+                        exc_info=True,
+                    )
                     failures.append(f"AuthoritativeEvaluatorRecordInvalid: {fin_err}")
             elif ev.get("event") in ("run_end", "end"):
                 ev_data = ev.get("data") if isinstance(ev.get("data"), dict) else ev
@@ -3217,7 +3493,21 @@ class VerificationAuthority:
                             candidate, require_authoritative=True
                         )
                         break
-                    except Exception as fin_err:
+                    except (
+                        ValueError,
+                        TypeError,
+                        KeyError,
+                        AttributeError,
+                        OSError,
+                        RuntimeError,
+                        InvalidSignature,
+                        UnsupportedAlgorithm,
+                    ) as fin_err:
+                        logger.debug(
+                            "verify_certification_artifact failed",
+                            extra={"operation": "verify_certification_artifact"},
+                            exc_info=True,
+                        )
                         failures.append(f"AuthoritativeEvaluatorRecordInvalid: {fin_err}")
 
         if fin_record is None:
@@ -3254,7 +3544,21 @@ class VerificationAuthority:
                             f"EvaluatorSignatureVerificationFailed: signature for "
                             f"'{fin_record.evaluator_identity}' failed verification"
                         )
-                except Exception as esig_err:
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    InvalidSignature,
+                    UnsupportedAlgorithm,
+                ) as esig_err:
+                    logger.debug(
+                        "verify_certification_artifact failed",
+                        extra={"operation": "verify_certification_artifact"},
+                        exc_info=True,
+                    )
                     failures.append(f"EvaluatorSignatureVerificationFailed: {esig_err}")
 
             # Cross-field consistency with execution manifest and package
