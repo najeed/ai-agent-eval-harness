@@ -3952,11 +3952,20 @@ async def test_session_tool_intercept_rejection_and_mutation_receipt(tmp_path):
 
 
 @pytest.mark.asyncio
-async def test_session_hitl_resumption_token_mismatched_task_and_duration_fallbacks(tmp_path):
+@pytest.mark.parametrize("ci_mode", ["true", "false"])
+@pytest.mark.parametrize("interactive", [False, True], ids=["headless", "terminal"])
+async def test_session_hitl_resumption_token_mismatched_task_and_duration_fallbacks(
+    tmp_path, monkeypatch, ci_mode, interactive
+):
     """
     Verify resumption token non-approval, mismatched task IDs,
     created_at duration fallback, and null context.
     """
+    # This contract exercises durable suspension explicitly, independent of
+    # the host's CI flag or inherited terminal.
+    monkeypatch.setenv("CI", ci_mode)
+    monkeypatch.setenv("AGENTV_CLI_HITL_SUSPEND", "1")
+    monkeypatch.setattr("sys.stdin.isatty", lambda: interactive)
     sess = _session_with_local_providers(tmp_path, "run_hitl_misc", {"id": "scen_hm"})
     sess.resumption_token = "tok_misc"
 
