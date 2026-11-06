@@ -139,6 +139,7 @@ class EcommerceProvider(BaseProvider):
         return artifacts
 
     async def transform(self, raw_artifacts: list[RawArtifact]) -> list[StandardSchema]:
+        self.ensure_simulation_allowed(raw_artifacts)
         results = []
         is_strict = self.llm_manager.strategy not in ["heuristic", "mock"]
 
@@ -248,10 +249,13 @@ class EcommerceProvider(BaseProvider):
                             id=record_id,
                             industry="ecommerce",
                             data=verified_data,
-                            provenance={
-                                "source": artifact.source_url,
-                                "schema": self.ecommerce_mode,
-                            },
+                            provenance=self.record_provenance(
+                                artifact,
+                                {
+                                    "source": artifact.source_url,
+                                    "schema": self.ecommerce_mode,
+                                },
+                            ),
                             checksum=data_checksum,
                         )
                     )

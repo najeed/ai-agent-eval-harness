@@ -84,7 +84,7 @@ langsmith = [
 # 4. Domain & Task Extras
 nlp = [
     "sentence-transformers==6.2.0",
-    "transformers==5.22.1",
+    "transformers==5.22.2",
     "datasets==5.1.0",
 ]
 docs = [
@@ -122,7 +122,7 @@ langchain-all = [
 
 all = [
     "sentence-transformers==6.2.0",
-    "transformers==5.22.1",
+    "transformers==5.22.2",
     "datasets==5.1.0",
     "google-genai==3.0.0",
     "langchain==1.4.9",

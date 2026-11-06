@@ -34,6 +34,7 @@ def test_cli_backup_rotation_zenith():
                     "finance",
                     "--source",
                     "api",
+                    "--allow-simulation",
                     "--target-dir",
                     ".",
                     "--output-name",

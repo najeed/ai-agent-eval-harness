@@ -135,6 +135,7 @@ class TransportationProvider(BaseProvider):
         return []
 
     async def transform(self, raw_artifacts: list[RawArtifact]) -> list[StandardSchema]:
+        self.ensure_simulation_allowed(raw_artifacts)
         results = []
         TARGET_SCHEMA = {
             "entity": "string",
@@ -167,7 +168,9 @@ class TransportationProvider(BaseProvider):
                                 id=crypto.record_id(f"OSM-{data['id']}"),
                                 industry="transportation",
                                 data=verified,
-                                provenance={"source": raw.source_url, "provider": "OpenStreetMap"},
+                                provenance=self.record_provenance(
+                                    raw, {"source": raw.source_url, "provider": "OpenStreetMap"}
+                                ),
                                 checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
@@ -189,7 +192,9 @@ class TransportationProvider(BaseProvider):
                                 id=crypto.record_id(f"EURO-{item['geo']}-{item['time']}"),
                                 industry="transportation",
                                 data=verified,
-                                provenance={"source": raw.source_url, "provider": "Eurostat"},
+                                provenance=self.record_provenance(
+                                    raw, {"source": raw.source_url, "provider": "Eurostat"}
+                                ),
                                 checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
@@ -218,7 +223,9 @@ class TransportationProvider(BaseProvider):
                             id=record_id,
                             industry="transportation",
                             data=verified_data,
-                            provenance={"source": raw.source_url, "provider": "US-DOT"},
+                            provenance=self.record_provenance(
+                                raw, {"source": raw.source_url, "provider": "US-DOT"}
+                            ),
                             checksum=data_checksum,
                         )
                     )

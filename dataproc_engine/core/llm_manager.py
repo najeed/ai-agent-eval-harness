@@ -19,6 +19,9 @@ class LLMManager:
     def __init__(self, config: dict[str, Any]):
         self.config = config
         self.strategy = config.get("llm_strategy", "auto")
+        self.allow_simulation = config.get("allow_simulation", False)
+        if type(self.allow_simulation) is not bool:
+            raise ValueError("allow_simulation must be an explicit boolean")
         self.preferred_provider = config.get("llm_provider", "gemini")
         self.preferred_model = config.get("model")
         self.estimated_cost_cents = 0.0
@@ -46,11 +49,12 @@ class LLMManager:
                     f"V2: TokenGuard intercepted request for {source_hint}. "
                     "Routing to Tier 3 (Heuristic)."
                 )
-                self.strategy = "heuristic"  # Persist state for visibility/lifecycle
                 effective_strategy = "heuristic"
 
         # 0.5 Tier 0: Mock
         if effective_strategy == "mock":
+            if not self.allow_simulation:
+                raise PermissionError("Tier-0 synthesis requires allow_simulation=True")
             mock_data = {}
             for key, expected_type in target_schema.items():
                 if expected_type == "number":
@@ -59,7 +63,10 @@ class LLMManager:
                     mock_data[key] = f"Mocked-{key}-{random.randint(100, 999)}"  # nosec B311
                 else:
                     mock_data[key] = None
-            return self._verify_schema(mock_data, target_schema)
+            verified = self._verify_schema(mock_data, target_schema)
+            if verified is not None:
+                verified["provenance"] = {"execution_mode": "simulated", "simulation": True}
+            return verified
 
         # 1. Tier 1: Cloud Providers (Preferred)
         if effective_strategy in ["auto", "cloud"]:

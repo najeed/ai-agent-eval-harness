@@ -26,6 +26,8 @@ class UnstructuredProvider(BaseProvider):
 
     async def extract(self) -> list[RawArtifact]:
         if self.unstructured_mode == "common_crawl":
+            if not self.allow_simulation:
+                return []
             # Gold Standard: Common Crawl (Web Archive)
             snapshot = self.config.get("snapshot", "2023-50")
             url = f"https://data.commoncrawl.org/crawl-data/CC-MAIN-{snapshot}/"
@@ -33,7 +35,7 @@ class UnstructuredProvider(BaseProvider):
             # Simulated Common Crawl Data (Zero-Bundling)
             sim_crawl = "<html><body><h1>Global AI Trends 2024</h1><p>Market growth expected in all sectors.</p></body></html>"  # noqa: E501
             return [
-                RawArtifact(
+                self.create_simulated_artifact(
                     id=f"CC-{snapshot}",
                     source_url=url,
                     content=sim_crawl,
@@ -42,7 +44,6 @@ class UnstructuredProvider(BaseProvider):
                         "target_uri": "https://example.com/trends",
                         "simulation": True,
                     },
-                    timestamp=datetime.datetime.now(datetime.UTC).isoformat(),
                 )
             ]
 
@@ -188,6 +189,7 @@ class UnstructuredProvider(BaseProvider):
         """
         Extract and verify data using LLMManager (Unified Async Path).
         """
+        self.ensure_simulation_allowed(raw_artifacts)
         from eval_runner.utils import crypto
 
         results = []
@@ -219,7 +221,9 @@ class UnstructuredProvider(BaseProvider):
                             id=crypto.record_id(f"CC-{raw_data['web_source']}"),
                             industry="unstructured",
                             data=verified,
-                            provenance={"source": raw.source_url, "provider": "Common Crawl"},
+                            provenance=self.record_provenance(
+                                raw, {"source": raw.source_url, "provider": "Common Crawl"}
+                            ),
                             checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                         )
                     )
@@ -228,6 +232,9 @@ class UnstructuredProvider(BaseProvider):
         for raw in raw_artifacts:
             # 1. Security: Scrub PII before LLM ingestion
             safe_content = self.scrub_pii(raw.content)
+            simulated_extraction = self.llm_manager.strategy == "mock"
+            if simulated_extraction and not self.allow_simulation:
+                raise PermissionError("Tier-0 extraction requires provider allow_simulation=True")
 
             # 2. Extraction via LLM (Tiers: Cloud -> Local -> Heuristic)
             source_hint = (
@@ -239,6 +246,12 @@ class UnstructuredProvider(BaseProvider):
 
             # 2.1 V2: Heuristic Fallback — produce a minimal record if all LLM tiers fail
             if extracted_data is None:
+                if not self.allow_simulation:
+                    logger.warning(
+                        "Extraction failed for %s; simulated fallback is disabled", raw.id
+                    )
+                    continue
+                simulated_extraction = True
                 logger.warning(f"LLM extraction failed for {raw.id}. Applying heuristic fallback.")
                 # Derive basic signals from raw content text
                 content_str = safe_content if isinstance(safe_content, str) else str(safe_content)
@@ -250,6 +263,9 @@ class UnstructuredProvider(BaseProvider):
                     "sentiment_score": self.llm_manager._heuristic_sentiment(content_str),
                     "strategic_signals": self._derive_strategic_pivot(content_str),
                 }
+
+            if simulated_extraction:
+                extracted_data.pop("provenance", None)
 
             # 2.5 V2: Deep Signal Layer (Sentiment & Signal Weighting)
             if "sentiment_score" not in extracted_data:
@@ -272,7 +288,18 @@ class UnstructuredProvider(BaseProvider):
                         id=raw.id,
                         industry=self.config.get("industry", "generic"),
                         data=extracted_data,
-                        provenance={"source": raw.source_url, "retrieved_at": raw.timestamp},
+                        provenance=self.record_provenance(
+                            raw,
+                            {
+                                "source": raw.source_url,
+                                "retrieved_at": raw.timestamp,
+                                **(
+                                    {"execution_mode": "simulated", "simulation": True}
+                                    if simulated_extraction
+                                    else {}
+                                ),
+                            },
+                        ),
                         checksum=data_checksum,
                     )
                 )

@@ -46,6 +46,7 @@ def test_cli_rotational_backup_integration(tmp_path):
             "finance",
             "--llm-strategy",
             "mock",
+            "--allow-simulation",
             "--limit",
             "1",
             "--target-dir",

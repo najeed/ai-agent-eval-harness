@@ -18,6 +18,43 @@ from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, Standa
 from dataproc_engine.core.config import ConfigLoader
 from dataproc_engine.core.llm_manager import LLMManager
 
+
+@pytest.mark.parametrize("setting", [None, False, "false", "true", 1])
+def test_provider_simulation_requires_explicit_boolean_authorization(setting):
+    config = {} if setting is None else {"allow_simulation": setting}
+    if setting is not None and type(setting) is not bool:
+        with pytest.raises(ValueError, match="explicit boolean"):
+            ConcreteProvider(config)
+        return
+    provider = ConcreteProvider(config)
+    with pytest.raises(PermissionError):
+        provider.create_simulated_artifact("example", {})
+
+
+def test_simulation_provenance_survives_normalization_and_export():
+    provider = ConcreteProvider({"allow_simulation": True})
+    metadata = {"execution_mode": "live", "source": "example"}
+    raw = provider.create_simulated_artifact("example", {"value": 1}, metadata=metadata)
+    assert metadata["execution_mode"] == "live"
+    assert raw.metadata["execution_mode"] == "simulated"
+    provenance = provider.record_provenance(raw, {"source": raw.source_url})
+    assert provenance["execution_mode"] == "simulated"
+    record = StandardSchema.create("test", {"execution_mode": "live"}, provenance)
+    exported = record.to_dict()
+    assert exported["execution_mode"] == "simulated"
+    restored = StandardSchema.from_pandas(pd.Series(exported), "test")
+    assert restored.provenance["execution_mode"] == "simulated"
+    with pytest.raises(PermissionError):
+        ConcreteProvider({}).ensure_simulation_allowed([raw])
+
+
+def test_supplied_table_missing_or_unspecified_does_not_create_sample_data(tmp_path):
+    provider = ConcreteProvider({})
+    assert provider.load_tabular_artifact() is None
+    provider.config["input_uri"] = str(tmp_path / "missing.csv")
+    assert provider.load_tabular_artifact() is None
+
+
 # ─── ConfigLoader ─────────────────────────────────────────────────────────────
 
 
@@ -233,10 +270,10 @@ def test_base_provider_circuit_breaker_initial_state():
     assert provider._failure_count == 0
 
 
-def test_base_provider_simulation_enabled_by_default():
-    """allow_simulation defaults to True from BaseProvider."""
+def test_base_provider_simulation_disabled_by_default():
+    """Simulation requires explicit opt-in from BaseProvider."""
     provider = ConcreteProvider({})
-    assert provider.allow_simulation is True
+    assert provider.allow_simulation is False
 
 
 def test_base_provider_simulation_disabled_via_config():
@@ -247,7 +284,7 @@ def test_base_provider_simulation_disabled_via_config():
 
 def test_base_provider_create_simulated_artifact():
     """create_simulated_artifact always tags artifact with simulation=True and sim- prefix."""
-    provider = ConcreteProvider({})
+    provider = ConcreteProvider({"allow_simulation": True})
     artifact = provider.create_simulated_artifact(
         id="test-123", content={"key": "value"}, source_url="test://url", metadata={"extra": "data"}
     )

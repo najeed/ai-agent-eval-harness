@@ -108,6 +108,7 @@ class EducationProvider(BaseProvider):
         return []
 
     async def transform(self, raw_artifacts: list[RawArtifact]) -> list[StandardSchema]:
+        self.ensure_simulation_allowed(raw_artifacts)
         results = []
         is_strict = self.llm_manager.strategy not in ["heuristic", "mock"]
 
@@ -132,7 +133,9 @@ class EducationProvider(BaseProvider):
                                 id=record_id,
                                 industry="education",
                                 data=verified,
-                                provenance={"source": raw.source_url, "provider": "UNESCO"},
+                                provenance=self.record_provenance(
+                                    raw, {"source": raw.source_url, "provider": "UNESCO"}
+                                ),
                                 checksum=crypto.record_id(json.dumps(verified, sort_keys=True)),
                             )
                         )
@@ -161,7 +164,9 @@ class EducationProvider(BaseProvider):
                                 id=record_id,
                                 industry="education",
                                 data=verified,
-                                provenance={"source": raw.source_url, "provider": "MOOC-Portal"},
+                                provenance=self.record_provenance(
+                                    raw, {"source": raw.source_url, "provider": "MOOC-Portal"}
+                                ),
                                 checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
@@ -190,7 +195,9 @@ class EducationProvider(BaseProvider):
                                 id=record_id,
                                 industry="education",
                                 data=verified,
-                                provenance={"source": raw.source_url, "provider": "Kaggle"},
+                                provenance=self.record_provenance(
+                                    raw, {"source": raw.source_url, "provider": "Kaggle"}
+                                ),
                                 checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
@@ -219,7 +226,9 @@ class EducationProvider(BaseProvider):
                             id=record_id,
                             industry="education",
                             data=verified,
-                            provenance={"source": raw.source_url, "provider": "NCES"},
+                            provenance=self.record_provenance(
+                                raw, {"source": raw.source_url, "provider": "NCES"}
+                            ),
                             checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                         )
                     )

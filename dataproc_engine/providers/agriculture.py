@@ -187,6 +187,7 @@ class AgricultureProvider(BaseProvider):
         return artifacts
 
     async def transform(self, raw_artifacts: list[RawArtifact]) -> list[StandardSchema]:
+        self.ensure_simulation_allowed(raw_artifacts)
         results = []
         is_strict = self.llm_manager.strategy not in ["heuristic", "mock"]
 
@@ -234,7 +235,9 @@ class AgricultureProvider(BaseProvider):
                                 ),
                                 industry="agriculture",
                                 data=verified,
-                                provenance={"source": raw.source_url, "provider": "FAOStat"},
+                                provenance=self.record_provenance(
+                                    raw, {"source": raw.source_url, "provider": "FAOStat"}
+                                ),
                                 checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
@@ -266,7 +269,9 @@ class AgricultureProvider(BaseProvider):
                             id=record_id,
                             industry="agriculture",
                             data=verified_data,
-                            provenance={"source": raw.source_url, "provider": "USDA-NASS"},
+                            provenance=self.record_provenance(
+                                raw, {"source": raw.source_url, "provider": "USDA-NASS"}
+                            ),
                             checksum=data_checksum,
                         )
                     )

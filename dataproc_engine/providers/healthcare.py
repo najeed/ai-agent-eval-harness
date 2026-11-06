@@ -244,6 +244,7 @@ class HealthcareProvider(BaseProvider):
         return artifacts
 
     async def transform(self, raw_artifacts: list[RawArtifact]) -> list[StandardSchema]:
+        self.ensure_simulation_allowed(raw_artifacts)
         results = []
         is_strict = self.llm_manager.strategy not in ["heuristic", "mock"]
 
@@ -273,7 +274,9 @@ class HealthcareProvider(BaseProvider):
                                 ),
                                 industry="healthcare",
                                 data=verified,
-                                provenance={"source": artifact.source_url, "provider": "WHO-GHO"},
+                                provenance=self.record_provenance(
+                                    artifact, {"source": artifact.source_url, "provider": "WHO-GHO"}
+                                ),
                                 checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
@@ -313,10 +316,13 @@ class HealthcareProvider(BaseProvider):
                                 id=record_id,
                                 industry="healthcare",
                                 data=verified,
-                                provenance={
-                                    "source": artifact.source_url,
-                                    "schema": dataset_version,
-                                },
+                                provenance=self.record_provenance(
+                                    artifact,
+                                    {
+                                        "source": artifact.source_url,
+                                        "schema": dataset_version,
+                                    },
+                                ),
                                 checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
@@ -378,11 +384,14 @@ class HealthcareProvider(BaseProvider):
                             id=record_id,
                             industry="healthcare",
                             data=verified_data,
-                            provenance={
-                                "source": "CMS dataset",
-                                "file": artifact.source_url,
-                                "provider_id": p_id,
-                            },
+                            provenance=self.record_provenance(
+                                artifact,
+                                {
+                                    "source": "CMS dataset",
+                                    "file": artifact.source_url,
+                                    "provider_id": p_id,
+                                },
+                            ),
                             checksum=data_checksum,
                         )
                     )

@@ -19,6 +19,10 @@ class HousingProvider(BaseProvider):
         self.api_key = config.get("hud_api_key")
 
     async def extract(self) -> list[RawArtifact]:
+        if self.config.get("input_uri"):
+            artifact = self.load_tabular_artifact()
+            if artifact is not None:
+                return [artifact]
         if self.housing_mode == "infrastructure":
             # Gold Standard: World Bank Infrastructure
             indicator = self.config.get("indicator", "EG.ELC.ACCS.ZS")  # Access to electricity
@@ -56,6 +60,7 @@ class HousingProvider(BaseProvider):
         return []
 
     async def transform(self, raw_artifacts: list[RawArtifact]) -> list[StandardSchema]:
+        self.ensure_simulation_allowed(raw_artifacts)
         results = []
 
         if self.housing_mode == "infrastructure":
@@ -77,7 +82,9 @@ class HousingProvider(BaseProvider):
                                 id=record_id,
                                 industry="housing",
                                 data=verified,
-                                provenance={"source": raw.source_url, "provider": "World Bank"},
+                                provenance=self.record_provenance(
+                                    raw, {"source": raw.source_url, "provider": "World Bank"}
+                                ),
                                 checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
@@ -106,7 +113,9 @@ class HousingProvider(BaseProvider):
                             id=record_id,
                             industry="housing",
                             data=verified,
-                            provenance={"source": raw.source_url, "provider": "HUD"},
+                            provenance=self.record_provenance(
+                                raw, {"source": raw.source_url, "provider": "HUD"}
+                            ),
                             checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                         )
                     )

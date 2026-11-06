@@ -60,6 +60,9 @@ async def test_public_sector_local_load_boost(tmp_path):
     )
     raw_l = await p_labor.extract()
     assert len(raw_l) > 0
+    assert raw_l[0].source_url == csv_path
+    assert raw_l[0].content == [{"key": "val", "metric": 100}]
+    assert not raw_l[0].metadata.get("simulation")
 
     # Housing
     p_housing = HousingProvider(
@@ -67,6 +70,8 @@ async def test_public_sector_local_load_boost(tmp_path):
     )
     raw_h = await p_housing.extract()
     assert len(raw_h) > 0
+    assert raw_h[0].content == raw_l[0].content
+    assert not raw_h[0].metadata.get("simulation")
 
     # Environment
     p_env = EnvironmentProvider(
@@ -74,6 +79,8 @@ async def test_public_sector_local_load_boost(tmp_path):
     )
     raw_e = await p_env.extract()
     assert len(raw_e) > 0
+    assert raw_e[0].content == raw_l[0].content
+    assert not raw_e[0].metadata.get("simulation")
 
 
 @pytest.mark.asyncio
@@ -81,7 +88,7 @@ async def test_housing_fhfa_transformation():
     """Verify FHFA/HUD housing transformation."""
     # Create raw artifact mimicking FHFA structure
     provider = HousingProvider(
-        {"industry": "public_sector", "housing_mode": "hud"},
+        {"industry": "public_sector", "housing_mode": "hud", "allow_simulation": True},
         llm_manager=LLMManager({"llm_provider": "heuristic"}),
     )
     sim_data = [{"region": "West", "index_value": 250.5, "year": 2023}]

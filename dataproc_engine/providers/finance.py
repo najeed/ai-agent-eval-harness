@@ -257,6 +257,7 @@ class FinanceProvider(BaseProvider):
         return []
 
     async def transform(self, raw_artifacts: list[RawArtifact]) -> list[StandardSchema]:
+        self.ensure_simulation_allowed(raw_artifacts)
         results = []
         is_strict = self.llm_manager.strategy not in ["heuristic", "mock"]
 
@@ -325,7 +326,9 @@ class FinanceProvider(BaseProvider):
                             StandardSchema.create(
                                 industry="finance",
                                 data=verified,
-                                provenance={"source": raw.source_url, "schema": "World-Bank-Macro"},
+                                provenance=self.record_provenance(
+                                    raw, {"source": raw.source_url, "schema": "World-Bank-Macro"}
+                                ),
                             )
                         )
                 continue
@@ -353,7 +356,9 @@ class FinanceProvider(BaseProvider):
                                 id=crypto.record_id(str(raw_data["account_id"])),
                                 industry="finance",
                                 data=verified,
-                                provenance={"source": raw.source_url, "schema": "UCI-Credit-Risk"},
+                                provenance=self.record_provenance(
+                                    raw, {"source": raw.source_url, "schema": "UCI-Credit-Risk"}
+                                ),
                                 checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
@@ -391,11 +396,14 @@ class FinanceProvider(BaseProvider):
                         id=record_id,
                         industry="finance",
                         data=verified,
-                        provenance={
-                            "source": raw.source_url,
-                            "taxonomy": self.taxonomy,
-                            "currency": self.currency,
-                        },
+                        provenance=self.record_provenance(
+                            raw,
+                            {
+                                "source": raw.source_url,
+                                "taxonomy": self.taxonomy,
+                                "currency": self.currency,
+                            },
+                        ),
                         checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                     )
                 )

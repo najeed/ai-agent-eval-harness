@@ -75,6 +75,7 @@ class ManufacturingProvider(BaseProvider):
         return []
 
     async def transform(self, raw_artifacts: list[RawArtifact]) -> list[StandardSchema]:
+        self.ensure_simulation_allowed(raw_artifacts)
         results = []
 
         if self.manufacturing_mode == "industrial_stats":
@@ -102,10 +103,13 @@ class ManufacturingProvider(BaseProvider):
                                 id=record_id,
                                 industry="manufacturing",
                                 data=verified,
-                                provenance={
-                                    "source": raw.source_url,
-                                    "provider": "Industrial-Stats-Agency",
-                                },
+                                provenance=self.record_provenance(
+                                    raw,
+                                    {
+                                        "source": raw.source_url,
+                                        "provider": "Industrial-Stats-Agency",
+                                    },
+                                ),
                                 checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
@@ -162,7 +166,9 @@ class ManufacturingProvider(BaseProvider):
                             id=record_id,
                             industry="manufacturing",
                             data=verified,
-                            provenance={"source": raw.source_url, "provider": "US Census ASM"},
+                            provenance=self.record_provenance(
+                                raw, {"source": raw.source_url, "provider": "US Census ASM"}
+                            ),
                             checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                         )
                     )

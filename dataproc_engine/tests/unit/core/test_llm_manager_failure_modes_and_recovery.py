@@ -87,7 +87,7 @@ async def test_llm_manager_call_grok_success():
 @pytest.mark.asyncio
 async def test_llm_manager_mock_unsupported_type():
     """Cover unknown type in mock strategy."""
-    manager = LLMManager({"llm_strategy": "mock"})
+    manager = LLMManager({"llm_strategy": "mock", "allow_simulation": True})
     res = await manager.extract_structured_data("content", {"key": "unknown_type"})
     assert res["key"] is None
 
@@ -126,7 +126,14 @@ async def test_llm_manager_token_guard_hits():
     """Cover token guard interception."""
     manager = LLMManager({"llm_strategy": "auto"})
     # Content contains public domain
-    await manager.extract_structured_data(
-        "Visit sec.gov for details", {"k": "s"}, source_hint="test"
-    )
-    assert manager.strategy == "heuristic"
+    with patch.object(manager, "_try_cloud_providers", new_callable=AsyncMock) as cloud:
+        result = await manager.extract_structured_data(
+            "Visit sec.gov for details\nrevenue: 123", {"revenue": "number"}, source_hint="test"
+        )
+        cloud.assert_not_awaited()
+        assert result["revenue"] == 123
+        assert manager.strategy == "auto"
+        cloud.return_value = {"revenue": 456}
+        result = await manager.extract_structured_data("private data", {"revenue": "number"})
+        cloud.assert_awaited_once()
+        assert result["revenue"] == 456

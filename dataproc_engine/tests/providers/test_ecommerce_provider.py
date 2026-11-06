@@ -81,6 +81,7 @@ async def test_ecommerce_cpi_inflation_impact():
         "industry": "ecommerce",
         "ecommerce_mode": "standard",
         "cpi_impact": 0.1,
+        "allow_simulation": True,
     }  # 10% inflation
     llm = LLMManager({"llm_provider": "heuristic"})
     provider = EcommerceProvider(config, llm_manager=llm)

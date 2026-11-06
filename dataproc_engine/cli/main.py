@@ -105,8 +105,8 @@ def cli():
 @click.option(
     "--allow-simulation",
     is_flag=True,
-    default=True,
-    help="Mandatory V2.0 fallback: allows high-fidelity simulation if data acquisition fails.",
+    default=False,
+    help="Explicitly permit simulated fallback data; disabled by default.",
 )
 @click.option(
     "--schema-type", help="Industry-specific schema variant (e.g., standard, global_population)."

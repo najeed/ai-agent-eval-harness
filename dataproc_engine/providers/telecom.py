@@ -224,6 +224,7 @@ class TelecomProvider(BaseProvider):
         return artifacts
 
     async def transform(self, raw_artifacts: list[RawArtifact]) -> list[StandardSchema]:
+        self.ensure_simulation_allowed(raw_artifacts)
         results = []
         is_strict = self.llm_manager.strategy not in ["heuristic", "mock"]
 
@@ -253,7 +254,9 @@ class TelecomProvider(BaseProvider):
                                 ),
                                 industry="telecom",
                                 data=verified,
-                                provenance={"source": raw.source_url, "provider": "ITU"},
+                                provenance=self.record_provenance(
+                                    raw, {"source": raw.source_url, "provider": "ITU"}
+                                ),
                                 checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
@@ -286,7 +289,10 @@ class TelecomProvider(BaseProvider):
                                 id=record_id,
                                 industry="telecom",
                                 data=verified,
-                                provenance={"source": artifact.source_url, "schema": "Ookla-Tiles"},
+                                provenance=self.record_provenance(
+                                    artifact,
+                                    {"source": artifact.source_url, "schema": "Ookla-Tiles"},
+                                ),
                                 checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
@@ -338,11 +344,14 @@ class TelecomProvider(BaseProvider):
                             id=record_id,
                             industry="telecom",
                             data=verified_data,
-                            provenance={
-                                "source": "FCC Broadband Dataset",
-                                "provider_id": p_id,
-                                "stream": artifact.source_url,
-                            },
+                            provenance=self.record_provenance(
+                                artifact,
+                                {
+                                    "source": "FCC Broadband Dataset",
+                                    "provider_id": p_id,
+                                    "stream": artifact.source_url,
+                                },
+                            ),
                             checksum=data_checksum,
                         )
                     )

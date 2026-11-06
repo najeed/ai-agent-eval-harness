@@ -79,6 +79,7 @@ class MediaProvider(BaseProvider):
         return []
 
     async def transform(self, raw_artifacts: list[RawArtifact]) -> list[StandardSchema]:
+        self.ensure_simulation_allowed(raw_artifacts)
         results = []
 
         if self.media_mode == "imdb":
@@ -98,7 +99,9 @@ class MediaProvider(BaseProvider):
                                 id=record_id,
                                 industry="media_and_entertainment",
                                 data=verified,
-                                provenance={"source": raw.source_url, "provider": "IMDb"},
+                                provenance=self.record_provenance(
+                                    raw, {"source": raw.source_url, "provider": "IMDb"}
+                                ),
                                 checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
@@ -123,7 +126,9 @@ class MediaProvider(BaseProvider):
                             id=record_id,
                             industry="media_and_entertainment",
                             data=verified,
-                            provenance={"source": raw.source_url, "provider": "Spotify"},
+                            provenance=self.record_provenance(
+                                raw, {"source": raw.source_url, "provider": "Spotify"}
+                            ),
                             checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                         )
                     )

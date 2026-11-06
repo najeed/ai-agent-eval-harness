@@ -40,9 +40,13 @@ async def test_agriculture_usda_and_heuristic_coverage(mock_llm):
     # 2. FAOStat mode + Climate Anomaly + Transform
     config_fao = {"agriculture_mode": "faostat", "climate_anomaly": 2.0}
     p_fao = AgricultureProvider(config_fao, llm_manager=mock_llm)
-    mock_raw = MagicMock(spec=RawArtifact)
-    mock_raw.content = [{"Area": "World", "Item": "Wheat", "Year": 2022, "Value": 100}]
-    mock_raw.source_url = "http://fao.org"
+    mock_raw = RawArtifact(
+        id="fao-observation",
+        content=[{"Area": "World", "Item": "Wheat", "Year": 2022, "Value": 100}],
+        source_url="http://fao.org",
+        metadata={},
+        timestamp="2026-01-01T00:00:00Z",
+    )
 
     res = await p_fao.transform([mock_raw])
     assert len(res) == 1
@@ -270,7 +274,8 @@ async def test_unstructured_provider_deep_logic(mock_llm, tmp_path):
     test_file = tmp_path / "doc.txt"
     test_file.write_text("Acquisition of AI startup was a success.")
     p_txt = UnstructuredProvider(
-        {"input_uri": str(test_file), "industry": "tech"}, llm_manager=mock_llm
+        {"input_uri": str(test_file), "industry": "tech", "allow_simulation": True},
+        llm_manager=mock_llm,
     )
 
     # Trigger fallback by having LLM return None
@@ -279,6 +284,7 @@ async def test_unstructured_provider_deep_logic(mock_llm, tmp_path):
     arts_txt = await p_txt.extract()
     res_txt = await p_txt.transform(arts_txt)
     assert len(res_txt) > 0
+    assert res_txt[0].provenance["execution_mode"] == "simulated"
     assert "M&A_ACTIVITY" in res_txt[0].data["strategic_signals"]
     assert res_txt[0].data["sentiment_score"] == 0.5  # from mock_llm fixture
 
@@ -312,10 +318,13 @@ async def test_unstructured_provider_deep_logic(mock_llm, tmp_path):
         assert "OCR Text" in arts_img[0].content
 
     # 4. Common Crawl Transformation
-    p_cc = UnstructuredProvider({"unstructured_mode": "common_crawl"}, llm_manager=mock_llm)
+    p_cc = UnstructuredProvider(
+        {"unstructured_mode": "common_crawl", "allow_simulation": True}, llm_manager=mock_llm
+    )
     arts_cc = await p_cc.extract()
     res_cc = await p_cc.transform(arts_cc)
     assert "Global AI Trends" in res_cc[0].data["web_title"]
+    assert res_cc[0].provenance["execution_mode"] == "simulated"
 
     # 5. Edge cases: Missing URI, Read failure, Integrity fail
     p_none = UnstructuredProvider({"allow_simulation": True}, llm_manager=mock_llm)

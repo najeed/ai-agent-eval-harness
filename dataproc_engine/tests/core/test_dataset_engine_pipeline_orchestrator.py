@@ -11,13 +11,14 @@ async def test_llm_manager_v2_token_guard_interception():
     manager = LLMManager(config)
 
     # 1. Test Interception (SEC domain)
-    content = "SEC FILING CONTENT"
+    content = "SEC FILING CONTENT\nrevenue: 123"
     schema = {"revenue": "number"}
     source_hint = "https://www.sec.gov/edgar/123.pdf"
 
-    # This should trigger _token_guard_intercept and set strategy to heuristic
-    await manager.extract_structured_data(content, schema, source_hint=source_hint)
-    assert manager.strategy == "heuristic"
+    # Interception applies to this request without mutating the configured strategy.
+    result = await manager.extract_structured_data(content, schema, source_hint=source_hint)
+    assert result["revenue"] == 123
+    assert manager.strategy == "auto"
 
 
 @pytest.mark.asyncio

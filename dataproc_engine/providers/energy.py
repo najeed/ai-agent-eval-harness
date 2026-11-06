@@ -86,54 +86,26 @@ class EnergyProvider(BaseProvider):
                     )
                 ]
 
-            if self.api_key:
-                logger.info("using_energy_api_key", key_preview=self.api_key[:4] + "...")
-                # Improved real-world simulation logic for balances
+            if self.allow_simulation:
                 import random
 
-                gen = random.SystemRandom()
-                sources = ["Solar", "Wind", "Nuclear", "Hydro", "Coal", "Natural Gas"]
-                flows = ["Production", "Consumption", "Export", "Import"]
-                countries = ["USA", "DEU", "CHN", "FRA", "JPN", "GBR"]
-
-                real_like_data = []
-                for country in countries:
-                    for product in gen.sample(sources, 3):
-                        flow = gen.choice(flows)
-                        real_like_data.append(
-                            {
-                                "country": country,
-                                "flow": flow,
-                                "product": product,
-                                "value": round(gen.uniform(10.0, 5000.0), 2),
-                                "unit": "Mtoe",
-                            }
-                        )
-                return [
-                    RawArtifact(
-                        id="ENERGY-BALANCES-GEN",
-                        source_url="https://api.energy.gov/v1/balances",
-                        content=real_like_data,
-                        metadata={"dataset": "Dynamic Energy Balances", "api_key_used": True},
-                        timestamp=datetime.datetime.now(datetime.UTC).isoformat(),
-                    )
-                ]
-                countries = ["USA", "CHN", "DEU", "NOR", "FRA", "IND", "BRA", "JPN"]
+                generator = random.SystemRandom()
                 simulated_balances = [
                     {
-                        "country": gen.choice(countries),
+                        "country": country,
                         "flow": "Consumption",
                         "product": "Electricity",
-                        "value": 1500.0,
+                        "value": round(generator.uniform(10.0, 5000.0), 2),
                         "unit": "Mtoe",
                     }
+                    for country in ("USA", "DEU", "CHN", "FRA", "JPN", "GBR")
                 ]
                 return [
                     self.create_simulated_artifact(
-                        id="sim-energy-balances",
+                        id="ENERGY-BALANCES-GEN",
+                        source_url="simulation://energy-balances",
                         content=simulated_balances,
-                        source_url="https://energy.data.example.org/",
-                        metadata={"dataset": "Global Energy Balances", "simulation": "Dynamic"},
+                        metadata={"dataset": "Simulated Energy Balances"},
                     )
                 ]
             return []
@@ -226,6 +198,7 @@ class EnergyProvider(BaseProvider):
         return artifacts
 
     async def transform(self, raw_artifacts: list[RawArtifact]) -> list[StandardSchema]:
+        self.ensure_simulation_allowed(raw_artifacts)
         results = []
 
         if self.energy_mode == "opsd":
@@ -245,7 +218,9 @@ class EnergyProvider(BaseProvider):
                                 id=crypto.record_id(f"OPSD-{row['region']}-{row['utc_timestamp']}"),
                                 industry="energy",
                                 data=verified,
-                                provenance={"source": raw.source_url, "provider": "OPSD"},
+                                provenance=self.record_provenance(
+                                    raw, {"source": raw.source_url, "provider": "OPSD"}
+                                ),
                                 checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
@@ -278,10 +253,13 @@ class EnergyProvider(BaseProvider):
                                 id=record_id,
                                 industry="energy",
                                 data=verified,
-                                provenance={
-                                    "source": raw.source_url,
-                                    "schema": "Energy-Balances-V1",
-                                },
+                                provenance=self.record_provenance(
+                                    raw,
+                                    {
+                                        "source": raw.source_url,
+                                        "schema": "Energy-Balances-V1",
+                                    },
+                                ),
                                 checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
@@ -337,7 +315,9 @@ class EnergyProvider(BaseProvider):
                             id=record_id,
                             industry="energy",
                             data=verified_data,
-                            provenance={"source": raw.source_url, "retrieved_at": raw.timestamp},
+                            provenance=self.record_provenance(
+                                raw, {"source": raw.source_url, "retrieved_at": raw.timestamp}
+                            ),
                             checksum=data_checksum,
                         )
                     )

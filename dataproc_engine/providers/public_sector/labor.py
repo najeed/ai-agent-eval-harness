@@ -19,6 +19,10 @@ class LaborProvider(BaseProvider):
         self.api_key = config.get("bls_api_key")
 
     async def extract(self) -> list[RawArtifact]:
+        if self.config.get("input_uri"):
+            artifact = self.load_tabular_artifact()
+            if artifact is not None:
+                return [artifact]
         if self.labor_mode == "ilo":
             # Gold Standard: ILO (International Labour Organization)
             indicator = self.config.get("indicator", "EMP_TEMP_SEX_AGE_RT")
@@ -59,6 +63,7 @@ class LaborProvider(BaseProvider):
         return []
 
     async def transform(self, raw_artifacts: list[RawArtifact]) -> list[StandardSchema]:
+        self.ensure_simulation_allowed(raw_artifacts)
         results = []
         TARGET_SCHEMA = {"location": "string", "period": "string", "unemployment_rate": "number"}
 
@@ -85,10 +90,13 @@ class LaborProvider(BaseProvider):
                             id=record_id,
                             industry="labor",
                             data=verified,
-                            provenance={
-                                "source": raw.source_url,
-                                "provider": self.labor_mode.upper(),
-                            },
+                            provenance=self.record_provenance(
+                                raw,
+                                {
+                                    "source": raw.source_url,
+                                    "provider": self.labor_mode.upper(),
+                                },
+                            ),
                             checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                         )
                     )

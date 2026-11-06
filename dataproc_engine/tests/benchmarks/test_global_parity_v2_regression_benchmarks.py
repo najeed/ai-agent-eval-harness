@@ -31,7 +31,7 @@ class MockResponse:
         ("finance", {"finance_mode": "sec_edgar"}),
         ("finance", {"finance_mode": "worldbank"}),
         ("finance", {"finance_mode": "credit_risk"}),
-        ("energy", {"eia_mode": "opsd"}),
+        ("energy", {"energy_mode": "opsd"}),
         ("healthcare", {"healthcare_mode": "clinical"}),
         ("healthcare", {"healthcare_mode": "who"}),
         ("telecom", {"telecom_mode": "fcc"}),
@@ -55,10 +55,10 @@ async def test_industry_parity(industry, custom_config):
     """
     Ensure all industrial providers adhere to the mission-critical architectural standards.
     """
-    llm = LLMManager({"llm_strategy": "mock"})
+    llm = LLMManager({"llm_strategy": "mock", "allow_simulation": True})
     engine = DatasetEngine(llm_manager=llm)
 
-    config = {"limit": 1}
+    config = {"limit": 1, "allow_simulation": True}
     config.update(custom_config)
 
     # 1. Mode-Aware High-Fidelity Mock for Finance domain validation
@@ -117,7 +117,7 @@ async def test_industry_parity(industry, custom_config):
 
     with patch("aiohttp.ClientSession.get", return_value=mock_resp):
         # Inject the mock llm_mgr into the engine so it's passed to ALL providers
-        llm_mgr = LLMManager({"llm_provider": "mock"})
+        llm_mgr = LLMManager({"llm_strategy": "mock", "allow_simulation": True})
         engine.llm_manager = llm_mgr
 
         provider = engine.get_provider(industry, config)
@@ -148,6 +148,8 @@ async def test_industry_parity(industry, custom_config):
             assert len(transformed) > 0, f"{industry} failed to produce records from dummy data."
 
         for record in transformed:
+            if any(artifact.metadata.get("simulation") for artifact in raw_data):
+                assert record.provenance["execution_mode"] == "simulated"
             assert isinstance(record, StandardSchema), f"{industry} must produce StandardSchema"
             assert record.industry == industry, f"{industry} output industry mismatch"
             assert "record_id" in record.to_dict(), f"{industry} missing record_id in dict"

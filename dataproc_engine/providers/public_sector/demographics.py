@@ -95,6 +95,7 @@ class DemographicsProvider(BaseProvider):
         return []
 
     async def transform(self, raw_artifacts: list[RawArtifact]) -> list[StandardSchema]:
+        self.ensure_simulation_allowed(raw_artifacts)
         results = []
 
         if self.demographics_mode == "worldbank":
@@ -116,7 +117,9 @@ class DemographicsProvider(BaseProvider):
                                 id=record_id,
                                 industry="demographics",
                                 data=verified,
-                                provenance={"source": raw.source_url, "provider": "World Bank"},
+                                provenance=self.record_provenance(
+                                    raw, {"source": raw.source_url, "provider": "World Bank"}
+                                ),
                                 checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
@@ -156,7 +159,9 @@ class DemographicsProvider(BaseProvider):
                             id=record_id,
                             industry="demographics",
                             data=verified,
-                            provenance={"source": raw.source_url, "provider": "US Census"},
+                            provenance=self.record_provenance(
+                                raw, {"source": raw.source_url, "provider": "US Census"}
+                            ),
                             checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                         )
                     )

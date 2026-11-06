@@ -35,6 +35,8 @@ class StandardSchema:
         # Flatten the data dict into the root for CSV compatibility
         for k, v in self.data.items():
             record[f"{k}"] = v
+        if self.provenance.get("execution_mode") == "simulated":
+            record["execution_mode"] = "simulated"
         return record
 
     @classmethod
@@ -71,7 +73,14 @@ class StandardSchema:
 
         # Provenance keys often stored in CSVs
         provenance = {}
-        for k in ["source", "retrieved_at", "source_url", "timestamp"]:
+        for k in [
+            "source",
+            "retrieved_at",
+            "source_url",
+            "timestamp",
+            "execution_mode",
+            "simulation",
+        ]:
             if k in data:
                 provenance[k] = data.pop(k)
 
@@ -102,7 +111,9 @@ class BaseProvider(ABC):
         self._max_failures = config.get("max_failures", 3)
 
         # Hardening: Standardized Simulation Control
-        self.allow_simulation = config.get("allow_simulation", True)
+        self.allow_simulation = config.get("allow_simulation", False)
+        if type(self.allow_simulation) is not bool:
+            raise ValueError("allow_simulation must be an explicit boolean")
 
     def create_simulated_artifact(
         self, id: str, content: Any, source_url: str = "simulation://local", metadata: dict = None
@@ -113,14 +124,54 @@ class BaseProvider(ABC):
         """
         import datetime
 
-        final_metadata = metadata or {}
+        if not self.allow_simulation:
+            raise PermissionError("Simulated artifacts require allow_simulation=True")
+        final_metadata = dict(metadata or {})
         final_metadata["simulation"] = True
+        final_metadata["execution_mode"] = "simulated"
         final_id = id if id.startswith("sim-") else f"sim-{id}"
         return RawArtifact(
             id=final_id,
             source_url=source_url,
             content=content,
             metadata=final_metadata,
+            timestamp=datetime.datetime.now(datetime.UTC).isoformat(),
+        )
+
+    def record_provenance(self, raw: RawArtifact, fields: dict[str, Any]) -> dict[str, Any]:
+        """Preserve simulation identity across the raw-to-normalized boundary."""
+        simulated = (
+            bool(raw.metadata.get("simulation"))
+            or raw.metadata.get("execution_mode") == "simulated"
+        )
+        if simulated and not self.allow_simulation:
+            raise PermissionError("Simulated inputs require allow_simulation=True")
+        provenance = dict(fields)
+        if simulated:
+            provenance.update(simulation=True, execution_mode="simulated")
+        return provenance
+
+    def ensure_simulation_allowed(self, artifacts: list[RawArtifact]) -> None:
+        for artifact in artifacts:
+            self.record_provenance(artifact, {})
+
+    def load_tabular_artifact(self) -> RawArtifact | None:
+        """Load an explicitly supplied table without substituting sample data."""
+        import datetime
+
+        from eval_runner.utils import crypto
+
+        source = self.config.get("input_uri")
+        if not source:
+            return None
+        frame = self.load_raw_data(source)
+        if frame is None:
+            return None
+        return RawArtifact(
+            id=crypto.record_id(str(source)),
+            source_url=str(source),
+            content=frame.to_dict(orient="records"),
+            metadata={"source": "User-Provided"},
             timestamp=datetime.datetime.now(datetime.UTC).isoformat(),
         )
 

@@ -19,6 +19,10 @@ class EnvironmentProvider(BaseProvider):
         self.api_key = config.get("noaa_api_key")
 
     async def extract(self) -> list[RawArtifact]:
+        if self.config.get("input_uri"):
+            artifact = self.load_tabular_artifact()
+            if artifact is not None:
+                return [artifact]
         if self.environment_mode == "copernicus":
             # Gold Standard: Copernicus Climate Change Service (C3S)
             dataset = self.config.get("dataset", "reanalysis-era5-single-levels")
@@ -69,6 +73,7 @@ class EnvironmentProvider(BaseProvider):
         return []
 
     async def transform(self, raw_artifacts: list[RawArtifact]) -> list[StandardSchema]:
+        self.ensure_simulation_allowed(raw_artifacts)
         results = []
         TARGET_SCHEMA = {
             "location": "string",
@@ -107,10 +112,13 @@ class EnvironmentProvider(BaseProvider):
                             id=record_id,
                             industry="environment",
                             data=verified,
-                            provenance={
-                                "source": raw.source_url,
-                                "provider": self.environment_mode.upper(),
-                            },
+                            provenance=self.record_provenance(
+                                raw,
+                                {
+                                    "source": raw.source_url,
+                                    "provider": self.environment_mode.upper(),
+                                },
+                            ),
                             checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                         )
                     )

@@ -49,10 +49,25 @@ def test_heuristic_sentiment():
 
 @pytest.mark.asyncio
 async def test_mock_extraction():
-    llm = LLMManager({"llm_strategy": "mock"})
+    llm = LLMManager({"llm_strategy": "mock", "allow_simulation": True})
     schema = {"id": "string", "value": "number"}
 
     result = await llm.extract_structured_data("some text", schema)
     assert "id" in result
     assert "value" in result
     assert isinstance(result["value"], int | float)
+    assert result["provenance"]["execution_mode"] == "simulated"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("config", [{}, {"allow_simulation": False}])
+async def test_tier_zero_synthesis_denied_without_explicit_permission(config):
+    manager = LLMManager({**config, "llm_strategy": "mock"})
+    with pytest.raises(PermissionError):
+        await manager.extract_structured_data("input", {"value": "number"})
+
+
+@pytest.mark.parametrize("permission", ["false", "true", 1, None])
+def test_llm_simulation_permission_rejects_truthy_and_null_settings(permission):
+    with pytest.raises(ValueError, match="explicit boolean"):
+        LLMManager({"allow_simulation": permission})

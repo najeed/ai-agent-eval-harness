@@ -15,6 +15,13 @@ from dataproc_engine.core.base_provider import RawArtifact, StandardSchema
 from dataproc_engine.core.llm_manager import LLMManager
 from dataproc_engine.providers.energy import EnergyProvider
 
+
+@pytest.mark.asyncio
+async def test_energy_credentials_do_not_authorize_generated_balance_data():
+    provider = EnergyProvider({"energy_mode": "energy_balances", "eia_api_key": "test-key"})
+    assert await provider.extract() == []
+
+
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
 
