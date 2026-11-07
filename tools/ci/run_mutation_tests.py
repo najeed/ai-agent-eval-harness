@@ -381,6 +381,7 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_handle_event_unowned_and_signing_failures",
                 "test_handle_event_run_id_collisions_and_resumption_errors",
                 "test_recorder_rejects_lifecycle_closed_by_provider",
+                "test_handle_event_failure_marks_custom_bound_provider_not_default",
             ),
             "finalize_run": (
                 "test_finalize_transitions_bound_provider",

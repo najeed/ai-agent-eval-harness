@@ -2,6 +2,7 @@
 
 import pytest
 
+from eval_runner.events import Event
 from eval_runner.flight_recorder import FlightRecorderPlugin
 from eval_runner.interfaces.signing import SigningBackend
 from eval_runner.reference.local_artifact import LocalFileArtifactStore
@@ -88,3 +89,61 @@ def test_recorder_signer_configuration_cannot_publish_a_premature_seal(tmp_path,
 
     assert artifacts.get_artifact("key-hint", "trace_seal.json") is None
     assert store.get_run("key-hint")["lifecycle"] == "FINALIZING"
+
+
+def test_handle_event_failure_marks_custom_bound_provider_not_default(tmp_path):
+    class FailingStore:
+        def __init__(self):
+            self.status_updates = []
+
+        def get_run(self, run_id, context=None):
+            return {"run_id": run_id, "status": "RUNNING"}
+
+        def get_events(self, run_id, offset=0, limit=1000, context=None):
+            return []
+
+        def append_events(self, run_id, events, context=None):
+            raise OSError("I/O failure during append")
+
+        def update_run_status(self, run_id, status, details=None, context=None):
+            self.status_updates.append((run_id, status, details, context))
+            return True
+
+    class DefaultStore:
+        def __init__(self):
+            self.status_updates = []
+
+        def get_run(self, run_id, context=None):
+            return {"run_id": run_id, "status": "RUNNING"}
+
+        def get_events(self, run_id, offset=0, limit=1000, context=None):
+            return []
+
+        def append_events(self, run_id, events, context=None):
+            return len(events)
+
+        def update_run_status(self, run_id, status, details=None, context=None):
+            self.status_updates.append((run_id, status, details, context))
+            return True
+
+    default_store = DefaultStore()
+    custom_store = FailingStore()
+    recorder = FlightRecorderPlugin(
+        run_store=default_store,
+        artifact_store=LocalFileArtifactStore(tmp_path / "artifacts"),
+        signing_backend=NullSigningBackend(),
+    )
+    custom_context = {"tenant_id": "tenant-corp"}
+    recorder.bind_run_provider("custom-run", custom_store, custom_context)
+
+    with pytest.raises(
+        RuntimeError,
+        match="TracePersistenceError: Failed to persist telemetry event for run 'custom-run'",
+    ):
+        recorder.handle_event(Event("step", {"run_id": "custom-run"}))
+
+    assert len(custom_store.status_updates) == 1
+    assert custom_store.status_updates[0][0] == "custom-run"
+    assert custom_store.status_updates[0][1] == "CERTIFICATION_FAILED"
+    assert custom_store.status_updates[0][3] == custom_context
+    assert len(default_store.status_updates) == 0

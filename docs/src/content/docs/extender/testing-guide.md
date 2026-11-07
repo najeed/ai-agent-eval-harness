@@ -80,31 +80,64 @@ tests/
 *   **Threshold**: Enforces a strict **100.00% definitive mutation kill rate** across all evaluated critical runtime modules.
 *   **Command**: `python tools/ci/run_mutation_tests.py --full`
 
-#### High-Performance Concurrency & Windows Dev Drive Architecture
-When evaluating full AST mutant populations (780+ mutants across concurrent processes), filesystem filter driver contention and lock collisions can impact throughput on Windows. Follow these recommended architectural configurations:
+#### High-Performance Concurrency & Windows Dev Drive (`V:`) Architecture
 
-1. **Suppress Filesystem Cache Provider (`-p no:cacheprovider`)**:
-   Concurrent pytest workers contending on `.pytest_cache/v/cache/lastfailed` create NTFS file-lock contention. `FAST_PYTEST_FLAGS` strips `cacheprovider` to run cleanly in memory without filesystem locks.
+When running test suites across multiple concurrent workers (e.g. `pytest -n auto` or `run_mutation_tests.py`), filesystem filter driver contention (`fltmgr.sys`), OneDrive sync activity, and synchronous antivirus scanning (`MsMpEng.exe`) can introduce latency. Windows 11 **Dev Drive** (ReFS) with Defender Performance Mode accelerates I/O-intensive workloads by converting synchronous antivirus hooks into asynchronous background scans.
 
-2. **Bytecode Caching & Pre-Compilation**:
-   Workers execute mutants via in-memory AST injection (`compile(..., "exec")`), leaving the mutated module strictly in RAM. To accelerate dependency resolution, pre-compile third-party dependencies once:
-   ```powershell
-   python -m compileall -q .
-   ```
+##### 1. Zero-Code Workspace Directory Junctions
+Untracked ephemeral directories in `ai-agent-eval-harness` are linked to the Dev Drive (`V:`) via NTFS Directory Junctions (`New-Item -ItemType Junction`), matching the existing `.venv` junction topology without altering any repository source files:
+* `.tmp -> V:\workspaces\ai-agent-eval-harness\tmp`
+* `.pytest-tmp -> V:\workspaces\ai-agent-eval-harness\pytest-tmp`
+* `.pytest_cache -> V:\workspaces\ai-agent-eval-harness\pytest_cache`
+* `.ruff_cache -> V:\workspaces\ai-agent-eval-harness\ruff_cache`
+* `.hypothesis -> V:\workspaces\ai-agent-eval-harness\hypothesis`
 
-3. **Windows 11 Dev Drive & Defender Performance Mode**:
-   For maximum I/O throughput without compromising security, execute mutation testing on a Windows 11 **Dev Drive** (ReFS formatted VHDX partition). Dev Drives enable Defender Performance Mode, converting synchronous antivirus filter driver hooks into asynchronous background scans, eliminating up to 80% of Defender I/O overhead while maintaining 100% real-time security.
+##### 2. Standard Session Initialization Profile
+Initialize PowerShell sessions with these environment variables before running any Runtime test suites:
 
-   Execute the mutation sentinel with cache and temp directories redirected to your Dev Drive volume (e.g. `V:`):
-   ```powershell
-   $env:PYTHONPYCACHEPREFIX = "V:\pycache"
-   $env:TEMP = "V:\temp"
-   $env:TMP = "V:\temp"
-   .\.venv\Scripts\python.exe tools/ci/run_mutation_tests.py --full --workers 6
-   ```
+```powershell
+# === AgentV Runtime Virtual Environment & ReFS Dev Drive (V:) Initialization ===
+.\.venv\Scripts\Activate.ps1
 
-4. **Worker Concurrency Tuning**:
-   On Windows, setting `--workers 4` to `--workers 6` avoids minifilter queue saturation (`fltmgr.sys`) and delivers faster total wall-clock turnaround than higher worker counts.
+$env:AGENTV_DISABLE_EXTERNAL_PLUGINS  = "1"
+$env:PYTHONPYCACHEPREFIX              = "V:\pycache"
+$env:PIP_CACHE_DIR                    = "V:\pip_cache"
+$env:TEMP                             = "V:\pytest_temp"
+$env:TMP                              = "V:\pytest_temp"
+$env:COVERAGE_FILE                    = "V:\coverage\runtime\.coverage"
+$env:AGENTV_TEST_MEMORY_FORENSICS_DIR = "V:\workspaces\ai-agent-eval-harness\tmp\memory-forensics"
+$env:AGENTV_MUTATION_OUTPUT_DIR       = "V:\temp\mutation_reports"
+# Note: Always use forward slashes in PYTEST_ADDOPTS because pytest uses shlex.split (posix mode)
+# which strips Windows backslashes (e.g. \pytest_temp\runtime -> pytest_tempruntime)
+$env:PYTEST_ADDOPTS                   = "--basetemp=V:/pytest_temp/runtime"
+```
+
+##### 3. Workload Execution Commands
+Execute standard test suites under the Dev Drive acceleration profile:
+
+```powershell
+# Core Runtime Suite (Unit, Contract, Security & Integration)
+.\.venv\Scripts\pytest.exe tests/ `
+    --ignore-glob='dataproc_engine/tests/*' `
+    --ignore=tests/functional/test_scenario_compliance.py `
+    -n auto `
+    --cov=eval_runner `
+    --cov-branch `
+    --cov-report=term-missing:skip-covered
+
+# DataProc Engine Suite
+$env:COVERAGE_FILE  = "V:\coverage\dataproc\.coverage"
+$env:PYTEST_ADDOPTS = "--basetemp=V:/pytest_temp/dataproc"
+.\.venv\Scripts\pytest.exe dataproc_engine/tests/ -n auto --cov=dataproc_engine --cov-branch
+
+# Acceptance Suite & Release Gate
+$env:PYTEST_ADDOPTS = "--basetemp=V:/pytest_temp/acceptance"
+.\.venv\Scripts\pytest.exe -m acceptance -v
+.\.venv\Scripts\python.exe tools/ci/acceptance_gate.py --manifest tests/acceptance/manifests/release.yaml
+
+# AST Mutation Testing Sentinel
+.\.venv\Scripts\python.exe tools/ci/run_mutation_tests.py --full --workers 6
+```
 
 ### 6. Compliance Tests (`test_doctor.py`)
 *   **Focus**: Active environment verification, virtual file system verification, and AES schema validity.
