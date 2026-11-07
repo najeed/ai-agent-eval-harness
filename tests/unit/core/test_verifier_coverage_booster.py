@@ -1245,6 +1245,39 @@ def test_sign_trace_bytes_binds_execution_mode_to_package_execution_identity(tmp
     assert exec_id.get("execution_mode") == "live"
 
 
+def test_sign_trace_bytes_evidence_capture_metadata_precedence_and_guards(tmp_path):
+    """
+    Evidence capture in metadata takes strict precedence over run_store.
+    """
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    run_id = "run-ec-precedence"
+    store = LocalFileRunStore(str(tmp_path / "runs"))
+    store.create_run(run_id, scenario_id="scenario")
+    store.append_events(run_id, [{"event": "step", "_seq": 1}])
+    trace_bytes = store.get_trace_bytes(run_id)
+
+    # 1. Metadata has evidence_capture -> run_store.get_run MUST NOT be called again
+    # (only 1 call from lifecycle state check, not 2).
+    mock_store = MagicMock(spec=LocalFileRunStore)
+    mock_store.get_trace_bytes.return_value = trace_bytes
+    mock_store.get_run.return_value = {
+        "status": "COMPLETED",
+        "status_details": {"evidence_capture": {"seq": 999, "source": "store"}},
+    }
+    explicit_ec = {"seq": 1, "source": "explicit_metadata", "acknowledged": True}
+    manifest = TraceVerifier.sign_trace_bytes(
+        trace_bytes,
+        run_id=run_id,
+        run_store=mock_store,
+        metadata={"evidence_capture": explicit_ec},
+        identity_id="test_signer",
+        execution_mode="live",
+    )
+    assert mock_store.get_run.call_count == 1
+    assert manifest["metadata"]["evidence_capture"] == explicit_ec
+
+
 def test_verify_certification_artifact_run_end_carrier_alone_succeeds():
     """Must recognize run_end as a valid finalization carrier."""
     from agentv_runtime.finalization import EvaluatorFinalizationRecord
@@ -2383,6 +2416,58 @@ def test_verify_certification_artifact_coverage_booster():
     )
     assert any("ExecutionManifestBindingMissing" in f for f in res_m711["failures"])
 
+    # run_start without execution_mode must fail with both missing declarations
+    events_no_mode = [
+        {"_seq": 1, "event": "run_start"},
+        {"_seq": 2, "event": "evaluator_finalization", "data": fin_dict},
+        {"_seq": 3, "event": "run_end"},
+    ]
+    tb_no_mode = (
+        json.dumps(events_no_mode[0])
+        + "\n"
+        + json.dumps(events_no_mode[1])
+        + "\n"
+        + json.dumps(events_no_mode[2])
+        + "\n"
+    ).encode("utf-8")
+    th_no_mode = f"sha3_256:{hashlib.sha3_256(tb_no_mode).hexdigest()}"
+    pkg_live_man = VerificationPackage(
+        scenario_id="scen_1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen_hash",
+        manifest_id="man_1",
+        manifest_hash="sha3_256:man_hash",
+        execution_identity={"system_id": "test", "execution_mode": "live", "run_id": "run_1"},
+        trace_hash=th_no_mode,
+        trace_seal={"trace_digest": th_no_mode},
+        evidence_root_hash="sha3_256:ev_root",
+        required_oracle_ids=["o1"],
+        executed_oracle_results=[],
+        finalization_hash=fin_hash,
+        evaluation_hash=fin_hash,
+        decision={"decision": "PASS", "score": 1.0},
+        signature="dummy",
+    )
+    res_no_trace_mode = TraceVerifier.verify_certification_artifact(
+        pkg_live_man,
+        raw_trace_bytes=tb_no_mode,
+        canonical_manifest={
+            "manifest_id": "man_1",
+            "execution_mode": "live",
+            "agent_config": {},
+            "runtime_config": {},
+            "environment": {},
+        },
+        scenario_data={"id": "scen_1"},
+    )
+    assert any(
+        "every run_start must declare execution truth" in f for f in res_no_trace_mode["failures"]
+    )
+    assert any(
+        "raw trace must declare execution mode in run_start" in f
+        for f in res_no_trace_mode["failures"]
+    )
+
     # raw_trace_events provided alongside valid raw_trace_bytes
     pkg_valid = VerificationPackage(
         scenario_id="scen_1",
@@ -2438,6 +2523,24 @@ def test_verify_certification_artifact_coverage_booster():
                 assert not any("TraceStreamSplitChainViolation" in f for f in res_split["failures"])
                 # canonical_manifest execution_mode accepted
                 assert not any("UncertifiedExecutionMode" in f for f in res_split["failures"])
+
+                class CanonicalManifestObj:
+                    execution_mode = "live"
+                    runtime_config = {}
+
+                res_obj_fallback = TraceVerifier.verify_certification_artifact(
+                    pkg_valid,
+                    raw_trace_bytes=tb,
+                    raw_trace_events=events,
+                    canonical_manifest=CanonicalManifestObj(),
+                    scenario_data={"id": "scen_1", "required_oracle_ids": ["o1"]},
+                    require_signature=False,
+                    key_registry={"eval_kernel": "dummy_pem"},
+                )
+                assert not any("ExecutionModeMismatch" in f for f in res_obj_fallback["failures"])
+                assert not any(
+                    "UncertifiedExecutionMode" in f for f in res_obj_fallback["failures"]
+                )
 
     # pkg_reqs != fin_reqs when manifest_reqs == fin_reqs
     pkg_diff_reqs = VerificationPackage(

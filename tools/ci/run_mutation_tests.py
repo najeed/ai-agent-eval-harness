@@ -199,6 +199,7 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_sign_trace_bytes_scenario_hash_and_manifest_hash_edge_cases",
                 "test_sign_trace_bytes_finalization_hash_from_top_level_and_cert_payload_execution_mode",
                 "test_sign_trace_bytes_private_key_without_private_bytes_raises",
+                "test_sign_trace_bytes_evidence_capture_metadata_precedence_and_guards",
             ),
             "verify_trace_bytes": (
                 "test_byte_verification_requires_explicit_run_and_provider",
@@ -268,57 +269,57 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
         },
         excluded_mutations=frozenset(
             {
-                ("sign_trace_bytes", 644, "and", "or"),
-                ("sign_trace_bytes", 644, "evidence_root_hash", "__mutation_missing_commitment__"),
-                ("sign_trace_bytes", 667, "evidence_root_hash", "__mutation_missing_commitment__"),
-                ("sign_trace_bytes", 670, "evidence_root_hash", "__mutation_missing_commitment__"),
-                ("verify_trace_certificate", 1827, "and", "or"),
-                ("verify_trace_certificate", 1835, "and", "or"),
-                ("verify_package_artifacts", 2381, "and", "or"),
-                ("verify_package", 2918, "and", "or"),
-                ("sign_trace_bytes", 899, "or", "and"),
+                ("sign_trace_bytes", 640, "and", "or"),
+                ("sign_trace_bytes", 640, "evidence_root_hash", "__mutation_missing_commitment__"),
+                ("sign_trace_bytes", 663, "evidence_root_hash", "__mutation_missing_commitment__"),
+                ("sign_trace_bytes", 666, "evidence_root_hash", "__mutation_missing_commitment__"),
+                ("verify_trace_certificate", 1824, "and", "or"),
+                ("verify_trace_certificate", 1832, "and", "or"),
+                ("verify_package_artifacts", 2378, "and", "or"),
+                ("verify_package", 2915, "and", "or"),
+                ("sign_trace_bytes", 896, "or", "and"),
             }
         ),
         exclusion_reasons={
-            ("sign_trace_bytes", 899, "or", "and"): (
+            ("sign_trace_bytes", 896, "or", "and"): (
                 "Provably equivalent redundant guard: CoreTraceSigner.sign already "
                 "validates that private_key is not None and has private_bytes for this identity "
                 "before package signing begins. An invalid key aborts there; for any valid "
                 "key reaching package signing both operands evaluate to False, so 'or' and 'and' "
                 "produce identical behavior."
             ),
-            ("sign_trace_bytes", 644, "evidence_root_hash", "__mutation_missing_commitment__"): (
+            ("sign_trace_bytes", 640, "evidence_root_hash", "__mutation_missing_commitment__"): (
                 "Equivalent extra-filter trigger: a missing lookup only runs the pure "
                 "fallback when the declared root already matches. The fallback adopts "
                 "only that same declared root, leaving the actual root comparison intact."
             ),
-            ("sign_trace_bytes", 667, "evidence_root_hash", "__mutation_missing_commitment__"): (
+            ("sign_trace_bytes", 663, "evidence_root_hash", "__mutation_missing_commitment__"): (
                 "Equivalent extra-filter fallback assignment: pre-finalization events "
                 "match graph computation; carrier exclusion leaves terminal comparison intact."
             ),
-            ("sign_trace_bytes", 670, "evidence_root_hash", "__mutation_missing_commitment__"): (
+            ("sign_trace_bytes", 666, "evidence_root_hash", "__mutation_missing_commitment__"): (
                 "Non-binding diagnostic lookup used only to format an already-raised "
                 "EvidenceRootMismatchError. The root comparison, signed commitments, "
                 "and successful verification paths are unchanged."
             ),
-            ("sign_trace_bytes", 644, "and", "or"): (
+            ("sign_trace_bytes", 640, "and", "or"): (
                 "Equivalent for supported JSON evidence: extra graph filtering changes the "
                 "stored root only when the filtered root equals the declared root; an "
                 "already-matching root is unchanged, and an absent hint cannot match a hash."
             ),
-            ("verify_trace_certificate", 1827, "and", "or"): (
+            ("verify_trace_certificate", 1824, "and", "or"): (
                 "Equivalent for supported JSON evidence: filtering is an extra fallback; "
                 "its result is adopted only if it matches the expected root already verified."
             ),
-            ("verify_trace_certificate", 1835, "and", "or"): (
+            ("verify_trace_certificate", 1832, "and", "or"): (
                 "Equivalent for supported JSON evidence: the extra fallback only replaces "
                 "the graph when its root equals the expected, already-matched root."
             ),
-            ("verify_package_artifacts", 2381, "and", "or"): (
+            ("verify_package_artifacts", 2378, "and", "or"): (
                 "Equivalent for graph-builder outputs (dict or None): both branches yield "
                 "the same nodes; an empty dict has no nodes and defaults to []."
             ),
-            ("verify_package", 2918, "and", "or"): (
+            ("verify_package", 2915, "and", "or"): (
                 "Equivalent redundant-parse guard: replacing and with or only recomputes the "
                 "canonical evidence graph when roots already match (adopting the identical root), "
                 "leaving EvidenceRootMismatch and package validity completely unchanged."

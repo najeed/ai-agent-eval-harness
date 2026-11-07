@@ -41,8 +41,7 @@ if (
     except (ImportError, OSError) as e:
         logger.warning(
             f"WeasyPrint or its GTK dependencies not available. "
-            f"Using ReportLab as fallback engine. Error: {e}",
-            exc_info=True,
+            f"Using ReportLab as fallback engine. Error: {e}"
         )
 
 # Try importing ReportLab
@@ -61,7 +60,7 @@ try:
 
     REPORTLAB_AVAILABLE = True
 except ImportError as e:
-    logger.error(f"ReportLab is not available: {e}", exc_info=True)
+    logger.error(f"ReportLab is not available: {e}")
 
 
 def generate_run_pdf(run_data: dict, output_path: Path | str) -> bool:
@@ -536,7 +535,7 @@ def generate_bundle_pdf(suite_data: dict, run_list: list, output_path: Path) -> 
                 <h2>2. Zip Archive Contents</h2>
                 <div class="card">
                     <ul>
-                        <li><strong>audit_manifest.json</strong>: Crypographically signed list of file hashes (Ed25519 payload).</li>
+                        <li><strong>audit_manifest.json</strong>: Cryptographically signed list of file hashes (Ed25519 payload).</li>
                         <li><strong>companion_summary.pdf</strong>: Human-readable guide for the auditor (this document).</li>
                         <li><strong>runs/</strong>: Directory containing raw run traces and verification certificates.</li>
                     </ul>

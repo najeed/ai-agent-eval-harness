@@ -82,6 +82,12 @@ def match_condition(condition: dict[str, Any] | None, input_data: dict[str, Any]
                 return val < values
         return False
 
+    supported_operators = frozenset(
+        {"exists", "not_exists", "in", "eq", "ne", "contains", "gte", "lte", "gt", "lt"}
+    )
+    if op not in supported_operators:
+        raise ValueError(f"EVALUATION_INVALID: Unsupported condition operator '{op}'")
+
     return True
 
 
@@ -103,8 +109,16 @@ def evaluate_declarative_rule(
       - Multi-reason failure aggregation with exact statutory pinpointing.
     """
     when_cond = rule.get("when")
-    if when_cond and not match_condition(when_cond, input_data):
-        return None
+    if when_cond:
+        try:
+            if not match_condition(when_cond, input_data):
+                return None
+        except ValueError as exc:
+            return {
+                "field": rule.get("field", "when"),
+                "code": "EVALUATION_INVALID",
+                "message": str(exc),
+            }
 
     # Check rule bypass flags (e.g. human_in_the_loop == True)
     bypass_flag = rule.get("bypass_flag")
@@ -267,26 +281,35 @@ def evaluate_declarative_rule(
     # If deterministic passed, check if semantic/judge check is required
     if mode in ("semantic", "hybrid") and "semantic" in rule:
         semantic_spec = rule["semantic"]
-        # If semantic evaluation flag or context indicates LLM judge is active
         judge_fn = (context or {}).get("llm_judge")
-        if callable(judge_fn):
-            rubric = semantic_spec.get("rubric", "general_compliance")
-            min_score = semantic_spec.get("min_score", 0.8)
-            score, feedback = judge_fn(rubric=rubric, input_data=input_data)
-            if score < min_score:
-                statutory_code = rule.get("statutory_code") or rule.get(
-                    "code", "SEMANTIC_RUBRIC_FAILURE"
-                )
-                return {
-                    "field": rule.get("field", "payload"),
-                    "code": statutory_code,
-                    "message": (
-                        f"Semantic judge rubric '{rubric}' failed "
-                        f"({score} < {min_score}): {feedback}"
-                    ),
-                    "score": score,
-                    "rubric": rubric,
-                }
+        if not callable(judge_fn):
+            statutory_code = rule.get("statutory_code") or rule.get("code", "EVALUATION_INVALID")
+            return {
+                "field": rule.get("field", "payload"),
+                "code": "EVALUATION_INVALID",
+                "message": (
+                    "Required judge unavailable for semantic evaluation "
+                    f"(mode={mode}, rubric={semantic_spec.get('rubric')!r})"
+                ),
+                "rubric": semantic_spec.get("rubric"),
+                "statutory_code": statutory_code,
+            }
+        rubric = semantic_spec.get("rubric", "general_compliance")
+        min_score = semantic_spec.get("min_score", 0.8)
+        score, feedback = judge_fn(rubric=rubric, input_data=input_data)
+        if score < min_score:
+            statutory_code = rule.get("statutory_code") or rule.get(
+                "code", "SEMANTIC_RUBRIC_FAILURE"
+            )
+            return {
+                "field": rule.get("field", "payload"),
+                "code": statutory_code,
+                "message": (
+                    f"Semantic judge rubric '{rubric}' failed ({score} < {min_score}): {feedback}"
+                ),
+                "score": score,
+                "rubric": rubric,
+            }
 
     return None
 
@@ -425,6 +448,33 @@ class BasicFieldPolicyEvaluator(PolicyEvaluator):
 
         # Declarative rules array
         if "rules" in policy_spec and isinstance(policy_spec["rules"], (list, tuple)):
+            supported_ops = {
+                "exists",
+                "not_exists",
+                "in",
+                "eq",
+                "ne",
+                "contains",
+                "gte",
+                "lte",
+                "gt",
+                "lt",
+                "and",
+                "or",
+                "not",
+            }
+            for r in policy_spec["rules"]:
+                if not isinstance(r, dict):
+                    return False
+                when = r.get("when")
+                if isinstance(when, dict):
+                    for k in when:
+                        if k not in supported_ops:
+                            return False
+                mode = r.get("mode")
+                if mode in ("semantic", "hybrid") and "semantic" in r:
+                    if not isinstance(r["semantic"], dict):
+                        return False
             return True
 
         max_val = (

@@ -412,13 +412,13 @@ def real_chain(tmp_path, monkeypatch):
                 "endpoint": f"http://127.0.0.1:{agent_server.server_port}/agent",
                 "protocol": "http",
             },
-        },
-        "state_authorities": {
-            "ledger": {
-                "url": authority_origin + "/state",
-                "headers": {"Authorization": auth_token},
-                "cafile": str(cert_path),
-            }
+            "state_authorities": {
+                "ledger": {
+                    "url": authority_origin + "/state",
+                    "headers": {"Authorization": auth_token},
+                    "cafile": str(cert_path),
+                }
+            },
         },
         "workflow": {
             "nodes": [

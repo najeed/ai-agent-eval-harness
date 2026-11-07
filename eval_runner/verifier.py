@@ -550,18 +550,14 @@ class TraceVerifier:
         # Detached packages must preserve every issuer provisional restriction.
         provisional = bool(provisional or (metadata or {}).get("provisional") is True)
         merged_metadata = dict(metadata or {})
-        if (
-            "evidence_capture" not in merged_metadata
-            and run_store is not None
-            and hasattr(run_store, "get_run")
-        ):
+        if "evidence_capture" not in merged_metadata:
             try:
                 run_rec = run_store.get_run(run_id, context=context)
                 if isinstance(run_rec, Mapping):
                     cap = (run_rec.get("status_details") or {}).get("evidence_capture")
                     if isinstance(cap, Mapping):
                         merged_metadata["evidence_capture"] = dict(cap)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
+            except (ValueError, TypeError, KeyError, OSError, RuntimeError) as exc:
                 logger.debug("Evidence capture receipt resolution fallback: %s", exc, exc_info=True)
         trace_hex = hashlib.sha3_256(raw_trace).hexdigest()
         manifest: dict[str, Any] = {
@@ -667,10 +663,11 @@ class TraceVerifier:
                 if graph_filtered.get("evidence_root_hash") == evidence_root_hash:
                     manifest["evidence_root_hash"] = evidence_root_hash
 
-        if evidence_root_hash and manifest.get("evidence_root_hash") != evidence_root_hash:
+        computed_evidence_root = manifest.get("evidence_root_hash")
+        if evidence_root_hash and computed_evidence_root != evidence_root_hash:
             raise EvidenceRootMismatchError(
                 f"EvidenceRootMismatch: declared={evidence_root_hash} "
-                f"computed={manifest.get('evidence_root_hash')}"
+                f"computed={computed_evidence_root}"
             )
 
         manifest["signing_context"] = {
@@ -3803,6 +3800,29 @@ class VerificationAuthority:
             failures.append(
                 f"UncertifiedExecutionMode: authoritative certification requires "
                 f"'live' execution mode, got '{exec_mode or 'undeclared'}'"
+            )
+
+        has_simulated_tools = False
+        simulated_tool_reason = None
+        for ev in effective_events:
+            ev_name = ev.get("event")
+            ev_data = ev.get("data") if isinstance(ev.get("data"), Mapping) else ev
+            if ev_data.get("has_simulated_tools") is True or ev.get("has_simulated_tools") is True:
+                has_simulated_tools = True
+                simulated_tool_reason = "has_simulated_tools flag set on event"
+                break
+            if ev_name in {"tool_call", "tool_result"}:
+                prov = ev_data.get("provenance") or ev.get("provenance")
+                if prov in {"simulated", "mock", "synthetic"}:
+                    has_simulated_tools = True
+                    tool = ev_data.get("tool") or ev.get("tool") or "unknown"
+                    simulated_tool_reason = f"tool '{tool}' executed with provenance '{prov}'"
+                    break
+
+        if has_simulated_tools and exec_mode == "live":
+            failures.append(
+                "SimulatedToolProvenanceInLiveRun: live certification prohibited "
+                f"when simulated tools are executed ({simulated_tool_reason})"
             )
 
         is_provisional = bool(

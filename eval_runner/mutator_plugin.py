@@ -195,8 +195,18 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
 
         return True
 
-    def on_tool_result(self, context: Any, tool_name: str, result: Any) -> dict[str, Any] | bool:
+    def on_tool_result(
+        self,
+        context: Any,
+        tool_name: str | None = None,
+        result: Any = None,
+        **kwargs: Any,
+    ) -> dict[str, Any] | bool:
         """Corrupt an actual post-execution tool response at the delivery boundary."""
+        if tool_name is None:
+            tool_name = str(kwargs.get("tool", ""))
+        if result is None and "result" in kwargs:
+            result = kwargs["result"]
         node = self.active_node_data
         if not node.get("tool_response_corrupted"):
             return True

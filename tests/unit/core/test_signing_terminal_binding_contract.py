@@ -1,6 +1,7 @@
 """Signing cannot adopt a chosen root that omits a non-finalization decision."""
 
 import json
+import re
 
 import pytest
 
@@ -78,5 +79,9 @@ def test_signing_rejects_root_that_omits_terminal_evidence(finalization_source, 
         scenario_data=scenario,
     )
     assert result["certified"], result["failures"]
-    with pytest.raises(EvidenceRootMismatchError, match="EvidenceRootMismatch"):
+    expected_msg = (
+        rf"EvidenceRootMismatch: declared={re.escape(omitted_root)} "
+        rf"computed={re.escape(root)}"
+    )
+    with pytest.raises(EvidenceRootMismatchError, match=expected_msg):
         sign(omitted_root)

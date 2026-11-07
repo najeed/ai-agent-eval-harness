@@ -964,3 +964,94 @@ async def test_p0_session_hitl_resumption_and_gate_branches(tmp_path: Path):
             ),
         )
         assert res == "Authorized by compliance officer"
+
+
+def test_save_and_restore_from_checkpoint_contract(tmp_path: Path):
+    run_id = "run-checkpoint-contract"
+    runs_dir = tmp_path / "runs"
+    runs_dir.mkdir(parents=True, exist_ok=True)
+    store = LocalFileRunStore(runs_dir)
+    scenario = {"id": "scen_chk_contract", "workflow": []}
+    session = SessionManager(
+        run_id=run_id,
+        scenario=scenario,
+        workspace_root=runs_dir,
+        run_store=store,
+    )
+    session.turn_number = 4
+    tool_state = {
+        "executed_count": 1,
+        "tool_names": ["wire"],
+        "executed_tools": [{"tool_name": "wire", "status": "success", "result": {"ok": True}}],
+    }
+    if hasattr(session, "tool_execution_coordinator") and session.tool_execution_coordinator:
+        session.tool_execution_coordinator.restore(tool_state)
+
+    chk_id = session.save_checkpoint(metadata={"reason": "test"})
+    assert chk_id is not None
+
+    session_restore = SessionManager(
+        run_id=run_id,
+        scenario=scenario,
+        workspace_root=runs_dir,
+        run_store=store,
+    )
+    assert session_restore.turn_number == 0
+
+    restored = session_restore.restore_from_checkpoint()
+    assert restored is True
+    assert session_restore.turn_number == 4
+    if (
+        hasattr(session_restore, "tool_execution_coordinator")
+        and session_restore.tool_execution_coordinator
+    ):
+        assert session_restore.tool_execution_coordinator.executed_tools == [
+            {"tool_name": "wire", "status": "success", "result": {"ok": True}}
+        ]
+
+    # Explicit checkpoint dictionary restoration
+    custom_tool_state = {
+        "executed_count": 1,
+        "tool_names": ["custom"],
+        "executed_tools": [{"tool_name": "custom", "status": "restored"}],
+    }
+    restored_dict = session_restore.restore_from_checkpoint(
+        checkpoint_data={
+            "turn": 7,
+            "tool_state": custom_tool_state,
+            "completed_execution_results": {},
+        }
+    )
+    assert restored_dict is True
+    assert session_restore.turn_number == 7
+    if (
+        hasattr(session_restore, "tool_execution_coordinator")
+        and session_restore.tool_execution_coordinator
+    ):
+        assert session_restore.tool_execution_coordinator.executed_tools == [
+            {"tool_name": "custom", "status": "restored"}
+        ]
+
+    from eval_runner.execution_ir import ExecutionIdentity
+
+    valid_scenario_hash = ExecutionIdentity.scenario_version_hash(scenario)
+
+    # Scope mismatch: mismatched scenario_version_id with matching evaluation_run_id
+    with pytest.raises(ValueError, match="CheckpointExecutionScopeMismatch"):
+        session_restore.restore_from_checkpoint(
+            checkpoint_data={
+                "attempt_id": "att-1",
+                "evaluation_run_id": run_id,
+                "scenario_version_id": "mismatched_scenario_hash",
+            }
+        )
+
+    # Scope mismatch: mismatched evaluation_run_id with matching scenario_version_id
+    with pytest.raises(ValueError, match="CheckpointExecutionScopeMismatch"):
+        session_restore.restore_from_checkpoint(
+            checkpoint_data={
+                "attempt_id": "att-1",
+                "evaluation_run_id": "mismatched_run_id",
+                "scenario_version_id": valid_scenario_hash,
+            }
+        )

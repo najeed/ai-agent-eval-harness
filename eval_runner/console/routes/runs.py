@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import tempfile
 import threading
 import time
@@ -569,21 +570,44 @@ def cancel_run(run_id):
 
 
 @run_bp.route("/v1/runs/<path:run_id>/resume", methods=["POST"])
-@require_permission(Permission.RUNS_WRITE)
+@require_permission(Permission.HITL_RESOLVE)
 def resume_run(run_id):
+    """Resumes a paused or checkpointed evaluation run via ExecutionBackend."""
     if not _run_is_in_active_context(run_id):
         return jsonify({"error": "Not found"}), 404
-    """Resumes a paused or checkpointed evaluation run via ExecutionBackend."""
+
+    from flask import g
+
     from eval_runner.runtime_services import resolve_approval_store, resolve_execution_backend
     from eval_runner.session_components.approval_manager import SessionApprovalManager
 
     data = request.json or {}
     resumption_token = data.get("resumption_token") or data.get("approval_token")
     decision = (data.get("decision") or "APPROVED").upper()
-    reviewer = data.get("reviewer") or "console_user"
-    reviewer_role = data.get("reviewer_role")
-    reviewer_credentials = data.get("reviewer_credentials") or {}
     reason = data.get("reason")
+
+    principal = getattr(g, "verified_principal", None)
+    if principal is not None:
+        reviewer = (
+            principal.get("name")
+            or principal.get("id")
+            or principal.get("principal_id")
+            or "authenticated_user"
+        )
+        roles = principal.get("roles") or []
+        if isinstance(roles, str):
+            roles = [roles]
+        reviewer_roles = set(roles)
+        if "role" in principal:
+            reviewer_roles.add(str(principal["role"]))
+    elif os.getenv("AGENTV_TEST_AUTH_BYPASS") == "1":
+        reviewer = data.get("reviewer") or "test_reviewer"
+        reviewer_role = data.get("reviewer_role")
+        reviewer_roles = {reviewer_role} if reviewer_role else {"admin", "reviewer"}
+    else:
+        return jsonify(
+            {"error": "Unauthorized: An authenticated principal is required to resolve approvals"}
+        ), 401
 
     if decision not in {"APPROVED", "REJECTED"}:
         return jsonify({"error": "decision must be APPROVED or REJECTED"}), 400
@@ -598,12 +622,12 @@ def resume_run(run_id):
         return jsonify({"error": "Approval token is not bound to this run"}), 409
     if req.status != "PENDING":
         return jsonify({"error": "Approval token has already been resolved"}), 409
-    if req.required_role and reviewer_role != req.required_role:
-        return jsonify({"error": "Reviewer role does not satisfy the approval requirement"}), 403
-    if req.reviewer_credentials and reviewer_credentials != req.reviewer_credentials:
-        return jsonify(
-            {"error": "Reviewer credentials do not satisfy the approval requirement"}
-        ), 403
+    if req.required_role and req.required_role not in reviewer_roles:
+        err_msg = (
+            f"Reviewer role does not satisfy the approval requirement "
+            f"(required: {req.required_role})"
+        )
+        return jsonify({"error": err_msg}), 403
 
     try:
         # Keep all durable approval resolutions on the runtime's generic
@@ -672,6 +696,23 @@ def resume_run(run_id):
     return jsonify({"status": "RUNNING", "run_id": run_id, "result": resumed})
 
 
+def _sanitize_certificate_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
+    """Sanitize sensitive credentials (headers, tokens, keys) from returned certificate manifest."""
+    sanitized = json.loads(json.dumps(manifest))
+    scen = sanitized.get("scenario_data")
+    if isinstance(scen, dict):
+        for container in (scen, scen.get("metadata")):
+            if isinstance(container, dict):
+                for auth_key in ("state_authorities", "state_authority"):
+                    auths = container.get(auth_key)
+                    if isinstance(auths, dict):
+                        for _a_name, a_val in auths.items():
+                            if isinstance(a_val, dict) and "headers" in a_val:
+                                if isinstance(a_val["headers"], dict):
+                                    a_val["headers"] = {k: "[REDACTED]" for k in a_val["headers"]}
+    return sanitized
+
+
 @run_bp.route("/v1/certificates/<run_id>", methods=["GET"])
 def get_verification_certificate(run_id):
     if not _run_is_in_active_context(run_id):
@@ -692,7 +733,7 @@ def get_verification_certificate(run_id):
         raise
     if not manifest:
         return jsonify({"error": "Certificate not found"}), 404
-    return jsonify(manifest)
+    return jsonify(_sanitize_certificate_manifest(manifest))
 
 
 def is_run_alive(run_id: str) -> bool:

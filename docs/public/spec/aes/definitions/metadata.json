@@ -149,6 +149,60 @@
           "type": "string"
         }
       }
+    },
+    "state_authorities": {
+      "type": "object",
+      "description": "Declared external state authorities providing verifiable pre/post observation bindings.",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "object"
+          },
+          "cafile": {
+            "type": "string"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "allowlist": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "state_authority": {
+      "type": "object",
+      "description": "Declared singular external state authority providing verifiable pre/post observation bindings.",
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "headers": {
+          "type": "object"
+        },
+        "cafile": {
+          "type": "string"
+        },
+        "timeout": {
+          "type": "number"
+        },
+        "allowlist": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
     }
   }
 }

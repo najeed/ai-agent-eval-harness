@@ -398,3 +398,79 @@ def test_console_module_has_no_filesystem_evidence_bypass():
         "status_" + "vault",
     )
     assert not [name for name in forbidden if name in source]
+
+
+def test_resume_derives_reviewer_from_verified_principal(app, provider_scope):
+    from unittest.mock import MagicMock
+
+    from flask import g
+
+    provider_scope.get_run.return_value = {"run_id": "r1"}
+    approval_store = MagicMock()
+    req = MagicMock(run_id="r1", status="PENDING", required_role="compliance_officer")
+    approval_store.get_request.return_value = req
+
+    with patch("eval_runner.runtime_services.resolve_approval_store", return_value=approval_store):
+        # 1. Reject when principal lacks required_role
+        with app.test_request_context(
+            "/v1/runs/r1/resume", method="POST", json={"approval_token": "tok1"}
+        ):
+            g.verified_principal = {"name": "alice", "roles": ["developer"]}
+            res, status = runs.resume_run("r1")
+            assert status == 403
+            assert "Reviewer role does not satisfy" in res.get_json()["error"]
+
+        # 2. Accept and derive reviewer when principal has required_role
+        mock_backend = MagicMock()
+        mock_backend.resume.return_value = {"status": "RUNNING", "run_id": "r1"}
+        with (
+            patch(
+                "eval_runner.session_components.approval_manager.SessionApprovalManager.resolve_durable_request"
+            ) as resolve_mock,
+            patch(
+                "eval_runner.runtime_services.resolve_execution_backend",
+                return_value=mock_backend,
+            ),
+            patch.object(runs, "_run_is_in_active_context", return_value=True),
+            app.test_request_context(
+                "/v1/runs/r1/resume", method="POST", json={"approval_token": "tok1"}
+            ),
+        ):
+            g.verified_principal = {"name": "alice", "roles": ["compliance_officer"]}
+            res = runs.resume_run("r1")
+            assert res.status_code == 200
+            resolve_mock.assert_called_once()
+            assert resolve_mock.call_args.kwargs["decided_by"] == "alice"
+
+
+def test_get_verification_certificate_sanitizes_credentials(app, provider_scope):
+    from flask import g
+
+    provider_scope.get_run.return_value = {"run_id": "r1"}
+    manifest = {
+        "run_id": "r1",
+        "scenario_data": {
+            "metadata": {
+                "state_authorities": {
+                    "ledger": {
+                        "url": "https://bank.example/api",
+                        "headers": {"Authorization": "Bearer super-secret-key-123"},
+                    }
+                }
+            }
+        },
+    }
+    provider_scope.get_manifest.return_value = manifest
+
+    with (
+        patch.object(runs, "_run_is_in_active_context", return_value=True),
+        app.test_request_context("/v1/certificates/r1", method="GET"),
+    ):
+        g.verified_principal = {"name": "auditor", "roles": ["auditor"]}
+        res = runs.get_verification_certificate("r1")
+        data = res.get_json()
+        assert data["run_id"] == "r1"
+        auth_header = data["scenario_data"]["metadata"]["state_authorities"]["ledger"]["headers"][
+            "Authorization"
+        ]
+        assert auth_header == "[REDACTED]"

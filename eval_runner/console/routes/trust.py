@@ -155,31 +155,31 @@ def public_verify_run(run_id):
         verified = result.get("verified", False)
         terminal_verdict = result.get("terminal_verdict", "UNVERIFIED")
 
-        return jsonify(
-            {
-                **result,
-                "run_id": run_id,
-                "verified": verified,
-                "terminal_verdict": terminal_verdict,
-                "file_integrity_valid": is_valid,
-                "cryptographically_valid": is_valid,
-                "certificate_valid": is_valid,
-                "evaluation_passed": is_compliant,
-                "evaluation_verdict": status,
-                "compliance_score": score,
-                "policy_compliant": is_compliant,
-                "certificate_authoritative": is_authoritative,
-                "execution_mode": clean_mode or "unknown",
-                "lifecycle_state": lifecycle_state.value,
-                "timestamp": datetime.now().astimezone().isoformat(),
-                "method": method,
-                "certificate_hash": (
-                    manifest.get("certificate_hash") or manifest.get("package_hash")
-                ),
-                "package_hash": manifest.get("package_hash"),
-                "trace_hash": manifest.get("trace_hash"),
-            }
-        )
+        safe_response = {
+            "run_id": run_id,
+            "verified": verified,
+            "terminal_verdict": terminal_verdict,
+            "verification_status": result.get("verification_status", terminal_verdict),
+            "file_integrity_valid": is_valid,
+            "cryptographically_valid": is_valid,
+            "certificate_valid": is_valid,
+            "evaluation_passed": is_compliant,
+            "evaluation_verdict": status,
+            "compliance_score": score,
+            "policy_compliant": is_compliant,
+            "certificate_authoritative": is_authoritative,
+            "execution_mode": clean_mode or "unknown",
+            "lifecycle_state": lifecycle_state.value,
+            "timestamp": datetime.now().astimezone().isoformat(),
+            "method": method,
+            "certificate_hash": (manifest.get("certificate_hash") or manifest.get("package_hash")),
+            "package_hash": manifest.get("package_hash"),
+            "trace_hash": manifest.get("trace_hash"),
+            "is_valid": is_valid,
+        }
+        if "failures" in result:
+            safe_response["failures"] = result["failures"]
+        return jsonify(safe_response)
     except Exception as e:
         logger.exception("Verification error for run %s: %s", run_id, e, exc_info=True)
         return jsonify({"error": f"Verification failed: {str(e)}", "verified": False}), 500

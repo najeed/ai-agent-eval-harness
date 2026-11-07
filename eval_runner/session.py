@@ -240,6 +240,7 @@ class SessionManager:
         import uuid as _uuid
 
         self.attempt_id: str = _uuid.uuid4().hex
+        self.has_simulated_tools: bool = False
 
         # [AgentV v1.6.0] Identifier Tracking
         # Note: Purged global os.environ writes (AES_RUN_ID, AES_IDENTIFIER)
@@ -2290,6 +2291,12 @@ class SessionManager:
             node_event_payload["approval_phase"] = task_results["approval_phase"]
         if task_results.get("mutation_fault"):
             node_event_payload["mutation_fault"] = task_results["mutation_fault"]
+        has_sim = getattr(self, "has_simulated_tools", False) or getattr(
+            sandbox, "has_simulated_tools", False
+        )
+        if has_sim:
+            self.has_simulated_tools = True
+            node_event_payload["has_simulated_tools"] = True
 
         self.event_bus.emit(
             CoreEvents.EXECUTION_GRAPH_NODE,
@@ -2494,6 +2501,54 @@ class SessionManager:
 
         return receipts
 
+    def _extract_provenance(
+        self,
+        tool_name: str,
+        sandbox: Any = None,
+        result: Any = None,
+        fallback_prov: str | None = None,
+    ) -> str:
+        """Safely extract tool provenance without raising on mock/coroutine objects."""
+        if result is not None:
+            if hasattr(result, "get_secure_metadata") and callable(result.get_secure_metadata):
+                if not type(result).__name__.endswith("Mock"):
+                    try:
+                        raw_meta = result.get_secure_metadata()
+                        if isinstance(raw_meta, dict):
+                            prov = raw_meta.get("provenance")
+                            if isinstance(prov, str):
+                                return prov
+                    except (AttributeError, TypeError, ValueError, KeyError) as exc:
+                        logger.debug(
+                            "Safe provenance extraction from result failed: %s", exc, exc_info=True
+                        )
+            elif isinstance(result, dict) and "provenance" in result:
+                prov = result["provenance"]
+                if isinstance(prov, str):
+                    return prov
+
+        sb = sandbox or getattr(self, "sandbox", None)
+        if (
+            sb is not None
+            and hasattr(sb, "get_tool_provenance")
+            and callable(sb.get_tool_provenance)
+        ):
+            if not type(sb).__name__.endswith("Mock"):
+                try:
+                    raw_prov = sb.get_tool_provenance(tool_name)
+                    if isinstance(raw_prov, str):
+                        return raw_prov
+                except (AttributeError, TypeError, ValueError, KeyError) as exc:
+                    logger.debug(
+                        "Safe provenance extraction from sandbox failed: %s", exc, exc_info=True
+                    )
+
+        if fallback_prov and isinstance(fallback_prov, str):
+            return fallback_prov
+
+        mode = getattr(self, "execution_mode", "simulated")
+        return "live" if mode == "live" else "simulated"
+
     async def _handle_tool_call(self, turn, agent_response, sandbox, history, actions, turn_ctx):
         tool_name = agent_response["tool_name"]
         tool_params = (
@@ -2536,9 +2591,13 @@ class SessionManager:
                 )
                 return
 
+        tool_prov = self._extract_provenance(tool_name, sandbox=sandbox)
+        if tool_prov in {"simulated", "mock", "synthetic"}:
+            self.has_simulated_tools = True
+
         self.event_bus.emit(
             CoreEvents.TOOL_CALL,
-            {"step": turn, "tool": tool_name, "arguments": tool_params},
+            {"step": turn, "tool": tool_name, "arguments": tool_params, "provenance": tool_prov},
         )
         actions["used_tools"].append(tool_name)
 
@@ -2651,9 +2710,18 @@ class SessionManager:
                     )
                     return
 
+            tp_prov = self._extract_provenance(active_tn, sandbox=sandbox)
+            if tp_prov in {"simulated", "mock", "synthetic"}:
+                self.has_simulated_tools = True
+
             self.event_bus.emit(
                 CoreEvents.TOOL_CALL,
-                {"step": turn, "tool": active_tn, "arguments": active_params},
+                {
+                    "step": turn,
+                    "tool": active_tn,
+                    "arguments": active_params,
+                    "provenance": tp_prov,
+                },
             )
             res = await sandbox.execute(active_tn, active_params)
             result_intercept = self.plugin_manager.trigger_interceptor(
@@ -2676,10 +2744,16 @@ class SessionManager:
                         },
                         span_context=turn_ctx.span_context,
                     )
+            res_prov = self._extract_provenance(
+                active_tn, sandbox=sandbox, result=res, fallback_prov=tp_prov
+            )
+            if res_prov in {"simulated", "mock", "synthetic"}:
+                self.has_simulated_tools = True
+
             all_tool_results[idx] = res
             self.event_bus.emit(
                 CoreEvents.TOOL_RESULT,
-                {"step": turn, "tool": active_tn, "result": res},
+                {"step": turn, "tool": active_tn, "result": res, "provenance": res_prov},
             )
 
         all_tool_results: list[Any] = [None] * len(tool_calls)
@@ -3165,11 +3239,27 @@ class SessionManager:
             self._approved_gates = set()
         self._approved_gates.add(node_id)
 
-    def _record_tool_result(self, turn, tool_name, tool_params, result, history, actions, turn_ctx):
+    def _record_tool_result(
+        self,
+        turn,
+        tool_name,
+        tool_params,
+        result,
+        history,
+        actions,
+        turn_ctx,
+        provenance: str | None = None,
+    ):
         """Unified helper to record tool results across single and short-circuited paths."""
+        if provenance is None:
+            provenance = self._extract_provenance(tool_name, result=result)
+
+        if provenance in {"simulated", "mock", "synthetic"}:
+            self.has_simulated_tools = True
+
         self.event_bus.emit(
             CoreEvents.TOOL_RESULT,
-            {"step": turn, "tool": tool_name, "result": result},
+            {"step": turn, "tool": tool_name, "result": result, "provenance": provenance},
             span_context=turn_ctx.span_context,
         )
 

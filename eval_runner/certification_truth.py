@@ -88,9 +88,7 @@ def state_claim_failures(scenario, events):
     if not isinstance(scenario, Mapping):
         return ["StateClaimScenarioMissing"]
     authorities = (
-        scenario.get("state_authorities")
-        or scenario.get("state_authority")
-        or (scenario.get("metadata") or {}).get("state_authorities")
+        (scenario.get("metadata") or {}).get("state_authorities")
         or (scenario.get("metadata") or {}).get("state_authority")
         or {}
     )
@@ -190,14 +188,25 @@ def state_claim_failures(scenario, events):
                         path = assertion.get("property")
                         if str(assertion.get("target", "")).startswith("policy:"):
                             from eval_runner.runtime_services import resolve_policy_evaluator
+                            from eval_runner.state_authority import bound_state_snapshot
+
+                            post_obs = row.get("post_observation")
+                            if not isinstance(post_obs, Mapping):
+                                raise ValueError(
+                                    "Policy evidence missing authoritative "
+                                    "raw post_observation mapping"
+                                )
+                            _, recomputed_post_hash = bound_state_snapshot(post_obs)
+                            if recomputed_post_hash != row.get("post_snapshot_hash"):
+                                raise ValueError(
+                                    "Policy raw observation hash does not match post_snapshot_hash"
+                                )
 
                             policy_id = assertion["target"][7:]
                             policy = ((scenario.get("metadata") or {}).get("policies") or {})[
                                 policy_id
                             ]
-                            evaluated = resolve_policy_evaluator().evaluate_policy(
-                                policy, row["post_observation"]
-                            )
+                            evaluated = resolve_policy_evaluator().evaluate_policy(policy, post_obs)
                             actual = (
                                 evaluated.violations
                                 if path == "violations"

@@ -104,3 +104,70 @@ def test_signed_execution_mode_claim_must_match_actual_manifest(
             else "ExecutionModeMismatch"
         )
         assert any(reason in failure for failure in result["failures"])
+
+
+def test_simulated_tool_provenance_rejects_authoritative_live_certification(finalization_source):
+    from eval_runner.services.certification import execute_industrial_certification
+
+    provider, _ = finalization_source
+    run_id = "simulated-tool-live-run"
+    simulated_tool_event = {
+        "event": "tool_result",
+        "data": {
+            "step": 1,
+            "tool": "mock_balance_check",
+            "result": {"balance": 100},
+            "provenance": "simulated",
+        },
+    }
+    scenario = _seed_run(provider, run_id, mode="live", extra_events=[simulated_tool_event])
+
+    with pytest.raises(ValueError, match="ProviderTruthLevelNotLive"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+
+
+def test_detached_verifier_rejects_simulated_tool_provenance_in_live_run(finalization_source):
+    provider, _ = finalization_source
+    run_id = "simulated-tool-detached-run"
+    simulated_tool_event = {
+        "event": "tool_result",
+        "data": {
+            "step": 1,
+            "tool": "mock_balance_check",
+            "result": {"balance": 100},
+            "provenance": "simulated",
+        },
+    }
+    scenario = _seed_run(provider, run_id, mode="live", extra_events=[simulated_tool_event])
+    trace = provider.get_trace_bytes(run_id)
+    execution_manifest = provider.get_manifest(run_id)["execution_manifest"]
+    finalization = provider.get_events(run_id, offset=0, limit=100)[-1]["data"]
+
+    class TraceView:
+        def get_trace_bytes(self, rid, context=None):
+            return trace
+
+        def get_run(self, rid, context=None):
+            return provider.get_run(rid, context=context)
+
+        def get_manifest(self, rid, context=None):
+            return provider.get_manifest(rid, context=context)
+
+    certificate = TraceVerifier.sign_trace_bytes(
+        trace,
+        run_id=run_id,
+        run_store=TraceView(),
+        scenario_data=scenario,
+        execution_manifest=execution_manifest,
+        execution_mode="live",
+        metadata={"required_oracle_ids": ["oracle-1"]},
+        evidence_root_hash=finalization["evidence_root_hash"],
+    )
+    result = VerificationAuthority.verify_certification_artifact(
+        certificate["verification_package"],
+        raw_trace_bytes=trace,
+        canonical_manifest=execution_manifest,
+        scenario_data=scenario,
+    )
+    assert result["certified"] is False
+    assert any("SimulatedToolProvenanceInLiveRun" in f for f in result["failures"])

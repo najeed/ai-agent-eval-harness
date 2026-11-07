@@ -74,13 +74,9 @@ class SharedStateRegistry:
             or "*" in allowed_writes
         ):
             self.registry[path] = value
-            from . import events
-
             event_data = {"agent": agent_name, "path": path, "value": value}
             if self.event_bus:
                 self.event_bus.emit("state_write", event_data)
-            else:
-                events.emit("state_write", event_data)
             return True
         return False
 
@@ -94,13 +90,9 @@ class SharedStateRegistry:
             or "*" in allowed_reads
         ):
             val = self.registry.get(path)
-            from . import events
-
             event_data = {"agent": agent_name, "path": path, "value": val}
             if self.event_bus:
                 self.event_bus.emit("state_read", event_data)
-            else:
-                events.emit("state_read", event_data)
             return val
         return None
 
@@ -130,19 +122,26 @@ class AbstractSandbox(ABC):
         self.scenario = scenario
         self.policy_evaluator = resolve_policy_evaluator(explicit=policy_evaluator)
         self.state = scenario.get("initial_state", {}).copy()
-        topology = scenario.get("metadata", {}).get("agent_topology", {})
-        self.shared_state = SharedStateRegistry(topology, event_bus=event_bus)
-        self.current_agent = "default_agent"
-
-        self.event_bus = event_bus
-        self.forensics = forensics
-        self.resources = ResourceRegistry()
-        self.plugin_manager = plugin_manager
         self.run_id = self.scenario.get("run_id")
         if not self.run_id:
             from . import utils
 
             self.run_id = utils.generate_id(prefix="transient")
+
+        if event_bus is None:
+            from .events import EventEmitter
+
+            self.event_bus = EventEmitter(run_id=self.run_id)
+        else:
+            self.event_bus = event_bus
+
+        topology = scenario.get("metadata", {}).get("agent_topology", {})
+        self.shared_state = SharedStateRegistry(topology, event_bus=self.event_bus)
+        self.current_agent = "default_agent"
+
+        self.forensics = forensics
+        self.resources = ResourceRegistry()
+        self.plugin_manager = plugin_manager
         # Terminal output is transient scratch state, never run-vault evidence.
         # The composition boundary supplies its parent explicitly; Core does not
         # infer it from RUN_LOG_DIR or any evidence-storage configuration.
@@ -156,6 +155,7 @@ class AbstractSandbox(ABC):
         # assertion with id / input-hash / decision / reason / evidence.
         self.policy_decisions: list[dict[str, Any]] = []
         self._simulator_cache: dict[str, Any] | None = None
+        self.has_simulated_tools: bool = False
         import json
 
         from .utils import crypto
@@ -425,6 +425,32 @@ class ToolSandbox(AbstractSandbox):
 
         return await tool_sandbox_service.isolate(call_data, core_executor)
 
+    def get_tool_provenance(self, tool_name: str) -> str:
+        """Determine execution provenance for a declared or simulated tool."""
+        active_simulators = self.get_active_simulators()
+        for sim_name in active_simulators:
+            if tool_name.startswith(f"{sim_name}_"):
+                return "simulated"
+        all_tool_defs = self.scenario.get("tools", {})
+        if tool_name in all_tool_defs:
+            tool_def = all_tool_defs[tool_name]
+            if isinstance(tool_def, dict):
+                if "provenance" in tool_def:
+                    return str(tool_def["provenance"])
+                if tool_def.get("mock") is True or tool_def.get("simulated") is True:
+                    return "simulated"
+                if tool_name.startswith("mock_") or tool_name.startswith("synthetic_"):
+                    return "simulated"
+            scenario_mode = (
+                (self.scenario.get("metadata") or {}).get("execution_mode")
+                or self.scenario.get("execution_mode")
+                or "live"
+            )
+            return str(scenario_mode)
+        if tool_name.startswith("mock_") or tool_name.startswith("sim_"):
+            return "simulated"
+        return "unregistered"
+
     async def _execute_core(
         self, tool_name: str, params: dict, agent_name: str | None = None
     ) -> dict:
@@ -438,6 +464,7 @@ class ToolSandbox(AbstractSandbox):
             active_simulators = self.get_active_simulators()
             for sim_name, simulator in active_simulators.items():
                 if tool_name.startswith(f"{sim_name}_"):
+                    self.has_simulated_tools = True
                     raw_result = await simulator.execute(tool_name, params)
                     if hasattr(simulator, "quiesce"):
                         try:
@@ -459,7 +486,10 @@ class ToolSandbox(AbstractSandbox):
                             )
                     from .simulators import ShimResultProxy
 
-                    secure_metadata = {"dna_hash": self.provisioning_hash}
+                    secure_metadata = {
+                        "dna_hash": self.provisioning_hash,
+                        "provenance": "simulated",
+                    }
                     if "dna" in raw_result:
                         secure_metadata.update(raw_result["dna"])
                     return ShimResultProxy(raw_result, metadata=secure_metadata)
@@ -480,6 +510,9 @@ class ToolSandbox(AbstractSandbox):
             }
         else:
             tool_def = all_tool_defs[tool_name]
+        tool_provenance = self.get_tool_provenance(tool_name)
+        if tool_provenance in {"simulated", "mock", "synthetic"}:
+            self.has_simulated_tools = True
         self.grounding_hits["tools"][tool_name] = self.grounding_hits["tools"].get(tool_name, 0) + 1
         policies = self.scenario.get("metadata", {}).get("policies", {})
 
@@ -595,8 +628,6 @@ class ToolSandbox(AbstractSandbox):
                         "message": f"Agent {active_agent} has no read permission for {read_path}",
                     }
         output = tool_def.get("output", {"status": "success", "message": f"Executed {tool_name}"})
-        from . import events
-
         safe_state = {}
         for k, v in self.state.items():
             safe_key = self._sanitize_path(k)
@@ -604,11 +635,6 @@ class ToolSandbox(AbstractSandbox):
             safe_state[safe_key] = safe_val
         if self.event_bus:
             self.event_bus.emit(
-                "world_state_change",
-                {"state": safe_state, "shared_state": self.shared_state.registry},
-            )
-        else:
-            events.emit(
                 "world_state_change",
                 {"state": safe_state, "shared_state": self.shared_state.registry},
             )

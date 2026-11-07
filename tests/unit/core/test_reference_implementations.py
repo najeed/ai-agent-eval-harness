@@ -349,6 +349,50 @@ class TestDeclarativePolicyReferenceImplementation:
         evaluator = BasicFieldPolicyEvaluator()
         assert evaluator.validate_policy({"standard": "arbitrary_external_standard"}) is False
 
+    def test_unknown_condition_operator_evaluates_to_invalid(self):
+        evaluator = BasicFieldPolicyEvaluator()
+        spec = {
+            "id": "unsupported_operator_control",
+            "rules": [
+                {
+                    "rule_id": "rule_with_bad_operator",
+                    "when": {"field": "status", "operator": "nonexistent_op", "value": "ACTIVE"},
+                    "require_all": ["confirmation"],
+                }
+            ],
+        }
+        res = evaluator.evaluate_policy(spec, {"status": "ACTIVE"})
+        assert res.allowed is False
+        assert any(v.get("code") == "EVALUATION_INVALID" for v in res.violations)
+
+    def test_unavailable_required_judge_evaluates_to_invalid(self):
+        evaluator = BasicFieldPolicyEvaluator()
+        spec = {
+            "id": "semantic_judge_control",
+            "rules": [
+                {
+                    "rule_id": "semantic_fairness_rule",
+                    "mode": "semantic",
+                    "semantic": {
+                        "rubric": "fairness_audit",
+                        "min_score": 0.85,
+                    },
+                }
+            ],
+        }
+        res = evaluator.evaluate_policy(spec, {"payload": "test decision"}, context={})
+        assert res.allowed is False
+        assert any(v.get("code") == "EVALUATION_INVALID" for v in res.violations)
+        assert any("Required judge unavailable" in v.get("message", "") for v in res.violations)
+
+    def test_validate_policy_rejects_invalid_condition_operators_and_semantic_specs(self):
+        evaluator = BasicFieldPolicyEvaluator()
+        bad_operator_spec = {"rules": [{"when": {"invalid_operator": "val"}}]}
+        assert evaluator.validate_policy(bad_operator_spec) is False
+
+        bad_semantic_spec = {"rules": [{"mode": "semantic", "semantic": "not-a-dict"}]}
+        assert evaluator.validate_policy(bad_semantic_spec) is False
+
     def test_declarative_custom_rules_fuel_from_control_plane(self):
         """Validates declarative AST rules passed as 'fuel' from Control Plane."""
         evaluator = BasicFieldPolicyEvaluator()
@@ -573,12 +617,10 @@ class TestDeclarativePolicyReferenceImplementation:
             )
             is False
         )
-        assert (
+        with pytest.raises(ValueError, match="EVALUATION_INVALID"):
             match_condition(
                 {"field": "status", "operator": "unrecognized_custom"}, {"status": "ACTIVE"}
             )
-            is True
-        )
 
         # 7. Bounds min violation
         spec_min = {

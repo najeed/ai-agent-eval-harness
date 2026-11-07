@@ -27,7 +27,11 @@ async def test_live_state_observation_rejects_unauthenticated_declared_authority
 
     session = SimpleNamespace(
         execution_mode="live",
-        scenario={"state_authorities": {"orders": {"url": "https://authority.example/state"}}},
+        scenario={
+            "metadata": {
+                "state_authorities": {"orders": {"url": "https://authority.example/state"}}
+            }
+        },
     )
     connector = MagicMock()
     connector.observation_identity.return_value = {"authenticated": False}
@@ -433,7 +437,9 @@ class TestSessionStateParityWithExternalAuthority:
     @pytest.mark.asyncio
     async def test_parity_verifier_target_external_state_and_dict_authorities(self):
         session_mock = MagicMock()
-        session_mock.scenario = {"state_authorities": {"url": "http://127.0.0.1:9999/state"}}
+        session_mock.scenario = {
+            "metadata": {"state_authorities": {"url": "http://127.0.0.1:9999/state"}}
+        }
         verifier = SessionStateParityVerifier(session_manager=session_mock)
 
         mock_connector = AsyncMock()

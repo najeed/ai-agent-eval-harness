@@ -120,7 +120,7 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
 
     assertion = {"target": "authority:orders", "property": "status", "expected": "approved"}
     scenario = {
-        "state_authorities": {"orders": {"url": "https://authority.example/state"}},
+        "metadata": {"state_authorities": {"orders": {"url": "https://authority.example/state"}}},
         "workflow": {"nodes": [{"id": "approve", "expected_outcome": [assertion]}]},
     }
     before, before_hash = bound_state_snapshot({"status": "pending"})

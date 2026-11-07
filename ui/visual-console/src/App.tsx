@@ -421,24 +421,48 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
             return;
           }
           const tier = await resolveTier(preManifest);
-          // Verify every declared relative chunk before importing the entry by
-          // its real URL. Blob imports break standard ESM relative resolution;
-          // real-URL imports preserve a Vite bundle's chunk graph.
+          // Zero-Trust TOCTOU Elimination: Load verified extension chunks and entry
+          // from cryptographically checked in-memory Blobs rather than refetching over the network.
           const chunks = preManifest.verified_chunks || {};
+          const chunkBlobUrls: Record<string, string> = {};
+          const createdBlobUrls: string[] = [];
+
           for (const [chunkPath, chunkSri] of Object.entries(chunks)) {
-            // Extension entries may be configured as an origin-relative URL.
-            // Resolve the entry first so relative Vite chunks are verified at
-            // the same real URL the ESM loader will use.
             const resolvedEntryUrl = new URL(entryUrl, window.location.origin).toString();
             const chunkUrl = new URL(chunkPath, resolvedEntryUrl).toString();
             const chunkResponse = await fetch(chunkUrl, { cache: 'no-store' });
             if (!chunkResponse.ok) throw new Error(`HTTP ${chunkResponse.status}: Failed to fetch extension chunk.`);
-            const verification = await verifySubresourceIntegrity(await chunkResponse.arrayBuffer(), chunkSri as string);
+            const chunkBuf = await chunkResponse.arrayBuffer();
+            const verification = await verifySubresourceIntegrity(chunkBuf, chunkSri as string);
             if (!verification.valid) {
               throw new Error(`Integrity check failed for extension chunk '${chunkPath}'.`);
             }
+            const chunkBlob = new Blob([chunkBuf], { type: 'application/javascript' });
+            const blobUrl = URL.createObjectURL(chunkBlob);
+            chunkBlobUrls[chunkPath] = blobUrl;
+            createdBlobUrls.push(blobUrl);
           }
-          const mod = await import(/* @vite-ignore */ entryUrl);
+
+          let entryCode = new TextDecoder().decode(buffer);
+          // Rewrite relative import paths to point to verified in-memory Blob URLs
+          for (const [chunkPath, blobUrl] of Object.entries(chunkBlobUrls)) {
+            const escaped = chunkPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const pattern = new RegExp(`(['"])(?:\\.\\/)?${escaped}(['"])`, 'g');
+            entryCode = entryCode.replace(pattern, `$1${blobUrl}$2`);
+          }
+
+          const entryBlob = new Blob([entryCode], { type: 'application/javascript' });
+          const entryBlobUrl = URL.createObjectURL(entryBlob);
+          createdBlobUrls.push(entryBlobUrl);
+
+          let mod: any;
+          try {
+            mod = await import(/* @vite-ignore */ entryBlobUrl);
+          } finally {
+            for (const bUrl of createdBlobUrls) {
+              URL.revokeObjectURL(bUrl);
+            }
+          }
           const manifestObj = (mod as any)?.manifest || preManifest;
           // Mandatory manifest confirmation post-import
           const violations = validateExtensionManifest(manifestObj, { requireSignature: true });

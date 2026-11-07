@@ -80,6 +80,21 @@ class CertificationService:
                 and bool(modes)
                 and all(execution_truth_eligible(value, provisional) for value in modes)
             )
+
+        # Inspect trace events for simulated tool execution provenance
+        for ev in events:
+            ev_name = ev.get("event")
+            ev_data = ev.get("data") if isinstance(ev.get("data"), Mapping) else ev
+            if ev_data.get("has_simulated_tools") is True or ev.get("has_simulated_tools") is True:
+                eligible = False
+                mode = "simulated"
+                break
+            if ev_name in {"tool_call", "tool_result"}:
+                prov = ev_data.get("provenance") or ev.get("provenance")
+                if prov in {"simulated", "mock", "synthetic"}:
+                    eligible = False
+                    mode = "simulated"
+                    break
         return mode, not eligible
 
     @staticmethod

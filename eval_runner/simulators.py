@@ -1662,6 +1662,7 @@ def get_simulator_registry(plugin_manager=None) -> dict:
 
     # Trigger plugin hook to allow external shims to register themselves
     pm = plugin_manager or resolve_plugin_registry()
-    pm.trigger("on_register_simulators", registry)
+    if hasattr(pm, "trigger") and callable(pm.trigger):
+        pm.trigger("on_register_simulators", registry)
 
     return registry

@@ -39,6 +39,7 @@ class SessionStateParityVerifier:
         self._observation_identities = contextvars.ContextVar(
             "authority_observation_identities", default=None
         )
+        self._policy_raw_observations: dict[str, Any] = {}
 
     def _external_evidence_target(self, assertion: dict[str, Any]) -> str | None:
         """Return the declared authority target that must be observed for this assertion."""
@@ -195,11 +196,8 @@ class SessionStateParityVerifier:
         ):
             scenario = getattr(self.session_manager, "scenario", {}) or {}
             scenario_meta = scenario.get("metadata") or {}
-            scenario_authorities = (
-                scenario.get("state_authorities")
-                or scenario.get("state_authority")
-                or scenario_meta.get("state_authorities")
-                or scenario_meta.get("state_authority")
+            scenario_authorities = scenario_meta.get("state_authorities") or scenario_meta.get(
+                "state_authority"
             )
             if isinstance(scenario_authorities, dict) and "url" in scenario_authorities:
                 scenario_authorities = {"default": scenario_authorities}
@@ -321,6 +319,7 @@ class SessionStateParityVerifier:
             from eval_runner.runtime_services import resolve_policy_evaluator
 
             evaluator = resolve_policy_evaluator()
+            self._policy_raw_observations[target] = observed
             eval_res = evaluator.evaluate_policy(policy_spec, observed)
             if property_path == "violations":
                 return eval_res.violations, None
@@ -576,14 +575,24 @@ class SessionStateParityVerifier:
                     else "message",
                 }
                 if authority_source and pre_observation:
-                    _, post_snapshot_hash = bound_state_snapshot(after_val)
+                    post_obs = (
+                        self._policy_raw_observations.get(assertion.get("target"), after_val)
+                        if str(assertion.get("target", "")).startswith("policy:")
+                        else after_val
+                    )
+                    _, post_snapshot_hash = bound_state_snapshot(post_obs)
                     evidence_row.update(
                         {
                             "source": authority_source,
                             "pre_snapshot_hash": pre_observation["snapshot_hash"],
                             "post_snapshot_hash": post_snapshot_hash,
                             "pre_observation": pre_observation["state"],
-                            "post_observation": after_val,
+                            "post_observation": post_obs,
+                            "policy_decision": (
+                                resolved_after
+                                if str(assertion.get("target", "")).startswith("policy:")
+                                else None
+                            ),
                             "pre_observation_identity": pre_observation.get(
                                 "observation_identity", {}
                             ),
