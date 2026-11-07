@@ -655,6 +655,8 @@ def append_authoritative_finalization(
         ),
     ).sign()
 
-    fin_line = json.dumps({"event": "evaluator_finalization", "data": fin.to_dict()})
+    fin_line = json.dumps(
+        {"_seq": len(parsed) + 1, "event": "evaluator_finalization", "data": fin.to_dict()}
+    )
     with open(trace_file, "a", encoding="utf-8") as f:
         f.write(fin_line + "\n")

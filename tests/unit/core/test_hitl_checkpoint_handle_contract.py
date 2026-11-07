@@ -419,17 +419,18 @@ def test_save_and_restore_from_checkpoint_contract(tmp_path):
 
     # restore_from_checkpoint with explicit data
     chk_data = {
+        **session._execution_checkpoint_state(),
         "turn": 5,
         "metadata": {"restored_meta": 789},
         "session_metadata": {"extra": 101},
-        "completed_node_results": {"node_1": {"status": "ok"}},
+        "completed_execution_results": {"node_1": {"status": "ok"}},
         "approval_token": "tok_auto_restore",
     }
     assert session.restore_from_checkpoint(chk_data) is True
     assert session.turn_number == 5
     assert session.session_metadata["restored_meta"] == 789
     assert session.session_metadata["extra"] == 101
-    assert session._completed_node_results == {"node_1": {"status": "ok"}}
+    assert session._completed_execution_results == {"node_1": {"status": "ok"}}
     assert session.resumption_token == "tok_auto_restore"
 
     # restore_from_checkpoint with explicit resumption_token override

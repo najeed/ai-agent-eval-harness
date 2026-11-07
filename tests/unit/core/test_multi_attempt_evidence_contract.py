@@ -86,6 +86,22 @@ def test_multiple_attempts_preserve_oracle_identity_and_duplicate_rejection(
         run_id,
         {"run_id": run_id, "execution_manifest": manifest.to_dict(), "scenario_data": scenario},
     )
+    from eval_runner.utils import crypto
+
+    raw = provider.get_trace_bytes(run_id)
+    count = len([line for line in raw.splitlines() if line.strip()])
+    provider.update_run_status(
+        run_id,
+        "OPEN",
+        details={
+            "evidence_capture": {
+                "complete": True,
+                "event_count": count,
+                "terminal_seq": count,
+                "trace_hash": "sha3_256:" + crypto.checksum(raw),
+            }
+        },
+    )
 
     if duplicate_first or phantom_second:
         failure = "DuplicateOracleId" if duplicate_first else "UngroundedPackagedOracle"

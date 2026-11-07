@@ -89,11 +89,13 @@ def _make_finalization_event(
         evidence_root_hash=evidence_root,
         outcome=outcome,
         score=score,
-        terminal_seq=1,
+        terminal_seq=len(parsed),
     )
     rec = rec.sign()
     fin_dict = rec.to_dict()
-    return json.dumps({"event": "evaluator_finalization", "data": fin_dict})
+    return json.dumps(
+        {"event": "evaluator_finalization", "_seq": len(parsed) + 1, "data": fin_dict}
+    )
 
 
 @pytest.fixture
@@ -108,19 +110,49 @@ def cli_env(tmp_path, isolated_trust, monkeypatch):
 
     trace_path = run_vault / "run.jsonl"
 
-    start_ev = (
-        '{"event":"run_start","scenario_id":"test_scenario",'
-        '"scenario_data":{"id":"test_scenario","version":"1.0.0"},"data":{"execution_mode":"live","execution_mode_declared":true}}'
+    start_ev = json.dumps(
+        {
+            "_seq": 1,
+            "event": "run_start",
+            "scenario_id": "test_scenario",
+            "scenario_data": {"id": "test_scenario", "version": "1.0.0"},
+            "data": {"execution_mode": "live", "execution_mode_declared": True},
+        }
     )
-    assert_ev = '{"event":"assertion_evaluated","assertion":"accuracy","passed":true}'
-    end_ev = '{"event":"run_end","outcome":"pass","status":"pass","score":1.0}'
+    assert_ev = json.dumps(
+        {"_seq": 2, "event": "assertion_evaluated", "assertion": "accuracy", "passed": True}
+    )
+    end_ev = json.dumps(
+        {"_seq": 3, "event": "run_end", "outcome": "pass", "status": "pass", "score": 1.0}
+    )
 
     core_events = [start_ev, assert_ev, end_ev]
     fin_ev = _make_finalization_event(run_id, "test_scenario", core_events, run_dir=run_vault)
 
-    trace_path.write_text(
-        "\n".join(core_events + [fin_ev]) + "\n",
-        encoding="utf-8",
+    trace_bytes = ("\n".join(core_events + [fin_ev]) + "\n").encode("utf-8")
+    trace_path.write_bytes(trace_bytes)
+
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+    from eval_runner.utils import crypto
+
+    store = LocalFileRunStore(runs_dir)
+    store.create_run(run_id, "test_scenario")
+    lines = [json.loads(line) for line in trace_bytes.splitlines() if line.strip()]
+    count = len(lines)
+    terminal_seq = max(
+        (e.get("_seq") for e in lines if isinstance(e.get("_seq"), int)), default=count
+    )
+    store.update_run_status(
+        run_id,
+        "OPEN",
+        details={
+            "evidence_capture": {
+                "complete": True,
+                "event_count": count,
+                "terminal_seq": terminal_seq,
+                "trace_hash": "sha3_256:" + crypto.checksum(trace_bytes),
+            }
+        },
     )
 
     return {"runs_dir": runs_dir, "run_id": run_id, "trace_path": trace_path, "tmp_path": tmp_path}

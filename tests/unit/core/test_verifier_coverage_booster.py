@@ -1046,7 +1046,7 @@ def test_verify_run_provisional_live_must_fail_authoritative(tmp_path):
             res = TraceVerifier.verify_run(run_id, manifest=manifest, run_store=store)
             assert res["is_valid"] is False
             assert (
-                "Authoritative verification requires a non-provisional live or hybrid run"
+                "Authoritative verification requires a non-provisional live run"
                 in res["failure_reason"]
             )
 

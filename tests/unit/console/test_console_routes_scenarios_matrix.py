@@ -643,6 +643,7 @@ def test_scenario_json_schema_draft07_lifecycle_validation_and_rejection(client,
     verifier = SessionStateParityVerifier(session_manager=session_mock)
     mock_connector = AsyncMock()
     mock_connector.fetch_state.return_value = {"record_id": "REC-99"}
+    mock_connector.observation_identity.return_value = {"authenticated": False}
     state_authority_registry.register_authority("um_meta", mock_connector)
 
     assertion = {
@@ -650,11 +651,12 @@ def test_scenario_json_schema_draft07_lifecycle_validation_and_rejection(client,
         "property": "record_id",
         "expected": "REC-99",
     }
-    val, prop = asyncio.run(
-        verifier._resolve_target(assertion, sandbox=None, history=[], shim_snapshots={})
-    )
-    assert val == {"record_id": "REC-99"}
-    assert prop == "record_id"
+    with patch.object(state_authority_registry, "get_connector", return_value=mock_connector):
+        val, prop = asyncio.run(
+            verifier._resolve_target(assertion, sandbox=None, history=[], shim_snapshots={})
+        )
+        assert val == {"record_id": "REC-99"}
+        assert prop == "record_id"
 
     # Also test metadata.state_authority singular dictionary fallback
     session_mock_single = MagicMock()
@@ -668,13 +670,14 @@ def test_scenario_json_schema_draft07_lifecycle_validation_and_rejection(client,
         "property": "record_id",
         "expected": "REC-99",
     }
-    val_s, prop_s = asyncio.run(
-        verifier_single._resolve_target(
-            assertion_single, sandbox=None, history=[], shim_snapshots={}
+    with patch.object(state_authority_registry, "get_connector", return_value=mock_connector):
+        val_s, prop_s = asyncio.run(
+            verifier_single._resolve_target(
+                assertion_single, sandbox=None, history=[], shim_snapshots={}
+            )
         )
-    )
-    assert val_s == {"record_id": "REC-99"}
-    assert prop_s == "record_id"
+        assert val_s == {"record_id": "REC-99"}
+        assert prop_s == "record_id"
 
 
 def test_execution_scope_for_request_and_redirect_handler():

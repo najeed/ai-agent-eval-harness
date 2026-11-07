@@ -27,6 +27,149 @@ from eval_runner.services.certification import (
 from eval_runner.verifier import CertificationFailedError, TraceVerifier
 
 
+@pytest.mark.parametrize("mode", ["hybrid", "simulated", "replay", "", None, "unknown"])
+def test_execution_truth_policy_rejects_every_non_live_mode_at_issuance(provider, mode):
+    from agentv_runtime.execution_truth import execution_truth_eligible
+
+    assert execution_truth_eligible(mode) is False
+    run_id = "truth-mode-" + str(mode or "missing")
+    scenario = _seed_run(provider, run_id, mode=mode)
+    with pytest.raises(ValueError, match="ProviderTruthLevelNotLive"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+
+
+@pytest.mark.parametrize("provisional", [True, 1, "false", None])
+def test_execution_truth_policy_requires_an_actual_false_provisional_designation(provisional):
+    from agentv_runtime.execution_truth import execution_truth_eligible
+
+    assert execution_truth_eligible("live", provisional) is False
+
+
+@pytest.mark.parametrize("mode", ["hybrid", "simulated", "replay", "", None])
+def test_detached_verifier_rejects_signed_non_live_or_undeclared_execution(provider, mode):
+    from agentv_runtime.package import VerificationPackage
+    from eval_runner.runtime_services import resolve_signing_backend
+    from eval_runner.verifier import VerificationAuthority
+
+    run_id = "detached-mode-" + str(mode or "missing")
+    scenario = _seed_run(provider, run_id)
+    certificate = execute_industrial_certification(
+        run_id, run_store=provider, scenario_data=scenario
+    )["manifest"]
+    package = VerificationPackage.from_dict(certificate["verification_package"])
+    package.execution_identity["execution_mode"] = mode
+    signed = package.sign(resolve_signing_backend())
+    assert signed.verify_signature(trust_root=config.TRUST_ROOT)
+    result = VerificationAuthority.verify_package(
+        signed,
+        raw_trace_bytes=provider.get_trace_bytes(run_id),
+        canonical_manifest=certificate["execution_manifest"],
+        scenario_data=scenario,
+    )
+    assert result["certified"] is False
+    assert result["authoritative"] is False
+    assert any("UncertifiedExecutionMode" in failure for failure in result["failures"])
+
+
+def test_message_certification_scope_does_not_claim_external_state():
+    from eval_runner.certification_truth import certification_claim_scope, state_claim_failures
+
+    scenario = {
+        "workflow": {
+            "nodes": [
+                {"id": "message", "expected_outcome": [{"target": "message", "expected": "ok"}]}
+            ]
+        }
+    }
+    assert certification_claim_scope(scenario) == "message_only"
+    assert state_claim_failures(scenario, []) == []
+
+
+def test_valid_trace_prefix_cannot_certify_after_recorded_capture_failure(provider):
+    run_id = "capture-failed-prefix"
+    scenario = _seed_run(provider, run_id)
+    provider.update_run_status(
+        run_id, "CERTIFICATION_FAILED", details={"evidence_capture_failed": True}
+    )
+    with pytest.raises(ValueError, match="IncompleteEvidenceCapture"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+    assert TraceVerifier.verify_run(run_id, run_store=provider)["verified"] is False
+
+
+@pytest.mark.parametrize("target", ["state", "shim:database.rows"])
+def test_authoritative_state_claims_cannot_use_sandbox_or_simulator_evidence(target):
+    from eval_runner.certification_truth import state_claim_failures
+
+    scenario = {
+        "workflow": {
+            "nodes": [{"id": "n", "expected_outcome": [{"target": target, "expected": True}]}]
+        }
+    }
+    assert any(
+        "NonAuthoritativeSandboxState" in failure for failure in state_claim_failures(scenario, [])
+    )
+
+
+@pytest.mark.parametrize(
+    "defect", [None, "missing", "unauthenticated", "wrong_source", "digest", "actual", "outcome"]
+)
+def test_independent_state_claim_verifier_recomputes_source_and_content_binding(defect):
+    from eval_runner.certification_truth import state_claim_failures
+    from eval_runner.state_authority import bound_state_snapshot
+    from eval_runner.utils import crypto
+
+    assertion = {"target": "authority:orders", "property": "status", "expected": "approved"}
+    scenario = {
+        "state_authorities": {"orders": {"url": "https://authority.example/state"}},
+        "workflow": {"nodes": [{"id": "approve", "expected_outcome": [assertion]}]},
+    }
+    before, before_hash = bound_state_snapshot({"status": "pending"})
+    after, after_hash = bound_state_snapshot({"status": "approved"})
+    identity = {
+        "authenticated": True,
+        "source_id": "sha3_256:" + crypto.checksum("https://authority.example/state"),
+        "transport": "https",
+    }
+    row = {
+        "assertion": assertion,
+        "source": "authority:orders",
+        "pre_snapshot_hash": before_hash,
+        "post_snapshot_hash": after_hash,
+        "pre_observation": before,
+        "post_observation": after,
+        "pre_observation_identity": dict(identity),
+        "post_observation_identity": dict(identity),
+        "actual_before": "pending",
+        "actual_after": "approved",
+        "passed": True,
+    }
+    if defect == "unauthenticated":
+        row["post_observation_identity"]["authenticated"] = False
+    elif defect == "wrong_source":
+        row["post_observation_identity"]["source_id"] = "sha3_256:" + "0" * 64
+    elif defect == "digest":
+        row["post_observation"]["status"] = "tampered"
+    elif defect == "actual":
+        row["actual_after"] = "fabricated"
+    elif defect == "outcome":
+        row["passed"] = False
+    events = (
+        []
+        if defect == "missing"
+        else [
+            {
+                "event": "execution_graph_node",
+                "scenario_node_id": "approve",
+                "execution_instance_id": "approve:attempt:1",
+                "status": "completed",
+                "transition_evidence": [row],
+            }
+        ]
+    )
+    failures = state_claim_failures(scenario, events)
+    assert bool(failures) is (defect is not None)
+
+
 def test_certification_rollback_failure_preserves_signing_error(provider, monkeypatch, caplog):
     run_id = "rollback-observability"
     scenario = _seed_run(provider, run_id)
@@ -65,6 +208,30 @@ def provider(tmp_path, monkeypatch):
     return LocalFileRunStore(tmp_path / "provider-runs")
 
 
+def _sync_capture_receipt(provider: LocalFileRunStore, run_id: str) -> None:
+    from eval_runner.utils import crypto
+
+    raw = provider.get_trace_bytes(run_id) or b""
+    lines = [json.loads(line) for line in raw.splitlines() if line.strip()]
+    count = len(lines)
+    terminal_seq = max(
+        (e.get("_seq") for e in lines if isinstance(e.get("_seq"), int)),
+        default=count,
+    )
+    provider.update_run_status(
+        run_id,
+        "OPEN",
+        details={
+            "evidence_capture": {
+                "complete": True,
+                "event_count": count,
+                "terminal_seq": terminal_seq,
+                "trace_hash": "sha3_256:" + crypto.checksum(raw),
+            }
+        },
+    )
+
+
 def _seed_run(
     provider: LocalFileRunStore,
     run_id: str,
@@ -73,7 +240,7 @@ def _seed_run(
     mode: str = "live",
     append_finalization: bool = True,
     corrupt_finalization: bool = False,
-    terminal_seq: int = 3,
+    terminal_seq: int | None = None,
     evidence_root_hash: str | None = None,
     required_oracles: list[str] | None = None,
     manifest_required_oracles: list[str] | None = None,
@@ -81,6 +248,7 @@ def _seed_run(
     scenario_override: dict | None = None,
     agent_id: str | None = None,
     model: str | None = None,
+    extra_events: list[dict] | None = None,
 ):
     """Publish a complete provider-owned evidence stream for one run."""
     req_oracles = required_oracles if required_oracles is not None else ["oracle-1"]
@@ -132,6 +300,11 @@ def _seed_run(
             "score": 1.0 if outcome == "pass" else 0.0,
         },
     ]
+    if extra_events:
+        for ev in extra_events:
+            ev_copy = dict(ev)
+            ev_copy["_seq"] = len(events) + 1
+            events.append(ev_copy)
     provider.append_events(run_id, events)
     exact_lines = provider.get_trace_bytes(run_id).decode("utf-8").splitlines()
     graph = build_evidence_graph_from_events(
@@ -141,6 +314,7 @@ def _seed_run(
     effective_root = (
         evidence_root_hash if evidence_root_hash is not None else graph["evidence_root_hash"]
     )
+    effective_terminal_seq = terminal_seq if terminal_seq is not None else len(events)
     finalization = EvaluatorFinalizationRecord(
         finalization_id=f"finalization-{run_id}",
         run_id=run_id,
@@ -154,17 +328,22 @@ def _seed_run(
         evidence_root_hash=effective_root,
         outcome=outcome,
         score=1.0 if outcome == "pass" else 0.0,
-        terminal_seq=terminal_seq,
+        terminal_seq=effective_terminal_seq,
         finalized_at="2026-10-24T00:00:00Z",
     ).sign()
     if corrupt_finalization:
         finalization = EvaluatorFinalizationRecord.from_dict(
             {**finalization.to_dict(), "score": 0.5}, require_authoritative=False
         )
+    fin_seq = len(events) + 1
     if append_finalization:
         provider.append_events(
             run_id,
-            [{"event": "evaluator_finalization", "_seq": 4, "data": finalization.to_dict()}],
+            [{"event": "evaluator_finalization", "_seq": fin_seq, "data": finalization.to_dict()}],
+        )
+    else:
+        provider.append_events(
+            run_id, [{"event": "run_end", "_seq": fin_seq, "data": {"status": "success"}}]
         )
     provider.save_run_manifest(
         run_id,
@@ -174,6 +353,7 @@ def _seed_run(
             "scenario_data": scenario,
         },
     )
+    _sync_capture_receipt(provider, run_id)
     return scenario
 
 
@@ -678,19 +858,19 @@ def test_certification_convenience_wrappers(provider):
 
 def test_certification_assertion_targets_and_prohibitions(provider):
     run_id_map = "run-shim-mapping"
-    scen_map = _seed_run(provider, run_id_map)
-    provider.append_events(
+    scen_map = _seed_run(
+        provider,
         run_id_map,
-        [{"event": "assertion_evaluated", "_seq": 99, "assertion": {"target": "shim:mock_db"}}],
+        extra_events=[{"event": "assertion_evaluated", "assertion": {"target": "shim:mock_db"}}],
     )
     with pytest.raises(ValueError, match="SimulatedStateEvidenceProhibited"):
         execute_industrial_certification(run_id_map, run_store=provider, scenario_data=scen_map)
 
     run_id_str = "run-shim-str"
-    scen_str = _seed_run(provider, run_id_str)
-    provider.append_events(
+    scen_str = _seed_run(
+        provider,
         run_id_str,
-        [{"event": "assertion_evaluated", "_seq": 99, "assertion": "shim:virtual_vfs"}],
+        extra_events=[{"event": "assertion_evaluated", "assertion": "shim:virtual_vfs"}],
     )
     with pytest.raises(ValueError, match="SimulatedStateEvidenceProhibited"):
         execute_industrial_certification(run_id_str, run_store=provider, scenario_data=scen_str)
@@ -758,6 +938,7 @@ def test_certification_evidence_graph_and_provenance_validation(provider, monkey
         run_id_empty,
         [{"event": "evaluator_finalization", "_seq": 3, "data": fin.to_dict()}],
     )
+    _sync_capture_receipt(provider, run_id_empty)
     with pytest.raises(ValueError, match="DecisionOnlyTrace"):
         execute_industrial_certification(run_id_empty, run_store=provider, scenario_data=scenario)
 
@@ -890,46 +1071,16 @@ def test_certification_oracle_inventory_and_reconciliation(provider, monkeypatch
         execute_industrial_certification(run_id_req, run_store=provider, scenario_data=scen_diff)
 
     run_id_block = "run-blocking-mismatch"
-    scen_block = _seed_run(provider, run_id_block, append_finalization=False)
-    provider.append_events(
+    scen_block = _seed_run(
+        provider,
         run_id_block,
-        [
+        extra_events=[
             {
                 "event": "assertion_evaluated",
-                "_seq": 4,
                 "assertion": "security_check",
                 "passed": False,
             }
         ],
-    )
-    exact_lines = provider.get_trace_bytes(run_id_block).decode("utf-8").splitlines()
-    all_events = provider.get_events(run_id_block)
-    graph = build_evidence_graph_from_events(
-        [(ev, line) for ev, line in zip(all_events, exact_lines, strict=True)],
-        required_oracle_ids=["oracle-1"],
-    )
-    manifest = provider.get_manifest(run_id_block)
-    fin_rec = EvaluatorFinalizationRecord(
-        finalization_id=f"finalization-{run_id_block}",
-        run_id=run_id_block,
-        scenario_id=scen_block["id"],
-        scenario_version=scen_block["version"],
-        scenario_hash=compute_scenario_hash(scen_block),
-        execution_manifest_hash=ExecutionManifest.from_dict(
-            manifest["execution_manifest"]
-        ).compute_manifest_hash(),
-        evaluator_config_hash="sha3_256:evaluator-config",
-        evaluator_identity="eval_kernel",
-        required_oracle_ids=["oracle-1"],
-        evidence_root_hash=graph["evidence_root_hash"],
-        outcome="pass",
-        score=1.0,
-        terminal_seq=4,
-        finalized_at="2026-10-24T00:00:00Z",
-    ).sign()
-    provider.append_events(
-        run_id_block,
-        [{"event": "evaluator_finalization", "_seq": 5, "data": fin_rec.to_dict()}],
     )
     with pytest.raises(ValueError, match="BlockingAssertionOutcomeMismatch"):
         execute_industrial_certification(run_id_block, run_store=provider, scenario_data=scen_block)
@@ -1260,6 +1411,7 @@ def test_execute_industrial_certification_scenario_resolution_sources(provider, 
         run_id_data,
         [{"event": "evaluator_finalization", "_seq": 4, "data": fin.to_dict()}],
     )
+    _sync_capture_receipt(provider, run_id_data)
     res = execute_industrial_certification(run_id_data, run_store=provider, scenario_data=None)
     assert res["certified"] is True
 
@@ -1324,6 +1476,7 @@ def test_execute_industrial_certification_scenario_resolution_sources(provider, 
         run_id_loader,
         [{"event": "evaluator_finalization", "_seq": 4, "data": fin_l.to_dict()}],
     )
+    _sync_capture_receipt(provider, run_id_loader)
     monkeypatch.setattr("eval_runner.loader.load_scenario", lambda *a, **k: [scenario_loader])
     res_l = execute_industrial_certification(run_id_loader, run_store=provider, scenario_data=None)
     assert res_l["certified"] is True
@@ -1395,6 +1548,7 @@ def test_execute_industrial_certification_missing_required_oracles(provider):
         run_id,
         [{"event": "evaluator_finalization", "_seq": 4, "data": fin.to_dict()}],
     )
+    _sync_capture_receipt(provider, run_id)
     with pytest.raises(ValueError, match="MissingRequiredOracles"):
         execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
 
@@ -1498,6 +1652,7 @@ def test_execute_industrial_certification_oracle_result_formats(provider, summar
         run_id,
         [{"event": "evaluator_finalization", "_seq": 6, "data": fin.to_dict()}],
     )
+    _sync_capture_receipt(provider, run_id)
     if summary_projection:
         with pytest.raises(ValueError, match="UngroundedPackagedOracle"):
             execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
@@ -1586,7 +1741,8 @@ def test_extract_computed_run_outcome_terminal_and_run_end_variations(provider):
 def test_execute_industrial_certification_post_finalization_noise(provider):
     run_id = "run-post-fin-noise"
     scenario = _seed_run(provider, run_id)
-    provider.append_events(run_id, [{"event": "post_noise", "_seq": 99}])
+    provider.append_events(run_id, [{"event": "run_end", "_seq": 5, "data": {"status": "noise"}}])
+    _sync_capture_receipt(provider, run_id)
     with pytest.raises(ValueError, match="has inconclusive outcome"):
         execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
 
@@ -1653,6 +1809,7 @@ def test_execute_industrial_certification_scenario_in_event_root(provider):
     provider.append_events(
         run_id, [{"event": "evaluator_finalization", "_seq": 4, "data": fin.to_dict()}]
     )
+    _sync_capture_receipt(provider, run_id)
     res = execute_industrial_certification(run_id, run_store=provider, scenario_data=None)
     assert res["certified"] is True
 
@@ -1714,6 +1871,7 @@ def test_execute_industrial_certification_loader_mapping_and_exception(provider,
     provider.append_events(
         run_id_map, [{"event": "evaluator_finalization", "_seq": 4, "data": fin.to_dict()}]
     )
+    _sync_capture_receipt(provider, run_id_map)
 
     monkeypatch.setattr("eval_runner.loader.load_scenario", lambda *a, **k: scenario)
     res = execute_industrial_certification(run_id_map, run_store=provider, scenario_data=None)
@@ -1769,6 +1927,7 @@ def test_execute_industrial_certification_loader_mapping_and_exception(provider,
     provider.append_events(
         run_id_list, [{"event": "evaluator_finalization", "_seq": 4, "data": fin_list.to_dict()}]
     )
+    _sync_capture_receipt(provider, run_id_list)
     monkeypatch.setattr("eval_runner.loader.load_scenario", lambda *a, **k: [scenario])
     res_list = execute_industrial_certification(run_id_list, run_store=provider, scenario_data=None)
     assert res_list["certified"] is True
@@ -1823,6 +1982,7 @@ def test_execute_industrial_certification_loader_mapping_and_exception(provider,
     provider.append_events(
         run_id_fail, [{"event": "evaluator_finalization", "_seq": 4, "data": fin_fail.to_dict()}]
     )
+    _sync_capture_receipt(provider, run_id_fail)
 
     monkeypatch.setattr(
         "eval_runner.loader.load_scenario",
@@ -1910,6 +2070,7 @@ def test_execute_industrial_certification_extended_trace_and_oracle_edge_cases(p
     provider.append_events(
         run_id, [{"event": "evaluator_finalization", "_seq": 6, "data": fin.to_dict()}]
     )
+    _sync_capture_receipt(provider, run_id)
 
     with pytest.raises(CertificationFailedError, match="MalformedOracleResult"):
         execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)

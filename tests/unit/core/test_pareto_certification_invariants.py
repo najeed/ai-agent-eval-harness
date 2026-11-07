@@ -77,7 +77,14 @@ def _create_trace(
     vault.mkdir(parents=True, exist_ok=True)
     trace = vault / "run.jsonl"
 
-    final_events = list(events)
+    numbered_events = []
+    for i, ev in enumerate(events, 1):
+        ev_copy = dict(ev)
+        if "_seq" not in ev_copy:
+            ev_copy["_seq"] = i
+        numbered_events.append(ev_copy)
+
+    final_events = list(numbered_events)
     has_finalization = any(e.get("event") == "evaluator_finalization" for e in final_events)
 
     terminal_count = sum(
@@ -97,6 +104,7 @@ def _create_trace(
             if not scen_hash:
                 scen_hash = compute_scenario_hash({"id": scen_id, "version": "1.0.0"})
 
+        from agentv_runtime.canonical import canonical_json_encode
         from agentv_runtime.evidence_graph import (
             build_evidence_graph_from_events,
             compute_evidence_graph_root,
@@ -113,7 +121,8 @@ def _create_trace(
         exec_manifest_path.write_text(json.dumps(exec_manifest.to_dict()), encoding="utf-8")
         m_hash = exec_manifest.compute_manifest_hash()
 
-        ev_graph = build_evidence_graph_from_events(final_events)
+        exact_pairs = [(ev, canonical_json_encode(ev).decode("utf-8")) for ev in final_events]
+        ev_graph = build_evidence_graph_from_events(exact_pairs)
         ev_root = compute_evidence_graph_root(ev_graph)
 
         term_ev = next(
@@ -143,14 +152,33 @@ def _create_trace(
             evidence_root_hash=ev_root,
             outcome=outcome,
             score=score,
+            terminal_seq=len(final_events),
         )
         fin_rec = fin_rec.sign()
         fin_dict = fin_rec.to_dict()
-        final_events.append({"event": "evaluator_finalization", "data": fin_dict})
+        final_events.append(
+            {
+                "event": "evaluator_finalization",
+                "_seq": len(final_events) + 1,
+                "data": fin_dict,
+            }
+        )
+    elif not any(
+        e.get("event") in ("run_end", "end", "evaluator_finalization") for e in final_events
+    ):
+        final_events.append(
+            {
+                "event": "run_end",
+                "_seq": len(final_events) + 1,
+                "data": {"status": "success"},
+            }
+        )
 
-    with open(trace, "w", encoding="utf-8") as f:
+    from agentv_runtime.canonical import canonical_json_encode
+
+    with open(trace, "wb") as f:
         for ev in final_events:
-            f.write(json.dumps(ev) + "\n")
+            f.write(canonical_json_encode(ev) + b"\n")
     return vault, trace
 
 
@@ -166,6 +194,27 @@ def _fixture_run_store(run_id: str) -> LocalFileRunStore:
             run_id,
             {"execution_manifest": execution_manifest},
         )
+    from eval_runner.utils import crypto
+
+    raw = provider.get_trace_bytes(run_id) or b""
+    lines = [json.loads(line) for line in raw.splitlines() if line.strip()]
+    count = len(lines)
+    terminal_seq = max(
+        (e.get("_seq") for e in lines if isinstance(e.get("_seq"), int)),
+        default=count,
+    )
+    provider.update_run_status(
+        run_id,
+        "OPEN",
+        details={
+            "evidence_capture": {
+                "complete": True,
+                "event_count": count,
+                "terminal_seq": terminal_seq,
+                "trace_hash": "sha3_256:" + crypto.checksum(raw),
+            }
+        },
+    )
     return provider
 
 
@@ -387,6 +436,7 @@ def test_invariant_4_event_appended_after_finalization_blocks_certification(cert
             "event": "session_decision",
             "data": {"decision": "FAIL"},
         },  # Appended after finalization!
+        {"_seq": 5, "event": "run_end", "data": {"status": "success"}},
     ]
     _create_trace(cert_env["runs"], run_id, events)
 

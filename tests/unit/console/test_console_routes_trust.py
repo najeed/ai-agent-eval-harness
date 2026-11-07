@@ -37,7 +37,7 @@ def _make_finalization_event(
         line = line.strip()
         if line:
             try:
-                parsed.append(json.loads(line))
+                parsed.append((json.loads(line), line))
             except Exception:
                 pass
 
@@ -61,6 +61,7 @@ def _make_finalization_event(
             json.dumps(exec_manifest.to_dict()), encoding="utf-8"
         )
 
+    last_seq = parsed[-1][0].get("_seq", len(parsed)) if parsed else 0
     rec = EvaluatorFinalizationRecord(
         finalization_id=f"fin_{run_id}",
         run_id=run_id,
@@ -74,11 +75,37 @@ def _make_finalization_event(
         evidence_root_hash=evidence_root,
         outcome=outcome,
         score=score,
-        terminal_seq=1,
+        terminal_seq=last_seq,
     )
     rec = rec.sign()
     fin_dict = rec.to_dict()
     return json.dumps({"event": "evaluator_finalization", "data": fin_dict})
+
+
+def _sync_capture_receipt(console_jail: dict[str, Any], run_id: str) -> None:
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+    from eval_runner.utils import crypto
+
+    store = LocalFileRunStore(console_jail["runs"])
+    raw = store.get_trace_bytes(run_id) or b""
+    lines = [json.loads(line) for line in raw.splitlines() if line.strip()]
+    count = len(lines)
+    terminal_seq = max(
+        (e.get("_seq") for e in lines if isinstance(e.get("_seq"), int)),
+        default=count,
+    )
+    store.update_run_status(
+        run_id,
+        "OPEN",
+        details={
+            "evidence_capture": {
+                "complete": True,
+                "event_count": count,
+                "terminal_seq": terminal_seq,
+                "trace_hash": "sha3_256:" + crypto.checksum(raw),
+            }
+        },
+    )
 
 
 @pytest.fixture(scope="module")
@@ -137,16 +164,25 @@ def test_certify_run_rejects_incomplete_signer_output(client, console_jail):
     run_dir.mkdir(parents=True, exist_ok=True)
     start_ev = json.dumps(
         {
+            "_seq": 1,
             "event": "run_start",
             "scenario_id": "scen_1",
             "data": {"execution_mode": "live", "execution_mode_declared": True},
         }
     )
-    assert_ev = json.dumps({"event": "assertion_evaluated", "assertion": "check_1", "passed": True})
-    end_ev = json.dumps({"event": "run_end", "data": {"status": "pass", "score": 1.0}})
+    assert_ev = json.dumps(
+        {"_seq": 2, "event": "assertion_evaluated", "assertion": "check_1", "passed": True}
+    )
+    end_ev = json.dumps({"_seq": 3, "event": "run_end", "data": {"status": "pass", "score": 1.0}})
     core_events = [start_ev, assert_ev, end_ev]
     fin_ev = _make_finalization_event(run_id, "scen_1", core_events, run_dir=run_dir)
-    (run_dir / "run.jsonl").write_text("\n".join(core_events + [fin_ev]) + "\n", encoding="utf-8")
+    fin_dict = json.loads(fin_ev)
+    fin_dict["_seq"] = 4
+    fin_ev_str = json.dumps(fin_dict)
+    (run_dir / "run.jsonl").write_text(
+        "\n".join(core_events + [fin_ev_str]) + "\n", encoding="utf-8"
+    )
+    _sync_capture_receipt(console_jail, run_id)
 
     with (
         patch("eval_runner.verifier.TraceVerifier.sign_trace_bytes") as mock_sign,
@@ -174,9 +210,17 @@ def test_certify_run_inconclusive_missing_terminal_fails_closed(client, console_
     run_dir = console_jail["runs"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     start_ev = json.dumps(
-        {"event": "run_start", "data": {"execution_mode": "live", "execution_mode_declared": True}}
+        {
+            "_seq": 1,
+            "event": "run_start",
+            "data": {"execution_mode": "live", "execution_mode_declared": True},
+        }
     )
-    (run_dir / "run.jsonl").write_text(f"{start_ev}\n", encoding="utf-8")
+    end_ev = json.dumps(
+        {"_seq": 2, "event": "run_end", "data": {"status": "inconclusive", "score": 0.0}}
+    )
+    (run_dir / "run.jsonl").write_text(f"{start_ev}\n{end_ev}\n", encoding="utf-8")
+    _sync_capture_receipt(console_jail, run_id)
 
     res = client.post("/api/v1/certify", json={"run_id": run_id})
     assert res.status_code == 400
@@ -189,20 +233,27 @@ def test_certify_run_fail_closed_computed_fail(client, console_jail):
     run_dir.mkdir(parents=True, exist_ok=True)
     start_ev = json.dumps(
         {
+            "_seq": 1,
             "event": "run_start",
             "scenario_id": "scen_1",
             "data": {"execution_mode": "live", "execution_mode_declared": True},
         }
     )
     assert_ev = json.dumps(
-        {"event": "assertion_evaluated", "assertion": "check_1", "passed": False}
+        {"_seq": 2, "event": "assertion_evaluated", "assertion": "check_1", "passed": False}
     )
-    end_ev = json.dumps({"event": "run_end", "data": {"status": "fail", "score": 0.0}})
+    end_ev = json.dumps({"_seq": 3, "event": "run_end", "data": {"status": "fail", "score": 0.0}})
     core_events = [start_ev, assert_ev, end_ev]
     fin_ev = _make_finalization_event(
         run_id, "scen_1", core_events, outcome="fail", score=0.0, run_dir=run_dir
     )
-    (run_dir / "run.jsonl").write_text("\n".join(core_events + [fin_ev]) + "\n", encoding="utf-8")
+    fin_dict = json.loads(fin_ev)
+    fin_dict["_seq"] = 4
+    fin_ev_str = json.dumps(fin_dict)
+    (run_dir / "run.jsonl").write_text(
+        "\n".join(core_events + [fin_ev_str]) + "\n", encoding="utf-8"
+    )
+    _sync_capture_receipt(console_jail, run_id)
 
     with (
         patch("eval_runner.verifier.TraceVerifier.sign_trace_bytes") as mock_sign,
@@ -404,16 +455,25 @@ def test_certify_run_generic_exception(client, console_jail):
     run_dir.mkdir(parents=True, exist_ok=True)
     start_ev = json.dumps(
         {
+            "_seq": 1,
             "event": "run_start",
             "scenario_id": "scen_1",
             "data": {"execution_mode": "live", "execution_mode_declared": True},
         }
     )
-    assert_ev = json.dumps({"event": "assertion_evaluated", "assertion": "check_1", "passed": True})
-    end_ev = json.dumps({"event": "run_end", "data": {"status": "pass", "score": 1.0}})
+    assert_ev = json.dumps(
+        {"_seq": 2, "event": "assertion_evaluated", "assertion": "check_1", "passed": True}
+    )
+    end_ev = json.dumps({"_seq": 3, "event": "run_end", "data": {"status": "pass", "score": 1.0}})
     core_events = [start_ev, assert_ev, end_ev]
     fin_ev = _make_finalization_event(run_id, "scen_1", core_events, run_dir=run_dir)
-    (run_dir / "run.jsonl").write_text("\n".join(core_events + [fin_ev]) + "\n", encoding="utf-8")
+    fin_dict = json.loads(fin_ev)
+    fin_dict["_seq"] = 4
+    fin_ev_str = json.dumps(fin_dict)
+    (run_dir / "run.jsonl").write_text(
+        "\n".join(core_events + [fin_ev_str]) + "\n", encoding="utf-8"
+    )
+    _sync_capture_receipt(console_jail, run_id)
 
     with (
         patch(

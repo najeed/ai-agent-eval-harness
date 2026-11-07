@@ -65,14 +65,34 @@ async def test_resumption_preserves_root_execution_manifest_and_mode(tmp_path):
     snapshot_file = run_vault / "scenario_resolved.json"
     snapshot_file.write_text(json.dumps(scenario_data, indent=2), encoding="utf-8")
 
+    trace_content = b'{"_seq": 1, "event": "step_start"}\n'
     trace_file = run_vault / "run.jsonl"
-    trace_file.write_text('{"event": "step_start"}\n', encoding="utf-8")
+    trace_file.write_bytes(trace_content)
+
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    store = LocalFileRunStore(tmp_path / "runs")
+    store.create_run(run_id, scenario_data["id"])
+    import hashlib
+
+    store.update_run_status(
+        run_id,
+        "PAUSED_FOR_APPROVAL",
+        details={
+            "evidence_capture": {
+                "complete": False,
+                "resumable": True,
+                "event_count": 1,
+                "terminal_seq": 1,
+                "trace_hash": "sha3_256:" + hashlib.sha3_256(trace_content).hexdigest(),
+            }
+        },
+    )
 
     # 2. Setup runner patched to run in tmp_path
     with (
         patch.object(config, "RUN_LOG_DIR", tmp_path / "runs"),
         patch("eval_runner.plugins.manager.trigger"),
-        patch("eval_runner.events.emit"),
     ):
         runner = DefaultRunner()
 

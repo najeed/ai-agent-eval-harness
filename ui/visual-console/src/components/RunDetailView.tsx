@@ -17,6 +17,7 @@ import {
   Clock,
 } from 'lucide-react';
 import { ProvisionalBadge } from './ProvisionalBadge';
+import { useRunReportAction } from '../lib/runReportAction';
 
 export interface RunDetailData {
   run_id: string;
@@ -84,6 +85,7 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
   const [evidencePackage, setEvidencePackage] = useState<any>(null);
   const [streamEvents, setStreamEvents] = useState<any[]>([]);
   const [streamLoading, setStreamLoading] = useState(true);
+  const reportAction = useRunReportAction(run?.run_id);
 
   useEffect(() => {
     if (!run?.run_id) return;
@@ -543,7 +545,7 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
           ? `FAIL; ${failedAssertions.length} assertion(s) failed. First failure: ${failedAssertions[0].name ?? failedAssertions[0].metric ?? 'unnamed'
           } on node '${failedAssertions[0].node ?? '?'}'.`
           : (isUncertified || crypto?.has_certificate === false) && isEvaluationSuccess
-            ? 'YES (Uncertified); agent safely achieved intended state transitions without policy violations (all assertions passed). Cryptographic attestation has not yet been issued.'
+            ? 'Execution completed and runtime assertions passed. External business-state changes are not independently certified.'
             : crypto && crypto.errors?.length > 0
               ? `NOT VERIFIED; ${crypto.errors[0]}`
               : isNotVerified
@@ -995,22 +997,25 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
                 </div>
                 <Download className="w-4 h-4 text-slate-400 group-hover:text-white transition" />
               </a>
-              <a
-                href={`/api/v1/runs/${run.run_id}/report.pdf`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 hover:border-indigo-500 transition flex items-center justify-between group"
-              >
-                <div className="space-y-1">
-                  <div className="font-bold text-white flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400" /> Basic Compliance Report (PDF)
+              {reportAction.profiles.map((profile) => (
+                <a
+                  key={profile.id}
+                  href={profile.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 hover:border-indigo-500 transition flex items-center justify-between group"
+                >
+                  <div className="space-y-1">
+                    <div className="font-bold text-white flex items-center gap-1.5">
+                      <ShieldCheck className="w-4 h-4 text-emerald-400" /> {profile.label}
+                    </div>
+                    <div className="text-slate-400 text-[11px]">
+                      {profile.description || "Human-readable summary derived from this run's evidence."}
+                    </div>
                   </div>
-                  <div className="text-slate-400 text-[11px]">
-                    Human-readable summary derived from this run's evidence.
-                  </div>
-                </div>
-                <Download className="w-4 h-4 text-slate-400 group-hover:text-white transition" />
-              </a>
+                  <Download className="w-4 h-4 text-slate-400 group-hover:text-white transition" />
+                </a>
+              ))}
             </div>
           </div>
         )}

@@ -64,10 +64,11 @@ except ImportError as e:
     logger.error(f"ReportLab is not available: {e}", exc_info=True)
 
 
-def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
+def generate_run_pdf(run_data: dict, output_path: Path | str) -> bool:
     """
     Generates a CIO/CISO individual run compliance report PDF.
     """
+    output_path = Path(output_path)
     # Create directory if not exists
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -216,6 +217,12 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
     else:
         cert_status = "NOT ISSUED (Unverified)"
 
+    evidence_ref = (
+        run_data.get("evidence_reference")
+        or run_data.get("trace_hash")
+        or ("Merkle Root Sealed" if has_cert else "Unsigned / Uncertified")
+    )
+
     # 2. Try WeasyPrint if available
     if WEASYPRINT_AVAILABLE:
         try:
@@ -223,20 +230,21 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
             <html>
             <head>
                 <style>
-                    body {{ font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; margin: 40px; line-height: 1.5; }}
-                    h1 {{ color: #4f46e5; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; font-size: 24px; }}
-                    h2 {{ color: #0f172a; font-size: 16px; margin-top: 25px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; }}
-                    .meta-table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
-                    .meta-table th, .meta-table td {{ border: 1px solid #e2e8f0; padding: 10px; text-align: left; font-size: 12px; }}
-                    .meta-table th {{ bg-color: #f8fafc; font-weight: bold; width: 30%; }}
-                    .card {{ background-color: #f1f5f9; border-left: 4px solid #4f46e5; padding: 15px; border-radius: 4px; margin-bottom: 15px; font-size: 13px; }}
-                    .success-card {{ background-color: #f0fdf4; border-left: 4px solid #16a34a; padding: 15px; border-radius: 4px; font-size: 13px; }}
-                    .footer {{ margin-top: 50px; border-t: 1px solid #e2e8f0; padding-top: 10px; font-size: 10px; color: #64748b; font-family: monospace; }}
+                    @page {{ size: letter; margin: 14mm; }}
+                    body {{ font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; margin: 0; line-height: 1.45; }}
+                    h1 {{ color: #4f46e5; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 20px; margin-top: 0; }}
+                    h2 {{ color: #0f172a; font-size: 13px; margin-top: 16px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }}
+                    .meta-table {{ width: 100%; border-collapse: collapse; margin-bottom: 14px; table-layout: fixed; }}
+                    .meta-table th, .meta-table td {{ border: 1px solid #e2e8f0; padding: 7px 9px; text-align: left; font-size: 11px; word-break: break-word; overflow-wrap: anywhere; }}
+                    .meta-table th {{ background-color: #f8fafc; font-weight: bold; width: 28%; }}
+                    .card {{ background-color: #f1f5f9; border-left: 4px solid #4f46e5; padding: 12px; border-radius: 4px; margin-bottom: 12px; font-size: 11.5px; word-break: break-word; }}
+                    .success-card {{ background-color: #f0fdf4; border-left: 4px solid #16a34a; padding: 12px; border-radius: 4px; font-size: 11.5px; }}
+                    .footer {{ margin-top: 18px; border-top: 1px solid #e2e8f0; padding-top: 8px; font-size: 9.5px; color: #64748b; font-family: monospace; word-break: break-all; }}
                 </style>
             </head>
             <body>
-                <h1>AgentV Enterprise Compliance Report</h1>
-                <p style="font-size: 12px; color: #64748b;">Generated on: {datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S UTC")}</p>
+                <h1>AgentV Run Verification Summary</h1>
+                <p style="font-size: 11px; color: #64748b; margin-top: 2px;">Generated on: {datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S UTC")}</p>
                 
                 <h2>1. Execution Metadata</h2>
                 <table class="meta-table">
@@ -246,13 +254,13 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
                     <tr><th>Tenant</th><td>{tenant_id}</td></tr>
                     <tr><th>Workspace</th><td>{workspace_id}</td></tr>
                     <tr><th>Environment</th><td>{active_environment}</td></tr>
-                    <tr><th>Overall Verdict</th><td>{status}</td></tr>
+                    <tr><th>Runtime Verdict</th><td>{status}</td></tr>
                     <tr><th>Completion Epoch</th><td>{timestamp}</td></tr>
                 </table>
 
-                <h2>2. Compliance Analysis</h2>
+                <h2>2. Verification & Evidence Status</h2>
                 <table class="meta-table">
-                    <tr><th>PQC Status</th><td>{pqc_status}</td></tr>
+                    <tr><th>Signature / PQC Status</th><td>{pqc_status}</td></tr>
                     <tr><th>Weighted Severity Score</th><td>{severity_score}</td></tr>
                     <tr><th>Verification Certificate</th><td>{cert_status}</td></tr>
                 </table>
@@ -265,11 +273,12 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
                 </div>
 
                 <h2>4. Behavioral Telemetry</h2>
-                <p style="font-size: 12px;">{telemetry_text}</p>
+                <p style="font-size: 11.5px;">{telemetry_text}</p>
 
                 <div class="footer">
-                    Run Hash: {run_id}<br/>
-                    Signed by AgentV Audit Engine
+                    Run Identifier: {run_id}<br/>
+                    Evidence Reference: {evidence_ref}<br/>
+                    Generated by AgentV Audit Engine
                 </div>
             </body>
             </html>
@@ -286,7 +295,14 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
     # 3. Fallback to ReportLab
     if REPORTLAB_AVAILABLE:
         try:
-            doc = SimpleDocTemplate(str(output_path), pagesize=letter)
+            doc = SimpleDocTemplate(
+                str(output_path),
+                pagesize=letter,
+                leftMargin=45,
+                rightMargin=45,
+                topMargin=36,
+                bottomMargin=36,
+            )
             styles = getSampleStyleSheet()
 
             # Custom Styles
@@ -294,30 +310,47 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
                 "ReportTitle",
                 parent=styles["Heading1"],
                 textColor=colors.HexColor("#4f46e5"),
-                fontSize=20,
-                spaceAfter=15,
+                fontSize=18,
+                spaceAfter=8,
             )
             h2_style = ParagraphStyle(
                 "SectionHeader",
                 parent=styles["Heading2"],
                 textColor=colors.HexColor("#0f172a"),
-                fontSize=12,
-                spaceBefore=15,
-                spaceAfter=10,
+                fontSize=11,
+                spaceBefore=10,
+                spaceAfter=6,
             )
             body_style = ParagraphStyle(
                 "BodyTextCustom",
                 parent=styles["Normal"],
                 textColor=colors.HexColor("#1e293b"),
-                fontSize=10,
-                leading=14,
+                fontSize=9.5,
+                leading=13,
+            )
+            cell_label_style = ParagraphStyle(
+                "CellLabel",
+                parent=styles["Normal"],
+                fontName="Helvetica-Bold",
+                textColor=colors.HexColor("#1e293b"),
+                fontSize=8.5,
+                leading=11,
+            )
+            cell_value_style = ParagraphStyle(
+                "CellValue",
+                parent=styles["Normal"],
+                textColor=colors.HexColor("#1e293b"),
+                fontSize=8.5,
+                leading=11,
+                wordWrap="CJK",
             )
             card_style = ParagraphStyle(
                 "CardText",
                 parent=styles["Normal"],
                 textColor=colors.HexColor("#1e293b"),
                 fontSize=9,
-                leading=13,
+                leading=12.5,
+                wordWrap="CJK",
             )
 
             story = []
@@ -330,77 +363,81 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
                     body_style,
                 )
             )
-            story.append(Spacer(1, 15))
+            story.append(Spacer(1, 8))
+
+            def _row(label: str, val: object) -> list:
+                return [
+                    Paragraph(str(label), cell_label_style),
+                    Paragraph(str(val if val is not None else ""), cell_value_style),
+                ]
 
             # 1. Metadata Table
             story.append(Paragraph("1. Execution Metadata", h2_style))
             meta_data = [
-                ["Run Identifier", run_id],
-                ["Target Scenario", scenario],
-                ["Organization", org_id],
-                ["Tenant", tenant_id],
-                ["Workspace", workspace_id],
-                ["Environment", active_environment],
-                ["Overall Verdict", status],
-                ["Completion Epoch", timestamp],
+                _row("Run Identifier", run_id),
+                _row("Target Scenario", scenario),
+                _row("Organization", org_id),
+                _row("Tenant", tenant_id),
+                _row("Workspace", workspace_id),
+                _row("Environment", active_environment),
+                _row("Overall Verdict", status),
+                _row("Completion Epoch", timestamp),
             ]
-            t = Table(meta_data, colWidths=[150, 300])
+            t = Table(meta_data, colWidths=[145, 375])
             t.setStyle(
                 TableStyle(
                     [
                         ("BACKGROUND", (0, 0), (0, -1), colors.HexColor("#f8fafc")),
                         ("TEXTCOLOR", (0, 0), (-1, -1), colors.HexColor("#1e293b")),
                         ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#e2e8f0")),
-                        ("PADDING", (0, 0), (-1, -1), 8),
-                        ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
-                        ("FONTSIZE", (0, 0), (-1, -1), 9),
+                        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                        ("PADDING", (0, 0), (-1, -1), 6),
                     ]
                 )
             )
             story.append(t)
-            story.append(Spacer(1, 15))
+            story.append(Spacer(1, 10))
 
             # 2. Compliance Analysis Table
             story.append(Paragraph("2. Compliance Analysis", h2_style))
             compliance_data = [
-                ["PQC Status", pqc_status],
-                ["Weighted Severity Score", severity_score],
-                ["Verification Certificate", cert_status],
+                _row("PQC Status", pqc_status),
+                _row("Weighted Severity Score", severity_score),
+                _row("Verification Certificate", cert_status),
             ]
 
-            t2 = Table(compliance_data, colWidths=[150, 300])
+            t2 = Table(compliance_data, colWidths=[145, 375])
             t2.setStyle(
                 TableStyle(
                     [
                         ("BACKGROUND", (0, 0), (0, -1), colors.HexColor("#f8fafc")),
                         ("TEXTCOLOR", (0, 0), (-1, -1), colors.HexColor("#1e293b")),
                         ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#e2e8f0")),
-                        ("PADDING", (0, 0), (-1, -1), 8),
-                        ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
-                        ("FONTSIZE", (0, 0), (-1, -1), 9),
+                        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                        ("PADDING", (0, 0), (-1, -1), 6),
                     ]
                 )
             )
             story.append(t2)
-            story.append(Spacer(1, 15))
+            story.append(Spacer(1, 10))
 
             # 3. Executive Summary
             story.append(Paragraph("3. Executive Summary", h2_style))
             summary_html = f"<b>Identified Pattern:</b> {root_cause}<br/><br/><b>Summary Details:</b> {summary}<br/><br/><b>Remediation:</b> {suggestion}"
 
             # Wrap summary in a card styled table
-            t_summary = Table([[Paragraph(summary_html, card_style)]], colWidths=[450])
+            t_summary = Table([[Paragraph(summary_html, card_style)]], colWidths=[520])
             t_summary.setStyle(
                 TableStyle(
                     [
                         ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#f1f5f9")),
                         ("BOX", (0, 0), (-1, -1), 1, colors.HexColor("#4f46e5")),
-                        ("PADDING", (0, 0), (-1, -1), 12),
+                        ("PADDING", (0, 0), (-1, -1), 10),
                     ]
                 )
             )
             story.append(t_summary)
-            story.append(Spacer(1, 15))
+            story.append(Spacer(1, 10))
 
             # 4. Telemetry Note
             story.append(Paragraph("4. Behavioral Telemetry", h2_style))
@@ -408,11 +445,14 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
                 "</strong>", "</b>"
             )
             story.append(Paragraph(reportlab_telemetry, body_style))
-            story.append(Spacer(1, 40))
+            story.append(Spacer(1, 12))
 
             # Footer signature
             story.append(
-                Paragraph(f"Run Hash: {run_id}<br/>Signed by AgentV Audit Engine", card_style)
+                Paragraph(
+                    f"Run Identifier: {run_id}<br/>Evidence Reference: {evidence_ref}<br/>Signed by AgentV Audit Engine",
+                    card_style,
+                )
             )
 
             doc.build(story)

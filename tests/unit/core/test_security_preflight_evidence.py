@@ -58,7 +58,7 @@ def test_security_preflight_approval_stale_emits_typed_failure_evidence(test_env
                     "id": "step_transfer_funds",
                     "task_description": "Transfer 500 USD with pre-authorized token",
                     "approval_token": "EXPIRED_SIG_1970",
-                    "expected_outcome": [{"target": "state", "property": "ok", "expected": True}],
+                    "expected_outcome": [{"target": "message", "property": "ok", "expected": True}],
                 }
             ],
             "edges": [],
@@ -156,7 +156,7 @@ def test_security_preflight_approval_mismatch_typed_evidence(test_env):
                     "id": "step_payout",
                     "task_description": "Execute payout with wrong transaction binding",
                     "approval_transaction_id": "TX_MISMATCH_DIFFERENT_PAYMENT",
-                    "expected_outcome": [{"target": "state", "property": "ok", "expected": True}],
+                    "expected_outcome": [{"target": "message", "property": "ok", "expected": True}],
                 }
             ],
             "edges": [],
@@ -206,7 +206,7 @@ def test_security_preflight_approval_revocation_typed_evidence(test_env):
                     "id": "step_settle",
                     "task_description": "Execute settlement with revoked approval token",
                     "approval_revocation": True,
-                    "expected_outcome": [{"target": "state", "property": "ok", "expected": True}],
+                    "expected_outcome": [{"target": "message", "property": "ok", "expected": True}],
                 }
             ],
             "edges": [],
@@ -258,7 +258,7 @@ def test_security_preflight_preserves_required_scenario_oracles(test_env):
                     "expected_outcome": [
                         {
                             "oracle_id": "oracle:escrow_verified",
-                            "target": "state",
+                            "target": "message",
                             "property": "ok",
                             "expected": True,
                             "required": True,

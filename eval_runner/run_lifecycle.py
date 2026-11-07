@@ -111,6 +111,8 @@ def get_run_lifecycle_state(
     state = str(record.get("lifecycle") or record.get("status") or "OPEN").upper()
     if state in ("PENDING", "RUNNING", "STARTED", "QUEUED"):
         return RunLifecycleState.OPEN
+    if state in ("PAUSED", "PAUSED_FOR_APPROVAL", "AWAITING_APPROVAL", "WAITING_FOR_APPROVAL"):
+        return RunLifecycleState.PAUSED_FOR_APPROVAL
     # Execution completion is not a certificate seal.  Backends retain their
     # user-facing terminal status (COMPLETED/FAILED/etc.) in the run record,
     # while lifecycle consumers must treat that evidence as closed pending the

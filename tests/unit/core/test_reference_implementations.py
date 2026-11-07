@@ -1791,6 +1791,24 @@ class TestAuthAndCatalogExtraBranches:
         (checkpoint_vault / "scenario_resolved.json").write_text(
             json.dumps(checkpoint_scenario), encoding="utf-8"
         )
+        raw_prefix = b'{"_seq": 1, "event": "run_start"}\n'
+        (checkpoint_vault / "run.jsonl").write_bytes(raw_prefix)
+        backend._run_store.create_run(run_id_chk, "scen_chk")
+        import hashlib
+
+        backend._run_store.update_run_status(
+            run_id_chk,
+            "PAUSED",
+            details={
+                "evidence_capture": {
+                    "complete": False,
+                    "resumable": True,
+                    "event_count": 1,
+                    "terminal_seq": 1,
+                    "trace_hash": "sha3_256:" + hashlib.sha3_256(raw_prefix).hexdigest(),
+                }
+            },
+        )
         chk_dict = {
             "scenario_data": checkpoint_scenario,
             "checkpoint_id": "c1",

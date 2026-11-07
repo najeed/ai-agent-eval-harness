@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -9,6 +8,27 @@ from eval_runner.events import CoreEvents, Event
 from eval_runner.flight_recorder import FlightRecorderPlugin
 from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
+
+
+def test_recorder_persistence_failure_survives_bus_delivery_and_blocks_sealing(tmp_path):
+    from eval_runner.events import EventEmitter, EvidenceDeliveryError
+
+    store = LocalFileRunStore(tmp_path / "provider")
+    store.create_run("capture-failed", scenario_id="scenario")
+    recorder = FlightRecorderPlugin(run_store=store)
+    recorder.bind_run_provider("capture-failed", store)
+    bus = EventEmitter(run_id="capture-failed", async_mode=True)
+    bus.subscribe(recorder.handle_event)
+    with patch.object(store, "append_events", side_effect=OSError("disk unavailable")):
+        with pytest.raises(EvidenceDeliveryError):
+            bus.emit("assertion_evaluated", {"passed": False})
+    run = store.get_run("capture-failed")
+    assert run["status"] == "CERTIFICATION_FAILED"
+    assert run["status_details"]["evidence_capture_failed"] is True
+    assert store.update_run_status("capture-failed", "COMPLETED") is False
+    assert store.update_run_status("capture-failed", "SEALED") is False
+    with pytest.raises(EvidenceDeliveryError):
+        bus.emit("run_end", {"status": "success"})
 
 
 def test_resume_sequence_comes_from_provider_events(tmp_path):
@@ -234,42 +254,22 @@ def test_finalize_run_edge_cases_and_seals(tmp_path, monkeypatch):
     rec.finalize_run("run-already-sealed")
     assert rec.get_run_state("run-already-sealed") == "SEALED"
 
-    # 5. finalize_run with non-null signer creates trace_seal.json
-    # with signer identity and signature
+    # Recorder closure never signs or publishes certification artifacts.
     store.create_run("run-seal-art", "scenario")
-    mock_signer = MagicMock()
-    mock_signer.identity = "test-node"
-    mock_signer.key_id = "key-001"
-    mock_signer.sign.return_value = b"\xaa\xbb\xcc"
-
-    mock_art_store = MagicMock()
+    signer = MagicMock()
+    artifacts = MagicMock()
     rec_art = FlightRecorderPlugin(
-        run_store=store,
-        signing_backend=mock_signer,
-        artifact_store=mock_art_store,
+        run_store=store, signing_backend=signer, artifact_store=artifacts
     )
     rec_art.finalize_run("run-seal-art")
-    mock_art_store.store_artifact.assert_called_once()
-    stored_json = json.loads(mock_art_store.store_artifact.call_args[1]["content"])
-    assert stored_json["signer_identity"] == "test-node"
-    assert "trace_digest" in stored_json
-    assert stored_json["trace_digest"].startswith("sha3_256:")
-    assert stored_json["key_id"] == "key-001"
-    assert stored_json["signature"] == "aabbcc"
+    signer.sign_payload.assert_not_called()
+    artifacts.store_artifact.assert_not_called()
+    assert store.get_run("run-seal-art")["lifecycle"] == "FINALIZING"
 
-    # 6. Artifact store finalize error in certification mode raises exception
-    mock_art_fail = MagicMock()
-    mock_art_fail.store_artifact.side_effect = OSError("Disk unmounted")
-    rec_art_fail = FlightRecorderPlugin(
-        run_store=store,
-        signing_backend=mock_signer,
-        artifact_store=mock_art_fail,
-        certification_mode=True,
-    )
-    store.create_run("run-cert-fail", "scenario")
-    with pytest.raises(OSError, match="Disk unmounted"):
-        rec_art_fail.finalize_run("run-cert-fail")
-    assert rec_art_fail.get_run_state("run-cert-fail") == "CERTIFICATION_FAILED"
+    # An unavailable artifact service cannot cause premature publication either.
+    artifacts.store_artifact.side_effect = OSError("Disk unmounted")
+    rec_art.finalize_run("run-seal-art")
+    artifacts.store_artifact.assert_not_called()
 
 
 def test_freeze_run_and_utility_hooks(tmp_path):
@@ -375,55 +375,13 @@ def test_flight_recorder_uncovered_branches(tmp_path, monkeypatch):
     rec_no_art.finalize_run("run-no-art")
     assert rec_no_art.get_run_state("run-no-art") == "FINALIZING"
 
-    # 9. finalize_run with signer having get_key_id(), no key_id, and sign_payload
-    store.create_run("run-sig-payload", "scenario")
-    mock_art = MagicMock()
-
-    class PayloadSigner:
-        identity = "payload-node"
-
-        def can_sign(self):
-            return True
-
-        def get_key_id(self):
-            return "key-via-getter"
-
-        def sign_payload(self, payload):
-            return b"\x12\x34"
-
-    rec_payload = FlightRecorderPlugin(
-        run_store=store, signing_backend=PayloadSigner(), artifact_store=mock_art
+    artifacts = MagicMock()
+    signer = MagicMock()
+    store.create_run("run-no-premature-seal", "scenario")
+    rec_signed = FlightRecorderPlugin(
+        run_store=store, signing_backend=signer, artifact_store=artifacts
     )
-    rec_payload.finalize_run("run-sig-payload")
-    mock_art.store_artifact.assert_called_once()
-    envelope = json.loads(mock_art.store_artifact.call_args[1]["content"])
-    assert envelope["signer_identity"] == "payload-node"
-    assert envelope["signature"] == "1234"
-    assert envelope["key_id"] == "key-via-getter"
-
-    # Also test signer where get_key_id returns None
-    class NoneKeyIdSigner(PayloadSigner):
-        def get_key_id(self):
-            return None
-
-    mock_art2 = MagicMock()
-    rec_no_key = FlightRecorderPlugin(
-        run_store=store, signing_backend=NoneKeyIdSigner(), artifact_store=mock_art2
-    )
-    store.create_run("run-sig-no-key", "scenario")
-    rec_no_key.finalize_run("run-sig-no-key")
-    env2 = json.loads(mock_art2.store_artifact.call_args[1]["content"])
-    assert "key_id" not in env2
-
-    # 10. finalize_run artifact store error when certification_mode=False
-    store.create_run("run-art-ign", "scenario")
-    mock_art_ign = MagicMock()
-    mock_art_ign.store_artifact.side_effect = OSError("Ignoring artifact error")
-    rec_art_ign = FlightRecorderPlugin(
-        run_store=store,
-        signing_backend=PayloadSigner(),
-        artifact_store=mock_art_ign,
-        certification_mode=False,
-    )
-    rec_art_ign.finalize_run("run-art-ign")
-    assert rec_art_ign.get_run_state("run-art-ign") == "FINALIZING"
+    rec_signed.finalize_run("run-no-premature-seal")
+    signer.sign_payload.assert_not_called()
+    artifacts.store_artifact.assert_not_called()
+    assert rec_signed.get_run_state("run-no-premature-seal") == "FINALIZING"

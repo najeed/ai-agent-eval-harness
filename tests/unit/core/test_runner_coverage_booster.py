@@ -25,7 +25,8 @@ def clean_certification_locks():
         PerRunCertificationLock._active_locks.clear()
         PerRunCertificationLock._depth.clear()
         PerRunCertificationLock._thread_locks.clear()
-    yield
+    with patch("eval_runner.events.EventEmitter.finalize_capture"):
+        yield
     with PerRunCertificationLock._meta_lock:
         PerRunCertificationLock._active_locks.clear()
         PerRunCertificationLock._depth.clear()
@@ -319,6 +320,7 @@ async def test_scoped_configuration_adoption_success(tmp_path):
     mock_rev_service.get_deployment_adapter.return_value = mock_adapter
 
     mock_consumer = MagicMock()
+    mock_consumer.last_resolved_config = MagicMock(config_hash="sha3_256:abc123hash")
     mock_consumer.consume_and_reload.return_value = {"status": "reloaded"}
 
     mock_run_store = MagicMock()
@@ -596,6 +598,7 @@ async def test_signing_error_persists_scoped_failed_manifest():
     runner.revision_service = mock_rev_service
 
     mock_consumer = MagicMock()
+    mock_consumer.last_resolved_config = MagicMock(config_hash="sha3_256:abc123hash")
     mock_consumer.consume_and_reload.return_value = {"status": "reloaded"}
 
     mock_run_store = MagicMock()

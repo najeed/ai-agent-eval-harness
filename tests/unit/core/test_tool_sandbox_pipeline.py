@@ -49,6 +49,8 @@ class MockAuditingSandboxInterceptor(ToolSandboxInterceptor):
 class MockErrorSandboxInterceptor(ToolSandboxInterceptor):
     """Intentionally raises an error during isolation to verify zero-trust resiliency."""
 
+    enforcement = False
+
     def can_isolate(self, tool_name: str) -> bool:
         return True
 

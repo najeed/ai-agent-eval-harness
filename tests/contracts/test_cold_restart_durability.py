@@ -91,7 +91,28 @@ class TestColdRestartDurabilityContract:
                     },
                     context=scope_a,
                 )
-                run_store_1.update_run_status(run_id, "PAUSED_FOR_APPROVAL", context=scope_a)
+                from eval_runner.utils import crypto
+
+                prefix_events = [
+                    {"_seq": 1, "event": "run_start", "data": {"execution_mode": "live"}},
+                    {"_seq": 2, "event": "pause", "data": {"status": "PAUSED_FOR_APPROVAL"}},
+                ]
+                run_store_1.append_events(run_id, prefix_events, context=scope_a)
+                raw_prefix = run_store_1.get_trace_bytes(run_id, context=scope_a) or b""
+                run_store_1.update_run_status(
+                    run_id,
+                    "PAUSED_FOR_APPROVAL",
+                    details={
+                        "evidence_capture": {
+                            "complete": False,
+                            "resumable": True,
+                            "event_count": len(prefix_events),
+                            "terminal_seq": len(prefix_events),
+                            "trace_hash": "sha3_256:" + crypto.checksum(raw_prefix),
+                        }
+                    },
+                    context=scope_a,
+                )
 
                 # 1. Simulate active execution pausing at HITL checkpoint
                 checkpoint_data = {

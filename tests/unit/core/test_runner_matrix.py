@@ -18,6 +18,7 @@ import pytest
 
 from agentv_runtime.config import ResolvedRuntimeConfig
 from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
+from eval_runner import events
 from eval_runner.events import CoreEvents
 from eval_runner.execution_ir import WorkflowStatus
 from eval_runner.reference.local_run_store import LocalFileRunStore
@@ -661,8 +662,8 @@ async def test_runner_trace_and_assertion_branches(tmp_path, monkeypatch):
             return_value=sample_attempt_with_metrics
         )
         with patch.object(Path, "exists", _fake_exists):
-            res_no_trace = await runner.run({"id": "scen_no_trace"}, run_id="run_no_trace_dir")
-            assert res_no_trace is not None
+            with pytest.raises(events.EvidenceDeliveryError):
+                await runner.run({"id": "scen_no_trace"}, run_id="run_no_trace_dir")
 
     # 3. Missing signature branch after signing attempt
     with patch("eval_runner.session.SessionManager") as mock_session:
@@ -1379,8 +1380,31 @@ async def test_runner_vault_collision_and_resumption_lifecycle(tmp_path, monkeyp
 
     # 3. Successful resumption reloads the provider-owned manifest and snapshot.
     store.create_run("active_resume_run", "vault_scen")
+    prefix_events = [
+        {"_seq": 1, "event": "run_start", "data": {"execution_mode": "hybrid"}},
+        {"_seq": 2, "event": "pause", "data": {"status": "paused"}},
+    ]
+    store.append_events("active_resume_run", prefix_events)
+    from eval_runner.utils import crypto
+
+    raw_prefix = store.get_trace_bytes("active_resume_run") or b""
     transition_run_lifecycle(
-        "active_resume_run", RunLifecycleState.PAUSED_FOR_APPROVAL, run_store=store
+        "active_resume_run",
+        RunLifecycleState.PAUSED_FOR_APPROVAL,
+        run_store=store,
+    )
+    store.update_run_status(
+        "active_resume_run",
+        "PAUSED_FOR_APPROVAL",
+        details={
+            "evidence_capture": {
+                "complete": False,
+                "resumable": True,
+                "event_count": 2,
+                "terminal_seq": 2,
+                "trace_hash": "sha3_256:" + crypto.checksum(raw_prefix),
+            }
+        },
     )
     store.save_run_manifest(
         "active_resume_run",
@@ -1472,12 +1496,9 @@ async def test_runner_physical_trace_reading_empty_lines(tmp_path, monkeypatch):
 
     async def mock_exec(*args, **kwargs):
         run_file = tmp_path / "runs" / "space_trace_run" / "run.jsonl"
-        run_file.parent.mkdir(parents=True, exist_ok=True)
-        run_file.write_text(
-            '{"event": "run_start", "run_id": "space_trace_run"}\n\n   '
-            '\n{"event": "run_end", "run_id": "space_trace_run"}\n\n',
-            encoding="utf-8",
-        )
+        if run_file.exists():
+            existing = run_file.read_text(encoding="utf-8")
+            run_file.write_text(existing + "\n\n   \n\n", encoding="utf-8")
         return [{"workflow_verdict": {"status": "COMPLETED"}}]
 
     monkeypatch.setattr("eval_runner.session.SessionManager.execute_tasks", mock_exec)
@@ -1512,17 +1533,16 @@ async def test_runner_certification_evaluation_kernel_fallback_and_signing_error
         "source_commit": "abc1234",
     }
     emitted = []
+    orig_emit = events.emit
     monkeypatch.setattr(
         "eval_runner.events.emit",
-        lambda ev, payload, *a, **k: emitted.append((ev, payload)),
+        lambda ev, payload, *a, **k: (
+            emitted.append((ev, payload)),
+            orig_emit(ev, payload, *a, **k),
+        )[0],
     )
 
     async def mock_exec(*args, **kwargs):
-        for v in (tmp_path / "runs").iterdir():
-            if v.is_dir():
-                run_file = v / "run.jsonl"
-                if not run_file.exists():
-                    run_file.write_text('{"event": "run_start", "_seq": 1}\n', encoding="utf-8")
         return [{"workflow_verdict": {"status": "COMPLETED"}}]
 
     monkeypatch.setattr("eval_runner.session.SessionManager.execute_tasks", mock_exec)
@@ -1556,10 +1576,10 @@ async def test_runner_save_manifest_run_store_exception_logged(tmp_path, monkeyp
     runner = DefaultRunner()
     scenario = {"id": "run_store_fail_scen", "workflow": {"nodes": [{"id": "n1"}]}}
 
-    mock_run_store = MagicMock()
-    mock_run_store.get_run.return_value = None
-    mock_run_store.save_run_manifest.side_effect = [None, OSError("Simulated disk write failure")]
-    runner.run_store = mock_run_store
+    real_store = LocalFileRunStore(tmp_path / "runs")
+    runner.run_store = real_store
+    mock_save = MagicMock(side_effect=[None, OSError("Simulated disk write failure")])
+    monkeypatch.setattr(real_store, "save_run_manifest", mock_save)
 
     with patch(
         "eval_runner.session.SessionManager.execute_tasks",
@@ -1568,7 +1588,7 @@ async def test_runner_save_manifest_run_store_exception_logged(tmp_path, monkeyp
     ):
         res = await runner.run(scenario, run_id="store_fail_run")
         assert res is not None
-        assert mock_run_store.save_run_manifest.called
+        assert mock_save.called
 
 
 @pytest.mark.asyncio
@@ -1604,9 +1624,27 @@ async def test_runner_metadata_non_mapping_and_manifest_mode_branches(tmp_path, 
     # 2. Resumption where manifest has no execution_mode (branch 743->756)
     vault = tmp_path / "runs" / "no_mode_resume_run"
     vault.mkdir(parents=True, exist_ok=True)
-    (vault / "run.jsonl").write_text('{"event": "run_start"}\n', encoding="utf-8")
+    raw_prefix = b'{"_seq": 1, "event": "run_start"}\n'
+    (vault / "run.jsonl").write_bytes(raw_prefix)
+    from eval_runner.utils import crypto
+
     transition_run_lifecycle(
-        "no_mode_resume_run", RunLifecycleState.OPEN, run_store=runner.run_store
+        "no_mode_resume_run",
+        RunLifecycleState.OPEN,
+        run_store=runner.run_store,
+    )
+    runner.run_store.update_run_status(
+        "no_mode_resume_run",
+        "OPEN",
+        details={
+            "evidence_capture": {
+                "complete": False,
+                "resumable": True,
+                "event_count": 1,
+                "terminal_seq": 1,
+                "trace_hash": "sha3_256:" + crypto.checksum(raw_prefix),
+            }
+        },
     )
 
     mf = vault / "execution_manifest.json"
@@ -1635,9 +1673,23 @@ async def test_runner_metadata_non_mapping_and_manifest_mode_branches(tmp_path, 
     # 3. Resumption where manifest mode is set but ctx.metadata is not Mapping (branch 746->756)
     vault3 = tmp_path / "runs" / "no_meta_resume_run"
     vault3.mkdir(parents=True, exist_ok=True)
-    (vault3 / "run.jsonl").write_text('{"event": "run_start"}\n', encoding="utf-8")
+    raw_prefix3 = b'{"_seq": 1, "event": "run_start"}\n'
+    (vault3 / "run.jsonl").write_bytes(raw_prefix3)
     transition_run_lifecycle(
         "no_meta_resume_run", RunLifecycleState.OPEN, run_store=runner.run_store
+    )
+    runner.run_store.update_run_status(
+        "no_meta_resume_run",
+        "OPEN",
+        details={
+            "evidence_capture": {
+                "complete": False,
+                "resumable": True,
+                "event_count": 1,
+                "terminal_seq": 1,
+                "trace_hash": "sha3_256:" + crypto.checksum(raw_prefix3),
+            }
+        },
     )
 
     mf3 = vault3 / "execution_manifest.json"

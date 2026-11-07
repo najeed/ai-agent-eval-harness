@@ -1078,6 +1078,9 @@ class WorkflowInterpreter:
             payload["parent_execution_id"] = record.parent_execution_id
             payload["timed_out"] = record.timed_out
         if result:
+            if result.get("is_replayed") is True:
+                payload["is_replayed"] = True
+                payload["replay_provenance"] = result.get("replay_provenance")
             if "metrics" in result and result["metrics"]:
                 payload["metrics"] = result["metrics"]
             if "oracle_results" in result and result["oracle_results"]:

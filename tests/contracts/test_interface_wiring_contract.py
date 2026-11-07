@@ -8,6 +8,7 @@ runtime execution paths, preventing "built but unwired" regressions.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -507,6 +508,27 @@ def test_verifier_artifact_store_wiring(tmp_path, monkeypatch):
     ).sign()
     fin_ev = {"event": "evaluator_finalization", "data": rec.to_dict(), "_seq": 4}
     run_store.append_events(run_id, [fin_ev])
+
+    raw_all = run_store.get_trace_bytes(run_id) or b""
+    trace_lines = [json.loads(line) for line in raw_all.splitlines() if line.strip()]
+    terminal_seq = max(
+        (e.get("_seq") for e in trace_lines if isinstance(e.get("_seq"), int)),
+        default=len(trace_lines),
+    )
+    import hashlib
+
+    run_store.update_run_status(
+        run_id,
+        "OPEN",
+        details={
+            "evidence_capture": {
+                "complete": True,
+                "event_count": len(trace_lines),
+                "terminal_seq": terminal_seq,
+                "trace_hash": "sha3_256:" + hashlib.sha3_256(raw_all).hexdigest(),
+            }
+        },
+    )
 
     res = CertificationService.execute_industrial_certification(
         run_id=run_id,

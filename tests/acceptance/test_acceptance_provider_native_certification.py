@@ -13,6 +13,7 @@ from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
 from eval_runner import config
 from eval_runner.console.app import create_app
 from eval_runner.console.routes.evidence import build_verification_package
+from eval_runner.events import EventEmitter
 from eval_runner.identity import IdentityService
 from eval_runner.reference.local_run_store import LocalFileRunStore, RunManifestImmutableError
 from eval_runner.run_lifecycle import RunLifecycleState, get_run_lifecycle_state
@@ -51,6 +52,8 @@ def _seed_provider_run(store: LocalFileRunStore, run_id: str) -> dict:
         runtime_config={"execution_mode": "live"},
     )
     store.create_run(run_id, scenario["id"])
+    bus = EventEmitter(run_id=run_id)
+    bus.subscribe(lambda event: store.append_events(run_id, [event.to_dict()]), required=True)
     events = [
         {"event": "run_start", "_seq": 1, "run_id": run_id, "execution_mode": "live"},
         {
@@ -70,7 +73,9 @@ def _seed_provider_run(store: LocalFileRunStore, run_id: str) -> dict:
             "score": 1.0,
         },
     ]
-    store.append_events(run_id, events)
+    for event in events:
+        bus.emit(event["event"], {key: value for key, value in event.items() if key != "event"})
+    events = store.get_events(run_id, offset=0, limit=1000)
     trace_lines = store.get_trace_bytes(run_id).decode("utf-8").splitlines()
     graph = build_evidence_graph_from_events(
         list(zip(events, trace_lines, strict=True)), required_oracle_ids=["oracle-1"]
@@ -91,9 +96,7 @@ def _seed_provider_run(store: LocalFileRunStore, run_id: str) -> dict:
         terminal_seq=3,
         finalized_at="2026-10-27T00:00:00Z",
     ).sign()
-    store.append_events(
-        run_id, [{"event": "evaluator_finalization", "_seq": 4, "data": finalization.to_dict()}]
-    )
+    bus.emit("evaluator_finalization", {"_seq": 4, "data": finalization.to_dict()})
     store.save_run_manifest(
         run_id,
         {
@@ -102,6 +105,7 @@ def _seed_provider_run(store: LocalFileRunStore, run_id: str) -> dict:
             "execution_manifest": execution_manifest.to_dict(),
         },
     )
+    bus.finalize_capture(run_id, store)
     return scenario
 
 
@@ -115,7 +119,14 @@ def test_acceptance_manipulated_or_stale_provider_evidence_cannot_be_certified(
     run_id = f"at-provider-stale-{uuid.uuid4().hex[:8]}"
     scenario = _seed_provider_run(store, run_id)
     stale_events = store.get_events(run_id, offset=0, limit=1000)
-    store.append_events(run_id, [{"event": "forged_post_finalization", "_seq": 5}])
+    original_bytes = store.get_trace_bytes(run_id)
+    monkeypatch.setattr(
+        store,
+        "get_trace_bytes",
+        lambda *_args, **_kwargs: (
+            original_bytes + b'{"event":"forged_post_finalization","_seq":5}\n'
+        ),
+    )
     monkeypatch.setattr(store, "get_events", lambda *_args, **_kwargs: stale_events)
 
     with pytest.raises(ValueError, match="ProviderEventByteDivergence"):

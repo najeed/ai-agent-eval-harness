@@ -2253,8 +2253,23 @@ def test_certification_service_fail_closed_validations(tmp_path):
                 "data": {"execution_mode_declared": True},
             },
             {"event": "assertion_evaluated", "_seq": 2, "assertion": "oracle_1", "passed": False},
-            {"event": "evaluation_result", "_seq": 3, "data": {"status": "FAIL", "score": 0.0}},
+            {"event": "run_end", "_seq": 3, "data": {"status": "FAIL", "score": 0.0}},
         ],
+    )
+    raw = run_store.get_trace_bytes(run_id) or b""
+    from eval_runner.utils import crypto
+
+    run_store.update_run_status(
+        run_id,
+        "OPEN",
+        details={
+            "evidence_capture": {
+                "complete": True,
+                "event_count": 3,
+                "terminal_seq": 3,
+                "trace_hash": "sha3_256:" + crypto.checksum(raw),
+            }
+        },
     )
 
     orig_write_text = Path.write_text
@@ -3194,6 +3209,12 @@ def test_verify_certification_artifact_successful_authoritative_certification():
         metadata={
             "provisional": False,
             "certificate_profile": "agentv.certification.v3.0.0",
+            "evidence_capture": {
+                "complete": True,
+                "event_count": 3,
+                "terminal_seq": 3,
+                "trace_hash": trace_hash,
+            },
         },
         signer_identity="eval_agent",
     )

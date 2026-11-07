@@ -116,17 +116,31 @@ def _build_test_run(
         metadata={"required_oracle_ids": req_oracles} if req_oracles else {},
         runtime_config={"required_oracle_ids": req_oracles} if req_oracles else {},
     )
+    numbered_events: list[dict[str, Any]] = []
+    for i, ev in enumerate(events, 1):
+        ev_copy = dict(ev)
+        if "_seq" not in ev_copy:
+            ev_copy["_seq"] = i
+        numbered_events.append(ev_copy)
     run_store.create_run(run_id, str(scen_id))
-    run_store.append_events(run_id, events)
+    run_store.append_events(run_id, numbered_events)
 
     final_events: list[dict[str, Any]] = []
     if evaluator_finalization is not None:
-        if write_manifest and evaluator_finalization.execution_manifest_hash == "sha3_256:dummy":
-            evaluator_finalization = replace(
-                evaluator_finalization,
-                execution_manifest_hash=exec_manifest.compute_manifest_hash(),
-            )
         if not evaluator_finalization.evaluator_signature:
+            if evaluator_finalization.terminal_seq in (0, None):
+                evaluator_finalization = replace(
+                    evaluator_finalization,
+                    terminal_seq=len(numbered_events),
+                )
+            if (
+                write_manifest
+                and evaluator_finalization.execution_manifest_hash == "sha3_256:dummy"
+            ):
+                evaluator_finalization = replace(
+                    evaluator_finalization,
+                    execution_manifest_hash=exec_manifest.compute_manifest_hash(),
+                )
             exact_events = run_store.get_events(run_id, offset=0, limit=10_000_000)
             exact_lines = run_store.get_trace_bytes(run_id).decode("utf-8").splitlines()
             evidence_root = build_evidence_graph_from_events(
@@ -138,7 +152,23 @@ def _build_test_run(
             )
             evaluator_finalization = evaluator_finalization.sign()
         fin_dict = evaluator_finalization.to_dict()
-        final_events.append({"event": "evaluator_finalization", "data": fin_dict})
+        final_events.append(
+            {
+                "event": "evaluator_finalization",
+                "_seq": len(numbered_events) + 1,
+                "data": fin_dict,
+            }
+        )
+    elif not any(
+        ev.get("event") in {"run_end", "end", "evaluator_finalization"} for ev in numbered_events
+    ):
+        final_events.append(
+            {
+                "event": "run_end",
+                "_seq": len(numbered_events) + 1,
+                "data": {"status": "success"},
+            }
+        )
 
     if final_events:
         run_store.append_events(run_id, final_events)
@@ -147,6 +177,28 @@ def _build_test_run(
             run_id,
             {"execution_manifest": exec_manifest.to_dict(), "scenario_data": dict(scenario_data)},
         )
+
+    from eval_runner.utils import crypto
+
+    raw = run_store.get_trace_bytes(run_id) or b""
+    lines = [json.loads(line) for line in raw.splitlines() if line.strip()]
+    count = len(lines)
+    terminal_seq = max(
+        (e.get("_seq") for e in lines if isinstance(e.get("_seq"), int)),
+        default=count,
+    )
+    run_store.update_run_status(
+        run_id,
+        "OPEN",
+        details={
+            "evidence_capture": {
+                "complete": True,
+                "event_count": count,
+                "terminal_seq": terminal_seq,
+                "trace_hash": "sha3_256:" + crypto.checksum(raw),
+            }
+        },
+    )
 
     vault = runs_dir / run_id
     trace = vault / "run.jsonl"

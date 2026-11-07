@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
+from eval_runner.context import TurnContext
 from eval_runner.execution_ir import (
     CompiledEvaluationPlan,
     CompiledOracle,
@@ -181,14 +182,17 @@ async def test_handle_multiple_tools_exhaustive(base_scenario, tmp_path):
         session.plugin_manager, "trigger_interceptor", return_value={"short_circuit_result": "fast"}
     ):
         agent_resp = {"tool_calls": [{"tool": "t1"}]}
+        turn_ctx = TurnContext(
+            task_id="t1", turn_number=1, current_message="msg", history=(), span_context=None
+        )
         await session._handle_multiple_tools(
-            1, agent_resp, mock_sandbox, [], {"used_tools": []}, MagicMock()
+            1, agent_resp, mock_sandbox, [], {"used_tools": []}, turn_ctx
         )
 
     # Blocked tool
     with patch.object(session.plugin_manager, "trigger_interceptor", return_value=False):
         await session._handle_multiple_tools(
-            1, agent_resp, mock_sandbox, [], {"used_tools": []}, MagicMock()
+            1, agent_resp, mock_sandbox, [], {"used_tools": []}, turn_ctx
         )
 
 
@@ -507,7 +511,7 @@ async def test_session_cancellation_branches(tmp_path):
     assert len(results) >= 1
 
     # In turn loop
-    session2 = SessionManager(run_id, scenario, log_root=tmp_path / "runs")
+    session2 = SessionManager("run-cancel-002", scenario, log_root=tmp_path / "runs")
     session2.cancellation_event = threading.Event()
     node_def = {"id": "node_1", "prompt": "Hi"}
     session2.cancellation_event.set()

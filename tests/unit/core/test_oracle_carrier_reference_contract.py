@@ -46,8 +46,22 @@ def test_explicit_oracle_carrier_reference_requires_recorded_source(
     provider.append_events(
         "run-a", [{"event": "evaluator_finalization", "data": finalization.to_dict(), "_seq": 4}]
     )
-    provider.update_run_status("run-a", "FINALIZING")
     raw = provider.get_trace_bytes("run-a")
+    from eval_runner.utils import crypto
+
+    count = len([line for line in raw.splitlines() if line.strip()])
+    provider.update_run_status(
+        "run-a",
+        "FINALIZING",
+        details={
+            "evidence_capture": {
+                "complete": True,
+                "event_count": count,
+                "terminal_seq": count,
+                "trace_hash": "sha3_256:" + crypto.checksum(raw),
+            }
+        },
+    )
     manifest = provider.get_manifest("run-a")["execution_manifest"]
 
     def sign():

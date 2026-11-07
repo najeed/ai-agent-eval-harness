@@ -16,7 +16,7 @@ from tests.unit.core.test_signing_finalization_contract import (
     ("actual_mode", "trace_mode", "claimed_mode", "trace_provisional", "certified"),
     [
         ("live", "live", "live", False, True),
-        ("hybrid", "hybrid", "hybrid", False, True),
+        ("hybrid", "hybrid", "hybrid", False, False),
         ("simulated", "simulated", "live", False, False),
         ("record_replay", "record_replay", "live", False, False),
         ("live", "live", "hybrid", False, False),
@@ -48,6 +48,20 @@ def test_signed_execution_mode_claim_must_match_actual_manifest(
     start["provisional"] = trace_provisional
     lines[0] = json.dumps(start, sort_keys=True, separators=(",", ":")).encode("utf-8") + b"\n"
     trace = b"".join(lines)
+    from eval_runner.utils import crypto
+
+    provider.update_run_status(
+        "mode-run",
+        "OPEN",
+        details={
+            "evidence_capture": {
+                "complete": True,
+                "event_count": len(lines),
+                "terminal_seq": len(lines),
+                "trace_hash": "sha3_256:" + crypto.checksum(trace),
+            }
+        },
+    )
 
     class TraceView:
         def get_trace_bytes(self, run_id, context=None):

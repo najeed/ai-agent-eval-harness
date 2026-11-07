@@ -13,7 +13,9 @@ import json
 import logging
 import os
 import socket
+import ssl
 from abc import ABC, abstractmethod
+from pathlib import Path
 from typing import Any
 from urllib.parse import urljoin, urlparse
 
@@ -201,6 +203,10 @@ def bound_state_snapshot(
 class StateAuthorityConnector(ABC):
     """Abstract interface for observing external system state authorities."""
 
+    def observation_identity(self) -> dict[str, Any]:
+        """Custom connectors must establish authenticated provenance explicitly."""
+        return {"authenticated": False}
+
     @abstractmethod
     async def fetch_state(
         self,
@@ -217,9 +223,28 @@ class HttpStateAuthorityConnector(StateAuthorityConnector):
     Observes external services via standard HTTP GET with timeout.
     """
 
-    def __init__(self, base_url: str, default_headers: dict[str, str] | None = None):
+    def __init__(
+        self,
+        base_url: str,
+        default_headers: dict[str, str] | None = None,
+        ssl_context: Any | None = None,
+    ):
         self.base_url = _validate_external_authority_url(base_url.rstrip("/"))
         self.default_headers = default_headers or {}
+        self.ssl_context = ssl_context
+
+    def observation_identity(self) -> dict[str, Any]:
+        credentials = any(
+            name.lower() in {"authorization", "x-api-key", "api-key"}
+            and isinstance(value, str)
+            and bool(value.strip())
+            for name, value in self.default_headers.items()
+        )
+        return {
+            "source_id": "sha3_256:" + hashlib.sha3_256(self.base_url.encode()).hexdigest(),
+            "authenticated": urlparse(self.base_url).scheme == "https" and credentials,
+            "transport": urlparse(self.base_url).scheme,
+        }
 
     async def fetch_state(
         self,
@@ -243,9 +268,11 @@ class HttpStateAuthorityConnector(StateAuthorityConnector):
 
         async with aiohttp.ClientSession(timeout=client_timeout) as session:
             try:
-                async with session.get(url, headers=req_headers, allow_redirects=False) as resp:
+                async with session.get(
+                    url, headers=req_headers, allow_redirects=False, ssl=self.ssl_context
+                ) as resp:
                     status_code = resp.status
-                    if status_code >= 400:
+                    if not 200 <= status_code < 300:
                         err_text = await resp.text()
                         logger.warning(
                             f"[StateAuthority] External authority {url} "
@@ -296,20 +323,30 @@ class ExternalStateAuthorityRegistry:
         target_name_or_url: str,
         scenario_authorities: dict[str, Any] | None = None,
     ) -> StateAuthorityConnector:
-        # 1. Direct registry hit
-        if target_name_or_url in self._connectors:
-            return self._connectors[target_name_or_url]
-
-        # 2. Check scenario-declared authorities
+        # A scenario declaration must not reuse another session's credentials or URL.
         if scenario_authorities and target_name_or_url in scenario_authorities:
             auth_conf = scenario_authorities[target_name_or_url]
             if isinstance(auth_conf, dict):
                 url = auth_conf.get("url") or auth_conf.get("endpoint")
                 headers = auth_conf.get("headers")
+                ssl_context = auth_conf.get("ssl_context") or auth_conf.get("ssl")
+                cafile = (
+                    auth_conf.get("cafile")
+                    or auth_conf.get("ca_cert")
+                    or auth_conf.get("ssl_ca_cert")
+                )
+                if cafile:
+                    ssl_context = ssl.create_default_context(cafile=str(cafile))
+                elif isinstance(ssl_context, (str, Path)):
+                    ssl_context = ssl.create_default_context(cafile=str(ssl_context))
                 if url:
-                    connector = HttpStateAuthorityConnector(base_url=url, default_headers=headers)
-                    self._connectors[target_name_or_url] = connector
+                    connector = HttpStateAuthorityConnector(
+                        base_url=url, default_headers=headers, ssl_context=ssl_context
+                    )
                     return connector
+
+        if target_name_or_url in self._connectors:
+            return self._connectors[target_name_or_url]
 
         # 3. Dynamic HTTP URL target
         if target_name_or_url.startswith("http://") or target_name_or_url.startswith("https://"):

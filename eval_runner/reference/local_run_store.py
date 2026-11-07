@@ -793,6 +793,13 @@ class LocalFileRunStore(RunStore):
                     ):
                         return None
 
+            if (run_vault / ".evidence_capture_failed").exists():
+                record["status"] = "CERTIFICATION_FAILED"
+                record["lifecycle"] = "CERTIFICATION_FAILED"
+                record["status_details"] = {
+                    **(record.get("status_details") or {}),
+                    "evidence_capture_failed": True,
+                }
             trace_path = self._resolve_trace_file(run_id) or (run_vault / "run.jsonl")
             scenario = record.get("scenario") or record.get("scenario_id")
             if not scenario and manifest_data:
@@ -1146,6 +1153,16 @@ class LocalFileRunStore(RunStore):
             record.get("context", {}).get(k) not in (None, v) for k, v in context.items()
         ):
             return False
+        if (run_vault / ".evidence_capture_failed").exists() or (
+            record.get("status_details") or {}
+        ).get("evidence_capture_failed") is True:
+            if status != "CERTIFICATION_FAILED":
+                return False
+            details = {**(details or {}), "evidence_capture_failed": True}
+        if (details or {}).get("evidence_capture_failed") is True:
+            self._write_bytes_durable(run_vault / ".evidence_capture_failed", b"failed\n")
+        if (record.get("status_details") or {}).get("evidence_capture"):
+            details = {**record["status_details"], **(details or {})}
         record.update(
             {
                 "status": status,
@@ -1291,6 +1308,10 @@ class LocalFileRunStore(RunStore):
         ):
             return False
         target = vault / "run_manifest.json"
+        if (vault / ".evidence_capture_failed").exists() or (
+            record.get("status_details") or {}
+        ).get("evidence_capture_failed") is True:
+            return False
         incoming_digest = _canonical_digest(manifest)
         existing = self._read_json(target) if target.exists() else None
         if self._is_sealed(vault):

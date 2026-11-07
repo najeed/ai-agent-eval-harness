@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { createHash } from 'node:crypto';
 
-const sri = (source: string) => `sha256-${createHash('sha256').update(source).digest('base64')}`;
+const sri = (source: string) => `sha3-256-${createHash('sha3-256').update(source).digest('base64')}`;
 
 const initialContext = {
   org_id: 'northstar-health', tenant_id: 'northstar-health',

@@ -25,8 +25,22 @@ def test_signing_derives_terminal_finalization_hash_without_hint(
     provider.create_run("run-a", scenario["id"])
     provider.append_events("run-a", [*events, terminal])
     provider.save_run_manifest("run-a", source.get_manifest("run-a"))
-    provider.update_run_status("run-a", "FINALIZING")
     raw = provider.get_trace_bytes("run-a")
+    from eval_runner.utils import crypto
+
+    count = len([line for line in raw.splitlines() if line.strip()])
+    provider.update_run_status(
+        "run-a",
+        "FINALIZING",
+        details={
+            "evidence_capture": {
+                "complete": True,
+                "event_count": count,
+                "terminal_seq": count,
+                "trace_hash": "sha3_256:" + crypto.checksum(raw),
+            }
+        },
+    )
     manifest = provider.get_manifest("run-a")["execution_manifest"]
     certificate = TraceVerifier.sign_trace_bytes(
         raw,

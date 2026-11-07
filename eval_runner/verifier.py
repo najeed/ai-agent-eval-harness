@@ -10,9 +10,15 @@ from typing import Any
 
 from cryptography.exceptions import InvalidSignature, UnsupportedAlgorithm
 
+from agentv_runtime.execution_truth import execution_truth_eligible
 from agentv_runtime.versions import VC_SCHEMA_VERSION as VC_V3_SCHEMA_VERSION
 
 from . import config, forensics
+from .certification_truth import (
+    capture_receipt_failures,
+    certification_claim_scope,
+    state_claim_failures,
+)
 from .interfaces.signing import SigningBackend
 from .utils import crypto
 
@@ -543,6 +549,20 @@ class TraceVerifier:
 
         # Detached packages must preserve every issuer provisional restriction.
         provisional = bool(provisional or (metadata or {}).get("provisional") is True)
+        merged_metadata = dict(metadata or {})
+        if (
+            "evidence_capture" not in merged_metadata
+            and run_store is not None
+            and hasattr(run_store, "get_run")
+        ):
+            try:
+                run_rec = run_store.get_run(run_id, context=context)
+                if isinstance(run_rec, Mapping):
+                    cap = (run_rec.get("status_details") or {}).get("evidence_capture")
+                    if isinstance(cap, Mapping):
+                        merged_metadata["evidence_capture"] = dict(cap)
+            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
+                logger.debug("Evidence capture receipt resolution fallback: %s", exc, exc_info=True)
         trace_hex = hashlib.sha3_256(raw_trace).hexdigest()
         manifest: dict[str, Any] = {
             "vc_version": VC_V3_SCHEMA_VERSION,
@@ -562,7 +582,7 @@ class TraceVerifier:
             },
             "governance_ttl": ttl_days or config.GOVERNANCE_TTL_DAYS,
             "metadata": {
-                **dict(metadata or {}),
+                **merged_metadata,
                 "certificate_profile": f"agentv.certification.v{VC_V3_SCHEMA_VERSION}",
                 "provisional": bool(provisional),
             },
@@ -1125,6 +1145,15 @@ class TraceVerifier:
                 "has_signature": False,
                 "failure_reason": "Run not found by storage provider.",
             }
+        if run and (run.get("status_details") or {}).get("evidence_capture_failed") is True:
+            return {
+                "run_id": run_id,
+                "verification_status": "FAILED_VERIFICATION",
+                "is_valid": False,
+                "verified": False,
+                "certificate_valid": False,
+                "failure_reason": "IncompleteEvidenceCapture",
+            }
         if not manifest:
             return {
                 "run_id": run_id,
@@ -1226,11 +1255,9 @@ class TraceVerifier:
         provisional = bool(
             manifest.get("provisional") or mode in {"simulated", "unknown"} or not mode
         )
-        if valid and (provisional or str(mode).lower() not in {"live", "hybrid"}):
+        if valid and not execution_truth_eligible(mode, provisional):
             valid = False
-            failure_reason = (
-                "Authoritative verification requires a non-provisional live or hybrid run."
-            )
+            failure_reason = "Authoritative verification requires a non-provisional live run."
         compliance = manifest.get("compliance") or {}
         certification = manifest.get("certification") or {}
         package_data = manifest.get("verification_package") or {}
@@ -1266,6 +1293,9 @@ class TraceVerifier:
             "is_valid": valid,
             "cryptographically_valid": valid,
             "certificate_valid": valid,
+            "claim_scope": certification_claim_scope(
+                scenario_data or manifest.get("scenario_data") or manifest.get("scenario")
+            ),
             "evaluation_passed": passed,
             "has_certificate": True,
             "has_signature": bool(
@@ -3360,7 +3390,7 @@ class VerificationAuthority:
         runs and certification artifacts.
         Enforces the complete end-to-end verification contract:
         1. EvaluatorFinalizationRecord present in trace with valid cryptographic signature
-        2. Execution mode is authoritative ('live' or 'hybrid') and not provisional/simulated
+        2. Execution mode is explicitly live and non-provisional
         3. Raw trace byte parity (SHA3-256 vs pkg.trace_hash)
         4. Canonical manifest hash binding & semantic cross-bindings
         5. Evidence graph deterministic root reconstruction & direct provenance
@@ -3705,14 +3735,17 @@ class VerificationAuthority:
                 )
 
         # 2. Execution Mode Enforcement (Fail-closed on simulated/provisional)
-        man_mode = (
-            canonical_manifest.get("execution_mode")
-            if isinstance(canonical_manifest, dict)
-            else None
-        )
-        exec_mode = (
-            ((pkg.execution_identity or {}).get("execution_mode") or man_mode or "").lower().strip()
-        )
+        declared_mode = (pkg.execution_identity or {}).get("execution_mode")
+        if not declared_mode and "execution_mode" not in (pkg.execution_identity or {}):
+            if isinstance(canonical_manifest, Mapping):
+                declared_mode = canonical_manifest.get("execution_mode") or (
+                    canonical_manifest.get("runtime_config", {}) or {}
+                ).get("execution_mode")
+            elif hasattr(canonical_manifest, "runtime_config"):
+                declared_mode = (getattr(canonical_manifest, "runtime_config", {}) or {}).get(
+                    "execution_mode"
+                ) or getattr(canonical_manifest, "execution_mode", None)
+        exec_mode = declared_mode.lower().strip() if isinstance(declared_mode, str) else ""
 
         runtime_config = (
             canonical_manifest.get("runtime_config", {})
@@ -3727,6 +3760,14 @@ class VerificationAuthority:
             if event.get("event") not in {"run_start", "start"}:
                 continue
             data = event.get("data") if isinstance(event.get("data"), dict) else {}
+            contexts = [event, data, event.get("metadata"), data.get("metadata")]
+            if not any(
+                isinstance(context, Mapping) and context.get("execution_mode") is not None
+                for context in contexts
+            ):
+                failures.append(
+                    "ExecutionModeMissing: every run_start must declare execution truth"
+                )
             truth_contexts.extend(
                 [
                     ("run_start", event),
@@ -3743,20 +3784,25 @@ class VerificationAuthority:
             recorded_mode = truth.get("execution_mode")
             if origin.startswith("run_start") and recorded_mode is not None:
                 trace_mode_present = trace_mode_present or bool(str(recorded_mode).strip())
-            if recorded_mode is not None and str(recorded_mode).lower().strip() != exec_mode:
+            if "execution_mode" in truth and (
+                not execution_truth_eligible(recorded_mode)
+                or str(recorded_mode).lower().strip() != exec_mode
+            ):
                 failures.append(
                     f"ExecutionModeMismatch: {origin}={recorded_mode!r} package={exec_mode!r}"
                 )
-            recorded_provisional = recorded_provisional or bool(truth.get("provisional"))
+            recorded_provisional = (
+                recorded_provisional or truth.get("provisional", False) is not False
+            )
         if not trace_mode_present:
             failures.append(
                 "ExecutionModeMissing: raw trace must declare execution mode in run_start"
             )
 
-        if exec_mode not in ("live", "hybrid"):
+        if not execution_truth_eligible(exec_mode):
             failures.append(
                 f"UncertifiedExecutionMode: authoritative certification requires "
-                f"'live' or 'hybrid' execution mode, got '{exec_mode or 'undeclared'}'"
+                f"'live' execution mode, got '{exec_mode or 'undeclared'}'"
             )
 
         is_provisional = bool(
@@ -3768,6 +3814,13 @@ class VerificationAuthority:
             )
 
         # 3. Complete underlying artifact validation
+        if require_signature:
+            failures.extend(
+                capture_receipt_failures(
+                    (pkg.metadata or {}).get("evidence_capture"), raw_trace_bytes, effective_events
+                )
+            )
+        failures.extend(state_claim_failures(scenario_data, effective_events))
         pkg_art_res = cls.verify_package_artifacts(
             package=pkg,
             raw_trace_bytes=raw_trace_bytes,
@@ -3797,7 +3850,8 @@ class VerificationAuthority:
         return {
             "verified": is_valid,
             "certified": bool(is_valid and require_signature and passed),
-            "authoritative": bool(require_signature and profile_supported),
+            "claim_scope": certification_claim_scope(scenario_data),
+            "authoritative": bool(is_valid and require_signature and profile_supported),
             "status": status,
             "failures": failures,
             "package_id": pkg.package_id,

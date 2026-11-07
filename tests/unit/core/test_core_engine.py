@@ -456,17 +456,24 @@ async def test_default_runner_events():
     """Test that runner emits correct core events."""
     runner = DefaultRunner()
     scenario = {"id": "event-test"}
+    from eval_runner.events import CoreEvents, EventEmitter
+
+    orig_emit = EventEmitter.emit
+    emitted = []
+
+    def spy_emit(self, ev_type, *args, **kwargs):
+        emitted.append(ev_type)
+        return orig_emit(self, ev_type, *args, **kwargs)
+
     with (
-        patch("eval_runner.events.EventEmitter.emit") as mock_emit,
+        patch.object(EventEmitter, "emit", side_effect=spy_emit, autospec=True),
         patch(
             "eval_runner.session.SessionManager.execute_tasks", new_callable=AsyncMock
         ) as mock_exec,
     ):
         mock_exec.return_value = []
         await runner.run(scenario, attempts=1)
-        from eval_runner.events import CoreEvents
 
-        emitted = [call[0][0] for call in mock_emit.call_args_list]
         assert CoreEvents.RUN_START in emitted
         assert CoreEvents.RUN_END in emitted
 

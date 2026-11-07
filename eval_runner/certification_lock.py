@@ -59,7 +59,9 @@ class PerRunCertificationLock:
         with cls._meta_lock:
             if run_id in cls._active_locks:
                 return True
-        return bool(run_store and run_store.is_certification_leased(run_id, context=context))
+        if not run_store or not hasattr(run_store, "is_certification_leased"):
+            return False
+        return run_store.is_certification_leased(run_id, context=context) is True
 
     def verify_active(self) -> None:
         if self._lease_failure is not None:

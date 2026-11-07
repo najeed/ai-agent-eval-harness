@@ -1,7 +1,5 @@
 """An ambient run store never grants a recorder ownership of an arbitrary run."""
 
-import json
-
 import pytest
 
 from eval_runner.flight_recorder import FlightRecorderPlugin
@@ -50,7 +48,7 @@ def test_finalizing_unknown_identity_never_publishes_a_trace_seal(tmp_path):
     assert artifacts.get_artifact("unknown", "trace_seal.json") is None
 
 
-def test_unsigned_diagnostic_trace_closure_is_persisted_without_claiming_a_signature(tmp_path):
+def test_diagnostic_trace_closure_never_publishes_a_certificate_seal(tmp_path):
     store = LocalFileRunStore(tmp_path / "runs")
     store.create_run("diagnostic", "scenario")
     artifacts = LocalFileArtifactStore(tmp_path / "artifacts")
@@ -60,10 +58,7 @@ def test_unsigned_diagnostic_trace_closure_is_persisted_without_claiming_a_signa
 
     recorder.finalize_run("diagnostic")
 
-    seal = json.loads(artifacts.get_artifact("diagnostic", "trace_seal.json"))
-    assert seal["status"] == "finalized"
-    assert seal["run_id"] == "diagnostic"
-    assert "signature" not in seal and "signer_identity" not in seal
+    assert artifacts.get_artifact("diagnostic", "trace_seal.json") is None
     assert store.get_run("diagnostic")["lifecycle"] == "FINALIZING"
 
 
@@ -81,7 +76,7 @@ class DiagnosticSigner(SigningBackend):
 
 
 @pytest.mark.parametrize("key_id", [None, "", "opaque-provider-key"])
-def test_optional_key_identifier_is_emitted_only_when_nonempty(tmp_path, key_id):
+def test_recorder_signer_configuration_cannot_publish_a_premature_seal(tmp_path, key_id):
     store = LocalFileRunStore(tmp_path / "runs")
     store.create_run("key-hint", "scenario")
     artifacts = LocalFileArtifactStore(tmp_path / "artifacts")
@@ -91,9 +86,5 @@ def test_optional_key_identifier_is_emitted_only_when_nonempty(tmp_path, key_id)
 
     recorder.finalize_run("key-hint")
 
-    seal = json.loads(artifacts.get_artifact("key-hint", "trace_seal.json"))
-    assert seal["signature"] == "fixture-signature"
-    assert ("key_id" in seal) is bool(key_id)
-    if key_id:
-        assert seal["key_id"] == key_id
+    assert artifacts.get_artifact("key-hint", "trace_seal.json") is None
     assert store.get_run("key-hint")["lifecycle"] == "FINALIZING"

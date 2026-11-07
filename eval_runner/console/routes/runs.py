@@ -9,6 +9,7 @@ from typing import Any
 
 from flask import Blueprint, Response, jsonify, request, send_file
 
+from agentv_runtime.discovery import get_registered_extension, set_extension
 from agentv_runtime.manifest import resolve_artifact_scope
 from eval_runner.explainer import explain_events
 from eval_runner.metrics import MetricRegistry
@@ -25,6 +26,57 @@ from ..providers import get_run_store
 logger = logging.getLogger(__name__)
 
 run_bp = Blueprint("runs", __name__)
+
+_report_action_provider: Any = None
+
+
+def register_report_action_provider(provider: Any) -> None:
+    """Register an optional governed report-action provider for Console run views."""
+    global _report_action_provider
+    set_extension("report_action_provider", provider)
+    _report_action_provider = provider
+
+
+def resolve_run_report_actions(
+    run_id: str, context: dict[str, str] | None = None
+) -> dict[str, Any]:
+    """
+    Resolve the active report download actions for a run
+    (basic fallback if no provider is registered).
+    """
+    provider = _report_action_provider
+    if provider is None:
+        provider = get_registered_extension("report_action_provider")
+    if callable(provider):
+        try:
+            try:
+                resolved = provider(run_id, context)
+            except TypeError:
+                resolved = provider(run_id)
+            if isinstance(resolved, dict) and (
+                resolved.get("download_url") or resolved.get("href")
+            ):
+                if "download_url" not in resolved and "href" in resolved:
+                    resolved["download_url"] = resolved["href"]
+                return resolved
+        except Exception as exc:
+            logger.debug("Report action provider failed for %s: %s", run_id, exc, exc_info=True)
+    default_href = f"/api/v1/runs/{run_id}/report.pdf"
+    return {
+        "mode": "basic",
+        "label": "Download Basic Run Report (PDF)",
+        "download_url": default_href,
+        "href": default_href,
+        "default_profile": "basic",
+        "profiles": [
+            {
+                "id": "basic",
+                "label": "Basic Compliance Report (PDF)",
+                "description": "Human-readable summary derived from this run's evidence.",
+                "href": default_href,
+            }
+        ],
+    }
 
 
 @run_bp.route("/v1/metrics", methods=["GET"])
@@ -362,6 +414,21 @@ def download_run_report_pdf(run_id: str):
     )
 
 
+@run_bp.route("/v1/runs/<path:run_id>/report-actions", methods=["GET"])
+@require_permission(Permission.RUNS_READ)
+def get_run_report_actions(run_id: str):
+    """Return the active report download action(s) and available profiles for a run."""
+    context = active_runtime_context()
+    store = _active_run_store()
+    if (
+        context is not None
+        and store.get_run(run_id, context=None) is not None
+        and not _run_is_in_active_context(run_id, context=context)
+    ):
+        return jsonify({"error": "Not found"}), 404
+    return jsonify(resolve_run_report_actions(run_id, context=context))
+
+
 @run_bp.route("/v1/runs/<path:run_id>", methods=["GET"])
 @require_permission(Permission.RUNS_READ)
 def get_run_status(run_id):
@@ -463,6 +530,7 @@ def get_run_status(run_id):
                     else (manifest.get("compliance") or {}).get("score")
                 ),
                 "score_reason": summary.get("score_reason"),
+                "report_actions": resolve_run_report_actions(run_id, context=context),
                 "score_category": summary.get("score_category"),
                 "failure_reasons": summary.get("failure_reasons", []),
                 "failed_oracles": summary.get("failed_oracles", []),

@@ -267,8 +267,10 @@ async def test_full_lifecycle_suspension_to_certification_e2e(
     assert fin_record.scenario_hash == manifest.scenario_hash
     assert fin_record.evaluator_signature is not None
 
-    # Verify run lifecycle state is OPEN after evaluation completes
-    assert get_run_lifecycle_state(run_id, run_store=runner.run_store) == RunLifecycleState.OPEN
+    # Verify run lifecycle state is FINALIZING after evaluation completes (awaiting certification)
+    assert (
+        get_run_lifecycle_state(run_id, run_store=runner.run_store) == RunLifecycleState.FINALIZING
+    )
 
     # -----------------------------------------------------------------------
     # Step 6: Invoke CertificationService.issue_certification()

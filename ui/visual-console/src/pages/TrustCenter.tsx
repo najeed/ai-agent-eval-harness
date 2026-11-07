@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ShieldCheck, ShieldAlert, Award, CheckCircle, XCircle, Search, Key, RefreshCw, AlertCircle, Clock, ExternalLink, ChevronDown, ChevronRight } from 'lucide-react';
 import { useRBAC } from '../context/RBACContext';
 import { ProvisionalBadge } from '../components/ProvisionalBadge';
+import { useRunReportAction } from '../lib/runReportAction';
 
 interface VerifyResult {
   run_id: string;
@@ -17,6 +18,7 @@ interface VerifyResult {
   compliance_score?: number | null;
   policy_compliant?: boolean;
   certificate_authoritative?: boolean;
+  claim_scope?: string;
 }
 
 export const TrustCenter: React.FC = () => {
@@ -26,6 +28,7 @@ export const TrustCenter: React.FC = () => {
   // Verify State
   const [verifyRunId, setVerifyRunId] = useState('');
   const [verifyResult, setVerifyResult] = useState<VerifyResult | null>(null);
+  const reportAction = useRunReportAction(verifyResult?.run_id);
   const [verifying, setVerifying] = useState(false);
   const [verifyError, setVerifyError] = useState('');
 
@@ -258,6 +261,17 @@ export const TrustCenter: React.FC = () => {
               </div>
 
               {/* Tri-State Audit Verification Cards */}
+              {verifyResult.certificate_authoritative === true && (
+                <p className="text-xs text-slate-400">
+                  Verified claim scope: {verifyResult.claim_scope === 'message_only'
+                    ? 'Agent messages only'
+                    : verifyResult.claim_scope === 'external_business_state'
+                      ? 'Independent business-state evidence'
+                      : verifyResult.claim_scope === 'execution_evidence'
+                        ? 'Execution evidence only'
+                      : 'Undeclared'}
+                </p>
+              )}
               <div className="grid grid-cols-3 gap-2 pt-1 text-[11px]">
                 <div className="bg-slate-950/60 p-2 rounded border border-slate-800 space-y-0.5">
                   <span className="text-[9px] text-slate-500 uppercase font-bold block">1. Cryptographic</span>
@@ -315,11 +329,24 @@ export const TrustCenter: React.FC = () => {
 
               <div className="pt-4 border-t border-slate-800/80 space-y-2">
                 <a
-                  href={`/api/v1/runs/${verifyResult.run_id}/report.pdf`}
+                  href={reportAction.href}
                   className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white rounded text-xs font-bold uppercase tracking-wider transition-all"
                 >
-                  Download Basic Compliance Report (PDF)
+                  {reportAction.label}
                 </a>
+                {reportAction.profiles.length > 1 && (
+                  <div className="grid grid-cols-2 gap-2">
+                    {reportAction.profiles.slice(1).map((profile) => (
+                      <a
+                        key={profile.id}
+                        href={profile.href}
+                        className="flex items-center justify-center gap-1 px-2 py-1.5 border border-indigo-500/30 hover:border-indigo-400 text-indigo-300 rounded text-[11px] font-semibold transition-all text-center"
+                      >
+                        {profile.label}
+                      </a>
+                    ))}
+                  </div>
+                )}
                 <a
                   href={`/api/v1/evidence/packages/${verifyResult.run_id}?download=true`}
                   className="w-full flex items-center justify-center gap-2 px-3 py-2 border border-slate-700 hover:border-slate-500 text-slate-200 rounded text-xs font-bold uppercase tracking-wider transition-all"

@@ -20,6 +20,10 @@ from pydantic import BaseModel, Field  # noqa: E402
 logger = logging.getLogger(__name__)
 
 
+class EvidenceDeliveryError(RuntimeError):
+    """A mandatory evidence consumer did not acknowledge an event."""
+
+
 def sanitize_payload(data: dict) -> dict:
     """Redacts PII and Secrets from event payload before broadcast.
 
@@ -137,13 +141,30 @@ class EventEmitter:
             self.async_mode = async_mode
         self._pending_futures = []
         self._lock = threading.Lock()
+        self._required_subscribers = set()
+        self._delivery_failures = {}
+        self._emitted_counts = {}
+        self._acknowledged_counts = {}
+        self._inflight_counts = {}
+        self._closed_runs = set()
+        self._emission_commitments = {}
+        self._baseline_counts = {}
 
-    def subscribe(self, subscriber: Callable[[Event], None], key: str | None = None):
+    def subscribe(
+        self, subscriber: Callable[[Event], None], key: str | None = None, *, required: bool = False
+    ):
         """Register a new subscriber (e.g., a logging plugin)."""
         if key:
             self._keyed_subscribers[key] = subscriber
         elif subscriber not in self._subscribers:
             self._subscribers.append(subscriber)
+        if required:
+            import inspect
+
+            if inspect.iscoroutinefunction(subscriber):
+                self.unsubscribe(subscriber if key is None else key)
+                raise TypeError("Mandatory evidence subscribers must acknowledge synchronously")
+            self._required_subscribers.add(subscriber)
 
     def unsubscribe(self, subscriber: Callable[[Event], None] | str):
         """Unregister an existing subscriber or key."""
@@ -152,6 +173,9 @@ class EventEmitter:
                 del self._keyed_subscribers[subscriber]
         elif subscriber in self._subscribers:
             self._subscribers.remove(subscriber)
+        self._required_subscribers.intersection_update(
+            self._subscribers + list(self._keyed_subscribers.values())
+        )
 
     def reset(self):
         """Clear all subscribers and notify them to cleanup if possible."""
@@ -168,6 +192,138 @@ class EventEmitter:
                 print(f"   [Events] Warning: Subscriber cleanup failure: {e}")
         self._subscribers = []
         self._keyed_subscribers = {}
+        self._required_subscribers.clear()
+        self._delivery_failures.clear()
+        self._emitted_counts.clear()
+        self._acknowledged_counts.clear()
+        self._inflight_counts.clear()
+        self._closed_runs.clear()
+        self._emission_commitments.clear()
+        self._baseline_counts.clear()
+
+    def finalize_capture(self, run_id, run_store, context=None, *, complete=True):
+        """Durably acknowledge a complete provider stream before certification."""
+        import hashlib
+        import json
+
+        with self._lock:
+            expected = self._emitted_counts.get(run_id, 0)
+            if (
+                run_id in self._delivery_failures
+                or self._inflight_counts.get(run_id, 0)
+                or expected == 0
+                or self._acknowledged_counts.get(run_id, 0) != expected
+            ):
+                raise EvidenceDeliveryError(
+                    "IncompleteEvidenceCapture: events lack durable acknowledgement"
+                )
+            self._closed_runs.add(run_id)
+        try:
+            raw = run_store.get_trace_bytes(run_id, context=context)
+            if not isinstance(raw, bytes):
+                raise ValueError("Provider did not return exact trace bytes")
+            records = [
+                json.loads(line) for line in raw.decode("utf-8").splitlines() if line.strip()
+            ]
+            if len(records) != expected or any(
+                type(row.get("_seq")) is not int or row["_seq"] != index
+                for index, row in enumerate(records, 1)
+            ):
+                raise ValueError("Persisted event count or sequence differs from emitted events")
+            from agentv_runtime.canonical import canonical_json_encode
+
+            baseline = self._baseline_counts.get(run_id, 0)
+            commitments = self._emission_commitments.get(run_id, [])
+            if len(commitments) != expected - baseline:
+                raise ValueError("Emission commitments are incomplete")
+            for row, (keys, digest) in zip(records[baseline:], commitments, strict=True):
+                if (
+                    hashlib.sha3_256(
+                        canonical_json_encode({key: row[key] for key in keys})
+                    ).hexdigest()
+                    != digest
+                ):
+                    raise ValueError("Persisted event content differs from emitted evidence")
+            if complete and records[-1].get("event") not in {
+                "run_end",
+                "end",
+                "evaluator_finalization",
+            }:
+                raise ValueError("Terminal execution event was not persisted")
+            receipt = {
+                "complete": complete,
+                "resumable": not complete,
+                "event_count": expected,
+                "terminal_seq": expected,
+                "trace_hash": "sha3_256:" + hashlib.sha3_256(raw).hexdigest(),
+            }
+            status = "FINALIZING" if complete else "PAUSED_FOR_APPROVAL"
+            if (
+                run_store.update_run_status(
+                    run_id, status, details={"evidence_capture": receipt}, context=context
+                )
+                is not True
+            ):
+                raise ValueError("Provider did not acknowledge capture completion")
+            return receipt
+        except Exception as exc:
+            logger.error("Could not finalize evidence capture for %s", run_id, exc_info=True)
+            self._delivery_failures[run_id] = exc
+            try:
+                run_store.update_run_status(
+                    run_id,
+                    "CERTIFICATION_FAILED",
+                    details={"evidence_capture_failed": True},
+                    context=context,
+                )
+            except Exception:
+                logger.error("Could not persist capture failure for %s", run_id, exc_info=True)
+            raise EvidenceDeliveryError("IncompleteEvidenceCapture: stream closure failed") from exc
+
+    def resume_capture(self, run_id, run_store, context=None):
+        import json
+
+        from .certification_truth import capture_receipt_failures
+
+        with self._lock:
+            if self._inflight_counts.get(run_id, 0) or run_id in self._delivery_failures:
+                raise EvidenceDeliveryError("Cannot resume an active or failed evidence stream")
+        record = run_store.get_run(run_id, context=context) or {}
+        receipt = (record.get("status_details") or {}).get("evidence_capture")
+        raw = run_store.get_trace_bytes(run_id, context=context)
+        rows = (
+            [json.loads(line) for line in raw.decode("utf-8").splitlines() if line.strip()]
+            if isinstance(raw, bytes)
+            else []
+        )
+        if (
+            (record.get("status_details") or {}).get("evidence_capture_failed") is True
+            or not isinstance(receipt, dict)
+            or receipt.get("complete") is not False
+            or receipt.get("resumable") is not True
+            or capture_receipt_failures(receipt, raw, rows, require_complete=False)
+        ):
+            raise EvidenceDeliveryError(
+                "IncompleteEvidenceCapture: resumption lacks acknowledged prefix"
+            )
+        if (
+            run_store.update_run_status(
+                run_id,
+                "OPEN",
+                details={"evidence_capture": {**receipt, "resumable": False}},
+                context=context,
+            )
+            is not True
+        ):
+            raise EvidenceDeliveryError("Provider did not acknowledge capture resumption")
+        with self._lock:
+            if self._inflight_counts.get(run_id, 0):
+                raise EvidenceDeliveryError("Cannot resume an active evidence stream")
+            self._closed_runs.discard(run_id)
+            self._emitted_counts[run_id] = receipt["event_count"]
+            self._acknowledged_counts[run_id] = receipt["event_count"]
+            self._baseline_counts[run_id] = receipt["event_count"]
+            self._emission_commitments[run_id] = []
 
     def flush(self, timeout: float | None = None):
         """Block until all currently scheduled async event tasks are complete."""
@@ -179,7 +335,14 @@ class EventEmitter:
         if futures:
             concurrent.futures.wait(futures, timeout=timeout)
 
-    def emit(self, name: str, data: dict[str, Any], span_context: dict[str, Any] | None = None):
+    def emit(
+        self,
+        name: str,
+        data: dict[str, Any],
+        span_context: dict[str, Any] | None = None,
+        *,
+        required_only: bool = False,
+    ):
         """Emit an event to all subscribers with optional tracing context."""
         sanitized_data = sanitize_payload(data)
 
@@ -189,6 +352,59 @@ class EventEmitter:
 
         event = Event(name, sanitized_data, span_context=span_context)
         all_subs = self._subscribers + list(self._keyed_subscribers.values())
+        run_id = sanitized_data.get("run_id") or self.run_id
+        import hashlib
+
+        from agentv_runtime.canonical import canonical_json_encode
+
+        emitted = event.to_dict()
+        commitment = (tuple(emitted), hashlib.sha3_256(canonical_json_encode(emitted)).hexdigest())
+        with self._lock:
+            if run_id in self._closed_runs:
+                raise EvidenceDeliveryError(f"Evidence stream is closed for run {run_id}")
+            if run_id in self._delivery_failures:
+                raise EvidenceDeliveryError(
+                    f"Evidence capture already failed for run {run_id}"
+                ) from self._delivery_failures[run_id]
+            self._emitted_counts[run_id] = self._emitted_counts.get(run_id, 0) + 1
+            self._inflight_counts[run_id] = self._inflight_counts.get(run_id, 0) + 1
+            self._emission_commitments.setdefault(run_id, []).append(commitment)
+        optional_subs = []
+        mandatory_count = 0
+        for subscriber in all_subs:
+            required = (
+                subscriber in self._required_subscribers
+                or getattr(
+                    getattr(subscriber, "__self__", None), "evidence_delivery_required", False
+                )
+                is True
+            )
+            if not required:
+                optional_subs.append(subscriber)
+                continue
+            try:
+                mandatory_count += 1
+                # Mandatory persistence is acknowledged before asynchronous telemetry.
+                result = subscriber(event)
+                import inspect
+
+                if inspect.isawaitable(result):
+                    if inspect.iscoroutine(result):
+                        result.close()
+                    raise TypeError("Mandatory evidence acknowledgement cannot be asynchronous")
+            except Exception as exc:
+                logger.error("Mandatory event delivery failed for %s", run_id, exc_info=True)
+                self._delivery_failures[run_id] = exc
+                with self._lock:
+                    self._inflight_counts[run_id] -= 1
+                raise EvidenceDeliveryError(f"Evidence capture failed for run {run_id}") from exc
+        with self._lock:
+            self._inflight_counts[run_id] -= 1
+            if mandatory_count:
+                self._acknowledged_counts[run_id] = self._acknowledged_counts.get(run_id, 0) + 1
+        if required_only:
+            return
+        all_subs = optional_subs
 
         # Capture current OTel context if available
         otel_ctx = None
@@ -293,9 +509,11 @@ class EventEmitter:
 
 
 # Standard Global interface (Module Level Aliases)
-def subscribe(subscriber: Callable[[Event], None], key: str | None = None):
+def subscribe(
+    subscriber: Callable[[Event], None], key: str | None = None, *, required: bool = False
+):
     """Register a subscriber to the global event bus."""
-    EventEmitter.get_global().subscribe(subscriber, key=key)
+    EventEmitter.get_global().subscribe(subscriber, key=key, required=required)
 
 
 def unsubscribe(subscriber: Callable[[Event], None] | str):
@@ -303,9 +521,17 @@ def unsubscribe(subscriber: Callable[[Event], None] | str):
     EventEmitter.get_global().unsubscribe(subscriber)
 
 
-def emit(name: str, data: dict[str, Any], span_context: dict[str, Any] | None = None):
+def emit(
+    name: str,
+    data: dict[str, Any],
+    span_context: dict[str, Any] | None = None,
+    *,
+    required_only: bool = False,
+):
     """Broadcast an event via the global bus (Strict Redaction Enforced)."""
-    EventEmitter.get_global().emit(name, data, span_context=span_context)
+    EventEmitter.get_global().emit(
+        name, data, span_context=span_context, required_only=required_only
+    )
 
 
 def reset():

@@ -375,6 +375,28 @@ class DefaultRunner(BaseRunner):
         plugin_registry = resolve_plugin_registry()
         plugin_registry.load_plugins()
 
+        from .flight_recorder import FlightRecorderPlugin
+
+        runtime_context = (
+            ctx.metadata.get("runtime_context") if isinstance(ctx.metadata, Mapping) else None
+        )
+        if not runtime_context and isinstance(ctx.metadata, Mapping):
+            if all(
+                bool(ctx.metadata.get(k))
+                for k in ("org_id", "tenant_id", "workspace_id", "active_environment")
+            ):
+                runtime_context = ctx.metadata
+        if not runtime_context:
+            submission = self.run_store.get_submission(effective_run_id)
+            if submission and isinstance(submission.get("context"), Mapping):
+                runtime_context = submission["context"]
+
+        FlightRecorderPlugin.bind_active_recorder(
+            effective_run_id,
+            self.run_store,
+            dict(runtime_context) if isinstance(runtime_context, Mapping) else None,
+        )
+
         repro_contract = build_reproducibility_contract(
             scenario,
             resolved_config=self.resolved_config,
@@ -708,6 +730,12 @@ class DefaultRunner(BaseRunner):
         runtime_context = (
             ctx.metadata.get("runtime_context") if isinstance(ctx.metadata, Mapping) else None
         )
+        if not runtime_context and isinstance(ctx.metadata, Mapping):
+            if all(
+                bool(ctx.metadata.get(k))
+                for k in ("org_id", "tenant_id", "workspace_id", "active_environment")
+            ):
+                runtime_context = ctx.metadata
         if not runtime_context:
             submission = self.run_store.get_submission(effective_run_id)
             if submission and isinstance(submission.get("context"), Mapping):
@@ -755,8 +783,13 @@ class DefaultRunner(BaseRunner):
                     )
                     observation = consumer.consume_and_reload(
                         target_rev,
-                        config_dict=cfg_obj if isinstance(cfg_obj, dict) else None,
+                        config_dict=cfg_obj if (isinstance(cfg_obj, dict) and cfg_obj) else None,
                     )
+                    if consumer.last_resolved_config is not None:
+                        self.resolved_config = consumer.last_resolved_config
+                        resolved_runtime_config["evaluator_config_hash"] = (
+                            consumer.last_resolved_config.config_hash
+                        )
                     observed_revision_record = adapter.report_worker_observation(
                         scope,
                         target_rev.revision_id,
@@ -1005,6 +1038,12 @@ class DefaultRunner(BaseRunner):
                 self.run_store,
                 dict(runtime_context) if isinstance(runtime_context, Mapping) else None,
             )
+            if is_resume:
+                events.EventEmitter.get_global().resume_capture(
+                    effective_run_id,
+                    self.run_store,
+                    context=dict(runtime_context) if isinstance(runtime_context, Mapping) else None,
+                )
             events.emit(
                 events.CoreEvents.RUN_START,
                 {
@@ -1107,13 +1146,13 @@ class DefaultRunner(BaseRunner):
                         susp.approval_token,
                         exc_info=True,
                     )
-                    transition_run_lifecycle(
+                    events.EventEmitter.get_global().finalize_capture(
                         effective_run_id,
-                        RunLifecycleState.PAUSED_FOR_APPROVAL,
-                        run_store=self.run_store,
+                        self.run_store,
                         context=dict(runtime_context)
                         if isinstance(runtime_context, Mapping)
                         else None,
+                        complete=False,
                     )
                     raise
 
@@ -1601,6 +1640,11 @@ class DefaultRunner(BaseRunner):
                 span_context=ctx.span_context,
             )
 
+            events.EventEmitter.get_global().finalize_capture(
+                effective_run_id,
+                self.run_store,
+                context=dict(runtime_context) if isinstance(runtime_context, Mapping) else None,
+            )
             cfg_hash = getattr(self.resolved_config, "config_hash", "")
 
             # Save run manifest to RunStore

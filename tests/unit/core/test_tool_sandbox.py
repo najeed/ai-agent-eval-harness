@@ -14,6 +14,95 @@ from eval_runner.tool_sandbox import ToolSandbox
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("failure_stage", ["selection", "enforcement"])
+async def test_tool_enforcement_errors_deny_execution_and_emit_evidence(failure_stage):
+    from types import SimpleNamespace
+
+    from eval_runner.events import EventEmitter
+    from eval_runner.tool_sandbox import ToolSandboxInterceptor, ToolSandboxService
+
+    class Enforcement(ToolSandboxInterceptor):
+        def can_isolate(self, name):
+            if failure_stage == "selection":
+                raise ValueError("policy unavailable")
+            return True
+
+        async def isolate_call(self, data, next_executor):
+            raise ValueError("policy unavailable")
+
+    bus = EventEmitter(run_id="denied", async_mode=False)
+    evidence = []
+    bus.subscribe(lambda event: evidence.append(event.to_dict()))
+    service = ToolSandboxService()
+    service.register_interceptor(Enforcement())
+    fallback = AsyncMock(return_value={"status": "success"})
+    with pytest.raises(PermissionError):
+        await service.isolate(
+            {"tool_name": "write", "sandbox": SimpleNamespace(event_bus=bus)}, fallback
+        )
+    fallback.assert_not_awaited()
+    assert evidence[0]["event"] == "tool_interception_denied"
+    assert evidence[0]["outcome"] == "DENIED"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("after_execution", [False, True])
+async def test_optional_tool_observer_failure_never_repeats_execution(after_execution):
+    from eval_runner.tool_sandbox import ToolSandboxInterceptor, ToolSandboxService
+
+    class Observer(ToolSandboxInterceptor):
+        enforcement = False
+
+        def can_isolate(self, name):
+            return True
+
+        async def isolate_call(self, data, next_executor):
+            if after_execution:
+                await next_executor(data)
+            raise OSError("observer failed")
+
+    service = ToolSandboxService()
+    service.register_interceptor(Observer())
+    fallback = AsyncMock(return_value={"status": "success"})
+    assert await service.isolate({"tool_name": "write"}, fallback) == {"status": "success"}
+    fallback.assert_awaited_once()
+
+
+def test_branch_join_atomically_rejects_conflicts_and_preserves_disjoint_deltas(tmp_path):
+    parent = ToolSandbox({"id": "join"}, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+    parent.state = {"shared": 0, "nested": {"baseline": 1}}
+    left, right = parent.fork("left"), parent.fork("right")
+    left.state["nested"]["left"] = 1
+    right.state["nested"]["right"] = 2
+    parent.merge_branch_states([right, left])
+    assert parent.state["nested"] == {"baseline": 1, "left": 1, "right": 2}
+    left, right = parent.fork("left"), parent.fork("right")
+    left.state["shared"], right.state["shared"] = 1, 2
+    with pytest.raises(ValueError, match="ConcurrentStateWriteConflict"):
+        parent.merge_branch_states([right, left])
+    assert parent.state["shared"] == 0
+
+
+def test_branch_join_merges_stateful_simulator_deltas_without_sharing_instances(tmp_path):
+    parent = ToolSandbox(
+        {"id": "sim-join", "enabled_shims": ["email"]},
+        workspace_root=tmp_path,
+        jail_root=tmp_path / "jail",
+    )
+    original = parent.get_active_simulators()["email"]
+    branch = parent.fork("send")
+    simulated = branch.get_active_simulators()["email"]
+    assert simulated is not original
+    simulated.state["sent"].append({"to": "test@example.invalid"})
+    assert original.state["sent"] == []
+    parent.merge_branch_state(branch)
+    assert original.state["sent"] == [{"to": "test@example.invalid"}]
+    assert (
+        parent.fork("next").get_active_simulators()["email"].state["sent"] == original.state["sent"]
+    )
+
+
+@pytest.mark.asyncio
 async def test_sandbox_known_tool(tmp_path):
     """Test that a known tool returns the expected result from the scenario."""
     scenario = {
@@ -650,6 +739,8 @@ def test_sandbox_service_pipeline_multi_interceptor():
             return await next_fn(data)
 
     class InterceptorFails(ToolSandboxInterceptor):
+        enforcement = False
+
         def can_isolate(self, name):
             return True
 
@@ -676,7 +767,7 @@ def test_sandbox_service_pipeline_multi_interceptor():
                 res = await tool_sandbox_service.isolate({"tool_name": "t"}, fallback)
                 assert res == {"status": "ok"}
 
-        # 2. Test Exception bypass (kills + -> -)
+        # 2. Explicitly optional observability failures can continue.
         history.clear()
         i_fails = InterceptorFails()
         async with tool_sandbox_service.override_interceptor(i1):
@@ -703,6 +794,8 @@ def test_sandbox_service_pipeline_multi_interceptor():
 
         # 4. Test Failing interceptors recursion depth (kills depth + 1 -> - 1)
         class InterceptorFailsSilent(ToolSandboxInterceptor):
+            enforcement = False
+
             def can_isolate(self, name):
                 return True
 
@@ -1358,7 +1451,7 @@ async def test_tool_sandbox_relevant_shims_and_instantiation_branches(tmp_path):
 @pytest.mark.asyncio
 async def test_tool_sandbox_merge_branch_state_matrix(tmp_path):
     sb = ToolSandbox({"id": "merge_test"}, workspace_root=tmp_path, jail_root=tmp_path / "jail")
-    fork = ToolSandbox({"id": "merge_test"}, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+    fork = sb.fork("branch")
 
     # 1. Merge with keys, where one key is in fork and another is not
     fork.state["key1"] = "val1"
@@ -1374,7 +1467,7 @@ async def test_tool_sandbox_merge_branch_state_matrix(tmp_path):
     # 3. Merge policy decisions with deduplication and unhashed decisions
     sb.policy_decisions = [{"input_hash": "hash_existing", "decision": "allow"}]
     fork.policy_decisions = [
-        {"input_hash": "hash_existing", "decision": "allow_dup"},
+        {"input_hash": "hash_existing", "decision": "allow"},
         {"input_hash": "hash_new", "decision": "allow_new"},
         {"decision": "no_hash_decision"},
     ]

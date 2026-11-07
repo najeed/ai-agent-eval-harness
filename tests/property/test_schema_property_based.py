@@ -47,7 +47,11 @@ def test_property_wsm_score_invariants(metrics: dict[str, float]):
 @settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50, deadline=None)
 @given(
     key=st.text(min_size=1, max_size=30),
-    val=st.one_of(st.text(max_size=50), st.integers(), st.booleans()),
+    val=st.one_of(
+        st.text(max_size=50),
+        st.integers(min_value=-(2**53 - 1), max_value=2**53 - 1),
+        st.booleans(),
+    ),
 )
 def test_property_shared_state_registry_invariants(key: str, val: str | int | bool):
     """

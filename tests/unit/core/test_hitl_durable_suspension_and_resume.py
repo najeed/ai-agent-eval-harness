@@ -10,6 +10,7 @@ Acceptance and unit tests for P0 Runtime Control Plane Defects:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
@@ -311,10 +312,28 @@ async def test_p0_2_runner_resumption_preserves_manifest_and_completes(
     manifest_path.write_text(json.dumps(manifest_data), encoding="utf-8")
     (vault_dir / "scenario_resolved.json").write_text(json.dumps(scenario), encoding="utf-8")
 
-    # Pre-set lifecycle OPEN then PAUSED_FOR_APPROVAL
+    # Pre-set lifecycle OPEN then PAUSED_FOR_APPROVAL with acknowledged evidence capture
     store = LocalFileRunStore(runs_dir)
-    transition_run_lifecycle(run_id, RunLifecycleState.OPEN, run_store=store)
-    transition_run_lifecycle(run_id, RunLifecycleState.PAUSED_FOR_APPROVAL, run_store=store)
+    store.create_run(run_id, scenario["id"])
+    prefix_events = [
+        {"_seq": 1, "event": "run_start", "run_id": run_id, "scenario": "scen_resume_test"},
+        {"_seq": 2, "event": "hitl_pause", "run_id": run_id, "task_id": "node_1"},
+    ]
+    store.append_events(run_id, prefix_events)
+    raw_prefix = store.get_trace_bytes(run_id)
+    store.update_run_status(
+        run_id,
+        "PAUSED_FOR_APPROVAL",
+        details={
+            "evidence_capture": {
+                "complete": False,
+                "resumable": True,
+                "event_count": len(prefix_events),
+                "terminal_seq": len(prefix_events),
+                "trace_hash": "sha3_256:" + hashlib.sha3_256(raw_prefix).hexdigest(),
+            }
+        },
+    )
 
     # Setup approval store with approved request
     approval_store = FileApprovalStore(base_dir=tmp_path / ".agentv" / "approvals")
@@ -352,8 +371,8 @@ async def test_p0_2_runner_resumption_preserves_manifest_and_completes(
     # Verify manifest was preserved
     assert manifest_path.exists()
     assert json.loads(manifest_path.read_text()) == manifest_data
-    # Verify lifecycle is reopened during execution
-    assert get_run_lifecycle_state(run_id, run_store=store) == RunLifecycleState.OPEN
+    # Verify lifecycle transitions to FINALIZING upon successful completion
+    assert get_run_lifecycle_state(run_id, run_store=store) == RunLifecycleState.FINALIZING
     # Explicit plugin finalization transitions to FINALIZING/SEALED
     recorder = FlightRecorder(run_store=store)
     recorder.bind_run_provider(run_id, store)
@@ -482,10 +501,31 @@ async def test_p0_3_and_p0_4_cold_restart_hitl_bridge(tmp_path: Path):
         )
     )
 
-    # Initialize a cold backend with zero in-memory state
-    backend = InProcessExecutionBackend(
-        checkpoint_store=chk_store, run_store=LocalFileRunStore(Path(config.RUN_LOG_DIR))
+    # Set up durable run store with acknowledged pre-pause evidence
+    run_store = LocalFileRunStore(Path(config.RUN_LOG_DIR))
+    run_store.create_run(run_id, scenario["id"])
+    prefix_events = [
+        {"_seq": 1, "event": "run_start", "run_id": run_id, "scenario": "scen_bridge"},
+        {"_seq": 2, "event": "hitl_pause", "run_id": run_id, "task_id": "step_1"},
+    ]
+    run_store.append_events(run_id, prefix_events)
+    raw_prefix = run_store.get_trace_bytes(run_id)
+    run_store.update_run_status(
+        run_id,
+        "PAUSED_FOR_APPROVAL",
+        details={
+            "evidence_capture": {
+                "complete": False,
+                "resumable": True,
+                "event_count": len(prefix_events),
+                "terminal_seq": len(prefix_events),
+                "trace_hash": "sha3_256:" + hashlib.sha3_256(raw_prefix).hexdigest(),
+            }
+        },
     )
+
+    # Initialize a cold backend with zero in-memory state
+    backend = InProcessExecutionBackend(checkpoint_store=chk_store, run_store=run_store)
     assert run_id not in backend._active_runs
 
     status = backend.status(run_id)

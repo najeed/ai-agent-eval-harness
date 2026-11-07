@@ -165,10 +165,24 @@ def test_get_verification_package_success_with_cert_and_provenance(crypto_client
         score=1.0,
         terminal_seq=3,
     ).sign()
-    fin_ev = {"event": "evaluator_finalization", "data": fin_rec.to_dict()}
+    fin_ev = {"event": "evaluator_finalization", "data": fin_rec.to_dict(), "_seq": 4}
     store.append_events(run_id, [fin_ev])
 
     trace_bytes = store.get_trace_bytes(run_id)
+    raw_lines = [
+        json.loads(line) for line in trace_bytes.decode("utf-8").splitlines() if line.strip()
+    ]
+    receipt = {
+        "complete": True,
+        "event_count": len(raw_lines),
+        "terminal_seq": 4,
+        "trace_hash": "sha3_256:" + hashlib.sha3_256(trace_bytes).hexdigest(),
+    }
+    store.update_run_status(
+        run_id,
+        "OPEN",
+        details={"evidence_capture": receipt},
+    )
     manifest = TraceVerifier.sign_trace_bytes(
         trace_bytes,
         run_id=run_id,
@@ -176,9 +190,10 @@ def test_get_verification_package_success_with_cert_and_provenance(crypto_client
         execution_mode="live",
         scenario_data=scenario_data,
         execution_manifest=exec_manifest.to_dict(),
+        metadata={"evidence_capture": receipt},
     )
     store.save_run_manifest(run_id, manifest)
-    store.update_run_status(run_id, "SEALED")
+    store.update_run_status(run_id, "SEALED", details={"evidence_capture": receipt})
 
     # Query API
     res = crypto_client.get(f"/api/v1/evidence/packages/{run_id}")

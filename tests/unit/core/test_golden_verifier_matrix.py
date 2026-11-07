@@ -161,9 +161,11 @@ def clean_vault_setup(tmp_path, monkeypatch):
     trust_root.mkdir(parents=True, exist_ok=True)
 
     trace_file = run_dir / "run.jsonl"
-    line1 = json.dumps({"event": "start", "run_id": run_id, "turn": 1, "execution_mode": "live"})
-    line2 = json.dumps({"event": "action", "tool": "search", "query": "auth_key"})
-    line3 = json.dumps({"event": "stop", "run_id": run_id, "turn": 2})
+    line1 = json.dumps(
+        {"event": "start", "_seq": 1, "run_id": run_id, "turn": 1, "execution_mode": "live"}
+    )
+    line2 = json.dumps({"event": "action", "_seq": 2, "tool": "search", "query": "auth_key"})
+    line3 = json.dumps({"event": "stop", "_seq": 3, "run_id": run_id, "turn": 2})
     trace_file.write_text(f"{line1}\n{line2}\n{line3}\n", encoding="utf-8")
 
     monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", project_root)
@@ -178,6 +180,7 @@ def clean_vault_setup(tmp_path, monkeypatch):
     IdentityService._provision_local_identity("system_id")
     IdentityService._provision_local_identity("test_signer")
     IdentityService._provision_local_identity("signer")
+    IdentityService._provision_local_identity("authoritative_evaluator")
     run_store = LocalFileRunStore(run_log_dir)
     try:
         run_store.create_run(run_id, "scenario-golden")
@@ -232,6 +235,27 @@ def sign_and_save(run_id, trace_bytes, run_store=None, **kwargs):
                 ],
                 run_id=run_id,
             )
+    if run_store is not None:
+        raw = bytes(trace_bytes)
+        lines = [json.loads(line) for line in raw.splitlines() if line.strip()]
+        count = len(lines)
+        from eval_runner.utils import crypto
+
+        run_store.update_run_status(
+            run_id,
+            "OPEN",
+            details={
+                "evidence_capture": {
+                    "complete": True,
+                    "event_count": count,
+                    "terminal_seq": max(
+                        (e.get("_seq") for e in lines if isinstance(e.get("_seq"), int)),
+                        default=count,
+                    ),
+                    "trace_hash": "sha3_256:" + crypto.checksum(raw),
+                }
+            },
+        )
     manifest = TraceVerifier.sign_trace_bytes(
         trace_bytes,
         run_id=run_id,
@@ -1689,7 +1713,9 @@ def _append_authoritative_finalization(trace_file: Path, run_id: str, run_dir: P
         ),
     ).sign()
 
-    fin_line = json.dumps({"event": "evaluator_finalization", "data": fin.to_dict()})
+    fin_line = json.dumps(
+        {"event": "evaluator_finalization", "_seq": len(parsed) + 1, "data": fin.to_dict()}
+    )
     with open(trace_file, "a", encoding="utf-8") as f:
         f.write(fin_line + "\n")
 
@@ -1729,7 +1755,9 @@ def test_verify_run_provider_status_matrix(clean_vault_setup):
     assert "trace bytes" in orphan_cert["failure_reason"].lower()
 
     # VERIFIED: freshly certified vault passes with full chain validation.
-    trace_file.write_text(VC_EVENT_LINE, encoding="utf-8")
+    trace_file.write_text(
+        json.dumps({"event": "start", "_seq": 1, "execution_mode": "live"}) + "\n", encoding="utf-8"
+    )
     cert_path.unlink()
     _append_authoritative_finalization(trace_file, run_id, run_dir)
     sign_and_save(

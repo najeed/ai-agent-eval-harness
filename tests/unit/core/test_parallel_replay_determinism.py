@@ -33,6 +33,7 @@ async def test_parallel_branch_deterministic_state_merge_order():
             "name": "Parallel Merge Determinism",
             "id": "parallel_merge_determinism",
             "compliance_level": "Standard",
+            "state_conflict_policy": "canonical_last_writer_wins",
         },
         "tools": {
             "tool_alpha": {

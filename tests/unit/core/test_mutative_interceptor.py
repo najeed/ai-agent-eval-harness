@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
+from eval_runner.context import TurnContext
 from eval_runner.mutator_plugin import RuntimeMutationPlugin
 from eval_runner.plugins import BaseEvalPlugin, PluginManager
 from eval_runner.reference.local_artifact import LocalFileArtifactStore
@@ -72,7 +73,9 @@ async def test_mutative_tool_redirection(tmp_path):
     agent_response = {"action": "call_tool", "tool_name": "old_tool", "tool_params": {}}
     history = []
     actions = {"used_tools": []}
-    turn_ctx = MagicMock()
+    turn_ctx = TurnContext(
+        task_id="t1", turn_number=1, current_message="msg", history=(), span_context=None
+    )
 
     # Execute
     await session._handle_tool_call(1, agent_response, sandbox, history, actions, turn_ctx)
@@ -100,7 +103,9 @@ async def test_tool_short_circuit(tmp_path):
     agent_response = {"action": "call_tool", "tool_name": "identity_check", "tool_params": {}}
     history = []
     actions = {"used_tools": []}
-    turn_ctx = MagicMock()
+    turn_ctx = TurnContext(
+        task_id="t1", turn_number=1, current_message="msg", history=(), span_context=None
+    )
 
     # Execute
     await session._handle_tool_call(1, agent_response, sandbox, history, actions, turn_ctx)
@@ -132,7 +137,9 @@ async def test_runtime_response_mutation_records_delivery_evidence(tmp_path):
         sandbox,
         [],
         {"used_tools": []},
-        MagicMock(),
+        TurnContext(
+            task_id="t1", turn_number=1, current_message="msg", history=(), span_context=None
+        ),
     )
 
     delivery = [event for event in events if event.get("category") == "MUTATION_DELIVERY"]

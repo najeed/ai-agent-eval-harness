@@ -6,6 +6,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from eval_runner import config
+from eval_runner.context import TurnContext
 from eval_runner.execution_ir import (
     CompiledEvaluationPlan,
     CompiledOracle,
@@ -15,6 +16,82 @@ from eval_runner.reference.local_artifact import LocalFileArtifactStore
 from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.session import ExecutionMode, NodeVerdict, SessionManager, _InterpreterEventBridge
 from eval_runner.workflow_interpreter import WorkflowOutcome, WorkflowStatus
+
+
+@pytest.mark.asyncio
+async def test_session_repeated_node_visits_execute_each_immutable_instance(tmp_path):
+    oracle = [{"metric": "task_completion", "threshold": 1.0}]
+    scenario = {
+        "id": "loop-execution",
+        "initial_state": {"count": 0},
+        "workflow": {
+            "nodes": [
+                {"id": "poll", "max_visitations": 4, "success_criteria": oracle},
+                {"id": "done", "success_criteria": oracle},
+            ],
+            "edges": [
+                {
+                    "from": "poll",
+                    "to": "poll",
+                    "type": "retry",
+                    "condition": {"op": "lt", "path": "state.count", "value": 2},
+                },
+                {
+                    "from": "poll",
+                    "to": "done",
+                    "type": "condition",
+                    "condition": {"op": "gte", "path": "state.count", "value": 2},
+                },
+            ],
+        },
+    }
+    session = _session_with_local_providers(tmp_path, "loop-run", scenario)
+    calls = []
+
+    async def execute(node, attempt, round_number, sandbox, *args, **kwargs):
+        calls.append(kwargs["execution_context"]["execution_instance_id"])
+        if node["id"] == "poll":
+            sandbox.state["count"] += 1
+        return {"task_id": node["id"], "status": "success"}
+
+    with patch.object(session, "_execute_node", side_effect=execute):
+        results = await session.execute_tasks(1)
+    assert calls == ["poll:attempt:1", "poll:attempt:1#it2", "done:attempt:1"]
+    visits = [row for row in results if row.get("task_id") == "poll"]
+    assert [row["iteration"] for row in visits] == [1, 2]
+    assert all(row.get("is_replayed") is not True for row in visits)
+
+
+@pytest.mark.asyncio
+async def test_session_reconciliation_observes_its_executing_branch(tmp_path):
+    scenario = {
+        "id": "branch-reconcile",
+        "metadata": {"execution_mode": "hybrid"},
+        "initial_state": {"balance": 0},
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "update",
+                    "state_projection": ["balance"],
+                    "expected_state_changes": [{"path": "balance", "value": 1}],
+                    "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+                }
+            ]
+        },
+    }
+    session = _session_with_local_providers(tmp_path, "reconcile-run", scenario)
+
+    async def execute(node, attempt, round_number, sandbox, *args, **kwargs):
+        sandbox.state["balance"] = 1
+        return {"task_id": node["id"], "status": "success"}
+
+    with patch.object(session, "_execute_node", side_effect=execute):
+        results = await session.execute_tasks(1)
+    result = next(row for row in results if row.get("task_id") == "update")
+    assert result["status"] == "success"
+    assert result["reconciliation"]["reconciled"] is True
+    assert result["reconciliation"]["authoritative"] is False
+    assert result["reconciliation"]["observation_kind"] == "sandbox"
 
 
 def _session_with_local_providers(tmp_path, run_id, scenario, **kwargs):
@@ -200,7 +277,7 @@ async def test_handle_tool_call(base_scenario, tmp_path):
     agent_resp = {"tool_name": "test_tool", "tool_params": {}}
     history = []
     actions = {"used_tools": []}
-    turn_ctx = MagicMock()
+    turn_ctx = MagicMock(span_context=None)
 
     await session._handle_tool_call(1, agent_resp, mock_sandbox, history, actions, turn_ctx)
 
@@ -219,7 +296,7 @@ async def test_handle_multiple_tools(base_scenario, tmp_path):
     agent_resp = {"tool_names": ["t1", "t2"]}
     history = []
     actions = {"used_tools": []}
-    turn_ctx = MagicMock()
+    turn_ctx = MagicMock(span_context=None)
 
     await session._handle_multiple_tools(1, agent_resp, mock_sandbox, history, actions, turn_ctx)
 
@@ -244,7 +321,7 @@ async def test_handle_multiple_tools_parameterized(base_scenario, tmp_path):
     }
     history = []
     actions = {"used_tools": []}
-    turn_ctx = MagicMock()
+    turn_ctx = MagicMock(span_context=None)
 
     await session._handle_multiple_tools(1, agent_resp, mock_sandbox, history, actions, turn_ctx)
 
@@ -274,7 +351,7 @@ async def test_handle_multiple_tools_duplicate_calls(base_scenario, tmp_path):
     }
     history = []
     actions = {"used_tools": []}
-    turn_ctx = MagicMock()
+    turn_ctx = MagicMock(span_context=None)
 
     await session._handle_multiple_tools(1, agent_resp, mock_sandbox, history, actions, turn_ctx)
 
@@ -314,9 +391,12 @@ async def test_handle_tool_call_interceptor_short_circuit(base_scenario, tmp_pat
     mock_sandbox = AsyncMock()
     agent_resp = {"tool_name": "test_tool"}
     history = []
+    turn_ctx = TurnContext(
+        task_id="t1", turn_number=1, current_message="msg", history=(), span_context=None
+    )
 
     await session._handle_tool_call(
-        1, agent_resp, mock_sandbox, history, {"used_tools": []}, MagicMock()
+        1, agent_resp, mock_sandbox, history, {"used_tools": []}, turn_ctx
     )
 
     mock_sandbox.execute.assert_not_called()
@@ -535,7 +615,7 @@ async def test_session_handle_hitl(base_scenario, tmp_path, monkeypatch):
     agent_resp = {"prompt": "Confirm action"}
     history = []
     actions = {}
-    turn_ctx = MagicMock()
+    turn_ctx = MagicMock(span_context=None)
 
     monkeypatch.setenv("CI", "true")
     res = await session._handle_hitl(1, agent_resp, history, actions, turn_ctx)
@@ -670,8 +750,11 @@ async def test_multiple_tools_interceptor(base_scenario, tmp_path):
 
     agent_resp = {"tool_names": ["t1", "t2"]}
     actions = {"used_tools": []}
+    turn_ctx = TurnContext(
+        task_id="t1", turn_number=1, current_message="msg", history=(), span_context=None
+    )
 
-    await session._handle_multiple_tools(1, agent_resp, mock_sandbox, [], actions, MagicMock())
+    await session._handle_multiple_tools(1, agent_resp, mock_sandbox, [], actions, turn_ctx)
 
     mock_sandbox.execute.assert_not_called()
 
@@ -1050,8 +1133,11 @@ async def test_multiple_tools_interceptor_mutate(base_scenario, tmp_path):
     mock_sandbox.state = {}
     mock_sandbox.get_full_state.return_value = {}
     agent_resp = {"tool_names": ["t1"]}
+    turn_ctx = TurnContext(
+        task_id="t1", turn_number=1, current_message="msg", history=(), span_context=None
+    )
     await session._handle_multiple_tools(
-        1, agent_resp, mock_sandbox, [], {"used_tools": []}, MagicMock()
+        1, agent_resp, mock_sandbox, [], {"used_tools": []}, turn_ctx
     )
     mock_sandbox.execute.assert_awaited_with("redirected", {"p": 1})
 
@@ -1201,6 +1287,7 @@ async def test_parallel_branch_state_merge_order_is_deterministic(tmp_path):
     """[F1] Parallel branches merge state in deterministic (node_id, iteration) order."""
     scenario = {
         "id": "scenario_merge_determinism",
+        "metadata": {"state_conflict_policy": "canonical_last_writer_wins"},
         "initial_state": {"target_key": "initial"},
         "workflow": {
             "nodes": [
@@ -1285,7 +1372,7 @@ async def test_tool_dependency_cycle_fails_closed(tmp_path):
 
     history = []
     actions = {"used_tools": []}
-    turn_ctx = MagicMock()
+    turn_ctx = MagicMock(span_context=None)
     turn_ctx.span_context = None
 
     await session._handle_multiple_tools(
@@ -1459,8 +1546,17 @@ def test_session_ingest_external_tool_receipts(base_scenario, tmp_path):
     assert session._ingest_external_tool_receipts({}, 7, node, "http", None) == []
 
     # 7. Fallback on canonical json failure
+    import agentv_runtime.canonical as _canon_mod
+
+    orig_canonical_encode = _canon_mod.canonical_json_encode
+
+    def scoped_canonical_encode(obj):
+        if isinstance(obj, dict) and "event" not in obj and obj.get("tool") == "t_fb":
+            raise ValueError("encode fail")
+        return orig_canonical_encode(obj)
+
     with patch(
-        "agentv_runtime.canonical.canonical_json_encode", side_effect=ValueError("encode fail")
+        "agentv_runtime.canonical.canonical_json_encode", side_effect=scoped_canonical_encode
     ):
         receipts_fallback = session._ingest_external_tool_receipts(
             agent_response={"tool_calls": [{"tool": "t_fb", "arguments": {}}]},
@@ -1621,17 +1717,20 @@ async def test_handle_multiple_tools_exhaustive(base_scenario, tmp_path):
     mock_sandbox.execute.return_value = {"status": "success"}
     mock_sandbox.get_full_state.return_value = {}
 
+    turn_ctx = TurnContext(
+        task_id="t1", turn_number=1, current_message="msg", history=(), span_context=None
+    )
     with patch.object(
         session.plugin_manager, "trigger_interceptor", return_value={"short_circuit_result": "fast"}
     ):
         agent_resp = {"tool_calls": [{"tool": "t1"}]}
         await session._handle_multiple_tools(
-            1, agent_resp, mock_sandbox, [], {"used_tools": []}, MagicMock()
+            1, agent_resp, mock_sandbox, [], {"used_tools": []}, turn_ctx
         )
 
     with patch.object(session.plugin_manager, "trigger_interceptor", return_value=False):
         await session._handle_multiple_tools(
-            1, agent_resp, mock_sandbox, [], {"used_tools": []}, MagicMock()
+            1, agent_resp, mock_sandbox, [], {"used_tools": []}, turn_ctx
         )
 
 
@@ -1768,7 +1867,7 @@ async def test_session_hitl_non_interactive_approval_and_rejection(
     monkeypatch.setenv("AGENTV_TEST_NON_DURABLE_HITL", "1")
     monkeypatch.delenv("CI", raising=False)
 
-    turn_ctx = MagicMock(task_id="task_1")
+    turn_ctx = MagicMock(task_id="task_1", span_context=None)
 
     durable_request = MagicMock(approval_token="approval-1", timeout_seconds=0, created_at=0)
     approved = MagicMock(status="APPROVED", decision_reason="Approved by reviewer")
@@ -1934,7 +2033,7 @@ async def test_session_cancellation_branches(tmp_path):
     results = await session.execute_tasks(1)
     assert len(results) >= 1
 
-    session2 = SessionManager(run_id, scenario, log_root=tmp_path / "runs")
+    session2 = SessionManager("run-cancel-002", scenario, log_root=tmp_path / "runs")
     session2.cancellation_event = threading.Event()
     node_def = {"id": "node_1", "prompt": "Hi"}
     session2.cancellation_event.set()
@@ -3287,7 +3386,7 @@ async def test_session_hitl_cli_suspension_and_empty_response(tmp_path, monkeypa
 
     monkeypatch.setenv("AGENTV_TEST_NON_DURABLE_HITL", "1")
     monkeypatch.delenv("CI", raising=False)
-    turn_ctx = MagicMock(task_id="task_1")
+    turn_ctx = MagicMock(task_id="task_1", span_context=None)
 
     with (
         patch("sys.stdin.isatty", return_value=False),
@@ -3416,10 +3515,14 @@ async def test_session_restore_checkpoint_completed_nodes_and_tokens(tmp_path):
     sess = _session_with_local_providers(tmp_path, "run_restore", {"id": "scen_res"})
 
     # 1. Restore completed_node_results and resumption_token argument
-    data1 = {"turn": 3, "completed_node_results": {"n1": {"status": "success"}}}
+    data1 = {
+        **sess._execution_checkpoint_state(),
+        "turn": 3,
+        "completed_execution_results": {"n1": {"status": "success"}},
+    }
     sess.restore_from_checkpoint(data1, resumption_token="res_tok_1")
     assert sess.turn_number == 3
-    assert sess._completed_node_results == {"n1": {"status": "success"}}
+    assert sess._completed_execution_results == {"n1": {"status": "success"}}
     assert sess.resumption_token == "res_tok_1"
 
     # 2. Restore approval_token from checkpoint data without resumption_token arg
@@ -3445,18 +3548,23 @@ async def test_session_execute_tasks_replays_cached_nodes(tmp_path):
         },
     }
     sess = _session_with_local_providers(tmp_path, "run_cached", scen)
-    sess._completed_node_results = {
-        "n_cached": {
-            "task_id": "n_cached",
-            "status": "success",
-            "duration_ms": 150,
-        }
-    }
-
-    results = await sess.execute_tasks(1)
+    with patch.object(
+        sess,
+        "_execute_node",
+        new_callable=AsyncMock,
+        return_value={"task_id": "n_cached", "status": "success"},
+    ) as execute:
+        await sess.execute_tasks(1)
+        key = next(iter(sess._completed_execution_results))
+        sess._completed_execution_results[key]["result"]["original_duration_ms"] = 150
+        checkpoint = sess._execution_checkpoint_state()
+        sess.restore_from_checkpoint(checkpoint)
+        results = await sess.execute_tasks(1)
+        execute.assert_awaited_once()
     replayed = next(r for r in results if r.get("task_id") == "n_cached")
-    assert replayed.get("is_replayed") is True
-    assert replayed.get("original_duration_ms") == 150
+    assert replayed["is_replayed"] is True
+    assert replayed["original_duration_ms"] == 150
+    assert replayed["replay_provenance"]["source"] == "checkpoint"
 
 
 @pytest.mark.asyncio
@@ -3762,7 +3870,7 @@ async def test_session_acquire_bounded_state_validation(tmp_path):
 
 
 @pytest.mark.asyncio
-async def test_session_cached_result_with_original_duration_branch(tmp_path):
+async def test_session_node_name_cache_never_authorizes_execution_replay(tmp_path):
     """
     Verify execute_tasks returns cached node results
     when original_duration_ms is already present.
@@ -3787,13 +3895,21 @@ async def test_session_cached_result_with_original_duration_branch(tmp_path):
             "original_duration_ms": 250,
         }
     }
-    results = await sess.execute_tasks(1)
-    replayed = next(r for r in results if r.get("task_id") == "n_cached_orig")
-    assert replayed.get("original_duration_ms") == 250
+    with patch.object(
+        sess,
+        "_execute_node",
+        new_callable=AsyncMock,
+        return_value={"status": "success", "task_id": "n_cached_orig"},
+    ) as execute:
+        results = await sess.execute_tasks(1)
+        execute.assert_awaited_once()
+    actual = next(r for r in results if r.get("task_id") == "n_cached_orig")
+    assert actual.get("is_replayed") is not True
+    assert "replay_provenance" not in actual
 
 
 @pytest.mark.asyncio
-async def test_session_completed_node_results_lazy_init_on_success(tmp_path):
+async def test_session_completed_executions_record_successful_instance(tmp_path):
     """
     Verify _completed_node_results is lazily initialized
     when a node succeeds in execute_tasks.
@@ -3811,8 +3927,6 @@ async def test_session_completed_node_results_lazy_init_on_success(tmp_path):
         },
     }
     sess = _session_with_local_providers(tmp_path, "run_lazy_init", scen)
-    if hasattr(sess, "_completed_node_results"):
-        delattr(sess, "_completed_node_results")
 
     with (
         patch.object(
@@ -3824,8 +3938,8 @@ async def test_session_completed_node_results_lazy_init_on_success(tmp_path):
     ):
         results = await sess.execute_tasks(1)
         assert len(results) >= 1
-        assert hasattr(sess, "_completed_node_results")
-        assert "n_lazy" in sess._completed_node_results
+        assert sess._completed_execution_results
+        assert "n_lazy:attempt:1" in sess._completed_execution_results
 
 
 @pytest.mark.asyncio
@@ -3990,6 +4104,8 @@ async def test_session_hitl_resumption_token_mismatched_task_and_duration_fallba
         assert exc_info.value.prompt == "Prompt 1"
 
     # 2. res_req approved but task_id doesn't match
+    sess2 = _session_with_local_providers(tmp_path, "run_hitl_misc_2", {"id": "scen_hm"})
+    sess2.resumption_token = "tok_misc"
     mock_req_mismatch = MagicMock(status="APPROVED", metadata={"task_id": "other_task"})
     with patch(
         "eval_runner.reference.approval_store.get_default_approval_store"
@@ -3999,12 +4115,14 @@ async def test_session_hitl_resumption_token_mismatched_task_and_duration_fallba
         mock_store_getter.return_value = mock_store
 
         with pytest.raises(RunSuspendedForApproval) as exc_info2:
-            await sess._handle_hitl(
+            await sess2._handle_hitl(
                 1, {"prompt": "Prompt 2"}, [], {}, MagicMock(task_id="this_task")
             )
         assert exc_info2.value.prompt == "Prompt 2"
 
     # 3. res_req approved, task_id matches, but decided_at is None (created_at fallback)
+    sess3 = _session_with_local_providers(tmp_path, "run_hitl_misc_3", {"id": "scen_hm"})
+    sess3.resumption_token = "tok_misc"
     mock_req_created_only = MagicMock(
         status="APPROVED",
         metadata={"task_id": "task_match"},
@@ -4020,7 +4138,7 @@ async def test_session_hitl_resumption_token_mismatched_task_and_duration_fallba
         mock_store.get_request.return_value = mock_req_created_only
         mock_store_getter.return_value = mock_store
 
-        resp = await sess._handle_hitl(
+        resp = await sess3._handle_hitl(
             1, {"prompt": "Prompt 3"}, [], {}, MagicMock(task_id="task_match")
         )
         assert resp == "Approved reason"
@@ -4041,7 +4159,7 @@ async def test_session_hitl_resumption_token_mismatched_task_and_duration_fallba
         mock_store.get_request.return_value = mock_req_no_timestamps
         mock_store_getter.return_value = mock_store
 
-        resp = await sess._handle_hitl(
+        resp = await sess3._handle_hitl(
             1, {"prompt": "Prompt 4"}, [], {}, MagicMock(task_id="task_match")
         )
         assert resp == "Approved no timestamps"

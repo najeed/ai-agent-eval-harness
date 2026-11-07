@@ -14,6 +14,8 @@ not merely a final boolean.
 from __future__ import annotations
 
 import asyncio
+import contextvars
+import copy
 import inspect
 import logging
 import re
@@ -34,6 +36,9 @@ class SessionStateParityVerifier:
 
     def __init__(self, session_manager: Any):
         self.session_manager = session_manager
+        self._observation_identities = contextvars.ContextVar(
+            "authority_observation_identities", default=None
+        )
 
     def _external_evidence_target(self, assertion: dict[str, Any]) -> str | None:
         """Return the declared authority target that must be observed for this assertion."""
@@ -64,11 +69,25 @@ class SessionStateParityVerifier:
             source = self._external_evidence_target(assertion)
             if not source or source in observations:
                 continue
+            related = [
+                candidate
+                for candidate in node.get("expected_outcome", []) or []
+                if isinstance(candidate, dict)
+                and self._external_evidence_target(candidate) == source
+            ]
+            projections = [
+                candidate.get("projection") or node.get("state_projection") for candidate in related
+            ]
+            projection = (
+                sorted({path for paths in projections for path in paths})
+                if projections and all(isinstance(paths, list) and paths for paths in projections)
+                else None
+            )
             observed, property_path = await self._resolve_target(
                 {
                     "target": source,
                     "property": assertion.get("property"),
-                    "projection": assertion.get("projection"),
+                    "projection": projection,
                 },
                 sandbox,
                 history,
@@ -80,9 +99,10 @@ class SessionStateParityVerifier:
                 continue
             _, snapshot_hash = bound_state_snapshot(observed)
             observations[source] = {
-                "state": observed,
+                "state": copy.deepcopy(observed),
                 "property_path": property_path,
                 "snapshot_hash": snapshot_hash,
+                "observation_identity": (self._observation_identities.get() or {}).get(source, {}),
             }
         return observations
 
@@ -207,7 +227,38 @@ class SessionStateParityVerifier:
                 connector = state_authority_registry.get_connector(
                     auth_name, scenario_authorities=scenario_authorities
                 )
+                observation_identity = connector.observation_identity()
+                if not isinstance(observation_identity, dict):
+                    if inspect.iscoroutine(observation_identity):
+                        observation_identity.close()
+                    observation_identity = {"authenticated": False}
+                live = getattr(self.session_manager, "execution_mode", None) == "live"
+                declared = (
+                    isinstance(scenario_authorities, dict) and auth_name in scenario_authorities
+                )
+                if live and declared:
+                    from eval_runner.certification_truth import authority_is_independent
+                    from eval_runner.utils import crypto
+
+                    declaration = scenario_authorities[auth_name]
+                    url = (
+                        (declaration.get("url") or declaration.get("endpoint"))
+                        if isinstance(declaration, dict)
+                        else None
+                    )
+                    declared = isinstance(url, str) and observation_identity.get(
+                        "source_id"
+                    ) == "sha3_256:" + crypto.checksum(url.rstrip("/"))
+                if live and declared:
+                    declared = authority_is_independent(url, scenario)
+                if live and (not declared or observation_identity.get("authenticated") is not True):
+                    raise ValueError(
+                        "Independent authenticated authority is required for live state evidence"
+                    )
                 raw_state = await connector.fetch_state()
+                identities = dict(self._observation_identities.get() or {})
+                identities[target_str] = observation_identity
+                self._observation_identities.set(identities)
             except Exception as auth_err:
                 logger.warning(
                     f"[StateParity] External state authority '{auth_name}' observation failed: "
@@ -518,6 +569,11 @@ class SessionStateParityVerifier:
                     "tolerance": tolerance if mode == "numerical_tolerance" else None,
                     "passed": match,
                     "outcome": "PASS" if match else "FAIL",
+                    "authoritative": False,
+                    "observation_kind": "sandbox"
+                    if assertion.get("target") == "state"
+                    or str(assertion.get("target", "")).startswith("shim:")
+                    else "message",
                 }
                 if authority_source and pre_observation:
                     _, post_snapshot_hash = bound_state_snapshot(after_val)
@@ -526,6 +582,23 @@ class SessionStateParityVerifier:
                             "source": authority_source,
                             "pre_snapshot_hash": pre_observation["snapshot_hash"],
                             "post_snapshot_hash": post_snapshot_hash,
+                            "pre_observation": pre_observation["state"],
+                            "post_observation": after_val,
+                            "pre_observation_identity": pre_observation.get(
+                                "observation_identity", {}
+                            ),
+                            "post_observation_identity": (
+                                self._observation_identities.get() or {}
+                            ).get(authority_source, {}),
+                            "observation_kind": "external_authority",
+                            "authoritative": pre_observation.get("observation_identity", {}).get(
+                                "authenticated"
+                            )
+                            is True
+                            and (self._observation_identities.get() or {})
+                            .get(authority_source, {})
+                            .get("authenticated")
+                            is True,
                         }
                     )
                 evidence_rows.append(evidence_row)

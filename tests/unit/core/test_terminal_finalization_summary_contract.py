@@ -30,6 +30,22 @@ def test_terminal_summary_preserves_pre_finalization_evidence(
     provider.create_run("run-a", scenario["id"])
     provider.append_events("run-a", [*events[:-1], terminal])
     provider.save_run_manifest("run-a", source.get_manifest("run-a"))
+    from eval_runner.utils import crypto
+
+    raw = provider.get_trace_bytes("run-a")
+    count = len([line for line in raw.splitlines() if line.strip()])
+    provider.update_run_status(
+        "run-a",
+        "OPEN",
+        details={
+            "evidence_capture": {
+                "complete": True,
+                "event_count": count,
+                "terminal_seq": count,
+                "trace_hash": "sha3_256:" + crypto.checksum(raw),
+            }
+        },
+    )
 
     issued = execute_industrial_certification("run-a", run_store=provider, scenario_data=scenario)
 

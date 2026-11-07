@@ -251,6 +251,7 @@ def build_verification_package(
                 scenario_data=scenario_resolved or None,
             )
             crypto_verification["verified"] = authority["is_valid"]
+            crypto_verification["claim_scope"] = authority.get("claim_scope", "unverified")
             if authority.get("failure_reason"):
                 crypto_verification["errors"].append(authority["failure_reason"])
         except ImportError:

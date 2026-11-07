@@ -201,6 +201,22 @@ def _seed_live_certified_run(tmp_path, run_id: str):
     run_store.append_events(
         run_id, [{"event": "evaluator_finalization", "_seq": 3, "data": fin_rec.to_dict()}]
     )
+    import hashlib
+
+    raw_trace = run_store.get_trace_bytes(run_id)
+    run_store.update_run_status(
+        run_id,
+        "OPEN",
+        details={
+            "evidence_capture": {
+                "complete": True,
+                "resumable": False,
+                "event_count": 3,
+                "terminal_seq": 3,
+                "trace_hash": "sha3_256:" + hashlib.sha3_256(raw_trace).hexdigest(),
+            }
+        },
+    )
     run_store.save_run_manifest(
         run_id,
         {"execution_manifest": exec_manifest.to_dict(), "scenario_data": scen_data},

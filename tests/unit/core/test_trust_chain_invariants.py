@@ -201,6 +201,30 @@ def _build_valid_test_vault(
     return vault, trace_path, exec_manifest, fin_record
 
 
+def _sync_capture_receipt(provider: LocalFileRunStore, run_id: str) -> None:
+    from eval_runner.utils import crypto
+
+    raw = provider.get_trace_bytes(run_id) or b""
+    lines = [json.loads(line) for line in raw.splitlines() if line.strip()]
+    count = len(lines)
+    terminal_seq = max(
+        (e.get("_seq") for e in lines if isinstance(e.get("_seq"), int)),
+        default=count,
+    )
+    provider.update_run_status(
+        run_id,
+        "OPEN",
+        details={
+            "evidence_capture": {
+                "complete": True,
+                "event_count": count,
+                "terminal_seq": terminal_seq,
+                "trace_hash": "sha3_256:" + crypto.checksum(raw),
+            }
+        },
+    )
+
+
 def _fixture_run_store(run_id: str) -> LocalFileRunStore:
     """Expose a legacy JSONL fixture through an explicit local provider."""
     provider = LocalFileRunStore(config.RUN_LOG_DIR)
@@ -212,6 +236,7 @@ def _fixture_run_store(run_id: str) -> LocalFileRunStore:
             run_id,
             {"execution_manifest": json.loads(manifest_path.read_text(encoding="utf-8"))},
         )
+    _sync_capture_receipt(provider, run_id)
     return provider
 
 

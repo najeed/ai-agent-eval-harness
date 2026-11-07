@@ -160,7 +160,8 @@ class SessionManager:
             meta_tok = chk_meta.get("approval_token") if isinstance(chk_meta, dict) else None
             resumption_token = resumption_checkpoint.get("approval_token") or state_tok or meta_tok
         self.resumption_token = resumption_token
-        self._completed_node_results: dict[str, Any] = {}
+        self._completed_execution_results: dict[str, Any] = {}
+        self._checkpoint_replay_results: dict[str, Any] = {}
         self._approved_gates: set[str] = set()
         # Preserve the immutable evaluation contract separately from the working
         # scenario.  The runner hashes this supplied contract into the
@@ -247,8 +248,15 @@ class SessionManager:
         # Session-Scoped Infrastructure
         self.event_bus = EventEmitter(run_id=run_id)
         # [Telemetry Bridge] Propagate events to global subscribers
-        if not self.metadata.get("isolate_events", False):
-            self.event_bus.subscribe(lambda e: events.emit(e.name, e.data, e.span_context))
+        self.event_bus.subscribe(
+            lambda e: events.emit(
+                e.name,
+                e.data,
+                e.span_context,
+                required_only=self.metadata.get("isolate_events", False),
+            ),
+            required=True,
+        )
 
         # Plugin discovery and registry ownership are runtime concerns.  A
         # session consumes the canonical multi-load registry rather than
@@ -300,16 +308,7 @@ class SessionManager:
         self.approval_manager = SessionApprovalManager(
             run_id=self.run_id,
             checkpoint_manager=self.checkpoint_manager,
-            state_provider=lambda: {
-                "scenario_data": self.scenario,
-                "turn_state": self.turn_state_manager.snapshot(),
-                "tool_state": self.tool_execution_coordinator.snapshot(),
-                "completed_node_results": dict(getattr(self, "_completed_node_results", {})),
-                "metadata": dict(self.metadata),
-                "config_hash": getattr(self.resolved_config, "config_hash", None)
-                if self.resolved_config
-                else None,
-            },
+            state_provider=self._execution_checkpoint_state,
             plugin_manager=self.plugin_manager,
             event_bus=self.event_bus,
             scope=session_scope,
@@ -324,6 +323,13 @@ class SessionManager:
 
         # Initialize plugins for this session
         self.plugin_manager.load_plugins()
+        # Discovery can instantiate the recorder. Bind the final subscriber set
+        # before any session event can reach mandatory persistence.
+        from .flight_recorder import FlightRecorderPlugin
+
+        FlightRecorderPlugin.bind_active_recorder(
+            self.run_id, self.run_store, context=self.metadata.get("runtime_context")
+        )
 
         # [Southbound Mutation Interception] Auto-activate RuntimeMutationPlugin
         # if scenario has mutations
@@ -580,15 +586,28 @@ class SessionManager:
             self.turn_state_manager.current_turn = val
         self._current_turn = val
 
+    def _execution_checkpoint_state(self) -> dict[str, Any]:
+        return {
+            "evaluation_run_id": self.run_id,
+            "attempt_id": self.attempt_id,
+            "scenario_version_id": ExecutionIdentity.scenario_version_hash(self.scenario),
+            "scenario_data": copy.deepcopy(self.scenario),
+            "turn": self.turn_number,
+            "turn_state": self.turn_state_manager.snapshot(),
+            "tool_state": self.tool_execution_coordinator.snapshot(),
+            "completed_execution_results": copy.deepcopy(self._completed_execution_results),
+            "metadata": dict(self.metadata),
+            "config_hash": getattr(self.resolved_config, "config_hash", None)
+            if self.resolved_config
+            else None,
+        }
+
     def save_checkpoint(
         self, checkpoint_id: str | None = None, metadata: dict[str, Any] | None = None
     ) -> str:
         """Explicitly checkpoints current session state via CheckpointStore interface."""
-        state = {
-            "turn": self.turn_number,
-            "history": getattr(self.turn_state_manager, "history", []),
-            "metadata": self.metadata,
-        }
+        state = self._execution_checkpoint_state()
+        state["history"] = getattr(self.turn_state_manager, "history", [])
         return self.checkpoint_manager.create_checkpoint(
             state, checkpoint_id=checkpoint_id, metadata=metadata
         )
@@ -602,16 +621,39 @@ class SessionManager:
         data = checkpoint_data or self.checkpoint_manager.load_latest_checkpoint()
         if not data:
             return False
-        turn = data.get("turn", data.get("current_turn", data.get("turn_number", 0)))
-        self.turn_number = int(turn)
+        if data.get("attempt_id"):
+            if data.get("evaluation_run_id") != self.run_id or data.get(
+                "scenario_version_id"
+            ) != ExecutionIdentity.scenario_version_hash(self.scenario):
+                raise ValueError("CheckpointExecutionScopeMismatch")
+            self.attempt_id = str(data["attempt_id"])
+        elif data.get("completed_execution_results"):
+            raise ValueError("UnboundExecutionCheckpoint")
+        turn = data.get("turn", data.get("current_turn", data.get("turn_number", None)))
         if hasattr(self, "turn_state_manager") and self.turn_state_manager:
-            self.turn_state_manager.restore(data.get("turn_state", data))
+            turn_state = copy.deepcopy(data.get("turn_state", data))
+            if turn is not None:
+                turn_state["current_turn"] = int(turn)
+            self.turn_state_manager.restore(turn_state)
+            if turn is not None:
+                self.turn_number = int(turn)
+        elif turn is not None:
+            self.turn_number = int(turn)
+        if (
+            "tool_state" in data
+            and hasattr(self, "tool_execution_coordinator")
+            and self.tool_execution_coordinator
+        ):
+            self.tool_execution_coordinator.restore(data.get("tool_state"))
         if "metadata" in data and isinstance(data["metadata"], dict):
             self.session_metadata.update(data["metadata"])
         if "session_metadata" in data and isinstance(data["session_metadata"], dict):
             self.session_metadata.update(data["session_metadata"])
-        if "completed_node_results" in data and isinstance(data["completed_node_results"], dict):
-            self._completed_node_results = dict(data["completed_node_results"])
+        completed = data.get("completed_execution_results", {})
+        if not isinstance(completed, dict):
+            raise ValueError("InvalidExecutionCheckpointResults")
+        self._completed_execution_results = copy.deepcopy(completed)
+        self._checkpoint_replay_results = copy.deepcopy(completed)
         if resumption_token:
             self.resumption_token = resumption_token
         elif "approval_token" in data:
@@ -676,21 +718,31 @@ class SessionManager:
             instance_contexts: dict[str, ExecutionInstanceContext] = {}
             state_before_map: dict[str, dict[str, Any]] = {}
 
+            routing_state_projection: set[str] = set()
+            for edge in plan.edges:
+                if edge.predicate:
+                    routing_state_projection.update(
+                        self._extract_predicate_state_paths(edge.predicate)
+                    )
+            for node_ir in plan.nodes.values():
+                proj = node_ir.definition.get("state_projection")
+                if isinstance(proj, list):
+                    for p in proj:
+                        if isinstance(p, str) and p:
+                            routing_state_projection.add(
+                                p[len("state.") :] if p.startswith("state.") else p
+                            )
+            routing_state_list = sorted(routing_state_projection)
+
             async def _context_provider() -> dict[str, Any]:
-                state = await self._acquire_bounded_state(sandbox, [])
+                state = await self._acquire_bounded_state(sandbox, routing_state_list)
                 return {"state": state}
 
             async def _executor(node_ir, exec_id: str, parent_exec_id: str | None):
                 node_def = node_ir.definition
                 node_id_local = node_ir.node_id
-                if node_id_local in getattr(self, "_completed_node_results", {}):
-                    cached_res = copy.deepcopy(self._completed_node_results[node_id_local])
-                    cached_res["is_replayed"] = True
-                    if "original_duration_ms" not in cached_res:
-                        cached_res["original_duration_ms"] = cached_res.get(
-                            "execution_duration_ms"
-                        ) or cached_res.get("duration_ms")
-                    return cached_res
+                iteration_suffix = exec_id.rpartition("#it")[2]
+                execution_iteration = int(iteration_suffix) if iteration_suffix.isdigit() else 1
 
                 if (
                     self.cancellation_event
@@ -740,6 +792,32 @@ class SessionManager:
                 )
                 instance_contexts[exec_id] = ctx
 
+                replay = getattr(self, "_checkpoint_replay_results", {}).get(exec_id)
+                if replay is not None:
+                    cached = replay.get("result", {})
+                    expected_identity = {
+                        "execution_instance_id": exec_id,
+                        "scenario_node_id": node_id_local,
+                        "evaluation_run_id": identity.evaluation_run_id,
+                        "scenario_version_id": identity.scenario_version_id,
+                        "attempt_id": identity.attempt_id,
+                        "attempt_number": attempt_number,
+                    }
+                    if cached.get("status") != "success" or any(
+                        cached.get(key) != value for key, value in expected_identity.items()
+                    ):
+                        raise ValueError("CheckpointExecutionIdentityMismatch")
+                    branch_sandbox.restore_checkpoint_state(replay["sandbox"])
+                    branch_sandbox._fork_baseline = copy.deepcopy(replay["baseline"])
+                    ctx.history = copy.deepcopy(cached.get("conversation_history", []))
+                    ctx.initial_history_len = 0
+                    result = copy.deepcopy(cached)
+                    result["is_replayed"] = True
+                    result["execution_duration_ms"] = 0.0
+                    result["replay_provenance"] = {**expected_identity, "source": "checkpoint"}
+                    self._checkpoint_replay_results.pop(exec_id)
+                    return result
+
                 parent_node_id = (
                     instance_contexts[parent_exec_id].scenario_node_id
                     if parent_exec_id and parent_exec_id in instance_contexts
@@ -757,6 +835,7 @@ class SessionManager:
                     state_before=state_before,
                     execution_context={
                         "execution_instance_id": exec_id,
+                        "iteration": execution_iteration,
                         "parent_execution_id": parent_exec_id,
                         "from_scenario_node_id": parent_node_id,
                         "attempt_id": identity.attempt_id,
@@ -776,13 +855,9 @@ class SessionManager:
                 result["scenario_version_id"] = identity.scenario_version_id
                 result["case_id"] = identity.case_id
                 result["attempt_id"] = identity.attempt_id
+                result["attempt_number"] = attempt_number
+                result["iteration"] = execution_iteration
                 result["execution_mode"] = identity.execution_mode.value
-
-                if result.get("status") == "success":
-                    ctx.turns_taken += 1
-                    if not hasattr(self, "_completed_node_results"):
-                        self._completed_node_results = {}
-                    self._completed_node_results[node_id_local] = result
 
                 # LIVE/HYBRID reconciliation: independently capture the
                 # post-node world state and reconcile it against the node's
@@ -792,7 +867,7 @@ class SessionManager:
 
                     try:
                         state_after = await self._acquire_bounded_state(
-                            sandbox, node_def.get("state_projection") or []
+                            branch_sandbox, node_def.get("state_projection") or []
                         )
                     except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError):  # noqa: BLE001 - evidence capture must not break execution
                         logger.debug(
@@ -812,6 +887,8 @@ class SessionManager:
                     recon["attempt_id"] = identity.attempt_id
                     recon["scenario_node_id"] = node_id_local
                     result["reconciliation"] = recon
+                    recon["observation_kind"] = "sandbox"
+                    recon["authoritative"] = False
 
                     # Incorporate mandatory reconciliation into authoritative
                     # node and workflow verdict
@@ -827,6 +904,13 @@ class SessionManager:
                             result["node_verdict"]["reconciliation"] = "fail"
                             result["node_verdict"]["overall"] = "reconciliation_failed"
 
+                if result.get("status") == "success":
+                    ctx.turns_taken += 1
+                    self._completed_execution_results[exec_id] = {
+                        "result": copy.deepcopy(result),
+                        "sandbox": branch_sandbox.checkpoint_state(),
+                        "baseline": copy.deepcopy(branch_sandbox._fork_baseline),
+                    }
                 return result
 
             def _on_batch_complete(exec_ids: list[str]) -> None:
@@ -834,26 +918,14 @@ class SessionManager:
                 Deterministic post-gather state merge.
                 Merges branch sandboxes in strict canonical sorted order.
                 """
-                merged_keys: set[str] = set()
-                for eid in exec_ids:
-                    ctx = instance_contexts.get(eid)
-                    if (
-                        ctx
-                        and hasattr(sandbox, "merge_branch_state")
-                        and ctx.sandbox is not sandbox
-                    ):
-                        before_keys = (
-                            set(sandbox.state.keys())
-                            if hasattr(sandbox, "state") and isinstance(sandbox.state, dict)
-                            else set()
-                        )
-                        sandbox.merge_branch_state(ctx.sandbox)
-                        after_keys = (
-                            set(sandbox.state.keys())
-                            if hasattr(sandbox, "state") and isinstance(sandbox.state, dict)
-                            else set()
-                        )
-                        merged_keys.update(after_keys - before_keys)
+                branches = [
+                    instance_contexts[eid].sandbox
+                    for eid in exec_ids
+                    if eid in instance_contexts and instance_contexts[eid].sandbox is not sandbox
+                ]
+                before_keys = set(sandbox.state)
+                sandbox.merge_branch_states(branches)
+                merged_keys = set(sandbox.state) - before_keys
                 if self.event_bus and exec_ids:
                     self.event_bus.emit(
                         "parallel_state_merged",
@@ -1362,7 +1434,7 @@ class SessionManager:
                 "status": "running",
                 "attempt": attempt_number,
                 "attempt_id": attempt_id,
-                "iteration": attempt_number,
+                "iteration": execution_context.get("iteration", 1),
                 "task_description": task_description,
             },
             span_context=self.session_metadata.get("span_context"),
@@ -1462,7 +1534,7 @@ class SessionManager:
                     "status": "failed",
                     "attempt": attempt_number,
                     "attempt_id": attempt_id,
-                    "iteration": attempt_number,
+                    "iteration": execution_context.get("iteration", 1),
                     "task_description": task_description,
                     "failure_class": failure_category,
                     "failure_reason": error_text,
@@ -2191,7 +2263,7 @@ class SessionManager:
             "status": node_final_status,
             "attempt": attempt_number,
             "attempt_id": getattr(self, "attempt_id", f"att-{self.run_id}-{attempt_number}"),
-            "iteration": attempt_number,
+            "iteration": execution_context.get("iteration", 1),
         }
         node_event_payload["duration_ms"] = int((time.time() - node_start_time) * 1000)
         if node_final_status == "failed":
@@ -3207,6 +3279,30 @@ class SessionManager:
 
             registry[name] = {"parameters": params}
         return registry
+
+    @staticmethod
+    def _extract_predicate_state_paths(predicate: Any) -> set[str]:
+        if not predicate:
+            return set()
+        paths: set[str] = set()
+        if getattr(predicate, "op", None) == "compound":
+            for clause in getattr(predicate, "clauses", ()):
+                paths.update(SessionManager._extract_predicate_state_paths(clause))
+        else:
+            p = getattr(predicate, "path", None)
+            if isinstance(p, str) and p:
+                if p.startswith("state."):
+                    paths.add(p[len("state.") :])
+                elif not (
+                    p.startswith("world.")
+                    or p.startswith("shared.")
+                    or p.startswith("turn.")
+                    or p.startswith("node.")
+                    or p.startswith("tools_")
+                    or p.startswith("result.")
+                ):
+                    paths.add(p)
+        return paths
 
     @staticmethod
     async def _acquire_bounded_state(sandbox: ToolSandbox, projection: list[str]) -> dict[str, Any]:

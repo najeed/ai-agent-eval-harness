@@ -3,6 +3,114 @@ import pytest
 from eval_runner.events import CoreEvents, EventEmitter
 
 
+@pytest.mark.parametrize("corruption", [None, "drop", "content"])
+def test_capture_closure_checks_exact_provider_events(tmp_path, corruption):
+    from eval_runner.events import EvidenceDeliveryError
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    store = LocalFileRunStore(tmp_path / "runs")
+    run_id = "capture-check"
+    store.create_run(run_id, "capture-scenario")
+    bus = EventEmitter(run_id=run_id)
+
+    def persist(event):
+        if corruption == "drop":
+            return
+        row = event.to_dict()
+        row["_seq"] = 1
+        if corruption == "content":
+            row["outcome"] = "forged"
+        store.append_events(run_id, [row])
+
+    bus.subscribe(persist, required=True)
+    bus.emit("run_end", {"outcome": "success"})
+    if corruption:
+        with pytest.raises(EvidenceDeliveryError, match="closure failed"):
+            bus.finalize_capture(run_id, store)
+        assert store.get_run(run_id)["status_details"]["evidence_capture_failed"] is True
+    else:
+        receipt = bus.finalize_capture(run_id, store)
+        assert receipt["complete"] is True
+        assert receipt["event_count"] == 1
+        assert store.get_run(run_id)["status_details"]["evidence_capture"] == receipt
+        with pytest.raises(EvidenceDeliveryError, match="closed"):
+            bus.emit("node_start", {})
+
+
+def test_capture_resumption_binds_the_acknowledged_prefix(tmp_path):
+    import json
+
+    from eval_runner.events import EvidenceDeliveryError
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    store = LocalFileRunStore(tmp_path / "runs")
+    run_id = "capture-resume"
+    store.create_run(run_id, "capture-scenario")
+
+    def persist(event):
+        raw = store.get_trace_bytes(run_id)
+        rows = [json.loads(line) for line in raw.splitlines()] if raw is not None else []
+        store.append_events(run_id, [{**event.to_dict(), "_seq": len(rows) + 1}])
+
+    bus = EventEmitter(run_id=run_id)
+    bus.subscribe(persist, required=True)
+    bus.emit("approval_created", {})
+    assert bus.finalize_capture(run_id, store, complete=False)["resumable"] is True
+    resumed = EventEmitter(run_id=run_id)
+    resumed.subscribe(persist, required=True)
+    resumed.resume_capture(run_id, store)
+    assert store.get_run(run_id)["status_details"]["evidence_capture"]["resumable"] is False
+    with pytest.raises(EvidenceDeliveryError, match="acknowledged prefix"):
+        EventEmitter().resume_capture(run_id, store)
+    resumed.emit("run_end", {})
+    assert resumed.finalize_capture(run_id, store)["event_count"] == 2
+
+
+@pytest.mark.parametrize("async_mode", [False, True])
+def test_mandatory_event_delivery_is_synchronous_and_fails_closed(async_mode):
+    from eval_runner.events import EvidenceDeliveryError
+
+    bus = EventEmitter(run_id="required-evidence", async_mode=async_mode)
+    observed = []
+
+    def persistence(event):
+        observed.append(event.name)
+        raise OSError("provider unavailable")
+
+    bus.subscribe(persistence, required=True)
+    with pytest.raises(EvidenceDeliveryError):
+        bus.emit("node_end", {})
+    assert observed == ["node_end"]
+    with pytest.raises(EvidenceDeliveryError, match="already failed"):
+        bus.emit("run_end", {})
+    assert observed == ["node_end"]
+    bus.reset()
+
+
+def test_optional_event_observer_does_not_invalidate_durable_delivery():
+    bus = EventEmitter(async_mode=False)
+    persisted = []
+    bus.subscribe(lambda event: persisted.append(event.name), required=True)
+
+    def unavailable(event):
+        raise OSError("observer unavailable")
+
+    bus.subscribe(unavailable)
+    bus.emit("node_end", {})
+    assert persisted == ["node_end"]
+
+
+def test_mandatory_coroutine_evidence_subscribers_are_rejected():
+    bus = EventEmitter(async_mode=True)
+
+    async def persistence(event):
+        return None
+
+    with pytest.raises(TypeError, match="synchronously"):
+        bus.subscribe(persistence, required=True)
+    assert persistence not in bus._subscribers
+
+
 def test_event_subscription():
     """Verify that subscribers receive emitted events through a scoped bus."""
     bus = EventEmitter(run_id="test-123")

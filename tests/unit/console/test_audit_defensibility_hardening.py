@@ -102,17 +102,34 @@ def test_execute_industrial_certification_rejects_provisional_run(auth_client, t
     now = datetime.now(UTC)
     events = [
         {
+            "_seq": 1,
             "event": "run_start",
             "timestamp": now.isoformat(),
             "data": {"execution_mode": "unknown"},
         },
         {
+            "_seq": 2,
             "event": "run_end",
             "timestamp": (now + timedelta(seconds=2)).isoformat(),
             "data": {"status": "EXECUTION_COMPLETED", "passed": True},
         },
     ]
     run_store.append_events(run_id, events)
+    import hashlib
+
+    raw_all = run_store.get_trace_bytes(run_id) or b""
+    run_store.update_run_status(
+        run_id,
+        "OPEN",
+        details={
+            "evidence_capture": {
+                "complete": True,
+                "event_count": 2,
+                "terminal_seq": 2,
+                "trace_hash": "sha3_256:" + hashlib.sha3_256(raw_all).hexdigest(),
+            }
+        },
+    )
 
     with pytest.raises(ValueError, match=r"(is provisional|requires live evidence)"):
         execute_industrial_certification(run_id=run_id, run_store=run_store)

@@ -20,6 +20,7 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ed25519
 from flask import Flask
 
+from agentv_runtime.canonical import canonical_json_encode
 from agentv_runtime.contracts import (
     Verdict,
     VerificationResult,
@@ -169,16 +170,10 @@ def test_flight_recorder_cryptographic_trace_seal(tmp_path, monkeypatch):
     )
     fr.finalize_run(run_id=run_id)
 
+    # finalize_run marks run FINALIZING without publishing premature trace_seal.json
     seal_path = tmp_path / run_id / "trace_seal.json"
-    assert seal_path.exists()
-    seal_data = json.loads(seal_path.read_text(encoding="utf-8"))
-
-    assert seal_data["status"] == "finalized"
-    assert seal_data["run_id"] == run_id
-    assert seal_data["algorithm"] == "sha3_256"
-    assert "trace_digest" in seal_data
-    assert seal_data["trace_digest"].startswith("sha3_256:")
-    assert seal_data["event_count"] >= 2
+    assert not seal_path.exists()
+    assert run_store.get_run(run_id)["lifecycle"] == "FINALIZING"
 
 
 def test_server_side_preflight_fingerprint_enforcement(tmp_path, monkeypatch):
@@ -913,16 +908,21 @@ def test_trace_seal_trust_envelope_tamper_detected(tmp_path, monkeypatch):
     recorder.handle_event(event)
     recorder.finalize_run(run_id)
 
-    seal_path = tmp_path / run_id / "trace_seal.json"
-    assert seal_path.exists()
-    seal_data = json.loads(seal_path.read_text(encoding="utf-8"))
-
-    assert seal_data["signer_identity"] == "agentv-attestor-v1"
-    assert seal_data["key_id"] == "cert-key-001"
-    assert "signature" in seal_data
-
     trace_path = tmp_path / run_id / "run.jsonl"
     raw_trace = trace_path.read_bytes() if trace_path.exists() else b""
+    trace_digest = "sha3_256:" + hashlib.sha3_256(raw_trace).hexdigest()
+    seal_envelope = {
+        "status": "finalized",
+        "run_id": run_id,
+        "algorithm": "sha3_256",
+        "trace_digest": trace_digest,
+        "signer_identity": "agentv-attestor-v1",
+        "key_id": "cert-key-001",
+    }
+    seal_data = {
+        **seal_envelope,
+        "signature": backend.sign(canonical_json_encode(seal_envelope)).hex(),
+    }
 
     valid_pkg = VerificationPackage(
         scenario_id="s1",

@@ -14,9 +14,15 @@ from typing import Any
 
 from cryptography.exceptions import InvalidSignature, UnsupportedAlgorithm
 
+from agentv_runtime.execution_truth import execution_truth_eligible
 from agentv_runtime.finalization import EvaluatorFinalizationRecord
 from eval_runner import config
 from eval_runner.certification_lock import PerRunCertificationLock
+from eval_runner.certification_truth import (
+    capture_receipt_failures,
+    certification_claim_scope,
+    state_claim_failures,
+)
 from eval_runner.verifier import TraceVerifier
 
 logger = logging.getLogger(__name__)
@@ -53,21 +59,28 @@ class CertificationService:
 
     @staticmethod
     def _execution_truth(events: list[dict[str, Any]]) -> tuple[str, bool]:
-        start = next((e for e in events if e.get("event") in {"run_start", "start"}), None)
-        if start is None:
+        starts = [event for event in events if event.get("event") in {"run_start", "start"}]
+        if not starts:
             raise ValueError("IncompleteProviderStream: missing run_start event")
-        data = start.get("data") if isinstance(start.get("data"), dict) else {}
-        metadata = data.get("metadata") or start.get("metadata") or {}
-        mode = str(
-            data.get("execution_mode")
-            or metadata.get("execution_mode")
-            or start.get("execution_mode")
-            or "unknown"
-        ).lower()
-        provisional = bool(
-            data.get("provisional") or metadata.get("provisional") or start.get("provisional")
-        )
-        return mode, provisional or mode != "live"
+        mode = "unknown"
+        eligible = True
+        for start in starts:
+            data = start.get("data") if isinstance(start.get("data"), dict) else {}
+            contexts = [start, data, start.get("metadata"), data.get("metadata")]
+            contexts = [context for context in contexts if isinstance(context, Mapping)]
+            modes = [
+                context["execution_mode"] for context in contexts if "execution_mode" in context
+            ]
+            provisional = any(
+                context.get("provisional", False) is not False for context in contexts
+            )
+            mode = str(modes[0]).lower() if modes else "unknown"
+            eligible = (
+                eligible
+                and bool(modes)
+                and all(execution_truth_eligible(value, provisional) for value in modes)
+            )
+        return mode, not eligible
 
     @staticmethod
     def _finalization(events: list[dict[str, Any]], run_id: str) -> EvaluatorFinalizationRecord:
@@ -209,22 +222,11 @@ class CertificationService:
             )
             return "unknown", True
 
-        for ev in events:
-            if ev.get("event") in ("run_start", "start"):
-                data = ev.get("data", {}) if isinstance(ev.get("data"), dict) else {}
-                meta = data.get("metadata") or ev.get("metadata") or {}
-                mode = (
-                    data.get("execution_mode")
-                    or meta.get("execution_mode")
-                    or ev.get("execution_mode")
-                )
-                is_prov = bool(
-                    data.get("provisional") or meta.get("provisional") or ev.get("provisional")
-                )
-                if is_prov or not mode or mode not in ("live", "hybrid"):
-                    return mode or "unknown", True
-                return mode, False
-        return "unknown", True
+        try:
+            return CertificationService._execution_truth(events)
+        except ValueError:
+            logger.debug("Execution truth is missing from provider events", exc_info=True)
+            return "unknown", True
 
     @staticmethod
     def extract_computed_run_outcome(
@@ -389,6 +391,11 @@ class CertificationService:
         run = run_store.get_run(run_id, context=scoped_context)
         if run is None:
             raise FileNotFoundError(f"Run vault not found for {run_id}")
+        if (
+            run.get("status") == "CERTIFICATION_FAILED"
+            or (run.get("status_details") or {}).get("evidence_capture_failed") is True
+        ):
+            raise ValueError("IncompleteEvidenceCapture: provider reports failed trace persistence")
         lifecycle = get_run_lifecycle_state(run_id, run_store=run_store, context=scoped_context)
         if lifecycle == RunLifecycleState.SEALED:
             # A sealed run is immutable.  Its idempotent retry may read the
@@ -480,6 +487,10 @@ class CertificationService:
         events = cls.parse_trace_bytes(bytes(trace_bytes), run_id)
         if provider_events is not None and events != provider_events:
             raise ValueError("ProviderEventByteDivergence: events do not match exact trace bytes.")
+        capture_receipt = (run.get("status_details") or {}).get("evidence_capture")
+        capture_failures = capture_receipt_failures(capture_receipt, bytes(trace_bytes), events)
+        if capture_failures:
+            raise ValueError("; ".join(capture_failures))
 
         if run.get("run_id") not in (None, run_id) or provider_manifest.get("run_id") not in (
             None,
@@ -859,6 +870,8 @@ class CertificationService:
                         )
 
         metadata = {
+            "evidence_capture": dict(capture_receipt),
+            "certification_claim_scope": certification_claim_scope(effective_scenario),
             "scenario_id": finalization.scenario_id,
             "scenario_version": finalization.scenario_version,
             "scenario_hash": finalization.scenario_hash,
@@ -869,6 +882,9 @@ class CertificationService:
             "evaluator_identity": finalization.evaluator_identity,
             "required_oracle_ids": list(finalization.required_oracle_ids),
         }
+        state_failures = state_claim_failures(effective_scenario, events)
+        if state_failures:
+            raise ValueError("; ".join(state_failures))
         for ev in events:
             if ev.get("event") in ("run_start", "start"):
                 agent_id = ev.get("agent_id") or (ev.get("data") or {}).get("agent_id")

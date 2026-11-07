@@ -39,7 +39,10 @@ def test_public_verify_endpoint_v3(app_and_store, client, tmp_path):
     run_dir = tmp_path / "runs" / run_id
     run_dir.mkdir(parents=True)
     trace_path = run_dir / "run.jsonl"
-    trace_path.write_text('{"event": "run_start", "execution_mode": "live"}\n', encoding="utf-8")
+    trace_path.write_text(
+        '{"_seq": 1, "event": "run_start", "execution_mode": "live"}\n',
+        encoding="utf-8",
+    )
 
     identity_id = "system_id"
     keys_dir = tmp_path / "keys" / identity_id
@@ -50,6 +53,7 @@ def test_public_verify_endpoint_v3(app_and_store, client, tmp_path):
         "version": "1.0.0",
         "required_oracle_ids": ["fixture:direct_oracle"],
     }
+    import hashlib
     import json
 
     (run_dir / "scenario_resolved.json").write_text(json.dumps(scenario), encoding="utf-8")
@@ -59,6 +63,20 @@ def test_public_verify_endpoint_v3(app_and_store, client, tmp_path):
 
     append_authoritative_finalization(trace_path, run_id, run_dir)
     trace_bytes = run_store.get_trace_bytes(run_id) or trace_path.read_bytes()
+    lines = [json.loads(line) for line in trace_bytes.decode("utf-8").splitlines() if line.strip()]
+    count = len(lines)
+    terminal_seq = max(
+        (e.get("_seq") for e in lines if isinstance(e.get("_seq"), int)),
+        default=count,
+    )
+    receipt = {
+        "complete": True,
+        "resumable": False,
+        "event_count": count,
+        "terminal_seq": terminal_seq,
+        "trace_hash": "sha3_256:" + hashlib.sha3_256(trace_bytes).hexdigest(),
+    }
+    run_store.update_run_status(run_id, "OPEN", details={"evidence_capture": receipt})
 
     manifest = TraceVerifier.sign_trace_bytes(
         trace_bytes,
@@ -67,7 +85,10 @@ def test_public_verify_endpoint_v3(app_and_store, client, tmp_path):
         run_store=run_store,
         identity_id=identity_id,
         scenario_data=scenario,
-        metadata={"required_oracle_ids": scenario["required_oracle_ids"]},
+        metadata={
+            "required_oracle_ids": scenario["required_oracle_ids"],
+            "evidence_capture": receipt,
+        },
     )
     run_store.save_run_manifest(run_id, manifest)
     run_store.update_run_status(run_id, "SEALED")

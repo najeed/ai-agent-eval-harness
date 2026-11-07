@@ -95,6 +95,22 @@ def test_certification_cannot_ignore_fabricated_reference_on_excluded_finalizati
     provider.create_run("run-a", scenario["id"])
     provider.append_events("run-a", events)
     provider.save_run_manifest("run-a", original.get_manifest("run-a"))
+    from eval_runner.utils import crypto
+
+    raw = provider.get_trace_bytes("run-a")
+    count = len([line for line in raw.splitlines() if line.strip()])
+    provider.update_run_status(
+        "run-a",
+        "OPEN",
+        details={
+            "evidence_capture": {
+                "complete": True,
+                "event_count": count,
+                "terminal_seq": count,
+                "trace_hash": "sha3_256:" + crypto.checksum(raw),
+            }
+        },
+    )
     with pytest.raises(ValueError, match="EvidenceReferenceVerificationFailed"):
         execute_industrial_certification("run-a", run_store=provider, scenario_data=scenario)
     assert provider.get_run("run-a")["lifecycle"] != "SEALED"

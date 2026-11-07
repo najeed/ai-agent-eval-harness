@@ -9,13 +9,20 @@ from __future__ import annotations
 
 import base64
 import copy
+import datetime
 import hashlib
+import ipaddress
 import json
+import ssl
 import threading
 from urllib.request import Request, urlopen
 
 import pytest
-from flask import Flask, jsonify
+from cryptography import x509
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.x509.oid import NameOID
+from flask import Flask, jsonify, request
 from werkzeug.serving import make_server
 
 from agentv_runtime.package import VerificationPackage
@@ -306,8 +313,47 @@ def real_chain(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "TRUST_ROOT", tmp_path / "keys")
     for identity in ("system_id", "eval_kernel"):
         IdentityService._provision_local_identity(identity)
+
+    key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    subject = issuer = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "127.0.0.1")])
+    cert = (
+        x509.CertificateBuilder()
+        .subject_name(subject)
+        .issuer_name(issuer)
+        .public_key(key.public_key())
+        .serial_number(x509.random_serial_number())
+        .not_valid_before(datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=1))
+        .not_valid_after(datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=2))
+        .add_extension(
+            x509.SubjectAlternativeName([x509.IPAddress(ipaddress.IPv4Address("127.0.0.1"))]),
+            critical=False,
+        )
+        .sign(key, hashes.SHA256())
+    )
+    cert_path = tmp_path / "authority_cert.pem"
+    key_path = tmp_path / "authority_key.pem"
+    cert_path.write_bytes(cert.public_bytes(serialization.Encoding.PEM))
+    key_path.write_bytes(
+        key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
+    )
+
+    server_ssl_ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    server_ssl_ctx.load_cert_chain(certfile=str(cert_path), keyfile=str(key_path))
+
+    client_ssl_ctx = ssl.create_default_context(cafile=str(cert_path))
+
     state = {"balance": 100, "reads": [], "agent_calls": 0, "lie": False, "unavailable": False}
+    auth_token = "Bearer test-ledger-auth-token"
     authority = Flask("release-independent-authority")
+
+    @authority.before_request
+    def check_auth():
+        if request.headers.get("Authorization") != auth_token:
+            return jsonify({"error": "Unauthorized"}), 401
 
     @authority.get("/state")
     def observe():
@@ -322,16 +368,21 @@ def real_chain(tmp_path, monkeypatch):
         return jsonify({"committed": True})
 
     authority_server = make_server("127.0.0.1", 0, authority)
-    authority_origin = f"http://127.0.0.1:{authority_server.server_port}"
+    authority_server.socket = server_ssl_ctx.wrap_socket(authority_server.socket, server_side=True)
+    authority_origin = f"https://127.0.0.1:{authority_server.server_port}"
     agent = Flask("release-agent")
 
     @agent.post("/agent")
     def execute():
         state["agent_calls"] += 1
         if not state["lie"]:
-            with urlopen(  # nosec B310
-                Request(authority_origin + "/apply", data=b"{}", method="POST"), timeout=3
-            ):
+            req = Request(
+                authority_origin + "/apply",
+                data=b"{}",
+                headers={"Authorization": auth_token},
+                method="POST",
+            )
+            with urlopen(req, context=client_ssl_ctx, timeout=3):  # nosec B310
                 pass
         return jsonify(
             {
@@ -362,7 +413,13 @@ def real_chain(tmp_path, monkeypatch):
                 "protocol": "http",
             },
         },
-        "state_authorities": {"ledger": {"url": authority_origin + "/state"}},
+        "state_authorities": {
+            "ledger": {
+                "url": authority_origin + "/state",
+                "headers": {"Authorization": auth_token},
+                "cafile": str(cert_path),
+            }
+        },
         "workflow": {
             "nodes": [
                 {
@@ -522,7 +579,9 @@ async def test_release_evidence_chain_matrix(real_chain, case, boundary, expecte
     elif case == "unsigned_finalization":
         _finalizations(events)[0][1]["evaluator_signature"] = ""
     elif case == "duplicate_finalizations":
-        events.append(copy.deepcopy(events[_finalizations(events)[0][0]]))
+        dup_ev = copy.deepcopy(events[_finalizations(events)[0][0]])
+        dup_ev["_seq"] = len(events) + 1
+        events.append(dup_ev)
     elif case in {"omitted_execution", "omitted_observation", "altered_observation"}:
         needle = "agent" if case == "omitted_execution" else "post_snapshot_hash"
         index = next(i for i, ev in enumerate(events) if needle in json.dumps(ev).lower())
@@ -560,12 +619,25 @@ async def test_release_evidence_chain_matrix(real_chain, case, boundary, expecte
         duplicate_store = LocalFileRunStore(config.RUN_LOG_DIR.parent / "duplicate-issuance")
         duplicate_store.create_run(run_id, scenario["id"])
         duplicate_store.append_events(run_id, events)
+        dup_raw = b"".join(_json_bytes(event) + b"\n" for event in events)
         duplicate_store.save_run_manifest(
             run_id,
             {
                 "run_id": run_id,
                 "execution_manifest": cert["execution_manifest"],
                 "scenario_data": scenario,
+            },
+        )
+        duplicate_store.update_run_status(
+            run_id,
+            "OPEN",
+            details={
+                "evidence_capture": {
+                    "event_count": len(events),
+                    "terminal_seq": len(events),
+                    "trace_hash": _digest(dup_raw),
+                    "complete": True,
+                }
             },
         )
         with pytest.raises(ValueError, match="DuplicateEvaluatorFinalization"):

@@ -145,10 +145,23 @@ def test_rem2_trace_seal_trust_envelope_tamper_detected(tmp_path: Path):
     recorder.handle_event(event)
     recorder.finalize_run(run_id)
 
-    seal_path = tmp_path / run_id / "trace_seal.json"
-    assert seal_path.exists()
-    seal_data = json.loads(seal_path.read_text(encoding="utf-8"))
+    import hashlib
 
+    trace_path = tmp_path / run_id / "run.jsonl"
+    raw_trace = trace_path.read_bytes() if trace_path.exists() else b""
+    trace_digest = "sha3_256:" + hashlib.sha3_256(raw_trace).hexdigest()
+    seal_envelope = {
+        "status": "finalized",
+        "run_id": run_id,
+        "algorithm": "sha3_256",
+        "trace_digest": trace_digest,
+        "signer_identity": "agentv-attestor-v1",
+        "key_id": "cert-key-001",
+    }
+    seal_data = {
+        **seal_envelope,
+        "signature": backend.sign(canonical_json_encode(seal_envelope)).hex(),
+    }
     assert seal_data["signer_identity"] == "agentv-attestor-v1"
     assert seal_data["key_id"] == "cert-key-001"
     assert "signature" in seal_data

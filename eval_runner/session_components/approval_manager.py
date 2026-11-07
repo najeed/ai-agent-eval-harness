@@ -13,6 +13,7 @@ from agentv_runtime.interfaces import (
     ScopeMismatchError,
 )
 from agentv_runtime.scope import ScopeToken, get_active_scope_policy
+from eval_runner.events import EvidenceDeliveryError
 from eval_runner.runtime_services import resolve_approval_store
 
 logger = logging.getLogger(__name__)
@@ -390,6 +391,28 @@ class SessionApprovalManager:
                     details=getattr(self.plugin_manager, "last_rejection_details", None),
                 )
 
+        capture_bus = None
+        already_resolved = False
+        if self.run_store is not None:
+            run_context = _provider_context(active_scope)
+            run_record = self.run_store.get_run(self.run_id, context=run_context) or {}
+            capture = (run_record.get("status_details") or {}).get("evidence_capture")
+            if isinstance(capture, Mapping):
+                pending_record = self.approval_store.get_request(approval_token, scope=active_scope)
+                if (
+                    not isinstance(pending_record, ApprovalRequest)
+                    or pending_record.run_id != self.run_id
+                ):
+                    raise ApprovalBoundaryRejected(
+                        "Approval capture ownership mismatch", phase="resolution"
+                    )
+                already_resolved = str(pending_record.status).upper() != "PENDING"
+                if not already_resolved and capture.get("complete") is False:
+                    from eval_runner.events import EventEmitter
+
+                    capture_bus = EventEmitter.get_global()
+                    capture_bus.resume_capture(self.run_id, self.run_store, context=run_context)
+
         resolved = self.approval_store.resolve_request(
             approval_token=approval_token,
             decision=decision,
@@ -403,20 +426,27 @@ class SessionApprovalManager:
         # that event; a paused provider correctly rejects ordinary trace
         # writes.  Rejected decisions remain durably recorded in the approval
         # ledger and leave the execution trace closed.
-        if str(resolved.status).upper() == "APPROVED" and self.run_store is not None:
-            from eval_runner.flight_recorder import FlightRecorderPlugin
-            from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
+        if already_resolved:
+            return resolved
+        from eval_runner.flight_recorder import FlightRecorderPlugin
+        from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
+        from eval_runner.runtime_services import resolve_run_store
 
-            run_context = _provider_context(active_scope)
+        effective_store = self.run_store or resolve_run_store()
+        run_context = _provider_context(active_scope)
+        if effective_store is not None:
+            if effective_store.get_run(self.run_id, context=run_context) is None:
+                effective_store.create_run(self.run_id, "approval_resolution", context=run_context)
             FlightRecorderPlugin.bind_active_recorder(
-                self.run_id, self.run_store, context=run_context
+                self.run_id, effective_store, context=run_context
             )
-            transition_run_lifecycle(
-                self.run_id,
-                RunLifecycleState.OPEN,
-                run_store=self.run_store,
-                context=run_context,
-            )
+            if str(resolved.status).upper() == "APPROVED":
+                transition_run_lifecycle(
+                    self.run_id,
+                    RunLifecycleState.OPEN,
+                    run_store=effective_store,
+                    context=run_context,
+                )
 
         # Trigger on_approval_resolved hook (best-effort, fail-safe)
         if self.plugin_manager:
@@ -428,14 +458,17 @@ class SessionApprovalManager:
                     exc,
                 )
 
-        # A rejected request leaves the run paused/closed.  Its authoritative
-        # approval-ledger record is retained, but it must not cause a trace
-        # append that would violate the paused lifecycle.
         try:
             from eval_runner.events import CoreEvents, EventEmitter
 
             bus = self.event_bus or EventEmitter.get_global()
             bus.emit(CoreEvents.APPROVAL_RESOLVED, resolved.to_dict())
+            if capture_bus is not None:
+                capture_bus.finalize_capture(
+                    self.run_id, self.run_store, context=run_context, complete=False
+                )
+        except EvidenceDeliveryError:
+            raise
         except Exception as exc:
             logger.warning(
                 "[SessionApprovalManager] Failed to emit APPROVAL_RESOLVED event: %s",

@@ -21,6 +21,27 @@ from eval_runner.state_authority import (
 )
 
 
+@pytest.mark.asyncio
+async def test_live_state_observation_rejects_unauthenticated_declared_authority():
+    from types import SimpleNamespace
+
+    session = SimpleNamespace(
+        execution_mode="live",
+        scenario={"state_authorities": {"orders": {"url": "https://authority.example/state"}}},
+    )
+    connector = MagicMock()
+    connector.observation_identity.return_value = {"authenticated": False}
+    connector.fetch_state = AsyncMock(return_value={"status": "approved"})
+    verifier = SessionStateParityVerifier(session)
+    with patch.object(state_authority_registry, "get_connector", return_value=connector):
+        state, path = await verifier._resolve_target(
+            {"target": "authority:orders", "property": "status"}, None, [], {}
+        )
+    assert state is None
+    assert path == "__unobserved_source__"
+    connector.fetch_state.assert_not_awaited()
+
+
 class TestBoundedStateCaptureContract:
     """Tests for Bounded State Capture Contract (P0-06)."""
 
@@ -424,9 +445,12 @@ class TestSessionStateParityWithExternalAuthority:
             "property": "balance",
             "expected": 500,
         }
-        val, prop = await verifier._resolve_target(
-            assertion, sandbox=None, history=[], shim_snapshots={}
-        )
+        with patch(
+            "eval_runner.state_authority.HttpStateAuthorityConnector", return_value=mock_connector
+        ):
+            val, prop = await verifier._resolve_target(
+                assertion, sandbox=None, history=[], shim_snapshots={}
+            )
         assert val["balance"] == 500
         assert prop == "balance"
 

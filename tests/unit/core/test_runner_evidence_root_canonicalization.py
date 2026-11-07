@@ -35,7 +35,9 @@ async def test_runner_canonical_serialization_and_exact_physical_bytes_evidence_
                 {
                     "id": "node_1",
                     "task_description": "task 1",
-                    "expected_outcome": {"type": "typed_value", "value": "approved"},
+                    "expected_outcome": [
+                        {"type": "typed_value", "value": "approved", "target": "message"}
+                    ],
                 }
             ]
         },
@@ -97,7 +99,17 @@ async def test_runner_canonical_serialization_and_exact_physical_bytes_evidence_
         )
         return [{"workflow_verdict": {"status": "COMPLETED"}}]
 
-    with patch.object(store, "get_trace_bytes", return_value=None):
+    orig_get_trace_bytes = store.get_trace_bytes
+    trace_calls = []
+
+    def mock_get_trace_bytes(r_id, **kwargs):
+        trace_calls.append(r_id)
+        if len(trace_calls) == 1:
+            # First call is from runner.py line 1318 to exercise the canonical_json_dumps fallback
+            return None
+        return orig_get_trace_bytes(r_id, **kwargs)
+
+    with patch.object(store, "get_trace_bytes", side_effect=mock_get_trace_bytes):
         with patch(
             "eval_runner.session.SessionManager.execute_tasks",
             side_effect=mock_execute_fallback,

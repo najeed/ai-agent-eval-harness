@@ -7,6 +7,7 @@ from typing import Any
 
 from flask import Blueprint, jsonify, request
 
+from agentv_runtime.execution_truth import execution_truth_eligible
 from eval_runner import config, identity
 from eval_runner.console.extension_publisher import (
     _private_key_pem_bytes,
@@ -148,7 +149,9 @@ def public_verify_run(run_id):
 
         # Mode-Aware Truth Level Enforcement (P0-07)
         clean_mode = str(manifest.get("execution_mode", "")).strip().lower()
-        is_authoritative = bool(is_valid)
+        is_authoritative = bool(
+            is_valid and execution_truth_eligible(clean_mode, result.get("provisional", False))
+        )
         verified = result.get("verified", False)
         terminal_verdict = result.get("terminal_verdict", "UNVERIFIED")
 

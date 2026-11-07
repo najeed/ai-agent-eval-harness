@@ -11,9 +11,11 @@ async def test_behavioral_dna_nesting(monkeypatch):
     Strategy > Phase > Maneuver > Task > Subtask > Chain > Node
     """
     emitted_events = []
+    orig_emit = events.emit
 
-    def mock_emit(ev_type, payload, **kwargs):
+    def mock_emit(ev_type, *args, **kwargs):
         emitted_events.append(ev_type)
+        return orig_emit(ev_type, *args, **kwargs)
 
     monkeypatch.setattr(events, "emit", mock_emit)
 

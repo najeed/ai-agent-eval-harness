@@ -32,6 +32,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
     """Subscribes to core events and appends them to the bound run provider."""
 
     _subscribed = False
+    evidence_delivery_required = True
 
     def __init__(
         self,
@@ -97,7 +98,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             for sub in global_bus._subscribers
         )
         if not is_already_subbed:
-            events.subscribe(self.handle_event)
+            events.subscribe(self.handle_event, required=True)
             print("   [FlightRecorder] Registered singleton event listener.")
 
     def is_certification_mode(self, run_id: str | None = None) -> bool:
@@ -358,6 +359,26 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                 if run_id and run_id != "unknown":
                     self._run_states[run_id] = "CERTIFICATION_FAILED"
                     self._failed_runs.add(run_id)
+                failed_binding = self._run_providers.get(run_id)
+                if failed_binding is None and self._has_explicit_default_run_store:
+                    failed_binding = (self._default_run_store, None)
+            if failed_binding:
+                failed_store, failed_context = failed_binding
+                try:
+                    updated = failed_store.update_run_status(
+                        run_id,
+                        "CERTIFICATION_FAILED",
+                        details={"evidence_capture_failed": True},
+                        context=failed_context,
+                    )
+                    if updated is False:
+                        logger.error("Provider refused evidence failure marker for run %s", run_id)
+                except Exception:
+                    logger.error(
+                        "Could not persist evidence failure marker for run %s",
+                        run_id,
+                        exc_info=True,
+                    )
             # Losing forensic evidence invalidates the evaluation, regardless
             # of runtime mode.  Continuing would allow an apparently completed
             # run with an incomplete audit record.
@@ -401,6 +422,10 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
         run_store, context = self._provider_for_run(run_id)
         state = get_run_lifecycle_state(run_id, run_store=run_store, context=context)
+        if state == RunLifecycleState.INVALID:
+            raise RuntimeError(
+                "TracePersistenceError: invalid run cannot publish finalization artifacts"
+            )
         if state == RunLifecycleState.SEALED:
             with self._lock:
                 self._run_states[run_id] = "SEALED"
@@ -414,60 +439,6 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             )
         with self._lock:
             self._run_states[run_id] = "FINALIZING"
-
-        if self.artifact_store and run_id and run_id != "unknown":
-            try:
-                import hashlib
-                from datetime import UTC, datetime
-
-                from agentv_runtime.canonical import canonical_json_encode
-
-                trace_bytes = run_store.get_trace_bytes(run_id, context=context) or b""
-                trace_digest = f"sha3_256:{hashlib.sha3_256(trace_bytes).hexdigest()}"
-                line_count = len([line for line in trace_bytes.split(b"\n") if line.strip()])
-
-                seal_envelope = {
-                    "status": "finalized",
-                    "run_id": run_id,
-                    "trace_digest": trace_digest,
-                    "event_count": line_count,
-                    "sealed_at": datetime.now(UTC).isoformat(),
-                    "algorithm": "sha3_256",
-                }
-
-                signer = self.signing_backend
-                if signer and not isinstance(signer, NullSigningBackend):
-                    signer_id = str(getattr(signer, "identity", None) or "local-node")
-                    seal_envelope["signer_identity"] = signer_id
-                    key_id_val = getattr(signer, "key_id", None)
-                    if not key_id_val and hasattr(signer, "get_key_id"):
-                        key_id_val = signer.get_key_id()
-                    if key_id_val and isinstance(key_id_val, str):
-                        seal_envelope["key_id"] = key_id_val
-
-                    seal_bytes = canonical_json_encode(seal_envelope)
-                    if hasattr(signer, "sign"):
-                        raw_sig = signer.sign(seal_bytes)
-                    else:
-                        raw_sig = signer.sign_payload(seal_bytes)
-                    seal_envelope["signature"] = (
-                        raw_sig.hex() if isinstance(raw_sig, bytes) else str(raw_sig)
-                    )
-
-                self.artifact_store.store_artifact(
-                    run_id=run_id,
-                    artifact_name="trace_seal.json",
-                    content=json.dumps(seal_envelope, indent=2),
-                    content_type="application/json",
-                    overwrite=True,
-                )
-            except Exception as e:
-                logger.debug(f"Artifact store finalize seal error: {e}", exc_info=True)
-                if self.is_certification_mode(run_id):
-                    with self._lock:
-                        self._run_states[run_id] = "CERTIFICATION_FAILED"
-                        self._failed_runs.add(run_id)
-                    raise
 
     def freeze_run(self, run_id: str) -> None:
         """Explicitly freezes a run in preparation for verification/certification."""

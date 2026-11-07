@@ -53,4 +53,16 @@ class ToolExecutionCoordinator:
         return {
             "executed_count": len(self.executed_tools),
             "tool_names": [t["tool_name"] for t in self.executed_tools],
+            "executed_tools": list(self.executed_tools),
         }
+
+    def restore(self, state: dict[str, Any] | None) -> None:
+        """Restores executed tool state from a checkpoint snapshot."""
+        if not state or not isinstance(state, dict):
+            return
+        if "executed_tools" in state and isinstance(state["executed_tools"], list):
+            self.executed_tools = [dict(t) for t in state["executed_tools"]]
+        elif "tool_names" in state and isinstance(state["tool_names"], list):
+            self.executed_tools = [
+                {"tool_name": name, "status": "restored"} for name in state["tool_names"]
+            ]

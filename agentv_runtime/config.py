@@ -352,6 +352,7 @@ class RuntimeWorkerConfigConsumer:
         self.config_dir = Path(config_dir) if config_dir else None
         self.consumed_fingerprint: str | None = None
         self.active_revision_id: str | None = None
+        self.last_resolved_config: ResolvedRuntimeConfig | None = None
 
     def consume_and_reload(
         self,
@@ -366,15 +367,32 @@ class RuntimeWorkerConfigConsumer:
         """
         now_iso = datetime.now(UTC).isoformat()
         target_dir = Path(config_dir) if config_dir else self.config_dir
+        meta = revision.metadata if isinstance(revision.metadata, dict) else {}
+        doc_payload = (
+            meta.get("document_payload") if isinstance(meta.get("document_payload"), dict) else None
+        )
+        effective_overrides = config_dict
+        if effective_overrides is None:
+            if isinstance(meta.get("config_payload"), dict):
+                effective_overrides = dict(meta["config_payload"])
+            elif doc_payload is not None:
+                doc_key = str(meta.get("document_key") or "managed_document")
+                effective_overrides = {"policies": {doc_key: doc_payload}}
         try:
             detailed_result = self.resolver.resolve_detailed(
-                overrides=config_dict,
+                overrides=effective_overrides,
                 config_dir=target_dir,
                 mandates=mandates,
                 fail_closed=False,
             )
             errors = list(detailed_result.errors)
-            consumed_fp = detailed_result.snapshot_fingerprint or ""
+            if config_dict is None and doc_payload is not None:
+                canonical_doc = json.dumps(
+                    doc_payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True
+                )
+                consumed_fp = hashlib.sha3_256(canonical_doc.encode("utf-8")).hexdigest()
+            else:
+                consumed_fp = detailed_result.snapshot_fingerprint or ""
 
             # Mandate conflict or resolution error
             if errors:
@@ -404,6 +422,8 @@ class RuntimeWorkerConfigConsumer:
 
             self.consumed_fingerprint = consumed_fp
             self.active_revision_id = revision.revision_id
+            if isinstance(detailed_result.effective_snapshot, ResolvedRuntimeConfig):
+                self.last_resolved_config = detailed_result.effective_snapshot
             return InstanceObservation(
                 instance_id=self.instance_id,
                 consumed_fingerprint=consumed_fp,
@@ -457,11 +477,27 @@ class ResolvedRuntimeConfig:
     config_hash: str = ""
 
     def __post_init__(self):
+        self._validate_constraints()
+
+        # 2. Deterministic Hash Seal
+        if not self.config_hash:
+            object.__setattr__(self, "config_hash", self.compute_hash())
+        object.__setattr__(self, "_initialized", True)
+
+    def _validate_constraints(self) -> None:
         # 1. Schema Constraints Validation
-        if not isinstance(self.audit_level, int) or self.audit_level < 1:
+        if (
+            not isinstance(self.audit_level, int)
+            or isinstance(self.audit_level, bool)
+            or self.audit_level < 1
+        ):
             raise ValueError(f"Invalid audit_level: {self.audit_level}. Must be positive integer.")
 
-        if not isinstance(self.timeout_seconds, int) or self.timeout_seconds <= 0:
+        if (
+            not isinstance(self.timeout_seconds, int)
+            or isinstance(self.timeout_seconds, bool)
+            or self.timeout_seconds <= 0
+        ):
             raise ValueError(f"Invalid timeout_seconds: {self.timeout_seconds}. Must be > 0.")
 
         if not self.execution_backend or not isinstance(self.execution_backend, str):
@@ -473,9 +509,18 @@ class ResolvedRuntimeConfig:
         if not self.artifact_store or not isinstance(self.artifact_store, str):
             raise ValueError("artifact_store must be a non-empty string identifier.")
 
-        # 2. Deterministic Hash Seal
-        if not self.config_hash:
-            self.config_hash = self.compute_hash()
+    def __setattr__(self, name: str, value: Any) -> None:
+        has_prev = hasattr(self, name)
+        prev_val = getattr(self, name, None)
+        object.__setattr__(self, name, value)
+        if getattr(self, "_initialized", False) and name not in ("config_hash", "_initialized"):
+            try:
+                self._validate_constraints()
+            except Exception:
+                if has_prev:
+                    object.__setattr__(self, name, prev_val)
+                raise
+            object.__setattr__(self, "config_hash", self.compute_hash())
 
     def compute_hash(self) -> str:
         """Computes deterministic SHA3-256 hash digest of all configuration namespaces."""

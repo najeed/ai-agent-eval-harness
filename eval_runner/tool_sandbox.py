@@ -236,6 +236,9 @@ class AbstractSandbox(ABC):
 class ToolSandboxInterceptor(ABC):
     """Abstract Base Class for Tool Sandbox Interceptors in the execution pipeline."""
 
+    # Only explicitly optional observability middleware may continue on failure.
+    enforcement = True
+
     @abstractmethod
     def can_isolate(self, tool_name: str) -> bool:
         """Determines if this interceptor can isolate or intercept the requested tool."""
@@ -320,23 +323,54 @@ class ToolSandboxService:
             interceptor = interceptors_list[index]
 
             async def call_next(data: dict) -> dict:
-                if interceptor.can_isolate(tool_name):
-                    try:
-                        return await interceptor.isolate_call(data, make_next(index + 1, depth + 1))
-                    except (RecursionError, KeyboardInterrupt, SystemExit, GeneratorExit):
-                        raise
-                    except Exception as e:
-                        import logging
+                called = False
+                downstream_result = None
+                downstream_error = None
 
-                        cls_name = interceptor.__class__.__name__
-                        logging.error(
-                            f"[ToolSandboxService] Interceptor '{cls_name}' failed: {e}. "
-                            "Bypassing.",
-                            exc_info=True,
-                        )
-                        return await make_next(index + 1, depth + 1)(data)
-                else:
-                    return await make_next(index + 1, depth + 1)(data)
+                async def invoke_once(forwarded):
+                    nonlocal called, downstream_result, downstream_error
+                    if called:
+                        raise PermissionError("Tool interceptor attempted repeated execution")
+                    called = True
+                    try:
+                        downstream_result = await make_next(index + 1, depth + 1)(forwarded)
+                        return downstream_result
+                    except BaseException as exc:
+                        downstream_error = exc
+                        raise
+
+                try:
+                    if interceptor.can_isolate(data.get("tool_name")):
+                        return await interceptor.isolate_call(data, invoke_once)
+                    return await invoke_once(data)
+                except RecursionError:
+                    raise
+                except Exception as exc:
+                    logger.error(
+                        "Tool interceptor %s failed", type(interceptor).__name__, exc_info=True
+                    )
+                    if downstream_error is not None:
+                        raise downstream_error from None
+                    if getattr(interceptor, "enforcement", True) is False:
+                        if called:
+                            return downstream_result
+                        return await invoke_once(data)
+                    sandbox = data.get("sandbox")
+                    event_bus = getattr(sandbox, "event_bus", None)
+                    if event_bus is None:
+                        from .events import EventEmitter
+
+                        event_bus = EventEmitter.get_global()
+                    event_bus.emit(
+                        "tool_interception_denied",
+                        {
+                            "tool_name": tool_name,
+                            "interceptor": type(interceptor).__name__,
+                            "outcome": "DENIED",
+                            "reason": "Enforcement interceptor could not complete",
+                        },
+                    )
+                    raise PermissionError("Tool enforcement failed; execution denied") from exc
 
             return call_next
 
@@ -757,6 +791,9 @@ class ToolSandbox(AbstractSandbox):
         """
         import copy
 
+        if state_semantics != "isolated":
+            raise ValueError("Workflow branches require isolated state semantics")
+
         forked = ToolSandbox(
             scenario=copy.deepcopy(self.scenario),
             event_bus=self.event_bus,
@@ -773,29 +810,95 @@ class ToolSandbox(AbstractSandbox):
 
         forked.policy_decisions = list(self.policy_decisions)
         forked.current_agent = self.current_agent
+        forked.branch_id = branch_id
+        forked._fork_parent = self
+        forked._fork_baseline = self.checkpoint_state()
+        for name, simulator in forked.get_active_simulators().items():
+            if name in forked._fork_baseline["simulators"]:
+                simulator.state = copy.deepcopy(forked._fork_baseline["simulators"][name])
         return forked
+
+    def checkpoint_state(self) -> dict[str, Any]:
+        """Serializable state only; resource handles and observations are never shared."""
+        return copy.deepcopy(
+            {
+                "state": self.state,
+                "shared": self.shared_state.registry,
+                "simulators": {
+                    name: simulator.state
+                    for name, simulator in self.get_active_simulators().items()
+                },
+            }
+        )
+
+    def restore_checkpoint_state(self, snapshot: dict[str, Any]) -> None:
+        if not isinstance(snapshot, dict) or any(
+            not isinstance(snapshot.get(key), dict) for key in ("state", "shared", "simulators")
+        ):
+            raise ValueError("Invalid execution checkpoint state")
+        simulators = self.get_active_simulators()
+        if set(snapshot["simulators"]) - set(simulators):
+            raise ValueError("Checkpoint references unavailable simulators")
+        self.state = copy.deepcopy(snapshot["state"])
+        self.shared_state.registry = copy.deepcopy(snapshot["shared"])
+        for name, state in snapshot["simulators"].items():
+            simulators[name].state = copy.deepcopy(state)
+
+    def merge_branch_states(
+        self, branches: list[ToolSandbox], keys: list[str] | None = None
+    ) -> None:
+        """Atomically merge branch deltas; conflicting concurrent writes fail closed."""
+        proposed = self.checkpoint_state()
+        policy = (self.scenario.get("metadata") or {}).get("state_conflict_policy", "reject")
+        if policy not in ("reject", "canonical_last_writer_wins"):
+            raise ValueError("Unknown state conflict policy")
+        ordered = sorted(branches, key=lambda branch: branch.branch_id)
+        for branch in ordered:
+            if getattr(branch, "_fork_parent", None) is not self:
+                raise ValueError("ForeignSandboxBranch")
+            baseline = branch._fork_baseline
+            changed = branch.checkpoint_state()
+            for namespace in ("state", "shared", "simulators"):
+                before, after = baseline[namespace], changed[namespace]
+                if namespace == "state" and keys is not None:
+                    before = {key: value for key, value in before.items() if key in keys}
+                    after = {key: value for key, value in after.items() if key in keys}
+                _merge_state_delta(proposed[namespace], before, after, policy, namespace)
+        self.restore_checkpoint_state(proposed)
+        for branch in ordered:
+            for decision in branch.policy_decisions:
+                if decision not in self.policy_decisions:
+                    self.policy_decisions.append(copy.deepcopy(decision))
 
     def merge_branch_state(self, source_fork: ToolSandbox, keys: list[str] | None = None) -> None:
         """
         [P2.2] Explicit join-level state commit primitive.
         Merges candidate state transitions and policy decisions from a branch fork.
         """
-        import copy
+        self.merge_branch_states([source_fork], keys=keys)
 
-        if keys is not None:
-            for k in keys:
-                if k in source_fork.state:
-                    self.state[k] = copy.deepcopy(source_fork.state[k])
+
+def _merge_state_delta(current, baseline, candidate, policy, path):
+    missing = object()
+    for key in sorted(baseline.keys() | candidate.keys()):
+        before, after, observed = (
+            baseline.get(key, missing),
+            candidate.get(key, missing),
+            current.get(key, missing),
+        )
+        if after == before:
+            continue
+        if (
+            (isinstance(before, dict) or before is missing)
+            and isinstance(after, dict)
+            and isinstance(observed, dict)
+        ):
+            _merge_state_delta(
+                observed, {} if before is missing else before, after, policy, f"{path}.{key}"
+            )
+        elif observed != before and observed != after and policy == "reject":
+            raise ValueError(f"ConcurrentStateWriteConflict:{path}.{key}")
+        elif after is missing:
+            current.pop(key, None)
         else:
-            self.state.update(copy.deepcopy(source_fork.state))
-
-        # Merge shared state registry additions
-        self.shared_state.registry.update(copy.deepcopy(source_fork.shared_state.registry))
-
-        # Append new policy decisions
-        existing_hashes = {d.get("input_hash") for d in self.policy_decisions if "input_hash" in d}
-        for decision in source_fork.policy_decisions:
-            if decision.get("input_hash") not in existing_hashes:
-                self.policy_decisions.append(copy.deepcopy(decision))
-                if "input_hash" in decision:
-                    existing_hashes.add(decision["input_hash"])
+            current[key] = copy.deepcopy(after)

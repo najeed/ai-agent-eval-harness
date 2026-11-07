@@ -80,6 +80,30 @@ def _make_finalization_event(
     return json.dumps({"event": "evaluator_finalization", "data": fin_dict})
 
 
+def _sync_capture_receipt(provider, run_id: str) -> None:
+    from eval_runner.utils import crypto
+
+    raw = provider.get_trace_bytes(run_id) or b""
+    lines = [json.loads(line) for line in raw.splitlines() if line.strip()]
+    count = len(lines)
+    terminal_seq = max(
+        (e.get("_seq") for e in lines if isinstance(e.get("_seq"), int)),
+        default=count,
+    )
+    provider.update_run_status(
+        run_id,
+        "OPEN",
+        details={
+            "evidence_capture": {
+                "complete": True,
+                "event_count": count,
+                "terminal_seq": terminal_seq,
+                "trace_hash": "sha3_256:" + crypto.checksum(raw),
+            }
+        },
+    )
+
+
 @pytest.fixture
 def certify_env(tmp_path, monkeypatch):
     """
@@ -153,6 +177,7 @@ def certify_env(tmp_path, monkeypatch):
     fin_dict["_seq"] = 5
     all_events = core_events + [fin_dict]
     store.append_events(run_id, all_events)
+    _sync_capture_receipt(store, run_id)
 
     return {
         "root": root,
@@ -294,13 +319,15 @@ def test_sign_trace_unconditional_finalization_mandate(tmp_path, monkeypatch):
     # Bare trace without EvaluatorFinalizationRecord
     events = [
         {
+            "_seq": 1,
             "event": "run_start",
             "run_id": run_id,
             "data": {"execution_mode": "live", "execution_mode_declared": True},
         },
-        {"event": "run_end", "run_id": run_id, "status": "pass"},
+        {"_seq": 2, "event": "run_end", "run_id": run_id, "status": "pass"},
     ]
     store.append_events(run_id, events)
+    _sync_capture_receipt(store, run_id)
     trace_bytes = store.get_trace_bytes(run_id)
     assert trace_bytes is not None
 

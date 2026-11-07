@@ -71,15 +71,35 @@ def test_certification_finalization_carrier_contract(
     source_manifest = source.get_manifest("run-a")
     events = source.get_events("run-a", offset=0, limit=100)
     finalization = events[-1]["data"]
-    final_event = {"event": carrier, "_seq": 4}
+    test_events = list(events[:-1])
+    final_event = {"event": carrier, "_seq": len(test_events) + 1}
     if nested:
         final_event["data"] = {"finalization": finalization}
     else:
         final_event["finalization"] = finalization
+    test_events.append(final_event)
+    if carrier != "run_end":
+        test_events.append({"event": "run_end", "_seq": len(test_events) + 1})
     provider = LocalFileRunStore(tmp_path / "carrier-provider")
     provider.create_run("run-a", scenario["id"])
-    provider.append_events("run-a", [*events[:-1], final_event])
+    provider.append_events("run-a", test_events)
     provider.save_run_manifest("run-a", source_manifest)
+    from eval_runner.utils import crypto
+
+    raw = provider.get_trace_bytes("run-a")
+    count = len([line for line in raw.splitlines() if line.strip()])
+    provider.update_run_status(
+        "run-a",
+        "OPEN",
+        details={
+            "evidence_capture": {
+                "complete": True,
+                "event_count": count,
+                "terminal_seq": count,
+                "trace_hash": "sha3_256:" + crypto.checksum(raw),
+            }
+        },
+    )
 
     if not issuable:
         with pytest.raises(ValueError, match="missing mandatory authoritative"):
