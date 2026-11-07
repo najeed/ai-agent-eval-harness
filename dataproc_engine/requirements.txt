@@ -1,0 +1,10 @@
+# dataproc_engine/requirements.txt
+# Core runtime dependencies for DataProc Engine.
+# Mirrors [project.dependencies] in dataproc_engine/pyproject.toml (Single Source of Truth).
+# Install with: pip install -r dataproc_engine/requirements.txt
+
+click==8.5.1
+pydantic==2.14.3
+aiohttp==3.14.5
+pandas==3.1.1
+pyarrow==26.0.1

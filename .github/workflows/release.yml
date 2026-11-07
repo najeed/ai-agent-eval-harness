@@ -14,6 +14,7 @@ permissions:
 jobs:
   build-release-artifact:
     name: Build Release Package
+    if: github.repository == 'najeed/ai-agent-eval-harness'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout exact tagged SHA
@@ -25,6 +26,10 @@ jobs:
         uses: actions/setup-python@0a5c61591373683505ea898e09a6004c8ab57373 # v5.0.0
         with:
           python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: |
+            pyproject.toml
+            requirements*.txt
 
       - name: Install build tools
         run: pip install build
@@ -44,6 +49,7 @@ jobs:
 
   acceptance-release-gate:
     name: Acceptance Release Certification Gate
+    if: github.repository == 'najeed/ai-agent-eval-harness'
     needs: [build-release-artifact]
     runs-on: ubuntu-latest
     steps:
@@ -62,6 +68,10 @@ jobs:
         uses: actions/setup-python@0a5c61591373683505ea898e09a6004c8ab57373 # v5.0.0
         with:
           python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: |
+            pyproject.toml
+            requirements*.txt
 
       - name: Install built wheel and dev dependencies
         run: |
@@ -150,6 +160,7 @@ jobs:
 
   publish-certified-package:
     name: Publish Certified Package
+    if: github.repository == 'najeed/ai-agent-eval-harness'
     needs: [acceptance-release-gate, build-release-artifact]
     runs-on: ubuntu-latest
     permissions:
@@ -177,6 +188,10 @@ jobs:
         uses: actions/setup-python@0a5c61591373683505ea898e09a6004c8ab57373 # v5.0.0
         with:
           python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: |
+            pyproject.toml
+            requirements*.txt
 
       - name: Verify acceptance gate attestation against built package
         run: |

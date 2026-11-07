@@ -171,3 +171,48 @@ def test_detached_verifier_rejects_simulated_tool_provenance_in_live_run(finaliz
     )
     assert result["certified"] is False
     assert any("SimulatedToolProvenanceInLiveRun" in f for f in result["failures"])
+
+
+@pytest.mark.asyncio
+async def test_scenario_defined_tool_provenance_is_simulated_even_in_live_mode(tmp_path):
+    """ToolSandbox must classify scenario-defined tools as simulated
+    even if scenario claims live.
+    """
+    from eval_runner.tool_sandbox import ToolSandbox
+
+    scenario = {
+        "execution_mode": "live",
+        "tools": {
+            "query_account": {
+                "output": {"balance": 500},
+                "state_changes": [{"path": "query_count", "value": 1}],
+            }
+        },
+    }
+    sandbox = ToolSandbox(scenario)
+    assert sandbox.get_tool_provenance("query_account") == "simulated"
+    assert sandbox.has_simulated_tools is False
+
+    # Executing the scenario-defined tool marks simulated execution
+    result = await sandbox.execute("query_account", {})
+    assert result == {"balance": 500}
+    assert sandbox.has_simulated_tools is True
+
+
+def test_session_manager_defaults_provenance_to_simulated():
+    """SessionManager._extract_provenance must default to 'simulated' when absent."""
+    from eval_runner.session import SessionManager
+
+    session = SessionManager("test-session-prov", {"execution_mode": "live"})
+    # Output without provenance defaults to simulated
+    assert session._extract_provenance("test_tool", result={"balance": 100}) == "simulated"
+    assert session._extract_provenance("test_tool", result="plain string result") == "simulated"
+    assert session._extract_provenance("test_tool", result=None) == "simulated"
+    # Output with explicit live provenance is recognized
+    assert (
+        session._extract_provenance("test_tool", result={"balance": 100, "provenance": "live"})
+        == "live"
+    )
+    assert (
+        session._extract_provenance("test_tool", result={"provenance": "simulated"}) == "simulated"
+    )

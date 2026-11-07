@@ -17,6 +17,7 @@ import pytest
 from flask import Flask
 
 from eval_runner import config
+from eval_runner.console.auth_manager import Permission
 from eval_runner.console.routes.scenarios import (
     _assert_safe_probe_destination,
     scenario_bp,
@@ -403,13 +404,25 @@ def test_evaluate_scenario_fingerprint_enforcement(client, tmp_path):
         assert res_ok.get_json()["status"] == "started"
 
     # 4. Production default preflight enforcement
-    with patch.dict(os.environ, {"AGENTV_ENV": "production"}):
+    with patch.dict(os.environ, {"AGENTV_ENV": "production", "AGENTV_TEST_AUTH_BYPASS": "0"}):
+        with client.session_transaction() as sess:
+            sess["user"] = {
+                "id": "eval_operator",
+                "permissions": [Permission.EVAL_TRIGGER],
+                "roles": ["operator"],
+            }
         res_prod = client.post("/v1/evaluate", json={"path": str(sc_file)})
         assert res_prod.status_code == 400
         assert "PreflightRequired" in res_prod.get_json()["error"]
 
     # 5. Production force_launch forbidden without SYSTEM_CONFIG
-    with patch.dict(os.environ, {"AGENTV_ENV": "production"}):
+    with patch.dict(os.environ, {"AGENTV_ENV": "production", "AGENTV_TEST_AUTH_BYPASS": "0"}):
+        with client.session_transaction() as sess:
+            sess["user"] = {
+                "id": "eval_operator",
+                "permissions": [Permission.EVAL_TRIGGER],
+                "roles": ["operator"],
+            }
         res_force_forbidden = client.post(
             "/v1/evaluate",
             json={"path": str(sc_file), "force_launch": True},
@@ -1529,7 +1542,7 @@ def test_scenario_transition_and_evaluate_extended(client, tmp_path):
         encoding="utf-8",
     )
     with (
-        patch.dict(os.environ, {"AGENTV_ENV": "production"}),
+        patch.dict(os.environ, {"AGENTV_ENV": "production", "AGENTV_TEST_AUTH_BYPASS": "0"}),
         patch(
             "eval_runner.console.auth_manager.StaticKeyProvider.has_permission",
             return_value=True,
@@ -1540,7 +1553,11 @@ def test_scenario_transition_and_evaluate_extended(client, tmp_path):
     ):
         mock_backend_inst.return_value = MagicMock()
         with client.session_transaction() as sess:
-            sess["user"] = {"sub": "admin_user", "roles": ["admin"]}
+            sess["user"] = {
+                "id": "admin_user",
+                "roles": ["admin"],
+                "permissions": [Permission.EVAL_TRIGGER, Permission.SYSTEM_CONFIG],
+            }
         res_prod_force = client.post(
             "/v1/evaluate",
             json={"path": str(valid_eval_file), "force_launch": True},

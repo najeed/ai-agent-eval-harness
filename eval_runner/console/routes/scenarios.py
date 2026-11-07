@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 def _execution_scope_for_request(data: dict[str, Any]) -> dict[str, str] | None:
     """Get verified scope; retain the explicit test-auth seam only for tests."""
     context = active_runtime_context()
-    if context is not None:
+    if context is not None and context:
         return context
     scope = getattr(g, "runtime_scope", None)
     if scope is not None and scope.tags:

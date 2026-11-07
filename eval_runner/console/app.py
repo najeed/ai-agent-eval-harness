@@ -183,6 +183,11 @@ def create_app(*, run_store=None):
     )
     v2_ui_dist = os.path.abspath(ui_target)
     is_prod = config.is_production()
+    if is_prod and os.getenv("AGENTV_TEST_AUTH_BYPASS") == "1":
+        raise RuntimeError(
+            "[Console][CRITICAL] AGENTV_TEST_AUTH_BYPASS is strictly "
+            "prohibited in production deployments."
+        )
     ui_exists = os.path.isdir(v2_ui_dist) and os.path.exists(os.path.join(v2_ui_dist, "index.html"))
     if not ui_exists:
         if is_prod:

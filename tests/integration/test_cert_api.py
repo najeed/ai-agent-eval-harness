@@ -4,6 +4,7 @@ import pytest
 
 from eval_runner import config
 from eval_runner.console.app import create_app
+from eval_runner.console.auth_manager import Permission
 from eval_runner.verifier import TraceVerifier
 
 
@@ -17,10 +18,10 @@ def client():
 
 def test_public_certificate_endpoint_v3(client, tmp_path, monkeypatch):
     """
-    Integration Test: Verify that the /v1/certificates endpoint is public
-    and returns a valid, signed VC v3.0.0.
+    Integration Test: Verify certificate authorization, public projection,
+    and credential sanitization.
     """
-    # 1. Setup - Create a real vault-aligned run
+    # 1. Setup - Create a real vault-aligned run with sensitive scenario credentials
     run_id = "run-v3-integration"
     run_dir = tmp_path / "runs" / run_id
     run_dir.mkdir(parents=True)
@@ -51,21 +52,53 @@ def test_public_certificate_endpoint_v3(client, tmp_path, monkeypatch):
         run_store=run_store,
         identity_id=identity_id,
     )
+    # Inject sensitive credentials into scenario_data before saving
+    manifest["scenario_data"] = {
+        "id": "scenario-with-secrets",
+        "state_authorities": {
+            "internal_db": {
+                "headers": {"Authorization": "Bearer sensitive_secret_token_12345"},
+                "api_key": "sk-proj-secret-key-67890",
+            }
+        },
+    }
     run_store.save_run_manifest(run_id, manifest)
 
-    # 3. Test API Retrieval (New /v1/ Path)
-    response = client.get(f"/v1/certificates/{run_id}")
+    # 3. Test Anonymous Access to /v1/certificates/<run_id> (Must fail closed with 401)
+    anon_response = client.get(f"/v1/certificates/{run_id}")
+    assert anon_response.status_code == 401
 
-    assert response.status_code == 200
-    data = response.get_json()
+    # 4. Test Public Certificate Projection /v1/certificates/<run_id>/public (Unauthenticated OK)
+    public_response = client.get(f"/v1/certificates/{run_id}/public")
+    assert public_response.status_code == 200
+    public_data = public_response.get_json()
 
-    assert data["run_id"] == run_id
-    assert data["vc_version"] == "3.0.0"
-    assert "provenance_chain" in data
-    assert data["provenance_chain"][0]["identity"] == identity_id
+    assert public_data["run_id"] == run_id
+    assert public_data["vc_version"] == "3.0.0"
+    assert "provenance_chain" in public_data
+    assert public_data["provenance_chain"][0]["identity"] == identity_id
 
-    # 4. Error Handling
-    response_invalid = client.get("/v1/certificates/non_existent_run")
+    # Verify public projection strictly excludes private evidence and scenario data
+    assert "scenario_data" not in public_data
+    assert "agent_config" not in public_data
+    assert "runtime_config" not in public_data
+    assert "sensitive_secret_token_12345" not in json.dumps(public_data)
+    assert "sk-proj-secret-key-67890" not in json.dumps(public_data)
+
+    # 5. Test Authenticated Access to /v1/certificates/<run_id> with RUNS_READ
+    auth_headers = {"X-API-Key": config.SERVICE_API_KEY}
+    auth_response = client.get(f"/v1/certificates/{run_id}", headers=auth_headers)
+    assert auth_response.status_code == 200
+    auth_data = auth_response.get_json()
+
+    assert auth_data["run_id"] == run_id
+    # Ensure sensitive credentials are redacted in the manifest
+    assert "sensitive_secret_token_12345" not in json.dumps(auth_data)
+    assert "sk-proj-secret-key-67890" not in json.dumps(auth_data)
+    assert "[REDACTED]" in json.dumps(auth_data)
+
+    # 6. Error Handling
+    response_invalid = client.get("/v1/certificates/non_existent_run/public")
     assert response_invalid.status_code == 404
 
 
@@ -75,12 +108,11 @@ def test_certificate_vault_resolution(client, tmp_path, monkeypatch):
     run_dir = tmp_path / "runs" / run_id
     run_dir.mkdir(parents=True)
 
-    # Create manifest directly in vault
     manifest_data = {
         "vc_version": "3.0.0",
         "run_id": run_id,
         "status": "success",
-        "provenance_chain": [],  # Minimal for retrieval test
+        "provenance_chain": [],
     }
     manifest_path = run_dir / "run_manifest.json"
     with open(manifest_path, "w") as f:
@@ -89,7 +121,8 @@ def test_certificate_vault_resolution(client, tmp_path, monkeypatch):
     monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
     monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
 
-    response = client.get(f"/v1/certificates/{run_id}")
+    # Public projection endpoint resolution
+    response = client.get(f"/v1/certificates/{run_id}/public")
     assert response.status_code == 200
     assert response.get_json()["run_id"] == run_id
 
@@ -106,5 +139,50 @@ def test_certificate_api_error_handling(client, tmp_path, monkeypatch):
     monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
     monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
 
-    response = client.get(f"/v1/certificates/{run_id}")
+    response = client.get(f"/v1/certificates/{run_id}/public")
     assert response.status_code == 500
+
+
+def test_certificate_cross_scope_isolation(client, tmp_path, monkeypatch):
+    """Verify cross-scope requests cannot access runs from other contexts."""
+    run_id = "tenant-a-run"
+    run_dir = tmp_path / "runs" / run_id
+    run_dir.mkdir(parents=True)
+
+    manifest_data = {
+        "vc_version": "3.0.0",
+        "run_id": run_id,
+        "status": "success",
+        "context": {"org_id": "tenant-a", "tenant_id": "tenant-a"},
+        "provenance_chain": [],
+    }
+    manifest_path = run_dir / "run_manifest.json"
+    manifest_path.write_text(json.dumps(manifest_data), encoding="utf-8")
+
+    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
+    monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
+
+    # Session for tenant-b attempting to access tenant-a certificate
+    with client.session_transaction() as sess:
+        sess["user"] = {
+            "id": "tenant-b-user",
+            "permissions": [Permission.RUNS_READ],
+            "context_version": "2",
+            "context": {
+                "org_id": "tenant-b",
+                "tenant_id": "tenant-b",
+                "workspace_id": "ws1",
+                "active_environment": "prod",
+            },
+            "authorized_contexts": [
+                {
+                    "org_id": "tenant-b",
+                    "tenant_id": "tenant-b",
+                    "workspace_id": "ws1",
+                    "environments": ["prod"],
+                }
+            ],
+        }
+
+    response = client.get(f"/v1/certificates/{run_id}")
+    assert response.status_code == 404

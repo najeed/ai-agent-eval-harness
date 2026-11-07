@@ -93,7 +93,8 @@ async def test_digest_signature_release_matrix(real_chain, case, record_property
         identity: IdentityService.get_public_key(identity, auto_provision=False)
         for identity in ("system_id", "eval_kernel")
     }
-    assert TraceVerifier.verify_run(run_id, run_store=store)["verified"]
+    _vr = TraceVerifier.verify_run(run_id, run_store=store)
+    assert _vr["verified"]
     assert _independent_review(
         certificate, raw_trace, exported["evidence_graph"], scenario, True, anchors, strict=True
     )

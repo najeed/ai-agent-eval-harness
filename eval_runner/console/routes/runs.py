@@ -91,9 +91,17 @@ def _run_is_in_active_context(run_id: str, context: dict[str, str] | None = None
     """Hide a run when the authoritative provider denies the active scope."""
     if context is None:
         context = active_runtime_context()
-    if context is None:
-        return True
-    return _active_run_store().get_run(run_id, context=context) is not None
+    if context is not None:
+        return _active_run_store().get_run(run_id, context=context) is not None
+    run = _active_run_store().get_run(run_id)
+    if run is None:
+        return False
+    run_context = run.get("context") or (run.get("metadata") or {}).get("runtime_context")
+    if isinstance(run_context, dict) and any(
+        run_context.get(k) for k in ("org_id", "tenant_id", "workspace_id")
+    ):
+        return False
+    return True
 
 
 def _finalization_from_events(events: list[dict[str, Any]] | None) -> dict[str, Any]:
@@ -434,10 +442,10 @@ def get_run_report_actions(run_id: str):
 @require_permission(Permission.RUNS_READ)
 def get_run_status(run_id):
     """Industrial Polling Primitive."""
-    if not _run_is_in_active_context(run_id):
+    context = active_runtime_context()
+    if context is not None and not _run_is_in_active_context(run_id, context=context):
         return jsonify({"error": "Not found"}), 404
     store = _active_run_store()
-    context = active_runtime_context()
     run = store.get_run(run_id, context=context)
     if run is not None:
         events = store.get_events(run_id, offset=0, limit=10_000_000, context=context)
@@ -698,22 +706,51 @@ def resume_run(run_id):
 
 def _sanitize_certificate_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
     """Sanitize sensitive credentials (headers, tokens, keys) from returned certificate manifest."""
+    from eval_runner.sanitizer import sanitize_credentials
+
     sanitized = json.loads(json.dumps(manifest))
-    scen = sanitized.get("scenario_data")
-    if isinstance(scen, dict):
-        for container in (scen, scen.get("metadata")):
-            if isinstance(container, dict):
-                for auth_key in ("state_authorities", "state_authority"):
-                    auths = container.get(auth_key)
-                    if isinstance(auths, dict):
-                        for _a_name, a_val in auths.items():
-                            if isinstance(a_val, dict) and "headers" in a_val:
-                                if isinstance(a_val["headers"], dict):
-                                    a_val["headers"] = {k: "[REDACTED]" for k in a_val["headers"]}
-    return sanitized
+    return sanitize_credentials(sanitized)
+
+
+PUBLIC_CERTIFICATE_FIELDS = frozenset(
+    {
+        "run_id",
+        "vc_version",
+        "status",
+        "outcome",
+        "issued_at",
+        "expires_at",
+        "compliance_level",
+        "execution_mode",
+        "provisional",
+        "evidence_root_hash",
+        "scenario_hash",
+        "manifest_hash",
+        "verification_package",
+        "signature",
+        "signatures",
+        "provenance_chain",
+        "identity",
+        "public_key",
+        "digest",
+        "algorithm",
+    }
+)
+
+
+def project_public_certificate(manifest: dict[str, Any]) -> dict[str, Any]:
+    """Extract public certificate projection without exposing private scenario data or evidence."""
+    sanitized = _sanitize_certificate_manifest(manifest)
+    public_proj = {k: v for k, v in sanitized.items() if k in PUBLIC_CERTIFICATE_FIELDS}
+    if "run_id" not in public_proj and "run_id" in sanitized:
+        public_proj["run_id"] = sanitized["run_id"]
+    if "vc_version" not in public_proj and "vc_version" in sanitized:
+        public_proj["vc_version"] = sanitized["vc_version"]
+    return public_proj
 
 
 @run_bp.route("/v1/certificates/<run_id>", methods=["GET"])
+@require_permission(Permission.RUNS_READ)
 def get_verification_certificate(run_id):
     if not _run_is_in_active_context(run_id):
         return jsonify({"error": "Not found"}), 404
@@ -734,6 +771,26 @@ def get_verification_certificate(run_id):
     if not manifest:
         return jsonify({"error": "Certificate not found"}), 404
     return jsonify(_sanitize_certificate_manifest(manifest))
+
+
+@run_bp.route("/v1/certificates/<run_id>/public", methods=["GET"])
+def get_public_certificate(run_id):
+    """Public certificate projection returning cryptographic proof without private evidence."""
+    store = _active_run_store()
+    run = store.get_run(run_id)
+    if run is None:
+        return jsonify({"error": "Certificate not found"}), 404
+    if run.get("corrupted"):
+        return jsonify({"error": "Corrupt manifest found"}), 500
+    try:
+        manifest = store.get_manifest(run_id)
+    except ValueError as e:
+        if "corrupt" in str(e).lower():
+            return jsonify({"error": "Corrupt manifest found"}), 500
+        raise
+    if not manifest:
+        return jsonify({"error": "Certificate not found"}), 404
+    return jsonify(project_public_certificate(manifest))
 
 
 def is_run_alive(run_id: str) -> bool:
@@ -790,8 +847,10 @@ def _extract_canonical_event_info(line: str, fallback_seq: int) -> tuple[int, bo
 def stream_run_logs(run_id):
     """SSE streaming endpoint for live run traces with Last-Event-ID replay support."""
     req_context = active_runtime_context()
-    if not _run_is_in_active_context(run_id, req_context):
+    if req_context is not None and not _run_is_in_active_context(run_id, req_context):
         return jsonify({"error": "Not found"}), 404
+    provider = _active_run_store()
+    run_record = provider.get_run(run_id, context=req_context)
     last_id_str = (
         request.headers.get("Last-Event-ID")
         or request.args.get("last_event_id")
@@ -801,9 +860,6 @@ def stream_run_logs(run_id):
         last_event_id = int(last_id_str) if last_id_str is not None else 0
     except (ValueError, TypeError):
         last_event_id = 0
-
-    provider = _active_run_store()
-    run_record = provider.get_run(run_id, context=req_context)
 
     def provider_events():
         next_offset = last_event_id

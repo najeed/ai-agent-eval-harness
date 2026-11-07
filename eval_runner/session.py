@@ -631,21 +631,19 @@ class SessionManager:
         elif data.get("completed_execution_results"):
             raise ValueError("UnboundExecutionCheckpoint")
         turn = data.get("turn", data.get("current_turn", data.get("turn_number", None)))
-        if hasattr(self, "turn_state_manager") and self.turn_state_manager:
+        turn_mgr = getattr(self, "turn_state_manager", None)
+        if turn_mgr is not None:
             turn_state = copy.deepcopy(data.get("turn_state", data))
             if turn is not None:
                 turn_state["current_turn"] = int(turn)
-            self.turn_state_manager.restore(turn_state)
+            turn_mgr.restore(turn_state)
             if turn is not None:
                 self.turn_number = int(turn)
         elif turn is not None:
             self.turn_number = int(turn)
-        if (
-            "tool_state" in data
-            and hasattr(self, "tool_execution_coordinator")
-            and self.tool_execution_coordinator
-        ):
-            self.tool_execution_coordinator.restore(data.get("tool_state"))
+        tool_coord = getattr(self, "tool_execution_coordinator", None)
+        if "tool_state" in data and tool_coord is not None:
+            tool_coord.restore(data.get("tool_state"))
         if "metadata" in data and isinstance(data["metadata"], dict):
             self.session_metadata.update(data["metadata"])
         if "session_metadata" in data and isinstance(data["session_metadata"], dict):
@@ -2546,8 +2544,7 @@ class SessionManager:
         if fallback_prov and isinstance(fallback_prov, str):
             return fallback_prov
 
-        mode = getattr(self, "execution_mode", "simulated")
-        return "live" if mode == "live" else "simulated"
+        return "simulated"
 
     async def _handle_tool_call(self, turn, agent_response, sandbox, history, actions, turn_ctx):
         tool_name = agent_response["tool_name"]
@@ -2585,9 +2582,17 @@ class SessionManager:
             if "short_circuit_result" in intercept_result:
                 result = intercept_result["short_circuit_result"]
                 logger.info("      [Session] Tool Call Short-Circuited by Plugin.")
+                self.has_simulated_tools = True
                 # Record result and continue
                 self._record_tool_result(
-                    turn, tool_name, tool_params, result, history, actions, turn_ctx
+                    turn,
+                    tool_name,
+                    tool_params,
+                    result,
+                    history,
+                    actions,
+                    turn_ctx,
+                    provenance="simulated",
                 )
                 return
 
@@ -2704,14 +2709,20 @@ class SessionManager:
                 if "short_circuit_result" in intercept_result:
                     res = intercept_result["short_circuit_result"]
                     all_tool_results[idx] = res
+                    self.has_simulated_tools = True
                     self.event_bus.emit(
                         CoreEvents.TOOL_RESULT,
-                        {"step": turn, "tool": active_tn, "result": res},
+                        {
+                            "step": turn,
+                            "tool": active_tn,
+                            "result": res,
+                            "provenance": "simulated",
+                        },
                     )
                     return
 
             tp_prov = self._extract_provenance(active_tn, sandbox=sandbox)
-            if tp_prov in {"simulated", "mock", "synthetic"}:
+            if tp_prov != "live":
                 self.has_simulated_tools = True
 
             self.event_bus.emit(
@@ -2747,7 +2758,7 @@ class SessionManager:
             res_prov = self._extract_provenance(
                 active_tn, sandbox=sandbox, result=res, fallback_prov=tp_prov
             )
-            if res_prov in {"simulated", "mock", "synthetic"}:
+            if res_prov != "live":
                 self.has_simulated_tools = True
 
             all_tool_results[idx] = res

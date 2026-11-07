@@ -4,6 +4,7 @@ import logging
 import os
 from abc import ABC, abstractmethod
 from pathlib import Path
+from typing import Any
 
 from agentv_runtime.discovery import get_registered_extension
 from agentv_runtime.scope import (
@@ -465,7 +466,9 @@ def extract_credentials_from_context(headers: dict, args: dict) -> tuple[str | N
     return bearer_token, api_key
 
 
-def require_permission(permission_node: str):
+def require_permission(
+    permission_node: str | list[str] | tuple[str, ...] | dict[str, Any],
+):
     """
     Unified decorator for Session-based (Browser) and Header-based (CLI) Auth.
     Supports granular permission nodes via Strict PBAC logic.
@@ -480,17 +483,40 @@ def require_permission(permission_node: str):
             from flask import jsonify, request, session
 
             if os.getenv("AGENTV_TEST_AUTH_BYPASS") == "1":
+                from .. import config
+
+                if config.is_production():
+                    raise RuntimeError(
+                        "AGENTV_TEST_AUTH_BYPASS is strictly prohibited in production environments."
+                    )
                 from flask import g
 
                 from agentv_runtime.scope import ScopeToken
 
                 if getattr(g, "runtime_scope", None) is None:
                     g.runtime_scope = ScopeToken.from_tags({}, is_system=True)
+                if getattr(g, "runtime_context", None) is None:
+                    g.runtime_context = {}
                 return f(*args, **kwargs)
+
+            # Resolve effective permission nodes (string, sequence, or method-keyed dict)
+            if isinstance(permission_node, dict):
+                method_node = permission_node.get(request.method, permission_node.get("DEFAULT"))
+            else:
+                method_node = permission_node
+
+            if isinstance(method_node, str):
+                required_nodes = [method_node]
+            elif isinstance(method_node, (list, tuple, set)):
+                required_nodes = list(method_node)
+            else:
+                required_nodes = []
+
+            primary_node = required_nodes[0] if required_nodes else ""
 
             # [INDUSTRIAL DIAGNOSTIC]: Log all permission checks for forensic auditing
             print(
-                f"   [Auth] Checking permission '{permission_node}' for path: {request.path}",
+                f"   [Auth] Checking permission '{primary_node}' for path: {request.path}",
                 flush=True,
             )
             provider = get_auth_provider()
@@ -519,9 +545,12 @@ def require_permission(permission_node: str):
 
                 g.verified_principal = normalized
                 g.runtime_scope = scope
-                g.runtime_context = (
-                    scope.tags if scope and scope.tags else normalized.get("context")
-                )
+                if scope is not None and scope.tags:
+                    g.runtime_context = dict(scope.tags)
+                elif isinstance(normalized.get("context"), dict) and normalized["context"]:
+                    g.runtime_context = dict(normalized["context"])
+                else:
+                    g.runtime_context = None
                 return True
 
             def check_user_permission(principal: dict) -> bool:
@@ -530,11 +559,16 @@ def require_permission(permission_node: str):
 
                 policy = get_active_scope_policy()
                 scope = getattr(g, "runtime_scope", None)
-                if hasattr(policy, "allows_permission"):
-                    decision = policy.allows_permission(principal, permission_node, scope)
-                    if decision is not None:
-                        return bool(decision)
-                return provider.has_permission(principal, permission_node)
+                for node in required_nodes:
+                    if hasattr(policy, "allows_permission"):
+                        decision = policy.allows_permission(principal, node, scope)
+                        if decision is not None:
+                            if bool(decision):
+                                return True
+                            continue
+                    if provider.has_permission(principal, node):
+                        return True
+                return False
 
             # NOTE: No implicit localhost trust, even in demo mode.
             # All API access — including local developer setups — requires a valid
@@ -547,9 +581,7 @@ def require_permission(permission_node: str):
                     return jsonify({"error": "An active authorized context is required."}), 403
                 if check_user_permission(user):
                     return f(*args, **kwargs)
-                return jsonify(
-                    {"error": f"Forbidden: Permission '{permission_node}' required"}
-                ), 403
+                return jsonify({"error": f"Forbidden: Permission '{primary_node}' required"}), 403
 
             # 2. Check Header or Query (CLI / Debug Support)
             bearer_token, api_key = extract_credentials_from_context(
@@ -564,7 +596,7 @@ def require_permission(permission_node: str):
                     if check_user_permission(user):
                         return f(*args, **kwargs)
                     return jsonify(
-                        {"error": f"Forbidden: Permission '{permission_node}' required"}
+                        {"error": f"Forbidden: Permission '{primary_node}' required"}
                     ), 403
 
             elif api_key:
@@ -575,13 +607,13 @@ def require_permission(permission_node: str):
                     if check_user_permission(user):
                         return f(*args, **kwargs)
                     return jsonify(
-                        {"error": f"Forbidden: Permission '{permission_node}' required"}
+                        {"error": f"Forbidden: Permission '{primary_node}' required"}
                     ), 403
 
             if not bearer_token and not api_key and not user:
                 print(
                     f"   [Auth] 401 Unauthorized - No session and no key "
-                    f"(Node: {permission_node}, Path: {request.path})",
+                    f"(Node: {primary_node}, Path: {request.path})",
                     flush=True,
                 )
             elif api_key and not user:

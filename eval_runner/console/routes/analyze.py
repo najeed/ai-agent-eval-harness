@@ -38,7 +38,9 @@ def _provider_leaderboard_rows() -> list[dict]:
     rows: list[dict] = []
     for run in store.list_runs(limit=10_000, context=context):
         run_id = str(run.get("run_id") or "")
-        if not run_id or not _run_is_in_active_context(run_id, context):
+        if not run_id:
+            continue
+        if hasattr(store, "get_run") and store.get_run(run_id, context=context) is None:
             continue
         manifest = store.get_manifest(run_id, context=context) or {}
         events = store.get_events(run_id, offset=0, limit=10_000_000, context=context)

@@ -426,7 +426,12 @@ class ToolSandbox(AbstractSandbox):
         return await tool_sandbox_service.isolate(call_data, core_executor)
 
     def get_tool_provenance(self, tool_name: str) -> str:
-        """Determine execution provenance for a declared or simulated tool."""
+        """Determine execution provenance for a declared or simulated tool.
+
+        Any scenario-defined tool outcome executing via mock outputs or synthetic
+        state changes is classified as simulated unless an independent real adapter
+        has explicitly bound verified live provenance.
+        """
         active_simulators = self.get_active_simulators()
         for sim_name in active_simulators:
             if tool_name.startswith(f"{sim_name}_"):
@@ -435,19 +440,16 @@ class ToolSandbox(AbstractSandbox):
         if tool_name in all_tool_defs:
             tool_def = all_tool_defs[tool_name]
             if isinstance(tool_def, dict):
-                if "provenance" in tool_def:
-                    return str(tool_def["provenance"])
-                if tool_def.get("mock") is True or tool_def.get("simulated") is True:
-                    return "simulated"
-                if tool_name.startswith("mock_") or tool_name.startswith("synthetic_"):
-                    return "simulated"
-            scenario_mode = (
-                (self.scenario.get("metadata") or {}).get("execution_mode")
-                or self.scenario.get("execution_mode")
-                or "live"
-            )
-            return str(scenario_mode)
-        if tool_name.startswith("mock_") or tool_name.startswith("sim_"):
+                prov = tool_def.get("provenance")
+                if prov:
+                    return str(prov)
+            # Scenario-defined tools applying synthetic state changes/output are simulated
+            return "simulated"
+        if (
+            tool_name.startswith("mock_")
+            or tool_name.startswith("sim_")
+            or tool_name.startswith("synthetic_")
+        ):
             return "simulated"
         return "unregistered"
 
@@ -511,7 +513,7 @@ class ToolSandbox(AbstractSandbox):
         else:
             tool_def = all_tool_defs[tool_name]
         tool_provenance = self.get_tool_provenance(tool_name)
-        if tool_provenance in {"simulated", "mock", "synthetic"}:
+        if tool_provenance != "live":
             self.has_simulated_tools = True
         self.grounding_hits["tools"][tool_name] = self.grounding_hits["tools"].get(tool_name, 0) + 1
         policies = self.scenario.get("metadata", {}).get("policies", {})

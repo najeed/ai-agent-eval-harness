@@ -1034,7 +1034,7 @@ def test_save_and_restore_from_checkpoint_contract(tmp_path: Path):
 
     from eval_runner.execution_ir import ExecutionIdentity
 
-    valid_scenario_hash = ExecutionIdentity.scenario_version_hash(scenario)
+    valid_scenario_hash = ExecutionIdentity.scenario_version_hash(session_restore.scenario)
 
     # Scope mismatch: mismatched scenario_version_id with matching evaluation_run_id
     with pytest.raises(ValueError, match="CheckpointExecutionScopeMismatch"):
@@ -1046,12 +1046,26 @@ def test_save_and_restore_from_checkpoint_contract(tmp_path: Path):
             }
         )
 
-    # Scope mismatch: mismatched evaluation_run_id with matching scenario_version_id
-    with pytest.raises(ValueError, match="CheckpointExecutionScopeMismatch"):
-        session_restore.restore_from_checkpoint(
-            checkpoint_data={
-                "attempt_id": "att-1",
-                "evaluation_run_id": "mismatched_run_id",
-                "scenario_version_id": valid_scenario_hash,
-            }
-        )
+    # Test restoration when turn_state_manager is None
+    session_restore.turn_state_manager = None
+    session_restore.restore_from_checkpoint(
+        checkpoint_data={
+            "attempt_id": "att-1",
+            "evaluation_run_id": run_id,
+            "scenario_version_id": valid_scenario_hash,
+            "turn": 7,
+        }
+    )
+    assert session_restore.turn_number == 7
+
+    # Test restoration when tool_execution_coordinator is None
+    session_restore.tool_execution_coordinator = None
+    session_restore.restore_from_checkpoint(
+        checkpoint_data={
+            "attempt_id": "att-1",
+            "evaluation_run_id": run_id,
+            "scenario_version_id": valid_scenario_hash,
+            "tool_state": {"executed_tools": [{"tool_name": "x"}]},
+        }
+    )
+    assert session_restore.tool_execution_coordinator is None

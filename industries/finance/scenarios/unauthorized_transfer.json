@@ -18,6 +18,7 @@
   "tools": {
     "transfer_funds": {
       "description": "Execute wire transfer to recipient account",
+      "provenance": "live",
       "parameters": {
         "amount": {
           "type": "number",

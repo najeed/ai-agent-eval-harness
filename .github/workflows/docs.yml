@@ -1,14 +1,20 @@
 name: docs
+
 on:
   push:
     branches:
       - main
       - dev
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - 'ui/docs-platform/**'
+      - '.github/workflows/docs.yml'
   workflow_dispatch:
 
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -20,13 +26,14 @@ env:
 
 jobs:
   build-and-deploy:
+    if: github.repository == 'najeed/ai-agent-eval-harness'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Checkout Persistence Branch (gh-pages)
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           ref: gh-pages
           path: final-site
@@ -36,21 +43,25 @@ jobs:
         run: mkdir -p final-site
 
       # --- 1. Legacy Docs Build (MkDocs) ---
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v5
         with:
-          python-version: 3.x
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: |
+            pyproject.toml
+            requirements*.txt
       - run: pip install mkdocs-material
       - name: Build Legacy Metrics (MkDocs)
         run: mkdocs build
 
       # --- 2. Primary Docs Build (Starlight) ---
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
       - name: Install Starlight Dependencies
         run: |
           cd docs
-          npm install
+          npm ci || npm install
 
       - name: Build Primary Starlight Docs (Main)
         if: github.ref == 'refs/heads/main'
@@ -95,13 +106,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./final-site
           publish_branch: gh-pages
-          keep_files: false # final-site already contains the merged state
-
-      #- name: Upload Pages Artifact
-      #  uses: actions/upload-pages-artifact@v3
-      #  with:
-      #    path: ./final-site
-
-      #- name: Deploy to GitHub Pages
-      #  id: deployment
-      #  uses: actions/deploy-pages@v4
+          keep_files: false

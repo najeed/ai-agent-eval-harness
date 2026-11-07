@@ -20,14 +20,23 @@ on:
       - 'tests/integration/test_wheel_adapter_distribution.py'
       - '.github/workflows/package-compatibility.yml'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   wheel-and-extras:
+    if: github.repository == 'najeed/ai-agent-eval-harness'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: |
+            pyproject.toml
+            requirements*.txt
       - name: Install development and packaging test dependencies
         run: pip install -r requirements-dev.txt build
       - name: Verify wheel adapter distribution

@@ -70,6 +70,7 @@ def test_console_app_production_missing_keys_fails(monkeypatch, tmp_path):
     monkeypatch.setattr(config, "SERVICE_API_KEY", None)
     monkeypatch.delenv("DASHBOARD_API_KEY", raising=False)
     monkeypatch.delenv("SERVICE_API_KEY", raising=False)
+    monkeypatch.delenv("AGENTV_TEST_AUTH_BYPASS", raising=False)
     monkeypatch.setenv("AGENTV_ENV", "production")
 
     fake_ui = tmp_path / "ui_dist"
@@ -930,6 +931,7 @@ class TestConsoleAppExhaustiveCoverage:
         from eval_runner.console.app import create_app
 
         # 1. Production missing visual-console dist raises RuntimeError
+        monkeypatch.delenv("AGENTV_TEST_AUTH_BYPASS", raising=False)
         monkeypatch.setattr(config, "is_production", lambda: True)
         monkeypatch.setattr(console_app, "UI_BUILD_DIR", str(tmp_path / "nonexistent_ui_dist"))
         with pytest.raises(

@@ -28,6 +28,7 @@ from .reproducibility import (  # noqa: E402
     metric_registry_fingerprint,
 )
 from .run_lifecycle import RunSuspendedForApproval  # noqa: E402
+from .sanitizer import sanitize_credentials  # noqa: E402
 from .statistics import compute_attempt_statistics  # noqa: E402
 
 logger = logging.getLogger(__name__)
@@ -1052,7 +1053,9 @@ class DefaultRunner(BaseRunner):
                     "scenario_id": str(scenario_identifier),
                     "k_attempts": attempts,
                     "workflow": ctx.scenario_data.get("workflow"),
-                    "scenario_data": dict(ctx.scenario_data) if ctx.scenario_data else {},
+                    "scenario_data": (
+                        sanitize_credentials(dict(ctx.scenario_data)) if ctx.scenario_data else {}
+                    ),
                     "execution_mode": str(execution_mode),
                     # Whether the operator explicitly declared the mode;
                     # absent declaration → provisional certificates.

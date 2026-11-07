@@ -6,12 +6,17 @@ on:
 jobs:
   loan-agent:
     name: Repeated live loan-agent certification
+    if: github.repository == 'najeed/ai-agent-eval-harness'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: |
+            pyproject.toml
+            requirements*.txt
       - name: Check live-provider credential
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}

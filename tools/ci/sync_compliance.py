@@ -28,6 +28,9 @@ COMPLIANCE_FILE = REPO_ROOT / "COMPLIANCE.md"
 NOTICE_FILE = REPO_ROOT / "NOTICE"
 REQUIREMENTS_FILE = REPO_ROOT / "requirements.txt"
 PYPROJECT_FILE = REPO_ROOT / "pyproject.toml"
+DATAPROC_DIR = REPO_ROOT / "dataproc_engine"
+DATAPROC_PYPROJECT = DATAPROC_DIR / "pyproject.toml"
+DATAPROC_REQUIREMENTS = DATAPROC_DIR / "requirements.txt"
 
 # Standard known license mappings & files
 KNOWN_LICENSE_FILES: dict[str, str] = {
@@ -286,7 +289,10 @@ def scan_python_optional_packages(
 
 
 def check_or_sync_requirements(
-    pyproject_path: Path, requirements_path: Path, check_mode: bool = False
+    pyproject_path: Path,
+    requirements_path: Path,
+    check_mode: bool = False,
+    component_name: str = "AgentV",
 ) -> bool:
     """
     Validates or mirrors requirements.txt against [project.dependencies] in pyproject.toml.
@@ -316,18 +322,29 @@ def check_or_sync_requirements(
                 existing_deps.append(line)
 
     has_drift = sorted(pyproject_deps) != sorted(existing_deps)
+    rel_req = (
+        requirements_path.relative_to(REPO_ROOT)
+        if requirements_path.is_relative_to(REPO_ROOT)
+        else Path(requirements_path.name)
+    )
+    rel_pyproj = (
+        pyproject_path.relative_to(REPO_ROOT)
+        if pyproject_path.is_relative_to(REPO_ROOT)
+        else Path(pyproject_path.name)
+    )
     if has_drift:
-        print("  [DRIFT] requirements.txt out of sync with pyproject.toml [project.dependencies].")
+        print(f"  [DRIFT] {rel_req} out of sync with {rel_pyproj} [project.dependencies].")
         if not check_mode:
+            truth_label = "(Single Source of Truth)"
             header = (
-                "# requirements.txt\n"
-                "# Core runtime dependencies for AgentV.\n"
-                "# Mirrors [project.dependencies] in pyproject.toml (Single Source of Truth).\n"
-                "# Install with: pip install -r requirements.txt\n\n"
+                f"# {rel_req.as_posix()}\n"
+                f"# Core runtime dependencies for {component_name}.\n"
+                f"# Mirrors [project.dependencies] in {rel_pyproj.as_posix()} {truth_label}.\n"
+                f"# Install with: pip install -r {rel_req.as_posix()}\n\n"
             )
             content = header + "\n".join(pyproject_deps) + "\n"
             requirements_path.write_text(content, encoding="utf-8")
-            print("  [UPDATED] requirements.txt has been refreshed from pyproject.toml.")
+            print(f"  [UPDATED] {rel_req} has been refreshed from {rel_pyproj}.")
     return has_drift
 
 
@@ -500,7 +517,15 @@ def sync_compliance(check_mode: bool = False) -> int:
     print("=== Scanning Dependencies Across AI Agent Eval Harness Ecosystem ===")
 
     # 0. Check / sync requirements.txt and composite extras against pyproject.toml
-    req_drift = check_or_sync_requirements(PYPROJECT_FILE, REQUIREMENTS_FILE, check_mode=check_mode)
+    req_drift = check_or_sync_requirements(
+        PYPROJECT_FILE, REQUIREMENTS_FILE, check_mode=check_mode, component_name="AgentV"
+    )
+    dataproc_req_drift = check_or_sync_requirements(
+        DATAPROC_PYPROJECT,
+        DATAPROC_REQUIREMENTS,
+        check_mode=check_mode,
+        component_name="DataProc Engine",
+    )
     extras_drift = check_composite_extras_drift(PYPROJECT_FILE)
 
     # 1. Scan all packages from authoritative sources
@@ -564,7 +589,7 @@ def sync_compliance(check_mode: bool = False) -> int:
     updated_notice = build_notice_file(all_pkgs)
 
     # 5. Check for drift
-    has_drift = req_drift or extras_drift
+    has_drift = req_drift or dataproc_req_drift or extras_drift
     if (
         compliance_content.replace("\r\n", "\n").strip()
         != updated_compliance.replace("\r\n", "\n").strip()

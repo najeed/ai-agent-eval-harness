@@ -6,14 +6,14 @@ authors = [
     { name = "Najeed Khan", email = "agentvos@agentvos.ai" }
 ]
 dependencies = [
-    "click==8.3.1",
-    "pydantic==2.13.4",
-    "aiohttp==3.14.3",
-    "pandas==3.0.5",
-    "pyarrow==23.0.1"
+    "click==8.5.1",
+    "pydantic==2.14.3",
+    "aiohttp==3.14.5",
+    "pandas==3.1.1",
+    "pyarrow==26.0.1"
 ]
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 
 [project.scripts]
 dataproc-cli = "dataproc_engine.cli.main:cli"

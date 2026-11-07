@@ -712,39 +712,15 @@ def get_doctor_audit():
 
 
 @system_bp.route("/debugger/state", methods=["GET", "POST"])
+@require_permission(
+    {
+        "GET": [Permission.DEBUG_READ, Permission.RUNS_READ],
+        "POST": [Permission.DEBUG_EVENT, Permission.RUNS_WRITE],
+    }
+)
 def debugger_state():
     """Visual Debugger ephemeral state sink/source."""
-    import os
     import re
-
-    from flask import session
-
-    from ..auth_manager import Permission, get_auth_provider
-
-    if os.getenv("AGENTV_TEST_AUTH_BYPASS") != "1":
-        provider = get_auth_provider()
-        user = session.get("user")
-        if not user:
-            auth_header = request.headers.get("Authorization", "")
-            api_key = request.headers.get("X-AES-API-KEY") or request.headers.get("X-API-Key")
-            if auth_header.startswith("Bearer "):
-                user = provider.verify_token(auth_header[7:].strip())
-            elif api_key:
-                user = provider.authenticate(api_key.strip())
-
-        if not user:
-            return jsonify({"error": "Unauthenticated: Missing or invalid credentials"}), 401
-
-        required_perm = (
-            Permission.DEBUG_EVENT if request.method == "POST" else Permission.DEBUG_READ
-        )
-        has_perm = (
-            provider.has_permission(user, required_perm)
-            or provider.has_permission(user, Permission.RUNS_WRITE)
-            or provider.has_permission(user, Permission.RUNS_READ)
-        )
-        if not has_perm:
-            return jsonify({"error": f"Unauthorized: {required_perm} permission required"}), 403
 
     if request.method == "POST":
         data = request.json or {}

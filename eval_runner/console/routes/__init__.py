@@ -2,12 +2,19 @@ from flask import Blueprint, jsonify, request
 
 from eval_runner import config as config
 from eval_runner.catalog import ScenarioCatalog as ScenarioCatalog
+from eval_runner.console.auth_manager import Permission, require_permission
 
 from .agent_targets import agent_targets_bp as agent_targets_bp
 from .analyze import analyze_bp as analyze_bp
 from .demo import demo_bp as demo_bp, execute_demo_command, get_loan_demo_context
 from .evidence import evidence_bp as evidence_bp
-from .runs import get_verification_certificate, list_metrics, list_runs, run_bp as run_bp
+from .runs import (
+    get_public_certificate,
+    get_verification_certificate,
+    list_metrics,
+    list_runs,
+    run_bp as run_bp,
+)
 from .scenarios import (
     get_taxonomy,
     list_scenarios,
@@ -183,6 +190,12 @@ def proxy_cleanup():
 
 
 @core_bp.route("/api/debugger/state", methods=["GET", "POST"])
+@require_permission(
+    {
+        "GET": [Permission.DEBUG_READ, Permission.RUNS_READ],
+        "POST": [Permission.DEBUG_EVENT, Permission.RUNS_WRITE],
+    }
+)
 def proxy_debugger():
     return debugger_state()
 
@@ -246,6 +259,11 @@ def shim_metrics():
 @core_bp.route("/v1/certificates/<run_id>")
 def shim_cert(run_id):
     return get_verification_certificate(run_id)
+
+
+@core_bp.route("/v1/certificates/<run_id>/public")
+def shim_public_cert(run_id):
+    return get_public_certificate(run_id)
 
 
 @core_bp.route("/v1/verify/<run_id>")

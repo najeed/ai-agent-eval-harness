@@ -3,18 +3,37 @@ name: Acceptance Certification
 on:
   pull_request:
     branches: [main, dev]
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '.gitignore'
+      - 'LICENSE'
   push:
     branches: [main, dev]
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '.gitignore'
+      - 'LICENSE'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   acceptance-smoke:
     name: Acceptance Smoke Gate
+    if: github.repository == 'najeed/ai-agent-eval-harness'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: 'pip'
+          cache-dependency-path: |
+            pyproject.toml
+            requirements*.txt
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
       - name: Build Visual Console and install Chromium
@@ -29,7 +48,7 @@ jobs:
 
   acceptance-release:
     name: Acceptance Release Certification Gate
-    if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
+    if: github.repository == 'najeed/ai-agent-eval-harness' && (github.ref == 'refs/heads/main' || github.event_name == 'pull_request')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -52,6 +71,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: 'pip'
+          cache-dependency-path: |
+            pyproject.toml
+            requirements*.txt
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
       - name: Start and prove independent acceptance oracle

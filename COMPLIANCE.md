@@ -72,11 +72,11 @@ The following tables summarize the licenses of our core dependencies and optiona
 ### 2.5 Data Processing Engine Dependencies (`dataproc_engine/pyproject.toml`)
 | Package | Version | License | License File |
 | :--- | :--- | :--- | :--- |
-| **aiohttp** | 3.14.3 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **click** | 8.3.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **pandas** | 3.0.5 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **pyarrow** | 23.0.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **pydantic** | 2.13.4 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **aiohttp** | 3.14.5 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **click** | 8.5.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **pandas** | 3.1.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **pyarrow** | 26.0.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **pydantic** | 2.14.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 
 ### 2.6 Optional Ecosystem & Framework Integrations (`pyproject.toml [project.optional-dependencies]`)
 | Package | Version | License | License File |
