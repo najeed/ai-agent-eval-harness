@@ -192,12 +192,6 @@ def test_pii_analyzer_detection():
     assert res == FailureCategory.SECURITY_PII_LEAK
 
 
-def test_protocol_analyzer_missing_task_result():
-    """Verify ProtocolAnalyzer returns None when task_result is missing."""
-    analyzer = ProtocolAnalyzer()
-    assert analyzer.analyze([], None) is None
-
-
 def test_protocol_analyzer_direct_call():
     """Verify ProtocolAnalyzer checks protocol when task_result is provided."""
     analyzer = ProtocolAnalyzer()

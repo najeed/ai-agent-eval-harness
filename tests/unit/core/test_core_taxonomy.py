@@ -123,11 +123,14 @@ def test_taxonomy_hallucination_registry():
 
 
 def test_causal_chain_mechanics():
+    """Verify causal chain records all fields including trigger, evidence, and timestamp."""
     chain = CausalChain()
     chain.add(FailureCategory.LOGIC_STALL, "Evidence", turn_index=5, severity="high")
     assert len(chain) == 1
     assert chain[0]["trigger"] == FailureCategory.LOGIC_STALL
+    assert chain[0]["evidence"] == "Evidence"
     assert chain[0]["severity"] == "high"
+    assert "timestamp" in chain[0]
 
 
 def test_diagnostic_result_serialization():
@@ -172,14 +175,6 @@ def test_classify_from_events():
 
 
 # === Ported edge-case coverage ===
-
-
-def test_causal_chain_timestamp_and_evidence():
-    """Verify causal chain records all fields including timestamp."""
-    chain = CausalChain()
-    chain.add(FailureCategory.LOGIC_STALL, "Agent stuck in loop", turn_index=5, severity="high")
-    assert chain[0]["evidence"] == "Agent stuck in loop"
-    assert "timestamp" in chain[0]
 
 
 def test_diagnostic_result_fallback_diagnosis():

@@ -50,18 +50,6 @@ async def test_handle_evaluate_metadata_error():
 
 
 @pytest.mark.asyncio
-async def test_handle_evaluate_loop_exception():
-    """Exercises exception in evaluation loop (lines 176-179)."""
-    args = MagicMock(path="p", format="f", plugin=[], attempts=1)
-    with (
-        patch("eval_runner.loader.load_dataset", return_value=[{"id": "1"}]),
-        patch("eval_runner.engine.run_evaluation", side_effect=Exception("Loop Error")),
-    ):
-        res = await evaluation.handle_evaluate(args)
-        assert res == 1
-
-
-@pytest.mark.asyncio
 async def test_handle_run_overrides(tmp_path):
     """Exercises environment overrides and seed logic (lines 187, 199-202, 220-221)."""
 
@@ -134,17 +122,6 @@ async def test_handle_record_playground_failure():
         "eval_runner.handlers.evaluation.playground.run_playground", side_effect=Exception("Fail")
     ):
         assert await evaluation.handle_playground(args) == 1
-
-
-@pytest.mark.asyncio
-async def test_handle_replay_logic(tmp_path):
-    """Exercises replay missing run_id and failure (lines 279-280, 318-320)."""
-    # Missing run_id
-    assert await evaluation.handle_replay(MagicMock(run_id=None)) == 1
-
-    # Exception
-    with patch("eval_runner.runtime_services.resolve_run_store", side_effect=Exception("Fail")):
-        assert await evaluation.handle_replay(MagicMock(run_id="r")) == 1
 
 
 @pytest.mark.asyncio

@@ -41,12 +41,17 @@ def test_prepare_agent_env_socket_protocol():
 
 
 @pytest.mark.asyncio
-async def test_replay_requires_provider_owned_events():
-    """Replay has no path-jail branch because it does not resolve paths."""
+async def test_replay_requires_provider_owned_events(tmp_path):
+    """Replay delegates strictly to the run store provider, ignoring local disk artifacts."""
+    run_id = "run-vault-present"
+    vault_dir = tmp_path / "runs" / run_id
+    vault_dir.mkdir(parents=True, exist_ok=True)
+    (vault_dir / "run.jsonl").write_text("{}", encoding="utf-8")
+
     provider = MagicMock()
     provider.get_events.return_value = []
     with patch("eval_runner.runtime_services.resolve_run_store", return_value=provider):
-        assert await evaluation.handle_replay(MagicMock(run_id="out_of_bounds_run")) == 1
+        assert await evaluation.handle_replay(MagicMock(run_id=run_id)) == 1
 
 
 # ---------------------------------------------------------------------------
@@ -56,7 +61,11 @@ async def test_replay_requires_provider_owned_events():
 
 @pytest.mark.asyncio
 async def test_handle_evaluate_execution_flow(mock_args):
-    """Verify standard batch evaluation invocation and exit status."""
+    """Verify standard batch evaluation invocation, exit status, and callable argument filtering."""
+    mock_args.func = lambda a: a
+    mock_args.other_callback = lambda x: x
+    mock_args.clean_value = "hello"
+
     with (
         patch("eval_runner.loader.load_dataset", return_value=[{"id": "s1"}]),
         patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock) as mock_run,
@@ -65,6 +74,11 @@ async def test_handle_evaluate_execution_flow(mock_args):
         res = await evaluation.handle_evaluate(mock_args)
         assert res == 0
         mock_run.assert_called_once()
+        passed_metadata = mock_run.call_args[1]["metadata"]
+        passed_args = passed_metadata["args"]
+        assert "func" not in passed_args
+        assert "other_callback" not in passed_args
+        assert passed_args.get("clean_value") == "hello"
 
 
 @pytest.mark.asyncio
@@ -805,50 +819,6 @@ async def test_handler_certify_unsafe_and_exception(tmp_path):
     ):
         res_exp_err = await evaluation.handle_certify(args)
         assert res_exp_err == 0
-
-
-@pytest.mark.asyncio
-async def test_handle_evaluate_filters_callable_args():
-    """Verify that handle_evaluate removes dispatch functions and other callables from args."""
-
-    def dummy_dispatch(a):
-        return a
-
-    args = MagicMock()
-    args.path = "scenarios/test"
-    args.format = "json"
-    args.attempts = 1
-    args.func = dummy_dispatch
-    args.other_callback = lambda x: x
-    args.clean_value = "hello"
-
-    with (
-        patch("eval_runner.loader.load_dataset", return_value=[{"id": "scen_1"}]),
-        patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock) as mock_run,
-    ):
-        mock_run.return_value = {"status": "completed"}
-        res = await evaluation.handle_evaluate(args)
-        assert res == 0
-        mock_run.assert_called_once()
-        passed_metadata = mock_run.call_args[1]["metadata"]
-        passed_args = passed_metadata["args"]
-        assert "func" not in passed_args
-        assert "other_callback" not in passed_args
-        assert passed_args.get("clean_value") == "hello"
-
-
-@pytest.mark.asyncio
-async def test_replay_does_not_use_a_vault_path(tmp_path):
-    run_id = "run-vault-present"
-    vault_dir = tmp_path / "runs" / run_id
-    vault_dir.mkdir(parents=True, exist_ok=True)
-    vault_file = vault_dir / "run.jsonl"
-    vault_file.write_text("{}", encoding="utf-8")
-
-    provider = MagicMock()
-    provider.get_events.return_value = []
-    with patch("eval_runner.runtime_services.resolve_run_store", return_value=provider):
-        assert await evaluation.handle_replay(MagicMock(run_id=run_id)) == 1
 
 
 def test_prepare_agent_env_empty_cmd_and_socket():

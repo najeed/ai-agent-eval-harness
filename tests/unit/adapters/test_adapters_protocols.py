@@ -47,23 +47,21 @@ async def test_http_adapter_core():
 
 
 @pytest.mark.asyncio
-async def test_local_subprocess_adapter():
-    script = 'import sys; sys.stdout.write(\'{"test": "pass"}\')'
+@pytest.mark.parametrize(
+    ("script", "payload"),
+    [
+        ('import sys; sys.stdout.write(\'{"test": "pass"}\')', {}),
+        (
+            'import os, sys; os.close(0); sys.stdout.write(\'{"test": "pass"}\')',
+            {"request": "ignored"},
+        ),
+    ],
+    ids=["standard", "closes_stdin"],
+)
+async def test_local_subprocess_adapter(script, payload):
     res = await _run_local_process(
         command=[sys.executable, "-c", script],
-        payload={},
-        timeout=5,
-    )
-    assert res == {"test": "pass"}
-
-
-@pytest.mark.asyncio
-async def test_local_subprocess_adapter_accepts_agent_that_closes_stdin():
-    """A completed agent's stdout remains valid when it never reads the request."""
-    script = 'import os, sys; os.close(0); sys.stdout.write(\'{"test": "pass"}\')'
-    res = await _run_local_process(
-        command=[sys.executable, "-c", script],
-        payload={"request": "ignored"},
+        payload=payload,
         timeout=5,
     )
     assert res == {"test": "pass"}
@@ -106,23 +104,15 @@ def test_adapters_protocols_discovery():
 
 
 @pytest.mark.asyncio
-async def test_call_agent_protocol_selection():
-    from eval_runner.engine import AgentAdapterRegistry
-
-    payload = {"test": "data"}
-    AgentAdapterRegistry._discovered = False
-    AgentAdapterRegistry._discover()
-
-    with patch.dict(
-        AgentAdapterRegistry._adapters,
-        {"local": AsyncMock(return_value={"action": "final_answer", "content": "ok"})},
-    ):
-        result = await AgentAdapterRegistry.call_agent("local", "echo 'test'", str(payload), [])
-        assert result["content"] == "ok"
-
-
-@pytest.mark.asyncio
-async def test_call_agent_env_fallback():
+@pytest.mark.parametrize(
+    ("endpoint", "env_cmd", "expected"),
+    [
+        ("echo 'test'", None, "ok"),
+        (None, "python mock_agent.py", "env_ok"),
+    ],
+    ids=["explicit_endpoint", "env_fallback"],
+)
+async def test_call_agent_protocol_and_env_fallback(endpoint, env_cmd, expected):
     import os
 
     from eval_runner.engine import AgentAdapterRegistry
@@ -131,10 +121,11 @@ async def test_call_agent_env_fallback():
     AgentAdapterRegistry._discovered = False
     AgentAdapterRegistry._discover()
 
-    with patch.dict(os.environ, {"AGENT_LOCAL_CMD": "python mock_agent.py"}):
+    env_patch = {"AGENT_LOCAL_CMD": env_cmd} if env_cmd else {}
+    with patch.dict(os.environ, env_patch):
         with patch.dict(
             AgentAdapterRegistry._adapters,
-            {"local": AsyncMock(return_value={"action": "final_answer", "content": "env_ok"})},
+            {"local": AsyncMock(return_value={"action": "final_answer", "content": expected})},
         ):
-            result = await AgentAdapterRegistry.call_agent("local", None, str(payload), [])
-            assert result["content"] == "env_ok"
+            result = await AgentAdapterRegistry.call_agent("local", endpoint, str(payload), [])
+            assert result["content"] == expected
