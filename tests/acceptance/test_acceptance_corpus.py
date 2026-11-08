@@ -112,8 +112,16 @@ def test_agentv_acceptance_case(case, isolated_acceptance_env, acceptance_aggreg
     if oracle_url.startswith("${") and oracle_url.endswith("}"):
         oracle_url = os.environ.get(oracle_url[2:-1], "")
     if case["expect"].get("state", {}).get("oracle_url") and not oracle_url:
-        if os.environ.get("AGENTV_REQUIRE_EXTERNAL_ORACLE") == "1":
-            pytest.fail("Required independent acceptance oracle is unavailable")
+        is_strict_release = (
+            os.environ.get("AGENTV_REQUIRE_EXTERNAL_ORACLE") == "1"
+            or os.environ.get("AGENTV_RELEASE_MODE") == "1"
+            or os.environ.get("AGENTV_RELEASE_GATE") == "1"
+            or (os.environ.get("CI") == "true" and os.environ.get("AGENTV_ALLOW_CI_SKIPS") != "1")
+        )
+        if is_strict_release:
+            pytest.fail(
+                "Required independent acceptance oracle is unavailable in release/CI environment"
+            )
         pytest.skip("Independent acceptance oracle is not configured for this non-release run")
     if oracle_url:
         from tests.acceptance.support.artifact_reader import reset_external_state_oracle

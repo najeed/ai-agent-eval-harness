@@ -4,6 +4,18 @@ Verifies that TraceVerifier independently detects all forms of trace tampering,
 reordering, deletion, event insertion, signature corruption, and key substitution.
 Includes an independent cryptographic oracle built with stdlib/cryptography to
 prevent symmetrical verification bugs.
+
+CLASSIFICATION & ASSURANCE GOVERNANCE:
+-------------------------------------
+This module executes as a Historical Path-Compatibility Matrix via the
+`_bridge_golden_matrix_to_providers` fixture. Tests in this file verify cryptographic
+mathematical properties and oracle tamper sensitivity under historical path inputs.
+They are EXPLICITLY NOT classified as end-to-end provider-native verification runs.
+Authoritative, unbridged provider-native sign/seal/verify coverage resides in:
+  - tests/unit/core/test_verification_authority.py
+  - tests/unit/core/test_recorder_provider_binding_contract.py
+  - tests/contracts/test_execution_lifecycle_contract.py
+  - tests/acceptance/
 """
 
 from __future__ import annotations

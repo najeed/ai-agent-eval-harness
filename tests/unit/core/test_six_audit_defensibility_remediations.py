@@ -23,12 +23,15 @@ from cryptography.hazmat.primitives.asymmetric import ed25519
 
 from agentv_runtime.canonical import canonical_json_dumps, canonical_json_encode
 from agentv_runtime.package import VerificationPackage
-from eval_runner import config, reporter
+from eval_runner import config
 from eval_runner.artifact_plugin import ArtifactPlugin
 from eval_runner.events import Event
 from eval_runner.flight_recorder import FlightRecorderPlugin
 from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.verifier import VerificationAuthority
+from tests.unit.handlers.test_reporter import (
+    test_reporter_truthfulness_no_file_existence_verification as _rem6_test,
+)
 
 
 def _generate_ed25519_pem_pair() -> tuple[ed25519.Ed25519PrivateKey, str, str]:
@@ -336,41 +339,6 @@ def test_rem5_canonical_json_rfc8785():
 # ---------------------------------------------------------------------------
 # Rem 6: Reporter Truthfulness (File existence never implies verified)
 # ---------------------------------------------------------------------------
-def test_rem6_reporter_truthfulness_no_file_existence_verification(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-):
-    """HTML report does NOT display VERIFIED RUN merely because a manifest exists on disk."""
-    monkeypatch.setattr(config, "HTML_REPORTS_DIR", tmp_path / "reports")
-    scenario = {"id": "s1", "title": "Test Scenario"}
-    results = [
-        {
-            "task_id": "t1",
-            "metrics": [{"metric": "m1", "score": 1, "threshold": 0.5, "success": True}],
-        }
-    ]
-
-    # Place a dummy manifest beside the trace in runs directory
-    run_dir = tmp_path / "runs" / "run-unverified"
-    run_dir.mkdir(parents=True, exist_ok=True)
-    (run_dir / "audit_manifest.json").write_text("{}", encoding="utf-8")
-    (run_dir / "trace.jsonl").write_text("{}", encoding="utf-8")
-
-    # Generate report with NO authoritative verification metadata
-    out_file = reporter.generate_html_report(
-        scenario, results, metadata={"run_id": "run-unverified"}
-    )
-    html = Path(out_file).read_text(encoding="utf-8")
-
-    assert "VERIFIED RUN" not in html
-
-    # Generate report WITH authoritative verification result
-    out_file_verified = reporter.generate_html_report(
-        scenario,
-        results,
-        metadata={
-            "run_id": "run-verified",
-            "verification_result": {"is_valid": True, "status": "CERTIFIED"},
-        },
-    )
-    html_verified = Path(out_file_verified).read_text(encoding="utf-8")
-    assert "VERIFIED RUN" in html_verified
+def test_rem6_reporter_truthfulness_no_file_existence_verification(tmp_path, monkeypatch):
+    """Delegate to canonical test in test_reporter."""
+    _rem6_test(tmp_path, monkeypatch)

@@ -215,3 +215,23 @@ def test_failure_isolation_boundary_renders_extension_load_error_on_child_throw(
     assert "<RemoteErrorBoundary entryUrl={" in app_src
     # ...and no longer carries a divergent inline copy of the class.
     assert "class RemoteErrorBoundary" not in app_src
+
+    # Behavioral runtime execution via Node test runner (if node is available)
+    node_bin = shutil.which("node")
+    if node_bin:
+        test_file = (
+            UI_ROOT / "test-dist" / "tests" / "document-model" / "remoteErrorBoundary.test.js"
+        )
+        if not test_file.exists():
+            _ensure_compiled_contract()
+        if test_file.exists():
+            test_rel = "test-dist/tests/document-model/remoteErrorBoundary.test.js"
+            proc = subprocess.run(
+                [node_bin, "--test", test_rel],
+                capture_output=True,
+                text=True,
+                cwd=str(UI_ROOT),
+            )
+            err_msg = f"Runtime failure-isolation test failed:\n{proc.stdout}\n{proc.stderr}"
+            assert proc.returncode == 0, err_msg
+            assert "failure isolation: throwing-child state" in proc.stdout

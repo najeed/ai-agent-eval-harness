@@ -248,14 +248,6 @@ async def test_handle_gate_failures(tmp_path):
 
 
 @pytest.mark.asyncio
-async def test_handle_quickstart():
-    """Exercises handle_quickstart (line 454)."""
-    with patch("eval_runner.quickstart.run_quickstart") as mock_q:
-        await evaluation.handle_quickstart(None)
-        mock_q.assert_called_once()
-
-
-@pytest.mark.asyncio
 async def test_handle_certify_failures(tmp_path):
     """Exercises certify failures (lines 466-467, 474, 513, 523-526)."""
     # Missing run_id

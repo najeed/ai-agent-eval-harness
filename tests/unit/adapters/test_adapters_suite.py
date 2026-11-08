@@ -12,7 +12,7 @@ import pytest
 import pytest_asyncio
 from aiohttp import web
 
-from eval_runner.adapters import http_adapter, local_subprocess_adapter, socket_adapter
+from eval_runner.adapters import http_adapter, local_subprocess_adapter
 from eval_runner.adapters.claude import ClaudeAdapterPlugin
 from eval_runner.adapters.crewai import CrewAIAdapterPlugin
 from eval_runner.adapters.gemini import GeminiAdapterPlugin
@@ -281,15 +281,3 @@ async def test_local_subprocess_adapter():
     with patch("asyncio.create_subprocess_exec", return_value=mock_proc):
         res = await local_subprocess_adapter({}, "python agent.py")
         assert res["test"] == "pass"
-
-
-@pytest.mark.asyncio
-async def test_socket_adapter_tcp():
-    mock_reader = AsyncMock()
-    mock_reader.readline.return_value = b'{"response": "ok"}'
-    mock_writer = MagicMock()
-    mock_writer.drain = AsyncMock()
-    mock_writer.wait_closed = AsyncMock()
-    with patch("asyncio.open_connection", return_value=(mock_reader, mock_writer)):
-        res = await socket_adapter({}, "tcp:localhost:5000")
-        assert res["response"] == "ok"

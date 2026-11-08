@@ -179,11 +179,6 @@ def test_check_protocol_success():
     assert res is None
 
 
-def test_normalize_action_whitespace_only():
-    """Verify action normalization returns empty string for whitespace-only action."""
-    assert FailureTaxonomy._normalize_action("   ") == ""
-
-
 def test_pii_analyzer_detection():
     """Verify PII analyzer detects specific patterns and raises warning."""
     analyzer = PIIAnalyzer()

@@ -240,3 +240,4 @@ jobs:
       run: pytest tests/ui/ tests/unit/console/test_extension_host_contracts.py -v -s
       env:
         TRAJECTORY_DIR: tests/data/mock_trajectories
+        AGENTV_REQUIRE_BROWSER_ACCEPTANCE: '1'

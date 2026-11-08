@@ -144,8 +144,8 @@ def test_playwright_e2e_navigation(console_server):
     try:
         from playwright.sync_api import sync_playwright
     except ImportError as exc:
-        if os.getenv("AGENTV_REQUIRE_BROWSER_ACCEPTANCE") == "1":
-            pytest.fail(f"Required browser acceptance dependency missing: {exc}")
+        if os.getenv("CI") == "true" or os.getenv("AGENTV_REQUIRE_BROWSER_ACCEPTANCE") == "1":
+            pytest.fail(f"Required browser acceptance dependency missing in CI: {exc}")
         pytest.skip("playwright not installed in current environment")
 
     try:
@@ -178,7 +178,7 @@ def test_playwright_e2e_navigation(console_server):
             browser.close()
 
     except Exception as e:
-        if os.getenv("AGENTV_REQUIRE_BROWSER_ACCEPTANCE") == "1":
+        if os.getenv("CI") == "true" or os.getenv("AGENTV_REQUIRE_BROWSER_ACCEPTANCE") == "1":
             raise
         if "Executable doesn't exist" in str(e) or "browserType.launch" in str(e):
             pytest.skip(f"Chromium browser binary not downloaded: {e}")
