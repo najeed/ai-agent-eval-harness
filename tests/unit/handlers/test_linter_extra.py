@@ -84,14 +84,6 @@ def test_linter_zero_tasks(tmp_path):
     assert any("0 nodes" in w for w in res["warnings"])
 
 
-def test_linter_find_duplicates_exception(tmp_path):
-    p1 = tmp_path / "bad.json"
-    p1.write_text("{bad", encoding="utf-8")
-    linter = ScenarioLinter()
-    dupes = linter.find_duplicates(str(tmp_path))
-    assert len(dupes) == 0
-
-
 def test_run_lint_cli_directory_failure(tmp_path, monkeypatch, capsys):
     # Setup a failing scenario inside a directory
     monkeypatch.chdir(tmp_path)

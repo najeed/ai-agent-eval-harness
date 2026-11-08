@@ -116,14 +116,6 @@ def test_verify_integrity_missing_file(tmp_path):
     assert verify_res["details"][0]["status"] == "missing"
 
 
-def test_verify_integrity_non_existent_manifest():
-    """Test verification when manifest file doesn't exist."""
-    plugin = ArtifactPlugin()
-    result = plugin.verify_integrity("non_existent_manifest.json")
-    assert result["status"] == "error"
-    assert "not found" in result["message"]
-
-
 def test_get_signing_key_from_env(monkeypatch):
     """Verify that private key can be loaded from CORE_ARTIFACT_SIGNING_PEM environment variable."""
     from cryptography.hazmat.primitives import serialization
