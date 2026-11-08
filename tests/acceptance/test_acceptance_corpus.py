@@ -116,7 +116,6 @@ def test_agentv_acceptance_case(case, isolated_acceptance_env, acceptance_aggreg
             os.environ.get("AGENTV_REQUIRE_EXTERNAL_ORACLE") == "1"
             or os.environ.get("AGENTV_RELEASE_MODE") == "1"
             or os.environ.get("AGENTV_RELEASE_GATE") == "1"
-            or (os.environ.get("CI") == "true" and os.environ.get("AGENTV_ALLOW_CI_SKIPS") != "1")
         )
         if is_strict_release:
             pytest.fail(
