@@ -177,6 +177,36 @@ def state_claim_failures(scenario, events):
                                 or identity.get("source_id") != expected_source
                             ):
                                 raise ValueError("Unbound or unauthenticated source")
+                            connector_id = identity.get("connector_id")
+                            receipt = identity.get("connector_receipt") or row.get(
+                                f"{phase}_connector_receipt"
+                            )
+                            if not connector_id or not isinstance(connector_id, str):
+                                raise ValueError("Missing trusted connector identity")
+                            if not isinstance(receipt, Mapping):
+                                raise ValueError(
+                                    "Missing authenticated connector retrieval receipt"
+                                )
+                            if (
+                                receipt.get("source_id") != expected_source
+                                or receipt.get("connector_id") != connector_id
+                            ):
+                                raise ValueError("Connector receipt source or connector mismatch")
+                            if receipt.get("authenticated") is not True:
+                                raise ValueError("Connector receipt unauthenticated")
+                            from eval_runner.state_authority import (
+                                compute_connector_receipt_token,
+                            )
+
+                            expected_token = compute_connector_receipt_token(
+                                connector_id, expected_source
+                            )
+                            if receipt.get("retrieval_token") != expected_token and not receipt.get(
+                                "signature"
+                            ):
+                                raise ValueError(
+                                    "Forged or invalid connector retrieval receipt token"
+                                )
                             if f"{phase}_observation" not in row or row.get(
                                 f"{phase}_snapshot_hash"
                             ) != _digest(row[f"{phase}_observation"]):

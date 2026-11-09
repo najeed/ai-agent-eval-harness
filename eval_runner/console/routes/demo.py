@@ -21,8 +21,60 @@ demo_bp = Blueprint("demo", __name__, url_prefix="/api/demo")
 @demo_bp.route("/reset", methods=["POST"])
 @require_permission(Permission.DEMO_EXECUTE)
 def reset_demo():
-    """Reset demo environment state."""
-    return jsonify({"status": "success", "message": "Demo environment reset."})
+    """Reset demo environment state to pristine baseline."""
+    import shutil
+
+    from eval_runner.runtime_services import resolve_run_store
+
+    from ..demo_traces import DEMO_IDS
+
+    demo_dir = (config.PROJECT_ROOT / "sample_agent" / "loan_agent_demo").resolve()
+    baseline_agent = demo_dir / "loan_agent_baseline.py"
+    target_agent = demo_dir / "loan_agent.py"
+
+    files_reset = []
+    if baseline_agent.exists():
+        shutil.copyfile(baseline_agent, target_agent)
+        files_reset.append("loan_agent.py")
+
+    cleared_runs = []
+    try:
+        store = resolve_run_store()
+        # Clear static demo runs
+        for run_id in DEMO_IDS:
+            try:
+                if store.delete_run(run_id):
+                    cleared_runs.append(run_id)
+            except (OSError, RuntimeError, ValueError, KeyError, PermissionError) as exc:
+                logger.debug("Failed deleting demo run '%s': %s", run_id, exc, exc_info=True)
+
+        # Clear dynamically generated demo runs
+        for run_info in store.list_runs(limit=1000):
+            rid = str(run_info.get("run_id", ""))
+            if rid.startswith(("run-live-", "run-loan-")) and rid not in cleared_runs:
+                try:
+                    if store.delete_run(rid):
+                        cleared_runs.append(rid)
+                except (OSError, RuntimeError, ValueError, KeyError, PermissionError) as exc:
+                    logger.debug(
+                        "Failed deleting dynamic demo run '%s': %s", rid, exc, exc_info=True
+                    )
+    except (OSError, RuntimeError, ValueError, KeyError, AttributeError) as exc:
+        logger.debug(
+            "resolve_run_store or run deletion failed during demo reset: %s",
+            exc,
+            exc_info=True,
+        )
+
+    return jsonify(
+        {
+            "status": "reset",
+            "mode": "fresh",
+            "cleared_runs": cleared_runs,
+            "files_reset": files_reset,
+            "message": "Demo environment reset to baseline.",
+        }
+    )
 
 
 @demo_bp.route("/loan/context", methods=["GET"])

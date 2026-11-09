@@ -13,11 +13,18 @@ import json
 import logging
 import os
 import tempfile
+import threading
 import time
 from collections.abc import Generator
+from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
+
+if os.name == "nt":
+    import msvcrt
+else:
+    import fcntl
 
 from eval_runner import config
 from eval_runner.interfaces.run_store import RunStore
@@ -25,6 +32,67 @@ from eval_runner.utils import crypto
 from eval_runner.utils.safe_path import SafeRunPathResolver
 
 logger = logging.getLogger(__name__)
+
+
+class _LocalMutationLock:
+    """Provider-internal reentrant cross-process and thread mutation lock.
+
+    Synchronizes run mutations (append_events, update_run_status, save_run_manifest,
+    commit_certification, seal, and lease lifecycle) within the local run store provider.
+    """
+
+    _meta_lock: ClassVar[threading.Lock] = threading.Lock()
+    _thread_locks: ClassVar[dict[str, threading.RLock]] = {}
+    _depth: ClassVar[dict[tuple[str, int], int]] = {}
+    _fds: ClassVar[dict[tuple[str, int], int]] = {}
+
+    @classmethod
+    @contextmanager
+    def acquire(cls, vault_path: Path) -> Generator[None, None, None]:
+        canon_path = str(vault_path.resolve())
+        ident = threading.get_ident()
+        key = (canon_path, ident)
+        with cls._meta_lock:
+            thread_lock = cls._thread_locks.setdefault(canon_path, threading.RLock())
+        thread_lock.acquire()
+        try:
+            with cls._meta_lock:
+                current_depth = cls._depth.get(key, 0)
+                if current_depth > 0:
+                    cls._depth[key] = current_depth + 1
+                    nested = True
+                else:
+                    nested = False
+            if not nested:
+                lock_file = vault_path / ".mutation.lock"
+                vault_path.mkdir(parents=True, exist_ok=True)
+                fd = os.open(str(lock_file), os.O_CREAT | os.O_RDWR, 0o600)
+                if os.name == "nt":
+                    msvcrt.locking(fd, msvcrt.LK_LOCK, 1)
+                else:
+                    fcntl.flock(fd, fcntl.LOCK_EX)
+                with cls._meta_lock:
+                    cls._depth[key] = 1
+                    cls._fds[key] = fd
+            yield
+        finally:
+            with cls._meta_lock:
+                cls._depth[key] -= 1
+                remaining = cls._depth[key]
+                if remaining == 0:
+                    del cls._depth[key]
+                    fd = cls._fds.pop(key, None)
+                else:
+                    fd = None
+            if fd is not None:
+                try:
+                    if os.name == "nt":
+                        msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+                    else:
+                        fcntl.flock(fd, fcntl.LOCK_UN)
+                finally:
+                    os.close(fd)
+            thread_lock.release()
 
 
 class RunManifestImmutableError(PermissionError):
@@ -260,6 +328,10 @@ class LocalFileRunStore(RunStore):
         self._write_bytes_durable(run_vault / ".sealed", b"sealed\n")
         self._unlink_durable(journal_path)
 
+    @classmethod
+    def _mutation_lock(cls, run_vault: Path):
+        return _LocalMutationLock.acquire(run_vault)
+
     def acquire_certification_lease(
         self,
         run_id: str,
@@ -274,82 +346,66 @@ class LocalFileRunStore(RunStore):
             return False
         vault = self._get_run_vault(run_id, create=True)
         lease = self._lease_path(vault)
-        current_lease = self._read_json(lease) if lease.exists() else None
         legacy_lock = vault / ".certification.lock"
-        if current_lease is not None and self._lease_expired(current_lease):
-            legacy_lock.unlink(missing_ok=True)
-            try:
-                self._unlink_durable(lease)
-            except OSError:
-                logger.debug(
-                    "acquire_certification_lease failed",
-                    extra={"operation": "acquire_certification_lease", "run_id": run_id},
-                    exc_info=True,
-                )
-                pass
-        elif legacy_lock.exists():
-            try:
-                data = self._read_json(legacy_lock) or {}
-                pid = data.get("pid")
-                if pid and isinstance(pid, int):
-                    if _process_is_alive(pid):
-                        return False
-                    legacy_lock.unlink(missing_ok=True)
-            except (OSError, ValueError, TypeError, AttributeError) as e:
-                logger.debug("Failed checking legacy lock: %s", e, exc_info=True)
         deadline = time.monotonic() + timeout_seconds
         ttl_seconds = max(float(timeout_seconds), 60.0)
         while True:
-            try:
-                fd = os.open(str(lease), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
-                try:
-                    payload = {
-                        "owner_id": owner_id,
-                        "fencing_token": fencing_token,
-                        "run_id": run_id,
-                        "expires_at": time.time() + ttl_seconds,
-                    }
-                    os.write(fd, json.dumps(payload, sort_keys=True).encode("utf-8"))
-                    os.fsync(fd)
-                finally:
-                    os.close(fd)
-                try:
-                    legacy_payload = {
-                        "run_id": run_id,
-                        "pid": os.getpid(),
-                        "fencing_token": fencing_token,
-                        "acquired_at": time.time(),
-                    }
-                    legacy_lock.write_text(json.dumps(legacy_payload), encoding="utf-8")
-                except OSError:
-                    logger.debug(
-                        "acquire_certification_lease failed",
-                        extra={"operation": "acquire_certification_lease", "run_id": run_id},
-                        exc_info=True,
-                    )
-                    pass
-                return True
-            except FileExistsError:
-                logger.debug(
-                    "acquire_certification_lease failed",
-                    extra={"operation": "acquire_certification_lease", "run_id": run_id},
-                    exc_info=True,
-                )
-                current = self._read_json(lease) or {}
-                if self._lease_expired(current):
-                    try:
-                        self._unlink_durable(lease)
-                    except OSError:
-                        logger.debug(
-                            "acquire_certification_lease failed",
-                            extra={"operation": "acquire_certification_lease", "run_id": run_id},
-                            exc_info=True,
-                        )
-                        pass
-                    continue
-                if time.monotonic() >= deadline:
-                    return False
-                time.sleep(0.05)
+            with self._mutation_lock(vault):
+                current = self._read_json(lease) if lease.exists() else None
+                if current is not None and not self._lease_expired(current):
+                    if (
+                        current.get("owner_id") == owner_id
+                        and current.get("fencing_token") == fencing_token
+                    ):
+                        current["expires_at"] = time.time() + ttl_seconds
+                        self._write_json_durable(lease, current)
+                        return True
+                else:
+                    legacy_blocked = False
+                    if current is not None and self._lease_expired(current):
+                        legacy_lock.unlink(missing_ok=True)
+                    elif legacy_lock.exists():
+                        try:
+                            data = self._read_json(legacy_lock) or {}
+                            pid = data.get("pid")
+                            if pid and isinstance(pid, int):
+                                if _process_is_alive(pid):
+                                    legacy_blocked = True
+                                else:
+                                    legacy_lock.unlink(missing_ok=True)
+                        except (OSError, ValueError, TypeError, AttributeError) as exc:
+                            logger.debug("Failed checking legacy lock: %s", exc, exc_info=True)
+
+                    if not legacy_blocked:
+                        payload = {
+                            "owner_id": owner_id,
+                            "fencing_token": fencing_token,
+                            "run_id": run_id,
+                            "expires_at": time.time() + ttl_seconds,
+                        }
+                        self._write_json_durable(lease, payload)
+                        try:
+                            legacy_payload = {
+                                "run_id": run_id,
+                                "pid": os.getpid(),
+                                "fencing_token": fencing_token,
+                                "acquired_at": time.time(),
+                            }
+                            legacy_lock.write_text(json.dumps(legacy_payload), encoding="utf-8")
+                        except OSError:
+                            logger.debug(
+                                "acquire_certification_lease failed",
+                                extra={
+                                    "operation": "acquire_certification_lease",
+                                    "run_id": run_id,
+                                },
+                                exc_info=True,
+                            )
+                            pass
+                        return True
+            if time.monotonic() >= deadline:
+                return False
+            time.sleep(0.05)
 
     def verify_certification_lease(
         self,
@@ -377,24 +433,29 @@ class LocalFileRunStore(RunStore):
         timeout_seconds: float,
         context: dict[str, Any] | None = None,
     ) -> bool:
-        if not self.verify_certification_lease(
-            run_id, owner_id=owner_id, fencing_token=fencing_token, context=context
-        ):
+        if self.get_run(run_id, context=context) is None:
             return False
         vault = self._get_run_vault(run_id)
-        lease = self._lease_path(vault)
-        payload = self._read_json(lease) or {}
-        payload["expires_at"] = time.time() + max(float(timeout_seconds), 60.0)
-        try:
-            self._write_json_durable(lease, payload)
-            return True
-        except OSError:
-            logger.debug(
-                "renew_certification_lease failed",
-                extra={"operation": "renew_certification_lease", "run_id": run_id},
-                exc_info=True,
-            )
-            return False
+        with self._mutation_lock(vault):
+            lease = self._lease_path(vault)
+            payload = self._read_json(lease)
+            if payload is None:
+                return False
+            if self._lease_expired(payload):
+                return False
+            if payload.get("owner_id") != owner_id or payload.get("fencing_token") != fencing_token:
+                return False
+            payload["expires_at"] = time.time() + max(float(timeout_seconds), 60.0)
+            try:
+                self._write_json_durable(lease, payload)
+                return True
+            except OSError:
+                logger.debug(
+                    "renew_certification_lease failed",
+                    extra={"operation": "renew_certification_lease", "run_id": run_id},
+                    exc_info=True,
+                )
+                return False
 
     def release_certification_lease(
         self,
@@ -404,23 +465,29 @@ class LocalFileRunStore(RunStore):
         fencing_token: str,
         context: dict[str, Any] | None = None,
     ) -> bool:
-        if not self.verify_certification_lease(
-            run_id, owner_id=owner_id, fencing_token=fencing_token, context=context
-        ):
+        if self.get_run(run_id, context=context) is None:
             return False
-        try:
-            self._unlink_durable(self._lease_path(self._get_run_vault(run_id)))
-            legacy_lock = self._get_run_vault(run_id) / ".certification.lock"
-            if legacy_lock.exists():
-                legacy_lock.unlink(missing_ok=True)
-            return True
-        except OSError:
-            logger.debug(
-                "release_certification_lease failed",
-                extra={"operation": "release_certification_lease", "run_id": run_id},
-                exc_info=True,
-            )
-            return False
+        vault = self._get_run_vault(run_id)
+        with self._mutation_lock(vault):
+            lease = self._lease_path(vault)
+            payload = self._read_json(lease)
+            if payload is None:
+                return False
+            if payload.get("owner_id") != owner_id or payload.get("fencing_token") != fencing_token:
+                return False
+            try:
+                self._unlink_durable(lease)
+                legacy_lock = vault / ".certification.lock"
+                if legacy_lock.exists():
+                    legacy_lock.unlink(missing_ok=True)
+                return True
+            except OSError:
+                logger.debug(
+                    "release_certification_lease failed",
+                    extra={"operation": "release_certification_lease", "run_id": run_id},
+                    exc_info=True,
+                )
+                return False
 
     def is_certification_leased(
         self, run_id: str, *, context: dict[str, Any] | None = None
@@ -1107,31 +1174,32 @@ class LocalFileRunStore(RunStore):
         if not events:
             return 0
         run_vault = self._get_run_vault(run_id, create=True)
-        if self._read_json(self._record_path(run_vault)) is None:
-            self.create_run(run_id, scenario_id="unknown", context=context)
-        record = self._read_json(self._record_path(run_vault)) or {}
-        if str(record.get("status", "OPEN")).upper() in {
-            "PAUSED_FOR_APPROVAL",
-            "FINALIZING",
-            "SEALED",
-        }:
-            raise RunManifestImmutableError(run_id, run_vault)
-        if self._is_sealed(run_vault):
-            raise RunManifestImmutableError(run_id, run_vault)
-        trace = run_vault / "run.jsonl"
-        # Persist exactly the canonical bytes exposed by ``get_trace_bytes``.
-        # A verifier signs those bytes directly; recreating JSONL later from
-        # event objects would permit whitespace/key-order drift.
-        from agentv_runtime.canonical import canonical_json_encode
+        with self._mutation_lock(run_vault):
+            if self._is_sealed(run_vault):
+                raise RunManifestImmutableError(run_id, run_vault)
+            if self._read_json(self._record_path(run_vault)) is None:
+                self.create_run(run_id, scenario_id="unknown", context=context)
+            record = self._read_json(self._record_path(run_vault)) or {}
+            if str(record.get("status", "OPEN")).upper() in {
+                "PAUSED_FOR_APPROVAL",
+                "FINALIZING",
+                "SEALED",
+            }:
+                raise RunManifestImmutableError(run_id, run_vault)
+            trace = run_vault / "run.jsonl"
+            # Persist exactly the canonical bytes exposed by ``get_trace_bytes``.
+            # A verifier signs those bytes directly; recreating JSONL later from
+            # event objects would permit whitespace/key-order drift.
+            from agentv_runtime.canonical import canonical_json_encode
 
-        with trace.open("ab") as stream:
-            for event in events:
-                stream.write(canonical_json_encode(event))
-                stream.write(b"\n")
-            stream.flush()
-            os.fsync(stream.fileno())
-        self._sync_directory(trace.parent)
-        return len(events)
+            with trace.open("ab") as stream:
+                for event in events:
+                    stream.write(canonical_json_encode(event))
+                    stream.write(b"\n")
+                stream.flush()
+                os.fsync(stream.fileno())
+            self._sync_directory(trace.parent)
+            return len(events)
 
     def stream_events(
         self, run_id: str, from_seq: int = 0, context: dict[str, Any] | None = None
@@ -1146,45 +1214,53 @@ class LocalFileRunStore(RunStore):
         context: dict[str, Any] | None = None,
     ) -> bool:
         run_vault = self._get_run_vault(run_id, create=True)
-        record = self._read_json(self._record_path(run_vault))
-        if record is None:
-            record = self.create_run(run_id, scenario_id="unknown", context=context)
-        if context and any(
-            record.get("context", {}).get(k) not in (None, v) for k, v in context.items()
-        ):
-            return False
-        if (run_vault / ".evidence_capture_failed").exists() or (
-            record.get("status_details") or {}
-        ).get("evidence_capture_failed") is True:
-            if status != "CERTIFICATION_FAILED":
+        with self._mutation_lock(run_vault):
+            if self._is_sealed(run_vault):
+                if status == "SEALED":
+                    return True
+                raise RunManifestImmutableError(run_id, run_vault)
+            lease_data = self._read_json(self._lease_path(run_vault))
+            if lease_data and not self._lease_expired(lease_data):
+                owner_id = (details or {}).get("owner_id")
+                fencing_token = (details or {}).get("fencing_token")
+                if owner_id != lease_data.get("owner_id") or fencing_token != lease_data.get(
+                    "fencing_token"
+                ):
+                    logger.warning(
+                        "update_run_status rejected: certification lease actively held by "
+                        "competing owner",
+                        extra={"run_id": run_id, "operation": "update_run_status"},
+                    )
+                    return False
+            record = self._read_json(self._record_path(run_vault))
+            if record is None:
+                record = self.create_run(run_id, scenario_id="unknown", context=context)
+            if context and any(
+                record.get("context", {}).get(k) not in (None, v) for k, v in context.items()
+            ):
                 return False
-            details = {**(details or {}), "evidence_capture_failed": True}
-        if (details or {}).get("evidence_capture_failed") is True:
-            self._write_bytes_durable(run_vault / ".evidence_capture_failed", b"failed\n")
-        if (record.get("status_details") or {}).get("evidence_capture"):
-            details = {**record["status_details"], **(details or {})}
-        record.update(
-            {
-                "status": status,
-                "lifecycle": status,
-                "updated_at": datetime.now().astimezone().isoformat(),
-            }
-        )
-        if details:
-            record["status_details"] = details
-        self._write_json_durable(self._record_path(run_vault), record)
-        try:
-            self._write_bytes_durable(run_vault / ".run_lifecycle", status.encode("utf-8"))
-        except OSError:
-            logger.debug(
-                "update_run_status failed",
-                extra={"operation": "update_run_status", "run_id": run_id},
-                exc_info=True,
+            if (run_vault / ".evidence_capture_failed").exists() or (
+                record.get("status_details") or {}
+            ).get("evidence_capture_failed") is True:
+                if status != "CERTIFICATION_FAILED":
+                    return False
+                details = {**(details or {}), "evidence_capture_failed": True}
+            if (details or {}).get("evidence_capture_failed") is True:
+                self._write_bytes_durable(run_vault / ".evidence_capture_failed", b"failed\n")
+            if (record.get("status_details") or {}).get("evidence_capture"):
+                details = {**record["status_details"], **(details or {})}
+            record.update(
+                {
+                    "status": status,
+                    "lifecycle": status,
+                    "updated_at": datetime.now().astimezone().isoformat(),
+                }
             )
-            return False
-        if status == "SEALED":
+            if details:
+                record["status_details"] = details
+            self._write_json_durable(self._record_path(run_vault), record)
             try:
-                self._write_bytes_durable(run_vault / ".sealed", b"sealed\n")
+                self._write_bytes_durable(run_vault / ".run_lifecycle", status.encode("utf-8"))
             except OSError:
                 logger.debug(
                     "update_run_status failed",
@@ -1192,7 +1268,17 @@ class LocalFileRunStore(RunStore):
                     exc_info=True,
                 )
                 return False
-        return True
+            if status == "SEALED":
+                try:
+                    self._write_bytes_durable(run_vault / ".sealed", b"sealed\n")
+                except OSError:
+                    logger.debug(
+                        "update_run_status failed",
+                        extra={"operation": "update_run_status", "run_id": run_id},
+                        exc_info=True,
+                    )
+                    return False
+            return True
 
     def seal(self, run_id: str, metadata: dict[str, Any] | None = None) -> None:
         """Mark the run as sealed, enforcing cryptographic immutability."""
@@ -1228,53 +1314,54 @@ class LocalFileRunStore(RunStore):
           RunManifestImmutableError.
         """
         run_vault = self._get_run_vault(run_id, create=True)
-        target = run_vault / "run_manifest.json"
+        with self._mutation_lock(run_vault):
+            target = run_vault / "run_manifest.json"
 
-        lifecycle = self._read_lifecycle_status(run_vault)
-        if lifecycle == "FINALIZING":
-            raise RunManifestImmutableError(run_id, target)
-
-        incoming_digest = _canonical_digest(manifest)
-
-        if target.exists():
-            try:
-                with open(target, encoding="utf-8") as f:
-                    existing = json.load(f)
-                existing_digest = _canonical_digest(existing)
-            except (OSError, ValueError, TypeError, AttributeError):
-                logger.debug(
-                    "save_run_manifest failed",
-                    extra={"operation": "save_run_manifest", "run_id": run_id},
-                    exc_info=True,
-                )
-                existing = None
-                existing_digest = None
-
-            if existing_digest == incoming_digest:
-                return str(target)
-
-            if self._is_sealed(run_vault):
+            lifecycle = self._read_lifecycle_status(run_vault)
+            if lifecycle == "FINALIZING":
                 raise RunManifestImmutableError(run_id, target)
 
-            revisions = run_vault / "manifest_revisions"
-            revisions.mkdir(parents=True, exist_ok=True)
-            ts = datetime.now().astimezone().strftime("%Y%m%dT%H%M%S%f")
-            rev_path = revisions / f"{ts}-{incoming_digest[:8]}.json"
-            with open(rev_path, "w", encoding="utf-8") as f:
-                json.dump(manifest, f, indent=2)
-            logger.info(
-                "Manifest divergence for run '%s' preserved as revision %s "
-                "(original publication untouched).",
-                run_id,
-                rev_path.name,
-            )
-            return str(rev_path)
+            incoming_digest = _canonical_digest(manifest)
 
-        tmp_path = target.with_suffix(".json.tmp")
-        with open(tmp_path, "w", encoding="utf-8") as f:
-            json.dump(manifest, f, indent=2)
-        tmp_path.replace(target)
-        return str(target)
+            if target.exists():
+                try:
+                    with open(target, encoding="utf-8") as f:
+                        existing = json.load(f)
+                    existing_digest = _canonical_digest(existing)
+                except (OSError, ValueError, TypeError, AttributeError):
+                    logger.debug(
+                        "save_run_manifest failed",
+                        extra={"operation": "save_run_manifest", "run_id": run_id},
+                        exc_info=True,
+                    )
+                    existing = None
+                    existing_digest = None
+
+                if existing_digest == incoming_digest:
+                    return str(target)
+
+                if self._is_sealed(run_vault):
+                    raise RunManifestImmutableError(run_id, target)
+
+                revisions = run_vault / "manifest_revisions"
+                revisions.mkdir(parents=True, exist_ok=True)
+                ts = datetime.now().astimezone().strftime("%Y%m%dT%H%M%S%f")
+                rev_path = revisions / f"{ts}-{incoming_digest[:8]}.json"
+                with open(rev_path, "w", encoding="utf-8") as f:
+                    json.dump(manifest, f, indent=2)
+                logger.info(
+                    "Manifest divergence for run '%s' preserved as revision %s "
+                    "(original publication untouched).",
+                    run_id,
+                    rev_path.name,
+                )
+                return str(rev_path)
+
+            tmp_path = target.with_suffix(".json.tmp")
+            with open(tmp_path, "w", encoding="utf-8") as f:
+                json.dump(manifest, f, indent=2)
+            tmp_path.replace(target)
+            return str(target)
 
     def commit_certification(
         self,
@@ -1293,57 +1380,53 @@ class LocalFileRunStore(RunStore):
         been published.  Database providers implement the same contract in a
         single transaction; Runtime never depends on their implementation.
         """
-        if not self.verify_certification_lease(
-            run_id,
-            owner_id=owner_id,
-            fencing_token=fencing_token,
-            context=context,
-        ):
-            return False
         vault = self._get_run_vault(run_id, create=False)
-        record = self._read_json(self._record_path(vault))
-        if record is None or (
-            context
-            and any(record.get("context", {}).get(k) not in (None, v) for k, v in context.items())
-        ):
-            return False
-        target = vault / "run_manifest.json"
-        if (vault / ".evidence_capture_failed").exists() or (
-            record.get("status_details") or {}
-        ).get("evidence_capture_failed") is True:
-            return False
-        incoming_digest = _canonical_digest(manifest)
-        existing = self._read_json(target) if target.exists() else None
-        if self._is_sealed(vault):
-            return existing is not None and _canonical_digest(existing) == incoming_digest
+        with self._mutation_lock(vault):
+            if not self.verify_certification_lease(
+                run_id,
+                owner_id=owner_id,
+                fencing_token=fencing_token,
+                context=context,
+            ):
+                return False
+            record = self._read_json(self._record_path(vault)) or {}
+            target = vault / "run_manifest.json"
+            if (vault / ".evidence_capture_failed").exists() or (
+                record.get("status_details") or {}
+            ).get("evidence_capture_failed") is True:
+                return False
+            incoming_digest = _canonical_digest(manifest)
+            existing = self._read_json(target) if target.exists() else None
+            if self._is_sealed(vault):
+                return existing is not None and _canonical_digest(existing) == incoming_digest
 
-        sealed_record = {
-            **record,
-            "status": "SEALED",
-            "lifecycle": "SEALED",
-            "updated_at": datetime.now().astimezone().isoformat(),
-        }
-        journal = {
-            "version": 1,
-            "run_id": run_id,
-            "manifest": manifest,
-            "sealed_record": sealed_record,
-            "manifest_digest": incoming_digest,
-        }
-        try:
-            # This is the durable commit decision.  Any interruption after
-            # this write is recovered forward to the same sealed evidence.
-            self._write_json_durable(self._commit_journal_path(vault), journal)
-            self._recover_pending_certification(vault)
-            published = self._read_json(target)
-            return (
-                self._is_sealed(vault)
-                and published is not None
-                and (_canonical_digest(published) == incoming_digest)
-            )
-        except OSError:
-            logger.warning("Certification commit failed for run '%s'", run_id, exc_info=True)
-            return False
+            sealed_record = {
+                **record,
+                "status": "SEALED",
+                "lifecycle": "SEALED",
+                "updated_at": datetime.now().astimezone().isoformat(),
+            }
+            journal = {
+                "version": 1,
+                "run_id": run_id,
+                "manifest": manifest,
+                "sealed_record": sealed_record,
+                "manifest_digest": incoming_digest,
+            }
+            try:
+                # This is the durable commit decision.  Any interruption after
+                # this write is recovered forward to the same sealed evidence.
+                self._write_json_durable(self._commit_journal_path(vault), journal)
+                self._recover_pending_certification(vault)
+                published = self._read_json(target)
+                return (
+                    self._is_sealed(vault)
+                    and published is not None
+                    and (_canonical_digest(published) == incoming_digest)
+                )
+            except OSError:
+                logger.warning("Certification commit failed for run '%s'", run_id, exc_info=True)
+                return False
 
     def delete_run(self, run_id: str, context: dict[str, Any] | None = None) -> bool:
         try:
@@ -1356,16 +1439,18 @@ class LocalFileRunStore(RunStore):
             )
             return False
 
-        if self._is_sealed(run_vault):
-            logger.warning(
-                "Refusing to delete certified run '%s': evidence vault is sealed.",
-                run_id,
-            )
-            raise RunManifestImmutableError(run_id, run_vault)
+        if not run_vault.exists() or not run_vault.is_dir():
+            return False
 
-        if run_vault.exists() and run_vault.is_dir():
-            from eval_runner.utils import rmtree_resilient
+        with self._mutation_lock(run_vault):
+            if self._is_sealed(run_vault):
+                logger.warning(
+                    "Refusing to delete certified run '%s': evidence vault is sealed.",
+                    run_id,
+                )
+                raise RunManifestImmutableError(run_id, run_vault)
 
-            rmtree_resilient(run_vault)
-            return True
-        return False
+        from eval_runner.utils import rmtree_resilient
+
+        rmtree_resilient(run_vault)
+        return True

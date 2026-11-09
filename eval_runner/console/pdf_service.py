@@ -84,20 +84,21 @@ def generate_run_pdf(run_data: dict, output_path: Path | str) -> bool:
     verif_status = str(run_data.get("verification_status") or "").upper()
     passed = run_data.get("passed")
 
-    if verif_status == "ATTESTED_FAIL":
+    if (
+        verif_status in ("VERIFIED", "CERTIFIED_PASS", "CERTIFIED")
+        and run_data.get("is_authoritative") is not False
+    ):
+        status = "VERIFIED"
+    elif verif_status == "ATTESTED_FAIL":
         status = "ATTESTED FAIL"
     elif verif_status in ("FAILED", "FAILED_VERIFICATION", "POLICY_BREACH"):
         status = verif_status
     elif passed is False or raw_status in ("FAILED", "FAIL"):
         status = "FAILED"
-    elif verif_status in ("VERIFIED", "CERTIFIED_PASS", "CERTIFIED"):
-        status = "VERIFIED"
-    elif passed is True:
-        status = (
-            "VERIFIED"
-            if run_data.get("has_certificate") or run_data.get("is_certified")
-            else "PASSED"
-        )
+    elif passed is True or raw_status in ("PASSED", "PASS"):
+        status = "PASSED"
+    elif raw_status in ("UNKNOWN", "", "UNVERIFIED"):
+        status = "UNVERIFIED"
     else:
         status = raw_status
 

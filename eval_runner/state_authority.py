@@ -200,6 +200,11 @@ def bound_state_snapshot(
     return bounded_repr, full_digest
 
 
+def compute_connector_receipt_token(connector_id: str, source_id: str) -> str:
+    """Compute deterministic cryptographic receipt token binding connector identity to source."""
+    return hashlib.sha3_256(f"connector_receipt:{connector_id}:{source_id}".encode()).hexdigest()
+
+
 class StateAuthorityConnector(ABC):
     """Abstract interface for observing external system state authorities."""
 
@@ -240,10 +245,21 @@ class HttpStateAuthorityConnector(StateAuthorityConnector):
             and bool(value.strip())
             for name, value in self.default_headers.items()
         )
+        source_id = "sha3_256:" + hashlib.sha3_256(self.base_url.encode()).hexdigest()
+        is_auth = urlparse(self.base_url).scheme == "https" and credentials
+        connector_id = f"connector:http:{source_id}"
+        receipt = {
+            "connector_id": connector_id,
+            "source_id": source_id,
+            "authenticated": is_auth,
+            "retrieval_token": compute_connector_receipt_token(connector_id, source_id),
+        }
         return {
-            "source_id": "sha3_256:" + hashlib.sha3_256(self.base_url.encode()).hexdigest(),
-            "authenticated": urlparse(self.base_url).scheme == "https" and credentials,
+            "source_id": source_id,
+            "authenticated": is_auth,
             "transport": urlparse(self.base_url).scheme,
+            "connector_id": connector_id,
+            "connector_receipt": receipt,
         }
 
     async def fetch_state(

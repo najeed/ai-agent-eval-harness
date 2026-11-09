@@ -851,6 +851,13 @@ PUBLIC_CERTIFICATE_FIELDS = frozenset(
         "run_id",
         "vc_version",
         "status",
+        "verification_status",
+        "certificate_authoritative",
+        "is_authoritative",
+        "certificate_valid",
+        "cryptographically_valid",
+        "file_integrity_valid",
+        "evaluation_passed",
         "outcome",
         "issued_at",
         "expires_at",
@@ -883,6 +890,60 @@ def project_public_certificate(manifest: dict[str, Any]) -> dict[str, Any]:
     return public_proj
 
 
+def _verified_certificate_payload(
+    run_id: str,
+    manifest: dict[str, Any],
+    store: Any,
+    context: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    sanitized = _sanitize_certificate_manifest(manifest)
+    from eval_runner.verifier import TraceVerifier
+
+    try:
+        verif = TraceVerifier.verify_run(run_id, run_store=store, context=context)
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
+        logger.debug(
+            "TraceVerifier.verify_run failed during certificate fetch: %s",
+            exc,
+            exc_info=True,
+        )
+        verif = None
+
+    if verif is not None:
+        cert_valid = bool(getattr(verif, "certificate_valid", False))
+        is_auth = bool(getattr(verif, "is_authoritative", False))
+        verif_status = getattr(
+            getattr(verif, "status", None),
+            "value",
+            str(getattr(verif, "status", "UNVERIFIED")),
+        )
+        sanitized["certificate_valid"] = cert_valid
+        sanitized["cryptographically_valid"] = bool(
+            getattr(verif, "cryptographically_valid", False)
+        )
+        sanitized["file_integrity_valid"] = bool(getattr(verif, "file_integrity_valid", False))
+        sanitized["evaluation_passed"] = bool(getattr(verif, "evaluation_passed", False))
+        sanitized["certificate_authoritative"] = is_auth
+        sanitized["is_authoritative"] = is_auth
+        if cert_valid and is_auth and verif_status in ("CERTIFIED_PASS", "VERIFIED"):
+            sanitized["verification_status"] = verif_status
+        else:
+            sanitized["verification_status"] = "UNVERIFIED"
+            if "status" in sanitized:
+                sanitized["status"] = "UNVERIFIED"
+    else:
+        sanitized["certificate_valid"] = False
+        sanitized["cryptographically_valid"] = False
+        sanitized["file_integrity_valid"] = False
+        sanitized["evaluation_passed"] = False
+        sanitized["certificate_authoritative"] = False
+        sanitized["is_authoritative"] = False
+        sanitized["verification_status"] = "UNVERIFIED"
+        if "status" in sanitized:
+            sanitized["status"] = "UNVERIFIED"
+    return sanitized
+
+
 @run_bp.route("/v1/certificates/<run_id>", methods=["GET"])
 @require_permission(Permission.RUNS_READ)
 def get_verification_certificate(run_id):
@@ -904,7 +965,7 @@ def get_verification_certificate(run_id):
         raise
     if not manifest:
         return jsonify({"error": "Certificate not found"}), 404
-    return jsonify(_sanitize_certificate_manifest(manifest))
+    return jsonify(_verified_certificate_payload(run_id, manifest, store, context=context))
 
 
 @run_bp.route("/v1/certificates/<run_id>/public", methods=["GET"])
@@ -924,7 +985,8 @@ def get_public_certificate(run_id):
         raise
     if not manifest:
         return jsonify({"error": "Certificate not found"}), 404
-    return jsonify(project_public_certificate(manifest))
+    verified_payload = _verified_certificate_payload(run_id, manifest, store, context=None)
+    return jsonify(project_public_certificate(verified_payload))
 
 
 def is_run_alive(run_id: str) -> bool:

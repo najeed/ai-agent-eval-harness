@@ -111,11 +111,28 @@ def test_authoritative_state_claims_cannot_use_sandbox_or_simulator_evidence(tar
 
 
 @pytest.mark.parametrize(
-    "defect", [None, "missing", "unauthenticated", "wrong_source", "digest", "actual", "outcome"]
+    "defect",
+    [
+        None,
+        "missing",
+        "unauthenticated",
+        "wrong_source",
+        "digest",
+        "actual",
+        "outcome",
+        "forged_receipt",
+        "missing_connector_id",
+        "missing_receipt",
+        "receipt_source_mismatch",
+        "receipt_unauthenticated",
+    ],
 )
 def test_independent_state_claim_verifier_recomputes_source_and_content_binding(defect):
     from eval_runner.certification_truth import state_claim_failures
-    from eval_runner.state_authority import bound_state_snapshot
+    from eval_runner.state_authority import (
+        bound_state_snapshot,
+        compute_connector_receipt_token,
+    )
     from eval_runner.utils import crypto
 
     assertion = {"target": "authority:orders", "property": "status", "expected": "approved"}
@@ -125,10 +142,20 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
     }
     before, before_hash = bound_state_snapshot({"status": "pending"})
     after, after_hash = bound_state_snapshot({"status": "approved"})
+    source_id = "sha3_256:" + crypto.checksum("https://authority.example/state")
+    connector_id = f"connector:http:{source_id}"
+    receipt = {
+        "connector_id": connector_id,
+        "source_id": source_id,
+        "authenticated": True,
+        "retrieval_token": compute_connector_receipt_token(connector_id, source_id),
+    }
     identity = {
         "authenticated": True,
-        "source_id": "sha3_256:" + crypto.checksum("https://authority.example/state"),
+        "source_id": source_id,
         "transport": "https",
+        "connector_id": connector_id,
+        "connector_receipt": receipt,
     }
     row = {
         "assertion": assertion,
@@ -153,6 +180,31 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
         row["actual_after"] = "fabricated"
     elif defect == "outcome":
         row["passed"] = False
+    elif defect == "forged_receipt":
+        row["post_observation_identity"]["connector_receipt"] = {
+            "connector_id": connector_id,
+            "source_id": source_id,
+            "authenticated": True,
+            "retrieval_token": "forged_token_0000",
+        }
+    elif defect == "missing_connector_id":
+        row["post_observation_identity"].pop("connector_id", None)
+    elif defect == "missing_receipt":
+        row["post_observation_identity"].pop("connector_receipt", None)
+    elif defect == "receipt_source_mismatch":
+        row["post_observation_identity"]["connector_receipt"] = {
+            "connector_id": connector_id,
+            "source_id": "sha3_256:" + "f" * 64,
+            "authenticated": True,
+            "retrieval_token": compute_connector_receipt_token(connector_id, source_id),
+        }
+    elif defect == "receipt_unauthenticated":
+        row["post_observation_identity"]["connector_receipt"] = {
+            "connector_id": connector_id,
+            "source_id": source_id,
+            "authenticated": False,
+            "retrieval_token": compute_connector_receipt_token(connector_id, source_id),
+        }
     events = (
         []
         if defect == "missing"
