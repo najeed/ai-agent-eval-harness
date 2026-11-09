@@ -1486,7 +1486,7 @@ def test_verify_trace_bytes_mutant_branches():
     run_store.get_trace_bytes.return_value = None
     assert TraceVerifier.verify_trace_bytes(tb, manifest, run_store=run_store) is False
 
-    # verify_ledger=True returns False immediately
+    # verify_ledger=True returns False immediately when ledger is missing or invalid
     run_store.get_trace_bytes.return_value = tb
     with patch("eval_runner.verifier.verify_trace_certificate", return_value={"verified": True}):
         assert (
@@ -1498,6 +1498,55 @@ def test_verify_trace_bytes_mutant_branches():
         assert (
             TraceVerifier.verify_trace_bytes(
                 tb, manifest, run_store=run_store, trace_only=True, **{"verify_ledger": True}
+            )
+            is False
+        )
+
+        # verify_ledger=True succeeds when valid evidence_ledger is provided and verified
+        art_content = b"artifact valid data"
+        art_hash = f"sha3_256:{hashlib.sha3_256(art_content).hexdigest()}"
+        manifest_with_ledger = dict(manifest, evidence_ledger={"artifacts/audit.log": art_hash})
+        run_store.verify_evidence_ledger = MagicMock(return_value=True)
+        run_store.get_artifact_bytes = MagicMock(return_value=art_content)
+        assert (
+            TraceVerifier.verify_trace_bytes(
+                tb, manifest_with_ledger, run_store=run_store, verify_ledger=True, trace_only=True
+            )
+            is True
+        )
+
+        # Fallback to get_artifact_bytes when verify_evidence_ledger is omitted
+        del run_store.verify_evidence_ledger
+        assert (
+            TraceVerifier.verify_trace_bytes(
+                tb, manifest_with_ledger, run_store=run_store, verify_ledger=True, trace_only=True
+            )
+            is True
+        )
+
+        # Corrupted artifact byte stream fails verification
+        run_store.get_artifact_bytes.return_value = b"corrupted bytes"
+        assert (
+            TraceVerifier.verify_trace_bytes(
+                tb, manifest_with_ledger, run_store=run_store, verify_ledger=True, trace_only=True
+            )
+            is False
+        )
+
+        # Missing artifact returns None and fails verification
+        run_store.get_artifact_bytes.return_value = None
+        assert (
+            TraceVerifier.verify_trace_bytes(
+                tb, manifest_with_ledger, run_store=run_store, verify_ledger=True, trace_only=True
+            )
+            is False
+        )
+
+        # Store lacking get_artifact_bytes fails verification
+        del run_store.get_artifact_bytes
+        assert (
+            TraceVerifier.verify_trace_bytes(
+                tb, manifest_with_ledger, run_store=run_store, verify_ledger=True, trace_only=True
             )
             is False
         )
