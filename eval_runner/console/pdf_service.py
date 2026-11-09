@@ -85,18 +85,26 @@ def generate_run_pdf(run_data: dict, output_path: Path | str) -> bool:
     passed = run_data.get("passed")
 
     if (
-        verif_status in ("VERIFIED", "CERTIFIED_PASS", "CERTIFIED")
+        (
+            verif_status in ("VERIFIED", "CERTIFIED_PASS", "CERTIFIED")
+            or (
+                run_data.get("certificate_valid") is True
+                and run_data.get("cryptographically_valid") is True
+            )
+        )
         and run_data.get("is_authoritative") is not False
+        and run_data.get("certificate_valid") is not False
+        and (passed is True or raw_status in ("PASSED", "PASS"))
     ):
-        status = "VERIFIED"
-    elif verif_status == "ATTESTED_FAIL":
+        status = "CERTIFIED_PASS"
+    elif verif_status == "ATTESTED_FAIL" or raw_status in ("ATTESTED_FAIL", "ATTESTED FAIL"):
         status = "ATTESTED FAIL"
     elif verif_status in ("FAILED", "FAILED_VERIFICATION", "POLICY_BREACH"):
         status = verif_status
     elif passed is False or raw_status in ("FAILED", "FAIL"):
         status = "FAILED"
     elif passed is True or raw_status in ("PASSED", "PASS"):
-        status = "PASSED"
+        status = "EXECUTION_PASSED"
     elif raw_status in ("UNKNOWN", "", "UNVERIFIED"):
         status = "UNVERIFIED"
     else:
@@ -139,16 +147,27 @@ def generate_run_pdf(run_data: dict, output_path: Path | str) -> bool:
                     failed_turn = t_val
                     break
 
-    if status in ("PASSED", "VERIFIED"):
+    if status in ("CERTIFIED_PASS", "VERIFIED"):
+        claim_scope = run_data.get("claim_scope") or "scenario invariants"
         root_cause = "Verified Compliant: No failure patterns detected."
-        summary = (
-            "Execution satisfied all scenario goals, state invariants, and safety constraints."
-        )
-        suggestion = "Ready for production certification and deployment."
+        summary = f"Execution satisfied all certified scenario goals, state invariants, and safety constraints within claim scope ({claim_scope})."
+        suggestion = f"Certified within declared claim scope ({claim_scope}). Ready for production deployment under certified claims."
         severity_score = "0.0 / 10.0"
         telemetry_text = (
             "Full execution step events, state mutations, and tool receipts are recorded in the audit trace. "
             "Complete deterministic sequence verified with 0 causal divergences."
+        )
+    elif status in ("EXECUTION_PASSED", "PASSED"):
+        root_cause = "Execution completed successfully; certification has not been established."
+        summary = (
+            "The execution outcome passed, but no authoritative certificate establishes "
+            "compliance, invariant coverage, or deployment readiness."
+        )
+        suggestion = "Unsigned run. Certification has not been established; do not use for compliance-verified deployment."
+        severity_score = "N/A — certification pending"
+        telemetry_text = (
+            "Execution telemetry is available for review. It is not an independently "
+            "verified compliance or deployment-readiness determination."
         )
     else:
         failure_reasons = run_data.get("failure_reasons") or []
@@ -211,7 +230,7 @@ def generate_run_pdf(run_data: dict, output_path: Path | str) -> bool:
 
         if status == "ATTESTED FAIL" and has_cert:
             cert_status = "ATTESTATION OF NON-CERTIFICATION (Signed Failure Audit)"
-        elif status in ("VERIFIED", "PASSED") and has_cert:
+        elif status in ("CERTIFIED_PASS", "VERIFIED", "PASSED") and has_cert:
             cert_status = "ISSUED / VALIDATED"
         else:
             cert_status = "NOT ISSUED (Unverified)"

@@ -109,7 +109,7 @@ def get_run_lifecycle_state(
     if record is None or not isinstance(record, Mapping):
         return RunLifecycleState.OPEN
     state = str(record.get("lifecycle") or record.get("status") or "OPEN").upper()
-    if state in ("PENDING", "RUNNING", "STARTED", "QUEUED"):
+    if state in ("PENDING", "RUNNING", "STARTED", "QUEUED", "RESERVED", "DISPATCHED"):
         return RunLifecycleState.OPEN
     if state in ("PAUSED", "PAUSED_FOR_APPROVAL", "AWAITING_APPROVAL", "WAITING_FOR_APPROVAL"):
         return RunLifecycleState.PAUSED_FOR_APPROVAL

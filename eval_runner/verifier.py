@@ -1041,11 +1041,29 @@ class TraceVerifier:
             ):
                 return False
         if verify_ledger or kwargs.get("verify_ledger"):
-            # A ledger cannot be validated by reaching into a local provider's
-            # vault. Providers that expose artifact-ledger verification must
-            # implement it as an explicit contract before this option can be
-            # supported.
-            return False
+            evidence_ledger = manifest.get("evidence_ledger")
+            if not evidence_ledger or not isinstance(evidence_ledger, Mapping):
+                return False
+            ledger_verifier = getattr(run_store, "verify_evidence_ledger", None)
+            if callable(ledger_verifier):
+                if not ledger_verifier(run_id, evidence_ledger, context=context):
+                    return False
+            else:
+                artifact_getter = getattr(run_store, "get_artifact_bytes", None)
+                if not callable(artifact_getter):
+                    return False
+                for rel_path, expected_hash in evidence_ledger.items():
+                    art_bytes = artifact_getter(run_id, rel_path, context=context)
+                    if art_bytes is None:
+                        return False
+                    actual_hash = hashlib.sha3_256(art_bytes).hexdigest()
+                    clean_expected = (
+                        expected_hash.split(":", 1)[1]
+                        if str(expected_hash).startswith("sha3_256:")
+                        else str(expected_hash)
+                    )
+                    if actual_hash != clean_expected:
+                        return False
         scenario = (
             scenario_data
             or kwargs.get("scenario_data")

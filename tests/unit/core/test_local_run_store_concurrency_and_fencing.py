@@ -639,3 +639,44 @@ def test_commit_certification_branches(
         )
         is True
     )
+
+
+def test_reserved_and_dispatched_lifecycle_states_mapped_to_open(
+    run_store: LocalFileRunStore,
+):
+    """Verify get_run_lifecycle_state recognizes RESERVED and DISPATCHED as OPEN states."""
+    from eval_runner.run_lifecycle import RunLifecycleState, get_run_lifecycle_state
+
+    run_id = "test-run-lifecycle-dispatched"
+    run_store.reserve_submission(
+        run_id=run_id,
+        scenario_id="scenario_test",
+        agent_id="test_agent",
+        metadata={"execution_mode": "live"},
+        context={"tenant_id": "test_t"},
+        idempotency_key="idemp-123",
+    )
+
+    # Immediately after reservation, lifecycle should be OPEN
+    assert (
+        get_run_lifecycle_state(run_id, run_store=run_store, context={"tenant_id": "test_t"})
+        == RunLifecycleState.OPEN
+    )
+
+    # Transition to DISPATCHED
+    run_store.transition_submission(
+        run_id, "RESERVED", "DISPATCHED", context={"tenant_id": "test_t"}
+    )
+    assert (
+        get_run_lifecycle_state(run_id, run_store=run_store, context={"tenant_id": "test_t"})
+        == RunLifecycleState.OPEN
+    )
+
+    # Transition to RUNNING
+    run_store.transition_submission(
+        run_id, "DISPATCHED", "RUNNING", context={"tenant_id": "test_t"}
+    )
+    assert (
+        get_run_lifecycle_state(run_id, run_store=run_store, context={"tenant_id": "test_t"})
+        == RunLifecycleState.OPEN
+    )

@@ -9,13 +9,14 @@ divergent republications are preserved as an append-only revision history;
 the originally published manifest is never mutated.
 """
 
+import hashlib
 import json
 import logging
 import os
 import tempfile
 import threading
 import time
-from collections.abc import Generator
+from collections.abc import Generator, Mapping
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
@@ -1148,6 +1149,61 @@ class LocalFileRunStore(RunStore):
                 exc_info=True,
             )
             return None
+
+    def get_artifact_bytes(
+        self, run_id: str, artifact_path: str, context: dict[str, Any] | None = None
+    ) -> bytes | None:
+        """Retrieve authoritative artifact bytes by relative artifact path."""
+        if context and self.get_run(run_id, context=context) is None:
+            return None
+        try:
+            vault = self._get_run_vault(run_id)
+        except (ValueError, PermissionError):
+            logger.debug(
+                "get_artifact_bytes vault resolution failed",
+                extra={"operation": "get_artifact_bytes", "run_id": run_id},
+                exc_info=True,
+            )
+            return None
+        target = (vault / artifact_path).resolve()
+        if not target.is_relative_to(vault) or not target.is_file():
+            return None
+        try:
+            return target.read_bytes()
+        except OSError:
+            logger.debug(
+                "get_artifact_bytes failed",
+                extra={
+                    "operation": "get_artifact_bytes",
+                    "run_id": run_id,
+                    "artifact": artifact_path,
+                },
+                exc_info=True,
+            )
+            return None
+
+    def verify_evidence_ledger(
+        self,
+        run_id: str,
+        expected_ledger: Mapping[str, str],
+        context: dict[str, Any] | None = None,
+    ) -> bool:
+        """Verify provider-backed artifact hashes match the expected evidence ledger."""
+        if not isinstance(expected_ledger, Mapping):
+            return False
+        for rel_path, expected_hash in expected_ledger.items():
+            content = self.get_artifact_bytes(run_id, rel_path, context=context)
+            if content is None:
+                return False
+            actual_hash = hashlib.sha3_256(content).hexdigest()
+            clean_expected = (
+                expected_hash.split(":", 1)[1]
+                if expected_hash.startswith("sha3_256:")
+                else str(expected_hash)
+            )
+            if actual_hash != clean_expected:
+                return False
+        return True
 
     @staticmethod
     def _read_event_strict(line: str, line_number: int = 1) -> dict[str, Any]:

@@ -273,10 +273,10 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 ("sign_trace_bytes", 640, "evidence_root_hash", "__mutation_missing_commitment__"),
                 ("sign_trace_bytes", 663, "evidence_root_hash", "__mutation_missing_commitment__"),
                 ("sign_trace_bytes", 666, "evidence_root_hash", "__mutation_missing_commitment__"),
-                ("verify_trace_certificate", 1889, "and", "or"),
-                ("verify_trace_certificate", 1897, "and", "or"),
-                ("verify_package_artifacts", 2443, "and", "or"),
-                ("verify_package", 2980, "and", "or"),
+                ("verify_trace_certificate", 1907, "and", "or"),
+                ("verify_trace_certificate", 1915, "and", "or"),
+                ("verify_package_artifacts", 2461, "and", "or"),
+                ("verify_package", 2998, "and", "or"),
                 ("sign_trace_bytes", 896, "or", "and"),
             }
         ),
@@ -307,19 +307,19 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "stored root only when the filtered root equals the declared root; an "
                 "already-matching root is unchanged, and an absent hint cannot match a hash."
             ),
-            ("verify_trace_certificate", 1889, "and", "or"): (
+            ("verify_trace_certificate", 1907, "and", "or"): (
                 "Equivalent for supported JSON evidence: filtering is an extra fallback; "
                 "its result is adopted only if it matches the expected root already verified."
             ),
-            ("verify_trace_certificate", 1897, "and", "or"): (
+            ("verify_trace_certificate", 1915, "and", "or"): (
                 "Equivalent for supported JSON evidence: the extra fallback only replaces "
                 "the graph when its root equals the expected, already-matched root."
             ),
-            ("verify_package_artifacts", 2443, "and", "or"): (
+            ("verify_package_artifacts", 2461, "and", "or"): (
                 "Equivalent for graph-builder outputs (dict or None): both branches yield "
                 "the same nodes; an empty dict has no nodes and defaults to []."
             ),
-            ("verify_package", 2980, "and", "or"): (
+            ("verify_package", 2998, "and", "or"): (
                 "Equivalent redundant-parse guard: replacing and with or only recomputes the "
                 "canonical evidence graph when roots already match (adopting the identical root), "
                 "leaving EvidenceRootMismatch and package validity completely unchanged."

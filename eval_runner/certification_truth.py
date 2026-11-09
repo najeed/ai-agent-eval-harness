@@ -195,22 +195,22 @@ def state_claim_failures(scenario, events):
                             if receipt.get("authenticated") is not True:
                                 raise ValueError("Connector receipt unauthenticated")
                             from eval_runner.state_authority import (
-                                compute_connector_receipt_token,
+                                verify_connector_receipt_authenticity,
                             )
 
-                            expected_token = compute_connector_receipt_token(
-                                connector_id, expected_source
-                            )
-                            if receipt.get("retrieval_token") != expected_token and not receipt.get(
-                                "signature"
-                            ):
+                            if not verify_connector_receipt_authenticity(receipt):
                                 raise ValueError(
-                                    "Forged or invalid connector retrieval receipt token"
+                                    "Unverifiable or forged connector receipt signature/MAC"
                                 )
                             if f"{phase}_observation" not in row or row.get(
                                 f"{phase}_snapshot_hash"
                             ) != _digest(row[f"{phase}_observation"]):
                                 raise ValueError("Observation content digest mismatch")
+                            resp_digest = receipt.get("response_digest")
+                            if resp_digest and resp_digest != row.get(f"{phase}_snapshot_hash"):
+                                raise ValueError(
+                                    "Receipt response digest mismatch with observation"
+                                )
                         if row.get("pre_observation_identity") != row.get(
                             "post_observation_identity"
                         ):

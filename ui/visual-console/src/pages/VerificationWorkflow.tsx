@@ -164,25 +164,76 @@ export const VerificationWorkflow: React.FC = () => {
     ? 'UNREACHABLE'
     : ((healthQuery.data as any)?.status ?? 'UNREACHABLE');
 
-  const isFailedVerdict =
-    verdict === 'FAILED_VERIFICATION' ||
-    verdict === 'ERROR' ||
-    verdict === 'UNKNOWN' ||
-    verdict === 'NOT_VERIFIED' ||
-    verdict === 'POLICY_BREACH';
+  type ServerVerdictState =
+    | 'CERTIFIED_PASS'
+    | 'VERIFIED'
+    | 'VERIFIED_PROVISIONAL'
+    | 'ATTESTED_FAIL'
+    | 'FAILED_VERIFICATION'
+    | 'POLICY_BREACH'
+    | 'EXECUTION_COMPLETED'
+    | 'UNVERIFIED'
+    | 'UNKNOWN';
 
-  const isVerifiedVerdict =
-    verdict === 'VERIFIED' || verdict === 'VERIFIED_PROVISIONAL';
+  const serverVerdict: ServerVerdictState = useMemo(() => {
+    const raw = String(
+      runData.verification_status ||
+      runData.verdict ||
+      (runData as any)?.terminal_verdict ||
+      ''
+    ).toUpperCase().trim();
+    const st = String(runData.status || '').toUpperCase().trim();
+    if (raw === 'CERTIFIED_PASS' || raw === 'CERTIFIED') return 'CERTIFIED_PASS';
+    if (raw === 'VERIFIED') {
+      return runData.provisional ? 'VERIFIED_PROVISIONAL' : 'VERIFIED';
+    }
+    if (raw === 'VERIFIED_PROVISIONAL') return 'VERIFIED_PROVISIONAL';
+    if (raw === 'ATTESTED_FAIL' || raw === 'ATTESTED FAIL') return 'ATTESTED_FAIL';
+    if (raw === 'FAILED_VERIFICATION' || raw === 'FAILED') return 'FAILED_VERIFICATION';
+    if (raw === 'POLICY_BREACH') return 'POLICY_BREACH';
+    if (raw === 'UNVERIFIED') return 'UNVERIFIED';
+    if (st && st !== 'RUNNING' && st !== 'PENDING' && st !== 'OPEN') {
+      return 'EXECUTION_COMPLETED';
+    }
+    return 'UNKNOWN';
+  }, [runData]);
 
-  const stepStates: Record<number, StepState> = {
-    1: endpoint.trim() ? 'done' : 'active',
-    2: scenarioId.trim() ? 'done' : endpoint.trim() ? 'active' : 'pending',
-    3: preflightResult ? (preflightResult.ready ? 'done' : 'blocked') : scenarioId ? 'active' : 'pending',
-    4: runId ? 'done' : preflightResult?.ready ? 'active' : 'blocked',
-    5: verdict ? 'done' : runId ? 'active' : 'blocked',
-    6: isFailedVerdict ? 'active' : isVerifiedVerdict ? 'done' : runId && verdict ? 'done' : 'blocked',
-    7: isVerifiedVerdict ? 'active' : isFailedVerdict ? 'blocked' : runId && verdict ? 'active' : 'blocked',
-  };
+  const stepStates: Record<number, StepState> = useMemo(() => {
+    const s1: StepState = endpoint.trim() ? 'done' : 'active';
+    const s2: StepState = scenarioId.trim() ? 'done' : endpoint.trim() ? 'active' : 'pending';
+    const s3: StepState = preflightResult
+      ? (preflightResult.ready ? 'done' : 'blocked')
+      : scenarioId ? 'active' : 'pending';
+    const s4: StepState = runId ? 'done' : preflightResult?.ready ? 'active' : 'blocked';
+
+    let s5: StepState = 'blocked';
+    let s6: StepState = 'blocked';
+    let s7: StepState = 'blocked';
+
+    if (serverVerdict === 'CERTIFIED_PASS' || serverVerdict === 'VERIFIED' || serverVerdict === 'VERIFIED_PROVISIONAL') {
+      s5 = 'done';
+      s6 = 'done';
+      s7 = 'active';
+    } else if (serverVerdict === 'ATTESTED_FAIL') {
+      s5 = 'done';
+      s6 = 'active';
+      s7 = 'blocked';
+    } else if (serverVerdict === 'FAILED_VERIFICATION' || serverVerdict === 'POLICY_BREACH') {
+      s5 = 'blocked';
+      s6 = 'active';
+      s7 = 'blocked';
+    } else if (serverVerdict === 'EXECUTION_COMPLETED' || serverVerdict === 'UNVERIFIED') {
+      s5 = 'blocked';
+      s6 = 'active';
+      s7 = 'blocked';
+    } else if (runId) {
+      s5 = 'active';
+      s6 = 'blocked';
+      s7 = 'blocked';
+    }
+
+    return { 1: s1, 2: s2, 3: s3, 4: s4, 5: s5, 6: s6, 7: s7 };
+  }, [endpoint, scenarioId, preflightResult, runId, serverVerdict]);
 
   // [Chain binding] Deep-link preselection: /?scenario_id=<id> pre-fills the
   // scenario so first-value flows can land directly in the spine.

@@ -4,6 +4,7 @@ import os
 import tempfile
 import threading
 import time
+from collections.abc import Mapping
 from io import BytesIO
 from pathlib import Path
 from typing import Any
@@ -852,12 +853,15 @@ PUBLIC_CERTIFICATE_FIELDS = frozenset(
         "vc_version",
         "status",
         "verification_status",
+        "terminal_verdict",
         "certificate_authoritative",
         "is_authoritative",
+        "evidence_valid",
         "certificate_valid",
         "cryptographically_valid",
         "file_integrity_valid",
         "evaluation_passed",
+        "claim_scope",
         "outcome",
         "issued_at",
         "expires_at",
@@ -867,14 +871,13 @@ PUBLIC_CERTIFICATE_FIELDS = frozenset(
         "evidence_root_hash",
         "scenario_hash",
         "manifest_hash",
-        "verification_package",
         "signature",
-        "signatures",
-        "provenance_chain",
         "identity",
+        "signer_identity",
         "public_key",
         "digest",
         "algorithm",
+        "provenance_chain",
     }
 )
 
@@ -910,34 +913,77 @@ def _verified_certificate_payload(
         verif = None
 
     if verif is not None:
-        cert_valid = bool(getattr(verif, "certificate_valid", False))
-        is_auth = bool(getattr(verif, "is_authoritative", False))
-        verif_status = getattr(
-            getattr(verif, "status", None),
-            "value",
-            str(getattr(verif, "status", "UNVERIFIED")),
+
+        def _get_val(obj, key, default=None):
+            if isinstance(obj, Mapping):
+                return obj.get(key, default)
+            return getattr(obj, key, default)
+
+        evidence_valid = bool(_get_val(verif, "is_valid", False))
+        file_integrity_valid = bool(_get_val(verif, "file_integrity_valid", False))
+        cryptographically_valid = bool(_get_val(verif, "cryptographically_valid", False))
+        certificate_valid = bool(_get_val(verif, "certificate_valid", False))
+        eval_passed = bool(_get_val(verif, "evaluation_passed", False))
+        is_auth = bool(
+            _get_val(verif, "certificate_authoritative", _get_val(verif, "is_authoritative", False))
         )
-        sanitized["certificate_valid"] = cert_valid
-        sanitized["cryptographically_valid"] = bool(
-            getattr(verif, "cryptographically_valid", False)
+        raw_status = (
+            _get_val(verif, "verification_status")
+            or _get_val(verif, "verdict")
+            or _get_val(verif, "status")
         )
-        sanitized["file_integrity_valid"] = bool(getattr(verif, "file_integrity_valid", False))
-        sanitized["evaluation_passed"] = bool(getattr(verif, "evaluation_passed", False))
+        status_str = (
+            getattr(raw_status, "value", str(raw_status))
+            if raw_status is not None
+            else "UNVERIFIED"
+        )
+        term_verdict = str(_get_val(verif, "terminal_verdict") or status_str).upper()
+        raw_claim_scope = _get_val(verif, "claim_scope")
+        claim_scope = (
+            dict(raw_claim_scope)
+            if isinstance(raw_claim_scope, Mapping)
+            else (raw_claim_scope if isinstance(raw_claim_scope, str) else {})
+        )
+
+        sanitized["evidence_valid"] = evidence_valid
+        sanitized["file_integrity_valid"] = file_integrity_valid
+        sanitized["cryptographically_valid"] = cryptographically_valid
+        sanitized["certificate_valid"] = certificate_valid
+        sanitized["evaluation_passed"] = eval_passed
         sanitized["certificate_authoritative"] = is_auth
         sanitized["is_authoritative"] = is_auth
-        if cert_valid and is_auth and verif_status in ("CERTIFIED_PASS", "VERIFIED"):
-            sanitized["verification_status"] = verif_status
+        sanitized["claim_scope"] = claim_scope
+        sanitized["terminal_verdict"] = term_verdict
+
+        if is_auth and (term_verdict == "ATTESTED_FAIL" or status_str == "ATTESTED_FAIL"):
+            sanitized["verification_status"] = "ATTESTED_FAIL"
+            sanitized["status"] = "ATTESTED_FAIL"
+        elif (
+            is_auth
+            and certificate_valid
+            and (
+                term_verdict in ("CERTIFIED_PASS", "VERIFIED")
+                or status_str in ("CERTIFIED_PASS", "VERIFIED")
+            )
+        ):
+            sanitized["verification_status"] = (
+                "CERTIFIED_PASS" if term_verdict == "CERTIFIED_PASS" else "VERIFIED"
+            )
+            sanitized["status"] = sanitized["verification_status"]
         else:
             sanitized["verification_status"] = "UNVERIFIED"
             if "status" in sanitized:
                 sanitized["status"] = "UNVERIFIED"
     else:
-        sanitized["certificate_valid"] = False
-        sanitized["cryptographically_valid"] = False
+        sanitized["evidence_valid"] = False
         sanitized["file_integrity_valid"] = False
+        sanitized["cryptographically_valid"] = False
+        sanitized["certificate_valid"] = False
         sanitized["evaluation_passed"] = False
         sanitized["certificate_authoritative"] = False
         sanitized["is_authoritative"] = False
+        sanitized["claim_scope"] = {}
+        sanitized["terminal_verdict"] = "UNVERIFIED"
         sanitized["verification_status"] = "UNVERIFIED"
         if "status" in sanitized:
             sanitized["status"] = "UNVERIFIED"
@@ -985,6 +1031,27 @@ def get_public_certificate(run_id):
         raise
     if not manifest:
         return jsonify({"error": "Certificate not found"}), 404
+
+    # Publication is explicitly configurable; default to private if explicitly marked private.
+    is_private = (
+        manifest.get("is_private") is True or (run.get("metadata") or {}).get("is_private") is True
+    )
+    publication_disabled = (
+        manifest.get("is_public") is False
+        or manifest.get("published") is False
+        or os.getenv("AGENTV_ENABLE_PUBLIC_CERTIFICATES", "true").lower() in ("0", "false")
+    )
+    if is_private or publication_disabled:
+        return (
+            jsonify(
+                {
+                    "error": "Certificate is private; publication is not enabled",
+                    "is_public": False,
+                }
+            ),
+            403,
+        )
+
     verified_payload = _verified_certificate_payload(run_id, manifest, store, context=None)
     return jsonify(project_public_certificate(verified_payload))
 
@@ -1171,13 +1238,18 @@ def verify_run(run_id):
             "verification_status": verification_status,
             "verdict": verification_status,
             "provisional": verification_status == "VERIFIED_PROVISIONAL",
-            # The console reads these only as the result of the provider-native
-            # verification above, never as a certificate-presence inference.
+            # [P1-4] Preserve the verifier's independently computed dimensions.
+            # Never overwrite cryptographically_valid with is_valid.
             "is_valid": verified,
-            "cryptographically_valid": verified,
+            "cryptographically_valid": result.get("cryptographically_valid", verified),
+            "file_integrity_valid": result.get("file_integrity_valid", verified),
+            "certificate_valid": result.get("certificate_valid", has_certificate),
+            "certificate_authoritative": result.get("certificate_authoritative", False),
             "has_certificate": has_certificate,
-            "algorithm": signer.get("algorithm"),
-            "signer_identity": signer.get("identity") or signer.get("key_id"),
+            "algorithm": signer.get("algorithm") or result.get("algorithm"),
+            "signer_identity": signer.get("identity")
+            or signer.get("key_id")
+            or result.get("signer_identity"),
             **(
                 {"failure_reason": "Trace or certificate verification failed."}
                 if not verified

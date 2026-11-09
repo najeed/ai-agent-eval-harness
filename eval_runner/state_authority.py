@@ -15,6 +15,7 @@ import os
 import socket
 import ssl
 from abc import ABC, abstractmethod
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 from urllib.parse import urljoin, urlparse
@@ -23,6 +24,7 @@ import aiohttp
 
 from agentv_runtime.canonical import canonical_json_encode
 from agentv_runtime.contracts import EvidenceBoundednessLimits
+from eval_runner import config
 from eval_runner.utils.path_resolver import PathResolver
 
 logger = logging.getLogger(__name__)
@@ -200,9 +202,116 @@ def bound_state_snapshot(
     return bounded_repr, full_digest
 
 
-def compute_connector_receipt_token(connector_id: str, source_id: str) -> str:
+def get_state_authority_trust_key() -> bytes:
+    """Resolve the independently configured secret/trust key for state authority receipts."""
+    key_env = os.getenv("AGENTV_STATE_AUTHORITY_KEY") or os.getenv("STATE_AUTHORITY_KEY")
+    if key_env:
+        return key_env.encode("utf-8")
+    trust_root = getattr(config, "TRUST_ROOT", None)
+    if trust_root:
+        key_path = Path(trust_root) / "state_authority.key"
+        if key_path.is_file():
+            try:
+                return key_path.read_bytes().strip()
+            except OSError:
+                pass
+        return hashlib.sha3_256(f"state_authority_trust:{trust_root}".encode()).digest()
+    return hashlib.sha3_256(b"agentv_default_state_authority_trust_key").digest()
+
+
+def compute_connector_receipt_mac(
+    receipt_data: Mapping[str, Any],
+    key: bytes | None = None,
+) -> str:
+    """Compute HMAC-SHA3-256 over bounded canonical receipt fields."""
+    import hmac
+
+    resolved_key = key if key is not None else get_state_authority_trust_key()
+    fields = [
+        str(receipt_data.get("connector_id", "")),
+        str(receipt_data.get("source_id", "")),
+        str(receipt_data.get("request", "")),
+        str(receipt_data.get("response_digest", "")),
+        str(receipt_data.get("timestamp", "")),
+        str(receipt_data.get("execution_id", "")),
+    ]
+    payload = ":".join(fields).encode("utf-8")
+    return hmac.new(resolved_key, payload, hashlib.sha3_256).hexdigest()
+
+
+def compute_connector_receipt_token(
+    connector_id: str,
+    source_id: str,
+    key: bytes | None = None,
+) -> str:
     """Compute deterministic cryptographic receipt token binding connector identity to source."""
-    return hashlib.sha3_256(f"connector_receipt:{connector_id}:{source_id}".encode()).hexdigest()
+    resolved_key = key if key is not None else get_state_authority_trust_key()
+    import hmac
+
+    return hmac.new(
+        resolved_key,
+        f"connector_receipt:{connector_id}:{source_id}".encode(),
+        hashlib.sha3_256,
+    ).hexdigest()
+
+
+def create_authenticated_connector_receipt(
+    connector_id: str,
+    source_id: str,
+    *,
+    is_authenticated: bool = True,
+    request_spec: str | dict[str, Any] | None = None,
+    response_digest: str | None = None,
+    execution_id: str | None = None,
+    timestamp: str | None = None,
+    key: bytes | None = None,
+) -> dict[str, Any]:
+    """Create an authenticated connector receipt with cryptographic MAC."""
+    ts = str(timestamp or "")
+    req = str(request_spec or "")
+    resp_digest = str(response_digest or "")
+    exec_id = str(execution_id or "")
+
+    receipt: dict[str, Any] = {
+        "connector_id": connector_id,
+        "source_id": source_id,
+        "authenticated": bool(is_authenticated),
+        "request": req,
+        "response_digest": resp_digest,
+        "timestamp": ts,
+        "execution_id": exec_id,
+        "retrieval_token": compute_connector_receipt_token(connector_id, source_id, key=key),
+    }
+    receipt["mac"] = compute_connector_receipt_mac(receipt, key=key)
+    receipt["signature"] = receipt["mac"]
+    return receipt
+
+
+def verify_connector_receipt_authenticity(
+    receipt: Mapping[str, Any],
+    key: bytes | None = None,
+) -> bool:
+    """Cryptographically verify the signature or MAC of a connector receipt under the trust key."""
+    import hmac
+
+    if not isinstance(receipt, Mapping):
+        return False
+    mac = receipt.get("mac") or receipt.get("signature")
+    token = receipt.get("retrieval_token")
+    if not mac and not token:
+        return False
+    resolved_key = key if key is not None else get_state_authority_trust_key()
+    if mac and isinstance(mac, str):
+        expected_mac = compute_connector_receipt_mac(receipt, key=resolved_key)
+        return hmac.compare_digest(mac, expected_mac)
+    if token and isinstance(token, str):
+        expected_token = compute_connector_receipt_token(
+            str(receipt.get("connector_id", "")),
+            str(receipt.get("source_id", "")),
+            key=resolved_key,
+        )
+        return hmac.compare_digest(token, expected_token)
+    return False
 
 
 class StateAuthorityConnector(ABC):
@@ -248,12 +357,12 @@ class HttpStateAuthorityConnector(StateAuthorityConnector):
         source_id = "sha3_256:" + hashlib.sha3_256(self.base_url.encode()).hexdigest()
         is_auth = urlparse(self.base_url).scheme == "https" and credentials
         connector_id = f"connector:http:{source_id}"
-        receipt = {
-            "connector_id": connector_id,
-            "source_id": source_id,
-            "authenticated": is_auth,
-            "retrieval_token": compute_connector_receipt_token(connector_id, source_id),
-        }
+        receipt = create_authenticated_connector_receipt(
+            connector_id=connector_id,
+            source_id=source_id,
+            is_authenticated=is_auth,
+            request_spec=self.base_url,
+        )
         return {
             "source_id": source_id,
             "authenticated": is_auth,
