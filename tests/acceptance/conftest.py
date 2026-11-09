@@ -69,6 +69,7 @@ def isolated_acceptance_env(tmp_path, monkeypatch, signing_identity):
     env["TRUST_ROOT"] = str(trust_dir)
     env["ALLOW_SYSTEM_IDENTITY_PROVISIONING"] = "true"
     env["AES_PUBLIC_KEY_SYSTEM_ID"] = pub_bytes.decode("utf-8")
+    env["AGENTV_CLI_HITL_SUSPEND"] = "1"
 
     runner = AgentVAcceptanceRunner(repo_root=REPO_ROOT, env=env)
     return {

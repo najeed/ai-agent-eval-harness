@@ -443,6 +443,11 @@ class CertificationService:
                 "package_hash": provider_manifest.get("package_hash"),
                 "verification_package": provider_manifest.get("verification_package"),
             }
+        if lifecycle == RunLifecycleState.PAUSED_FOR_APPROVAL:
+            raise ValueError(
+                f"CertificationProhibitedPendingApproval: Run '{run_id}' is in "
+                f"PAUSED_FOR_APPROVAL state and cannot be certified until approval is resolved."
+            )
         if lifecycle in {RunLifecycleState.INVALID, RunLifecycleState.UNKNOWN}:
             raise ValueError(f"InvalidLifecycleState: {lifecycle.value}")
 
