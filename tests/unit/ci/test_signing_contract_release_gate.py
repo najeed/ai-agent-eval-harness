@@ -4,7 +4,13 @@ import xml.etree.ElementTree as ET
 
 import pytest
 
-from tools.ci.verify_signing_contract_matrix import REQUIRED, verify
+from tools.ci.verify_signing_contract_matrix import (
+    REQUIRED,
+    check_purity,
+    load_required_matrix,
+    sync_matrix,
+    verify,
+)
 
 
 def report(path):
@@ -20,7 +26,7 @@ def test_local_signing_evidence_cannot_claim_live_kms_or_release_approval(tmp_pa
     path = tmp_path / "junit.xml"
     report(path)
     result = verify(path)
-    assert result["passed_cases"] == 148
+    assert result["passed_cases"] == 153
     assert result["core_local_evidence_verified"]
     assert not result["live_kms_evidence_verified"]
     assert not result["large_payload_kms_feature_claim_ready"]
@@ -45,3 +51,21 @@ def test_incomplete_signing_evidence_is_rejected(tmp_path, defect):
     ET.ElementTree(root).write(path)
     with pytest.raises(ValueError):
         verify(path)
+
+
+def test_signing_contract_ast_purity_matches_manifest():
+    violations = check_purity()
+    assert not violations, f"Signing contract purity violations: {violations}"
+
+
+def test_sync_matrix_from_junit_xml(tmp_path):
+    junit_path = tmp_path / "sample.xml"
+    report(junit_path)
+    manifest_path = tmp_path / "synced_manifest.json"
+
+    num_funcs, total_cases = sync_matrix(source_junit=junit_path, manifest_path=manifest_path)
+    assert total_cases == 153
+    assert num_funcs == 30
+
+    reloaded = load_required_matrix(manifest_path)
+    assert reloaded == REQUIRED

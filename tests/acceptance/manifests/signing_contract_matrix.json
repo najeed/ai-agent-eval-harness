@@ -1,0 +1,42 @@
+{
+  "profile": "agentv.signature.digest-envelope.v1",
+  "total_cases": 153,
+  "target_modules": [
+    "tests/unit/core/test_digest_signature_contract.py",
+    "tests/unit/core/test_signing_acceptance_matrix.py",
+    "tests/unit/core/test_signing_input_policy_contract.py",
+    "tests/acceptance/test_digest_signature_release_matrix.py"
+  ],
+  "required_cases": {
+    "test_bad_structured_response_cannot_publish_or_seal": 10,
+    "test_cross_implementation_canonicalization_vectors": 4,
+    "test_digest_signature_release_matrix": 22,
+    "test_envelope_fields_match_unsigned_envelope": 1,
+    "test_envelope_shape_is_strict_for_json_inputs": 7,
+    "test_every_envelope_binding_is_enforced_even_with_a_genuine_signature": 18,
+    "test_exact_certificate_projection_excludes_only_frozen_fields": 1,
+    "test_external_resolver_cannot_change_the_expected_identity": 3,
+    "test_external_resolver_policy_must_match_the_selected_public_anchor": 1,
+    "test_external_trust_policy_restricts_valid_signatures": 5,
+    "test_full_certification_preserves_envelopes_and_verifies_without_backend": 1,
+    "test_hardware_failure_never_consults_available_local_key": 28,
+    "test_invalid_or_oversized_signer_identity_never_reaches_remote": 2,
+    "test_large_finalization_round_trip_preserves_and_verifies_envelope": 1,
+    "test_large_payload_is_an_envelope_signature_with_independent_offline_verification": 1,
+    "test_malformed_or_ambiguous_responses_do_not_downgrade": 13,
+    "test_mutable_kms_alias_is_not_an_immutable_key_binding": 1,
+    "test_noncanonical_payloads_cannot_claim_rfc8785": 4,
+    "test_nonzero_base64_padding_bits_are_rejected_even_for_valid_signature_bytes": 1,
+    "test_offline_process_reconstructs_frozen_projection": 4,
+    "test_raw_backend_hex_whitespace_is_not_silently_normalized": 1,
+    "test_raw_legacy_hex_signature_is_rejected": 1,
+    "test_raw_signing_response_cannot_use_permissive_hex_whitespace": 1,
+    "test_remote_outage_and_wrong_key_fail_without_local_fallback": 1,
+    "test_resolve_policy_with_none_public_key": 1,
+    "test_resolved_backend_outage_cannot_use_existing_local_private_key": 1,
+    "test_signature_semantics_and_exact_field_types_are_not_inferred": 6,
+    "test_strict_transport_json_rejects_ambiguous_or_unsupported_inputs": 11,
+    "test_unsigned_envelope_requires_bytes_and_identity": 1,
+    "test_validate_signing_response_valid_raw_hex": 1
+  }
+}

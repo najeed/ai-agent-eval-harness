@@ -291,3 +291,11 @@ def test_phase_one_verification_failures_are_auditable():
             ):
                 violations.append(f"{name}:{handler.lineno}")
     assert not violations, f"Suppressed failures without traceback logging: {violations}"
+
+
+def test_signing_contract_matrix_manifest_purity():
+    """Signing contract test suite functions must remain 100% in sync with the manifest."""
+    from tools.ci.verify_signing_contract_matrix import check_purity
+
+    violations = check_purity()
+    assert not violations, f"Signing contract purity violations: {violations}"
