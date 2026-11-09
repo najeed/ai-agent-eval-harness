@@ -2,14 +2,16 @@ name: Acceptance Certification
 
 on:
   pull_request:
-    branches: [main, dev]
+    branches: [main, dev, 'release/**', 'rc/**']
     paths-ignore:
       - 'docs/**'
       - '**.md'
       - '.gitignore'
       - 'LICENSE'
   push:
-    branches: [main, dev]
+    branches: [main, dev, 'release/**', 'rc/**']
+    tags:
+      - 'v*'
     paths-ignore:
       - 'docs/**'
       - '**.md'
@@ -48,7 +50,7 @@ jobs:
 
   acceptance-release:
     name: Acceptance Release Certification Gate
-    if: github.repository == 'najeed/ai-agent-eval-harness' && (github.ref == 'refs/heads/main' || github.event_name == 'pull_request')
+    if: github.repository == 'najeed/ai-agent-eval-harness' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/rc/') || startsWith(github.ref, 'refs/tags/v') || github.event_name == 'pull_request')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

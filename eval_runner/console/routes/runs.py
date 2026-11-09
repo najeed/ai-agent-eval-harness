@@ -362,18 +362,16 @@ def download_run_report_pdf(run_id: str):
     summary = _summary_from_provider({**run, "manifest": manifest_data})
 
     from eval_runner.console.pdf_service import generate_run_pdf
+    from eval_runner.verifier import TraceVerifier
 
     execution_manifest: dict[str, Any] = {}
     candidate = manifest_data.get("execution_manifest")
     if isinstance(candidate, dict):
         execution_manifest = candidate
 
-    verif_status = str(summary.get("verification_status") or "").upper()
-    status_val = str(summary.get("status") or "").upper()
-    is_passed = verif_status in {"VERIFIED", "CERTIFIED_PASS", "CERTIFIED"} or (
-        status_val in {"CERTIFIED", "PASSED"}
-        and verif_status not in {"ATTESTED_FAIL", "FAILED", "FAILED_VERIFICATION", "POLICY_BREACH"}
-    )
+    verif_res = TraceVerifier.verify_run(run_id, run_store=store, context=context)
+    verif_status = str(verif_res.get("verification_status") or "").upper()
+    is_passed = verif_status == "VERIFIED" and bool(verif_res.get("verified"))
 
     events = store.get_events(run_id, offset=0, limit=10_000, context=context) or []
     analysis = {}
@@ -393,9 +391,13 @@ def download_run_report_pdf(run_id: str):
             or run_id
         ),
         "passed": is_passed,
-        "has_certificate": summary["has_certificate"],
-        "is_certified": status_val == "CERTIFIED" and is_passed,
-        "verification_status": summary["verification_status"],
+        "has_certificate": bool(verif_res.get("has_certificate", summary.get("has_certificate"))),
+        "is_certified": is_passed,
+        "verification_status": verif_status,
+        "cryptographically_valid": bool(verif_res.get("cryptographically_valid")),
+        "file_integrity_valid": bool(verif_res.get("file_integrity_valid")),
+        "certificate_valid": bool(verif_res.get("certificate_valid")),
+        "algorithm": verif_res.get("algorithm") or summary.get("algorithm"),
         "analysis": analysis,
         "events": events,
         **resolve_artifact_scope(manifest_data),
@@ -436,6 +438,128 @@ def get_run_report_actions(run_id: str):
     ):
         return jsonify({"error": "Not found"}), 404
     return jsonify(resolve_run_report_actions(run_id, context=context))
+
+
+def _assess_run_certification_readiness(
+    run: dict[str, Any],
+    manifest: dict[str, Any],
+    events: list[dict[str, Any]],
+    raw_status: str,
+    terminal: bool,
+    evidence_nodes: int,
+) -> tuple[str, list[str]]:
+    """
+    Evaluates server-derived certification readiness.
+    Returns (eligibility, blocking_reasons) where eligibility is one of:
+    - 'eligible': all criteria for certification are satisfied
+    - 'ineligible': run is ineligible, accompanied by concrete blocking reasons
+    - 'pending': run execution is in-progress
+    """
+    from agentv_runtime.execution_truth import execution_truth_eligible
+
+    blocking_reasons: list[str] = []
+
+    # 1. Active / in-progress run lifecycle
+    if raw_status in {"OPEN", "RUNNING"} and not terminal:
+        return "pending", ["Run execution is currently active and has not terminated."]
+
+    # 2. Already certified
+    if bool(
+        manifest.get("verification_package")
+        or manifest.get("vc_version")
+        or manifest.get("certificate")
+    ):
+        blocking_reasons.append("Run already has an issued verification certificate.")
+
+    # 3. Events present
+    if not events:
+        blocking_reasons.append("No trace events recorded for this run.")
+
+    # 4. Evidence graph nodes
+    if evidence_nodes <= 0:
+        blocking_reasons.append("Evidence graph contains 0 nodes.")
+
+    # 5. Execution mode truth requirement
+    mode = (
+        manifest.get("execution_mode")
+        or run.get("execution_mode")
+        or (run.get("metadata") or {}).get("execution_mode")
+        or (run.get("context") or {}).get("execution_mode")
+    )
+    provisional = manifest.get("provisional")
+    if provisional is None:
+        provisional = run.get("provisional")
+    if provisional is None:
+        provisional = (run.get("metadata") or {}).get("provisional")
+
+    if not mode or provisional is None:
+        for ev in events:
+            ev_data = ev.get("data") if isinstance(ev.get("data"), dict) else {}
+            if not mode:
+                mode = ev.get("execution_mode") or ev_data.get("execution_mode")
+            if provisional is None:
+                provisional = ev.get("provisional") or ev_data.get("provisional")
+            if mode and provisional is not None:
+                break
+
+    clean_mode = str(mode or "unknown").strip().lower()
+    is_provisional = (
+        bool(provisional) if provisional is not None else (clean_mode in {"simulated", "unknown"})
+    )
+    if not execution_truth_eligible(clean_mode, is_provisional):
+        blocking_reasons.append(
+            f"Execution mode '{clean_mode}' (provisional={is_provisional}) "
+            "is not eligible for authoritative certification."
+        )
+
+    # 6. Simulated tool execution events
+    has_simulated = False
+    for ev in events:
+        ev_name = ev.get("event")
+        ev_data = ev.get("data") if isinstance(ev.get("data"), dict) else {}
+        if ev.get("has_simulated_tools") is True or ev_data.get("has_simulated_tools") is True:
+            has_simulated = True
+            break
+        if ev_name in {"tool_call", "tool_result"}:
+            prov = ev.get("provenance") or ev_data.get("provenance")
+            if prov in {"simulated", "mock", "synthetic"}:
+                has_simulated = True
+                break
+    if has_simulated:
+        blocking_reasons.append("Trace contains simulated tool execution events.")
+
+    # 7. Evaluator Finalization Record
+    has_finalization = False
+    finalization_outcome = None
+    for ev in reversed(events):
+        ev_name = ev.get("event")
+        ev_data = ev.get("data") if isinstance(ev.get("data"), dict) else {}
+        fin_payload = (
+            ev.get("finalization")
+            or ev_data.get("finalization")
+            or (ev_data if (isinstance(ev_data, dict) and "outcome" in ev_data) else None)
+            or (ev if "outcome" in ev else None)
+            or (ev_data if ev_name == "evaluator_finalization" else None)
+            or (ev if ev_name == "evaluator_finalization" else None)
+        )
+        if isinstance(fin_payload, dict) and (
+            ev_name in {"evaluator_finalization", "run_end", "end"} or "outcome" in fin_payload
+        ):
+            has_finalization = True
+            finalization_outcome = str(
+                fin_payload.get("outcome") or fin_payload.get("status") or ""
+            ).lower()
+            break
+    if not has_finalization:
+        blocking_reasons.append("Missing authoritative evaluator finalization record.")
+    elif finalization_outcome not in {"pass", "passed", "certified", "certified_pass"}:
+        blocking_reasons.append(
+            f"Finalization outcome '{finalization_outcome}' is not an authoritative pass."
+        )
+
+    if blocking_reasons:
+        return "ineligible", blocking_reasons
+    return "eligible", []
 
 
 @run_bp.route("/v1/runs/<path:run_id>", methods=["GET"])
@@ -510,13 +634,23 @@ def get_run_status(run_id):
                 "get_run_status failed", extra={"operation": "get_run_status"}, exc_info=True
             )
             evidence_nodes = 0
+        eligibility, blocking_reasons = _assess_run_certification_readiness(
+            run=run,
+            manifest=manifest,
+            events=events,
+            raw_status=raw_status,
+            terminal=terminal,
+            evidence_nodes=evidence_nodes,
+        )
         return jsonify(
             {
                 "run_id": run_id,
                 "status": status,
                 "size": event_count,
                 "evidence_nodes": evidence_nodes,
-                "can_certify": evidence_nodes > 0,
+                "certification_eligibility": eligibility,
+                "certification_blocking_reasons": blocking_reasons,
+                "can_certify": eligibility == "eligible",
                 "mtime": run.get("updated_at") or run.get("created_at"),
                 "has_certificate": bool(
                     manifest.get("verification_package")

@@ -198,11 +198,23 @@ def test_certify_run_rejects_incomplete_signer_output(client, console_jail):
         }
         res = client.post(
             "/api/v1/certify",
-            json={"run_id": run_id, "scenario_data": {"id": "scen_1", "version": "1.0.0"}},
+            json={"run_id": run_id},
         )
         assert res.status_code == 400
         assert "CertificateSelfVerificationFailed" in res.get_json()["error"]
         assert not (run_dir / "run_manifest.json").exists()
+
+
+def test_certify_run_rejects_caller_supplied_scenario_data(client, console_jail):
+    run_id = "caller_scen_run"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    res = client.post(
+        "/api/v1/certify",
+        json={"run_id": run_id, "scenario_data": {"id": "malicious_scenario", "version": "1.0.0"}},
+    )
+    assert res.status_code == 400
+    assert "Caller-supplied scenario_data is rejected" in res.get_json()["error"]
 
 
 def test_certify_run_inconclusive_missing_terminal_fails_closed(client, console_jail):
@@ -273,7 +285,6 @@ def test_certify_run_fail_closed_computed_fail(client, console_jail):
             json={
                 "run_id": run_id,
                 "status": "pass",
-                "scenario_data": {"id": "scen_1", "version": "1.0.0"},
             },
         )
         assert res.status_code == 400
@@ -486,7 +497,7 @@ def test_certify_run_generic_exception(client, console_jail):
     ):
         res = client.post(
             "/api/v1/certify",
-            json={"run_id": run_id, "scenario_data": {"id": "scen_1", "version": "1.0.0"}},
+            json={"run_id": run_id},
         )
         assert res.status_code == 500
         assert "Critical Failure" in res.get_json()["error"]

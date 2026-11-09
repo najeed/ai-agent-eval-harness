@@ -250,7 +250,14 @@ def build_verification_package(
                 context=context,
                 scenario_data=scenario_resolved or None,
             )
-            crypto_verification["verified"] = authority["is_valid"]
+            crypto_verification["authority_valid"] = bool(authority.get("is_valid"))
+            crypto_verification["terminal_verdict"] = authority.get(
+                "terminal_verdict", "UNVERIFIED"
+            )
+            crypto_verification["certified_outcome"] = authority.get(
+                "terminal_verdict", "UNVERIFIED"
+            )
+            crypto_verification["evaluation_passed"] = bool(authority.get("evaluation_passed"))
             crypto_verification["claim_scope"] = authority.get("claim_scope", "unverified")
             if authority.get("failure_reason"):
                 crypto_verification["errors"].append(authority["failure_reason"])

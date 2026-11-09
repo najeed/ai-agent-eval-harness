@@ -7,7 +7,6 @@ from typing import Any
 
 from flask import Blueprint, jsonify, request
 
-from agentv_runtime.execution_truth import execution_truth_eligible
 from eval_runner import config, identity
 from eval_runner.console.extension_publisher import (
     _private_key_pem_bytes,
@@ -40,6 +39,20 @@ def certify_run():
     ):
         return jsonify({"error": "Valid run_id is required"}), 400
 
+    if "scenario_data" in data and data["scenario_data"] is not None:
+        return (
+            jsonify(
+                {
+                    "error": (
+                        "Caller-supplied scenario_data is rejected. "
+                        "Authoritative execution-bound scenario must be resolved exclusively "
+                        "from provider evidence."
+                    )
+                }
+            ),
+            400,
+        )
+
     # Derive signer identity server-side from configured certification authority (P0-5 / Defect 6)
     server_identity = getattr(config, "AES_CERTIFICATION_IDENTITY", "system_id")
 
@@ -64,7 +77,7 @@ def certify_run():
             score=float(data["score"]) if data.get("score") is not None else None,
             policy_ref=data.get("policy_ref"),
             ttl=data.get("ttl"),
-            scenario_data=data.get("scenario_data"),
+            scenario_data=None,
             run_store=run_store,
             context=context,
         )
@@ -132,7 +145,10 @@ def public_verify_run(run_id):
             )
 
         result = TraceVerifier.verify_run(run_id, run_store=run_store, context=context)
-        is_valid = result["is_valid"]
+        is_valid = bool(result.get("is_valid"))
+        file_integrity_valid = bool(result.get("file_integrity_valid", is_valid))
+        cryptographically_valid = bool(result.get("cryptographically_valid", is_valid))
+        certificate_valid = bool(result.get("certificate_valid", is_valid))
 
         method = "SHA3-256 integrity check"
         if manifest.get("provenance_chain"):
@@ -145,24 +161,26 @@ def public_verify_run(run_id):
         if score is None:
             score = manifest.get("compliance_score")
 
-        is_compliant = bool(result.get("verified"))
+        is_compliant = bool(result.get("evaluation_passed", result.get("verified")))
 
-        # Mode-Aware Truth Level Enforcement (P0-07)
+        # Mode-Aware Truth Level: derive authority exclusively from complete terminal verdict
         clean_mode = str(manifest.get("execution_mode", "")).strip().lower()
+        terminal_verdict = result.get("terminal_verdict", "UNVERIFIED")
         is_authoritative = bool(
-            is_valid and execution_truth_eligible(clean_mode, result.get("provisional", False))
+            result.get("certificate_authoritative")
+            if "certificate_authoritative" in result
+            else terminal_verdict in {"CERTIFIED_PASS", "ATTESTED_FAIL"}
         )
         verified = result.get("verified", False)
-        terminal_verdict = result.get("terminal_verdict", "UNVERIFIED")
 
         safe_response = {
             "run_id": run_id,
             "verified": verified,
             "terminal_verdict": terminal_verdict,
             "verification_status": result.get("verification_status", terminal_verdict),
-            "file_integrity_valid": is_valid,
-            "cryptographically_valid": is_valid,
-            "certificate_valid": is_valid,
+            "file_integrity_valid": file_integrity_valid,
+            "cryptographically_valid": cryptographically_valid,
+            "certificate_valid": certificate_valid,
             "evaluation_passed": is_compliant,
             "evaluation_verdict": status,
             "compliance_score": score,

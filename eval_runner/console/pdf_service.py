@@ -191,30 +191,29 @@ def generate_run_pdf(run_data: dict, output_path: Path | str) -> bool:
                 "Inspect the first causal divergence in the Live Visual Debugger to trace structural discrepancies."
             )
 
-    # Truthful PQC status evaluation
-    is_pqc = bool(
-        run_data.get("pqc_enabled")
-        or run_data.get("is_pqc")
-        or "ML-DSA" in str(run_data.get("algorithm", ""))
-    )
-    if is_pqc:
-        pqc_status = "QUANTUM_SECURE (ML-DSA-65)"
-    elif (
-        run_data.get("has_certificate")
-        or run_data.get("is_certified")
-        or run_data.get("signer_type") == "SIGNED"
-    ):
-        pqc_status = "CLASSICAL (Ed25519)"
-    else:
-        pqc_status = "NON_COMPLIANT (PQC Disabled)"
-
-    has_cert = bool(run_data.get("has_certificate") or run_data.get("is_certified"))
-    if status == "ATTESTED FAIL":
-        cert_status = "ATTESTATION OF NON-CERTIFICATION (Signed Failure Audit)"
-    elif status in ("VERIFIED", "PASSED") and has_cert:
-        cert_status = "ISSUED / VALIDATED"
-    else:
+    # Truthful PQC status evaluation: display only verified algorithm and signer facts
+    is_crypto_verified = bool(run_data.get("cryptographically_valid"))
+    has_cert = bool(run_data.get("certificate_valid"))
+    if not is_crypto_verified:
+        pqc_status = "UNVERIFIED"
         cert_status = "NOT ISSUED (Unverified)"
+    else:
+        algo = str(run_data.get("algorithm") or "").strip().upper()
+        if "ML-DSA" in algo:
+            pqc_status = "QUANTUM_SECURE (ML-DSA-65)"
+        elif "ED25519" in algo:
+            pqc_status = "CLASSICAL (Ed25519)"
+        elif algo:
+            pqc_status = f"VERIFIED ({algo})"
+        else:
+            pqc_status = "UNVERIFIED"
+
+        if status == "ATTESTED FAIL" and has_cert:
+            cert_status = "ATTESTATION OF NON-CERTIFICATION (Signed Failure Audit)"
+        elif status in ("VERIFIED", "PASSED") and has_cert:
+            cert_status = "ISSUED / VALIDATED"
+        else:
+            cert_status = "NOT ISSUED (Unverified)"
 
     evidence_ref = (
         run_data.get("evidence_reference")
@@ -474,6 +473,7 @@ def generate_run_pdf(run_data: dict, output_path: Path | str) -> bool:
             f.write(f"Status: {status}\n")
             f.write(f"Timestamp: {timestamp}\n")
             f.write(f"PQC Status: {pqc_status}\n")
+            f.write(f"Verification Certificate: {cert_status}\n")
             f.write(f"Summary: {summary}\n")
             f.write(f"Root Cause: {root_cause}\n")
             f.write(f"Suggestion: {suggestion}\n")
@@ -484,6 +484,32 @@ def generate_run_pdf(run_data: dict, output_path: Path | str) -> bool:
     except Exception as e:
         logger.error(f"Last fallback text report generator failed: {e}", exc_info=True)
         return False
+
+
+def _is_run_authoritative_pass(r: dict) -> bool:
+    """Calculate pass counts exclusively from authoritative per-run verdicts."""
+    verif = str(
+        r.get("verification_status") or r.get("terminal_verdict") or r.get("verdict") or ""
+    ).upper()
+    if verif in {"VERIFIED", "CERTIFIED_PASS"}:
+        return True
+    if bool(r.get("verified")) and verif in {"CERTIFIED", "PASSED"}:
+        return True
+    return False
+
+
+def _run_verification_label(r: dict) -> str:
+    """Derive verification check label exclusively from authoritative verdict."""
+    verif = str(
+        r.get("verification_status") or r.get("terminal_verdict") or r.get("verdict") or ""
+    ).upper()
+    if verif in {"VERIFIED", "CERTIFIED_PASS"}:
+        return "VERIFIED"
+    if verif == "ATTESTED_FAIL":
+        return "ATTESTED FAIL"
+    if verif in {"FAILED", "FAILED_VERIFICATION", "POLICY_BREACH"}:
+        return "FAILING"
+    return "UNVERIFIED"
 
 
 def generate_bundle_pdf(suite_data: dict, run_list: list, output_path: Path) -> bool:
@@ -497,11 +523,7 @@ def generate_bundle_pdf(suite_data: dict, run_list: list, output_path: Path) -> 
     created_at = suite_data.get("created_at", "")
 
     total_runs = len(run_list)
-    passing_runs = sum(
-        1
-        for r in run_list
-        if r.get("status") == "COMPLETED" or "pass" in str(r.get("status")).lower()
-    )
+    passing_runs = sum(1 for r in run_list if _is_run_authoritative_pass(r))
     total_runs - passing_runs
 
     # 2. Try WeasyPrint if available
@@ -551,7 +573,7 @@ def generate_bundle_pdf(suite_data: dict, run_list: list, output_path: Path) -> 
                         </tr>
                     </thead>
                     <tbody>
-                        {"".join(f"<tr><td>{r.get('run_id')}</td><td>{r.get('status')}</td><td>{'VERIFIED' if 'COMPLETED' in str(r.get('status')) else 'FAILING'}</td></tr>" for r in run_list)}
+                        {"".join(f"<tr><td>{r.get('run_id')}</td><td>{r.get('status')}</td><td>{_run_verification_label(r)}</td></tr>" for r in run_list)}
                     </tbody>
                 </table>
 
@@ -656,7 +678,7 @@ def generate_bundle_pdf(suite_data: dict, run_list: list, output_path: Path) -> 
             story.append(Paragraph("3. Audited Run Breakdown", h2_style))
             table_header = [["Run Identifier", "Status", "Verification Check"]]
             for r in run_list:
-                chk = "VERIFIED" if "COMPLETED" in str(r.get("status")) else "FAILING"
+                chk = _run_verification_label(r)
                 table_header.append([r.get("run_id", "N/A"), r.get("status", "N/A"), chk])
 
             t_runs = Table(table_header, colWidths=[200, 130, 120])
@@ -698,7 +720,7 @@ def generate_bundle_pdf(suite_data: dict, run_list: list, output_path: Path) -> 
             f.write(f"Performance: {passing_runs}/{total_runs} passed\n")
             f.write("\nRuns List:\n")
             for r in run_list:
-                f.write(f" - {r.get('run_id')}: {r.get('status')}\n")
+                f.write(f" - {r.get('run_id')}: {r.get('status')} [{_run_verification_label(r)}]\n")
         output_path.write_bytes(txt_path.read_bytes())
         return True
     except Exception as e:

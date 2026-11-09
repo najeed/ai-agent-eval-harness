@@ -1129,6 +1129,10 @@ class TraceVerifier:
                 "run_id": run_id,
                 "verification_status": "FAILED_VERIFICATION",
                 "is_valid": False,
+                "file_integrity_valid": False,
+                "cryptographically_valid": False,
+                "certificate_valid": False,
+                "certificate_authoritative": False,
                 "has_certificate": False,
                 "has_signature": False,
                 "failure_reason": f"Corrupt or malformed run evidence: {e}",
@@ -1138,6 +1142,10 @@ class TraceVerifier:
                 "run_id": run_id,
                 "verification_status": "NOT_FOUND",
                 "is_valid": False,
+                "file_integrity_valid": False,
+                "cryptographically_valid": False,
+                "certificate_valid": False,
+                "certificate_authoritative": False,
                 "has_certificate": False,
                 "has_signature": False,
                 "failure_reason": "Run not found by storage provider.",
@@ -1148,7 +1156,10 @@ class TraceVerifier:
                 "verification_status": "FAILED_VERIFICATION",
                 "is_valid": False,
                 "verified": False,
+                "file_integrity_valid": False,
+                "cryptographically_valid": False,
                 "certificate_valid": False,
+                "certificate_authoritative": False,
                 "failure_reason": "IncompleteEvidenceCapture",
             }
         if not manifest:
@@ -1156,6 +1167,10 @@ class TraceVerifier:
                 "run_id": run_id,
                 "verification_status": "UNVERIFIED",
                 "is_valid": False,
+                "file_integrity_valid": False,
+                "cryptographically_valid": False,
+                "certificate_valid": False,
+                "certificate_authoritative": False,
                 "has_certificate": False,
                 "has_signature": False,
                 "failure_reason": "Certification manifest not returned by storage provider.",
@@ -1168,6 +1183,10 @@ class TraceVerifier:
                 "run_id": run_id,
                 "verification_status": "FAILED_VERIFICATION",
                 "is_valid": False,
+                "file_integrity_valid": False,
+                "cryptographically_valid": False,
+                "certificate_valid": False,
+                "certificate_authoritative": False,
                 "has_certificate": bool(manifest),
                 "has_signature": False,
                 "failure_reason": "Provider scope returned artifacts for a different run.",
@@ -1177,6 +1196,10 @@ class TraceVerifier:
                 "run_id": run_id,
                 "verification_status": "FAILED_VERIFICATION",
                 "is_valid": False,
+                "file_integrity_valid": False,
+                "cryptographically_valid": False,
+                "certificate_valid": False,
+                "certificate_authoritative": False,
                 "has_certificate": True,
                 "has_signature": bool(manifest.get("signature") or manifest.get("signatures")),
                 "failure_reason": "Trace bytes not returned by storage provider.",
@@ -1209,8 +1232,10 @@ class TraceVerifier:
                 "terminal_verdict": "UNVERIFIED",
                 "verified": False,
                 "is_valid": False,
+                "file_integrity_valid": False,
                 "cryptographically_valid": False,
                 "certificate_valid": False,
+                "certificate_authoritative": False,
                 "evaluation_passed": passed,
                 "has_certificate": False,
                 "has_signature": False,
@@ -1281,6 +1306,44 @@ class TraceVerifier:
             if valid
             else "FAILED_VERIFICATION"
         )
+        certificate_authoritative = bool(terminal_verdict in {"CERTIFIED_PASS", "ATTESTED_FAIL"})
+
+        # Disentangled validity dimensions
+        file_integrity_valid = valid
+        cryptographically_valid = valid
+        certificate_valid = bool(valid and has_certificate)
+        if not valid:
+            import hashlib
+
+            expected_raw = str(manifest.get("trace_hash") or "")
+            expected_hex = (
+                expected_raw.split(":", 1)[1]
+                if expected_raw.startswith("sha3_256:")
+                else expected_raw
+            )
+            actual_hex = (
+                hashlib.sha3_256(trace_bytes).hexdigest() if trace_bytes is not None else ""
+            )
+            file_integrity_valid = bool(expected_hex and expected_hex == actual_hex)
+            try:
+                cert_res = verify_trace_certificate(
+                    run_id,
+                    bytes(trace_bytes) if trace_bytes else b"",
+                    cert_data=dict(manifest),
+                    scenario_data=scenario_data or manifest.get("scenario_data"),
+                    trace_only=False,
+                )
+                cryptographically_valid = bool(cert_res.get("verified"))
+            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
+                logger.debug(
+                    "Secondary certificate verification failed: %s",
+                    exc,
+                    extra={"operation": "verify_trace_certificate_fallback", "run_id": run_id},
+                    exc_info=True,
+                )
+                cryptographically_valid = False
+            certificate_valid = False
+
         return {
             "run_id": run_id,
             "verification_status": verification_status,
@@ -1288,8 +1351,10 @@ class TraceVerifier:
             "terminal_verdict": terminal_verdict,
             "verified": valid and passed,
             "is_valid": valid,
-            "cryptographically_valid": valid,
-            "certificate_valid": valid,
+            "file_integrity_valid": file_integrity_valid,
+            "cryptographically_valid": cryptographically_valid,
+            "certificate_valid": certificate_valid,
+            "certificate_authoritative": certificate_authoritative,
             "claim_scope": certification_claim_scope(
                 scenario_data or manifest.get("scenario_data") or manifest.get("scenario")
             ),

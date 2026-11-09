@@ -180,7 +180,7 @@ def test_generate_run_pdf_failed_turn_none(tmp_path):
 
 
 def test_generate_run_pdf_non_completed_status(tmp_path):
-    """Status not containing 'completed' → NON_COMPLIANT PQC status branch."""
+    """Unverified run explicitly displays UNVERIFIED PQC/Signature status."""
     run_data = {
         "run_id": "run-fail",
         "scenario": "s",
@@ -195,7 +195,7 @@ def test_generate_run_pdf_non_completed_status(tmp_path):
             generate_run_pdf(run_data, output_path)
 
     txt = output_path.with_suffix(".txt").read_text(encoding="utf-8")
-    assert "NON_COMPLIANT" in txt
+    assert "UNVERIFIED" in txt
 
 
 # ---------------------------------------------------------------------------
@@ -322,21 +322,40 @@ def test_generate_bundle_pdf_zero_runs(suite_data, tmp_path):
 
 
 def test_generate_bundle_pdf_passing_runs_count(suite_data, tmp_path):
-    """Verify pass rate counts COMPLETED and 'pass'-containing statuses."""
-    runs = [
+    """Verify pass rate requires authoritative verification verdict, not mere completion."""
+    unverified_runs = [
         {"run_id": "r1", "status": "COMPLETED"},
         {"run_id": "r2", "status": "passed"},
         {"run_id": "r3", "status": "FAILED"},
     ]
-    output_path = tmp_path / "pr_bundle.pdf"
+    output_unverified = tmp_path / "pr_bundle_unverified.pdf"
 
     with patch("eval_runner.console.pdf_service.WEASYPRINT_AVAILABLE", False):
         with patch("eval_runner.console.pdf_service.REPORTLAB_AVAILABLE", False):
-            result = generate_bundle_pdf(suite_data, runs, output_path)
+            result = generate_bundle_pdf(suite_data, unverified_runs, output_unverified)
 
     assert result is True
-    txt = output_path.with_suffix(".txt").read_text(encoding="utf-8")
-    assert "2/3" in txt
+    txt_unverified = output_unverified.with_suffix(".txt").read_text(encoding="utf-8")
+    assert "0/3 passed" in txt_unverified
+    assert "r1: COMPLETED [UNVERIFIED]" in txt_unverified
+
+    verified_runs = [
+        {"run_id": "r1", "status": "COMPLETED", "verification_status": "VERIFIED"},
+        {"run_id": "r2", "status": "COMPLETED", "terminal_verdict": "CERTIFIED_PASS"},
+        {"run_id": "r3", "status": "FAILED", "verification_status": "ATTESTED_FAIL"},
+    ]
+    output_verified = tmp_path / "pr_bundle_verified.pdf"
+
+    with patch("eval_runner.console.pdf_service.WEASYPRINT_AVAILABLE", False):
+        with patch("eval_runner.console.pdf_service.REPORTLAB_AVAILABLE", False):
+            result_v = generate_bundle_pdf(suite_data, verified_runs, output_verified)
+
+    assert result_v is True
+    txt_verified = output_verified.with_suffix(".txt").read_text(encoding="utf-8")
+    assert "2/3 passed" in txt_verified
+    assert "r1: COMPLETED [VERIFIED]" in txt_verified
+    assert "r2: COMPLETED [VERIFIED]" in txt_verified
+    assert "r3: FAILED [ATTESTED FAIL]" in txt_verified
 
 
 def test_import_weasyprint_success_and_reportlab_failure():
@@ -393,13 +412,29 @@ def test_import_weasyprint_success_and_reportlab_failure():
 
 
 def test_generate_run_pdf_verified_and_pqc_status(tmp_path):
+    # 1. Unverified run without cryptographic proof displays UNVERIFIED
+    output_unverif = tmp_path / "unverif_run.pdf"
+    unverif_data = {
+        "run_id": "run-unverif",
+        "scenario": "unverif_scenario",
+        "passed": True,
+        "has_certificate": True,  # certificate presence alone is not cryptographic validation
+    }
+    with patch("eval_runner.console.pdf_service.WEASYPRINT_AVAILABLE", False):
+        with patch("eval_runner.console.pdf_service.REPORTLAB_AVAILABLE", False):
+            res_unverif = generate_run_pdf(unverif_data, output_unverif)
+    assert res_unverif is True
+    unverif_txt = output_unverif.with_suffix(".txt").read_text(encoding="utf-8")
+    assert "UNVERIFIED" in unverif_txt
+
+    # 2. Cryptographically verified PQC run
     output_pqc = tmp_path / "pqc_run.pdf"
     pqc_data = {
         "run_id": "run-pqc",
         "scenario": "pqc_scenario",
         "passed": True,
-        "pqc_enabled": True,
-        "is_pqc": True,
+        "cryptographically_valid": True,
+        "certificate_valid": True,
         "algorithm": "ML-DSA-65",
         "has_certificate": True,
     }
@@ -411,14 +446,16 @@ def test_generate_run_pdf_verified_and_pqc_status(tmp_path):
     assert "QUANTUM_SECURE" in pqc_txt
     assert "Verified Compliant" in pqc_txt
 
+    # 3. Cryptographically verified classical Ed25519 run
     output_classical = tmp_path / "classical_run.pdf"
     classical_data = {
         "run_id": "run-classical",
         "scenario": "classical_scenario",
         "passed": True,
+        "cryptographically_valid": True,
+        "certificate_valid": True,
+        "algorithm": "Ed25519",
         "has_certificate": True,
-        "is_pqc": False,
-        "pqc_enabled": False,
     }
     with patch("eval_runner.console.pdf_service.WEASYPRINT_AVAILABLE", False):
         with patch("eval_runner.console.pdf_service.REPORTLAB_AVAILABLE", False):
