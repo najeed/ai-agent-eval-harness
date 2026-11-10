@@ -330,10 +330,12 @@ def build_verification_package(
         crypto_verification.get("verified") is True
         and crypto_verification.get("manifest_hash_match") is True
     )
+    authority_valid = bool(crypto_verification.get("authority_valid"))
     evidence_chain_valid = bool(
         signed_certificate
         and cryptographically_verified
         and graph_matches_certificate
+        and authority_valid
         and not corrupt_line_offsets
     )
     if corrupt_line_offsets:
@@ -358,6 +360,13 @@ def build_verification_package(
         verified_outcome, execution_status, score, assertions = (
             "EVIDENCE_INVALID",
             "EVIDENCE_ROOT_MISMATCH",
+            None,
+            [],
+        )
+    elif signed_certificate and cryptographically_verified and not authority_valid:
+        verified_outcome, execution_status, score, assertions = (
+            "AUTHORITY_REJECTED",
+            "AUTHORITY_REJECTED",
             None,
             [],
         )

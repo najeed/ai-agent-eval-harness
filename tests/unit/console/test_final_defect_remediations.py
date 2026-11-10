@@ -556,6 +556,7 @@ def test_state_authority_receipt_tampering_and_forgery_rejection():
 
     from eval_runner import config
     from eval_runner.state_authority import (
+        StateAuthorityKeyMissingError,
         compute_connector_receipt_token,
         get_state_authority_trust_key,
     )
@@ -566,7 +567,7 @@ def test_state_authority_receipt_tampering_and_forgery_rejection():
     finally:
         os.environ.pop("AGENTV_STATE_AUTHORITY_KEY", None)
 
-    # Trust root file on disk and OSError fallback
+    # Trust root file on disk and fail-closed OSError behavior
     import tempfile
 
     with tempfile.TemporaryDirectory() as td:
@@ -578,35 +579,38 @@ def test_state_authority_receipt_tampering_and_forgery_rejection():
             config.TRUST_ROOT = str(tdp)
             assert get_state_authority_trust_key() == b"file_based_key_123"
 
-            # Test OSError reading key file falls back to hashed path
+            # Test OSError reading key file fails closed rather than deriving synthetic keys
             def mock_read_bytes():
                 raise OSError("Permission denied")
 
             with patch.object(Path, "read_bytes", side_effect=mock_read_bytes):
-                derived = get_state_authority_trust_key()
-                assert len(derived) == 32
+                with pytest.raises(StateAuthorityKeyMissingError):
+                    get_state_authority_trust_key()
         finally:
             config.TRUST_ROOT = old_root
 
-    # Default trust key when TRUST_ROOT is None
+    # Default trust key fails closed when TRUST_ROOT is None or key missing
     old_root = getattr(config, "TRUST_ROOT", None)
     try:
         config.TRUST_ROOT = None
-        assert (
+        with pytest.raises(StateAuthorityKeyMissingError):
             get_state_authority_trust_key()
-            == hashlib.sha3_256(b"agentv_default_state_authority_trust_key").digest()
-        )
     finally:
         config.TRUST_ROOT = old_root
 
-    # Token-only receipt verification and invalid non-string mac/token
+    # Token-only receipt without MAC must fail verification (P0-02)
     token_only_receipt = {
         "connector_id": connector_id,
         "source_id": source_id,
         "authenticated": True,
-        "retrieval_token": compute_connector_receipt_token(connector_id, source_id),
+        "retrieval_token": compute_connector_receipt_token(
+            connector_id, source_id, key=b"custom_test_env_key"
+        ),
     }
-    assert verify_connector_receipt_authenticity(token_only_receipt) is True
+    assert (
+        verify_connector_receipt_authenticity(token_only_receipt, key=b"custom_test_env_key")
+        is False
+    )
 
     bad_token_receipt = dict(token_only_receipt, retrieval_token="bad_token_123")
     assert verify_connector_receipt_authenticity(bad_token_receipt) is False

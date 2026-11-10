@@ -302,7 +302,7 @@ export const ComplianceForensics: React.FC = () => {
                 <ShieldCheck className="w-8 h-8 text-emerald-500" />
                 <h4 className="text-xs font-bold text-slate-300">Snapshots Identical</h4>
                 <p className="text-[10px] text-slate-600 mt-1 max-w-xs leading-relaxed">
-                  No added, modified, or deleted records found. Immutability status verified.
+                  No added, modified, or deleted records found across supplied snapshots.
                 </p>
               </div>
             ) : (

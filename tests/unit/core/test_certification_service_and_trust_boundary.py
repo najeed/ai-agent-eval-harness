@@ -131,7 +131,7 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
     from eval_runner.certification_truth import state_claim_failures
     from eval_runner.state_authority import (
         bound_state_snapshot,
-        compute_connector_receipt_token,
+        create_authenticated_connector_receipt,
     )
     from eval_runner.utils import crypto
 
@@ -144,12 +144,11 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
     after, after_hash = bound_state_snapshot({"status": "approved"})
     source_id = "sha3_256:" + crypto.checksum("https://authority.example/state")
     connector_id = f"connector:http:{source_id}"
-    receipt = {
-        "connector_id": connector_id,
-        "source_id": source_id,
-        "authenticated": True,
-        "retrieval_token": compute_connector_receipt_token(connector_id, source_id),
-    }
+    receipt = create_authenticated_connector_receipt(
+        connector_id=connector_id,
+        source_id=source_id,
+        is_authenticated=True,
+    )
     identity = {
         "authenticated": True,
         "source_id": source_id,
@@ -181,30 +180,32 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
     elif defect == "outcome":
         row["passed"] = False
     elif defect == "forged_receipt":
-        row["post_observation_identity"]["connector_receipt"] = {
-            "connector_id": connector_id,
-            "source_id": source_id,
-            "authenticated": True,
-            "retrieval_token": "forged_token_0000",
-        }
+        row["post_observation_identity"]["connector_receipt"] = dict(
+            receipt,
+            mac="0" * 64,
+            signature="0" * 64,
+            retrieval_token="forged_token_0000",
+        )
     elif defect == "missing_connector_id":
         row["post_observation_identity"].pop("connector_id", None)
     elif defect == "missing_receipt":
         row["post_observation_identity"].pop("connector_receipt", None)
     elif defect == "receipt_source_mismatch":
-        row["post_observation_identity"]["connector_receipt"] = {
-            "connector_id": connector_id,
-            "source_id": "sha3_256:" + "f" * 64,
-            "authenticated": True,
-            "retrieval_token": compute_connector_receipt_token(connector_id, source_id),
-        }
+        row["post_observation_identity"]["connector_receipt"] = (
+            create_authenticated_connector_receipt(
+                connector_id=connector_id,
+                source_id="sha3_256:" + "f" * 64,
+                is_authenticated=True,
+            )
+        )
     elif defect == "receipt_unauthenticated":
-        row["post_observation_identity"]["connector_receipt"] = {
-            "connector_id": connector_id,
-            "source_id": source_id,
-            "authenticated": False,
-            "retrieval_token": compute_connector_receipt_token(connector_id, source_id),
-        }
+        row["post_observation_identity"]["connector_receipt"] = (
+            create_authenticated_connector_receipt(
+                connector_id=connector_id,
+                source_id=source_id,
+                is_authenticated=False,
+            )
+        )
     events = (
         []
         if defect == "missing"

@@ -313,6 +313,9 @@ def real_chain(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "TRUST_ROOT", tmp_path / "keys")
     for identity in ("system_id", "eval_kernel"):
         IdentityService._provision_local_identity(identity)
+    (tmp_path / "keys" / "state_authority.key").write_bytes(
+        b"release_chain_state_authority_key_1234"
+    )
 
     key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
     subject = issuer = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "127.0.0.1")])

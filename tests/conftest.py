@@ -470,6 +470,11 @@ def isolate_trust_root(tmp_path, monkeypatch):
     if not system_id_pem.exists():
         system_id_pem.write_bytes(_CACHED_TEST_KEYS["system_id"][0])
 
+    # Seed baseline test state_authority.key if absent
+    state_auth_key = isolated_keys_dir / "state_authority.key"
+    if not state_auth_key.exists():
+        state_auth_key.write_bytes(b"test_state_authority_secret_key_32_bytes_long!!")
+
     monkeypatch.setattr(config, "TRUST_ROOT", isolated_keys_dir)
     monkeypatch.setenv("TRUST_ROOT", str(isolated_keys_dir))
     return isolated_keys_dir

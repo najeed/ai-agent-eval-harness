@@ -436,7 +436,7 @@ class CertificationService:
                 "status": "certified" if certified else "attested_failed",
                 "compliance_status": str(compliance.get("status", "")),
                 "certified": certified,
-                "certificate_issued": True,
+                "certificate_issued": certified,
                 "run_id": run_id,
                 "score": float(compliance.get("score") or 0.0),
                 "manifest": provider_manifest,

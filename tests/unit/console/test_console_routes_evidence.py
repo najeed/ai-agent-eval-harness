@@ -788,3 +788,72 @@ def test_evidence_routes_exhaustive_edge_cases(client, tmp_path: Path, monkeypat
     monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "nonexistent_runs_dir")
     res_nonexistent = client.get("/api/v1/evidence/packages")
     assert res_nonexistent.status_code == 200
+
+
+def test_p0_03_authority_rejection_blocks_verified_verdict(client, tmp_path):
+    """P0-03: Cryptographically intact package must not report VERIFIED on authority rejection."""
+    from unittest.mock import patch
+
+    import eval_runner.console.routes.evidence as ev_module
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    runs_dir = tmp_path / "runs"
+    run_id = f"run-p0-03-{int(datetime.now(UTC).timestamp())}"
+    store = LocalFileRunStore(log_dir=runs_dir)
+    store.create_run(run_id, scenario_id="sec_eval")
+
+    now = datetime.now(UTC)
+    events = [
+        {"event": "run_start", "timestamp": now.isoformat(), "data": {"scenario": "sec_eval"}},
+        {
+            "event": "run_end",
+            "timestamp": (now + timedelta(seconds=1)).isoformat(),
+            "data": {"passed": True},
+        },
+    ]
+    store.append_events(run_id, events)
+
+    manifest_data = {
+        "vc_version": "3.0.0",
+        "harness_version": "2.0.0",
+        "lifecycle": "SEALED",
+        "certification": {
+            "transactional": True,
+            "outcome": "CERTIFIED_PASS",
+        },
+        "compliance": {"status": "pass", "score": 1.0},
+        "verification_package": {
+            "evidence_root_hash": None,
+            "executed_oracle_results": [],
+        },
+    }
+    store.save_run_manifest(run_id, manifest_data)
+    store.update_run_status(run_id, "SEALED")
+
+    mock_graph_res = ({"graph_version": "1.0.0"}, True)
+    with patch.object(ev_module, "_certification_graph", return_value=mock_graph_res):
+        with patch(
+            "eval_runner.verifier.verify_trace_certificate",
+            return_value={
+                "verified": True,
+                "manifest_hash_match": True,
+                "signer_identity": "system_id",
+            },
+        ):
+            # Authoritative verifier rejects the run (authority_valid=False)
+            with patch(
+                "eval_runner.verifier.TraceVerifier.verify_run",
+                return_value={
+                    "is_valid": False,
+                    "terminal_verdict": "REJECTED",
+                    "failure_reason": "Policy violation caught by authority",
+                },
+            ):
+                pkg = ev_module.build_verification_package(
+                    run_id,
+                    run_store=store,
+                )
+                assert pkg["cryptographic_verification"]["authority_valid"] is False
+                assert pkg["evidence_chain_valid"] is False
+                assert pkg["verdict"]["verified_outcome"] == "AUTHORITY_REJECTED"
+                assert pkg["verdict"]["execution_status"] == "AUTHORITY_REJECTED"

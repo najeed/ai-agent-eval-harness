@@ -34,6 +34,10 @@ class StateAuthorityPolicyError(ValueError):
     """Raised when an external-state request violates the egress contract."""
 
 
+class StateAuthorityKeyMissingError(ValueError):
+    """Raised when state authority trust key material is missing, unreadable, or empty."""
+
+
 def _configured_authority_origins() -> set[str]:
     """Return the explicit egress allow-list for scenario-owned authorities.
 
@@ -203,20 +207,29 @@ def bound_state_snapshot(
 
 
 def get_state_authority_trust_key() -> bytes:
-    """Resolve the independently configured secret/trust key for state authority receipts."""
+    """Resolve the independently configured secret/trust key for state authority receipts.
+
+    Fails closed if secret material is missing, unreadable, or empty.
+    Fallback to synthetic or hardcoded default keys is strictly prohibited.
+    """
     key_env = os.getenv("AGENTV_STATE_AUTHORITY_KEY") or os.getenv("STATE_AUTHORITY_KEY")
-    if key_env:
-        return key_env.encode("utf-8")
+    if key_env and key_env.strip():
+        return key_env.strip().encode("utf-8")
     trust_root = getattr(config, "TRUST_ROOT", None)
     if trust_root:
         key_path = Path(trust_root) / "state_authority.key"
         if key_path.is_file():
             try:
-                return key_path.read_bytes().strip()
+                key_bytes = key_path.read_bytes().strip()
+                if key_bytes:
+                    return key_bytes
             except OSError:
                 pass
-        return hashlib.sha3_256(f"state_authority_trust:{trust_root}".encode()).digest()
-    return hashlib.sha3_256(b"agentv_default_state_authority_trust_key").digest()
+    raise StateAuthorityKeyMissingError(
+        "State authority trust key is required but missing, unreadable, or empty. "
+        "Explicitly provision AGENTV_STATE_AUTHORITY_KEY or <TRUST_ROOT>/state_authority.key. "
+        "Falling back to default or synthetic keys is prohibited."
+    )
 
 
 def compute_connector_receipt_mac(
@@ -291,27 +304,42 @@ def verify_connector_receipt_authenticity(
     receipt: Mapping[str, Any],
     key: bytes | None = None,
 ) -> bool:
-    """Cryptographically verify the signature or MAC of a connector receipt under the trust key."""
+    """Cryptographically verify the signature or MAC of a connector receipt under the trust key.
+
+    Observation-specific MAC or signature binding the observation payload and
+    metadata is strictly required. Retrieval-token-only authentication is prohibited.
+    """
     import hmac
 
     if not isinstance(receipt, Mapping):
         return False
     mac = receipt.get("mac") or receipt.get("signature")
-    token = receipt.get("retrieval_token")
-    if not mac and not token:
+    if not mac or not isinstance(mac, str):
         return False
-    resolved_key = key if key is not None else get_state_authority_trust_key()
-    if mac and isinstance(mac, str):
-        expected_mac = compute_connector_receipt_mac(receipt, key=resolved_key)
-        return hmac.compare_digest(mac, expected_mac)
-    if token and isinstance(token, str):
+
+    try:
+        resolved_key = key if key is not None else get_state_authority_trust_key()
+    except StateAuthorityKeyMissingError:
+        return False
+
+    expected_mac = compute_connector_receipt_mac(receipt, key=resolved_key)
+    if not hmac.compare_digest(mac, expected_mac):
+        return False
+
+    # If a retrieval token is also present, validate token binding as defense-in-depth
+    token = receipt.get("retrieval_token")
+    if token:
+        if not isinstance(token, str):
+            return False
         expected_token = compute_connector_receipt_token(
             str(receipt.get("connector_id", "")),
             str(receipt.get("source_id", "")),
             key=resolved_key,
         )
-        return hmac.compare_digest(token, expected_token)
-    return False
+        if not hmac.compare_digest(token, expected_token):
+            return False
+
+    return True
 
 
 class StateAuthorityConnector(ABC):

@@ -62,6 +62,7 @@ def isolated_acceptance_env(tmp_path, monkeypatch, signing_identity):
     )
     (sys_key_dir / "private_key.pem").write_bytes(priv_bytes)
     (sys_key_dir / "public_key.pem").write_bytes(pub_bytes)
+    (trust_dir / "state_authority.key").write_bytes(b"acceptance_state_authority_key_1234")
 
     env = dict(os.environ)
     env["RUN_LOG_DIR"] = str(runs_dir)
@@ -70,6 +71,7 @@ def isolated_acceptance_env(tmp_path, monkeypatch, signing_identity):
     env["ALLOW_SYSTEM_IDENTITY_PROVISIONING"] = "true"
     env["AES_PUBLIC_KEY_SYSTEM_ID"] = pub_bytes.decode("utf-8")
     env["AGENTV_CLI_HITL_SUSPEND"] = "1"
+    env["AGENTV_STATE_AUTHORITY_KEY"] = "acceptance_state_authority_key_1234"
 
     runner = AgentVAcceptanceRunner(repo_root=REPO_ROOT, env=env)
     return {
