@@ -81,14 +81,14 @@ The following tables summarize the licenses of our core dependencies and optiona
 ### 2.6 Optional Ecosystem & Framework Integrations (`pyproject.toml [project.optional-dependencies]`)
 | Package | Version | License | License File |
 | :--- | :--- | :--- | :--- |
-| **ag2** | 1.3.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **ag2** | 1.3.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **cyclecore-pq** | 0.3.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **datasets** | 5.1.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **datasets** | 5.2.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **GitPython** | 3.2.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **google-genai** | 3.0.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **langchain** | 1.4.9 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **google-genai** | 3.1.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **langchain** | 1.4.10 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-anthropic** | 1.7.10 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langchain-core** | 1.7.6 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-core** | 1.7.7 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-google-genai** | 4.4.2 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **langchain-ollama** | 1.1.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-openai** | 1.7.4 | MIT | [MIT.txt](LICENSES/MIT.txt) |
@@ -96,7 +96,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **langserve** | 0.3.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langsmith** | 0.14.17 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **lxml** | 6.1.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **pypdf** | 7.0.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **pypdf** | 7.0.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **python-docx** | 1.2.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **reportlab** | 5.1.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **sentence-transformers** | 6.2.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |

@@ -187,9 +187,13 @@ def _summary_from_provider(run: dict, events: list[dict[str, Any]] | None = None
         "verification_status": run.get("verification_status", "UNKNOWN"),
         "trace_integrity": run.get("trace_integrity", "PROVIDER_MANAGED"),
         "has_certificate": bool(
-            manifest.get("verification_package")
-            or manifest.get("vc_version")
-            or manifest.get("certificate")
+            (
+                manifest.get("verification_package")
+                or manifest.get("vc_version")
+                or manifest.get("certificate")
+            )
+            and not run.get("corrupted")
+            and not manifest.get("corrupted")
         ),
         "identifier": (
             run.get("identifier")
@@ -558,6 +562,16 @@ def _assess_run_certification_readiness(
             f"Finalization outcome '{finalization_outcome}' is not an authoritative pass."
         )
 
+    # 8. Cryptographic Integrity / Tamper Checks (P1-01)
+    if run.get("trace_integrity") in {"CORRUPTED", "TAMPERED", "INVALID"}:
+        blocking_reasons.append(
+            "Trace integrity verification failed (tampered or corrupted trace)."
+        )
+    if run.get("verification_status") in {"FAILED_VERIFICATION", "INVALID"}:
+        blocking_reasons.append("Run evidence failed cryptographic verification.")
+    if manifest.get("corrupted") is True or run.get("corrupted") is True:
+        blocking_reasons.append("Run manifest or trace is corrupted.")
+
     if blocking_reasons:
         return "ineligible", blocking_reasons
     return "eligible", []
@@ -654,9 +668,13 @@ def get_run_status(run_id):
                 "can_certify": eligibility == "eligible",
                 "mtime": run.get("updated_at") or run.get("created_at"),
                 "has_certificate": bool(
-                    manifest.get("verification_package")
-                    or manifest.get("vc_version")
-                    or manifest.get("certificate")
+                    (
+                        manifest.get("verification_package")
+                        or manifest.get("vc_version")
+                        or manifest.get("certificate")
+                    )
+                    and not run.get("corrupted")
+                    and not manifest.get("corrupted")
                 ),
                 "sourced_from_master": False,
                 "scenario": scenario,
@@ -1032,16 +1050,22 @@ def get_public_certificate(run_id):
     if not manifest:
         return jsonify({"error": "Certificate not found"}), 404
 
-    # Publication is explicitly configurable; default to private if explicitly marked private.
+    # Secure by default (P1-04): Certificates are private unless explicitly marked public
+    # or the deployment explicitly enables global public certificate publication.
     is_private = (
         manifest.get("is_private") is True or (run.get("metadata") or {}).get("is_private") is True
     )
-    publication_disabled = (
-        manifest.get("is_public") is False
-        or manifest.get("published") is False
-        or os.getenv("AGENTV_ENABLE_PUBLIC_CERTIFICATES", "true").lower() in ("0", "false")
+    is_explicitly_public = (
+        manifest.get("is_public") is True
+        or manifest.get("published") is True
+        or (run.get("metadata") or {}).get("is_public") is True
     )
-    if is_private or publication_disabled:
+    global_public_enabled = os.getenv("AGENTV_ENABLE_PUBLIC_CERTIFICATES", "false").lower() in (
+        "1",
+        "true",
+    )
+
+    if is_private or not (is_explicitly_public or global_public_enabled):
         return (
             jsonify(
                 {
@@ -1243,7 +1267,7 @@ def verify_run(run_id):
             "is_valid": verified,
             "cryptographically_valid": result.get("cryptographically_valid", verified),
             "file_integrity_valid": result.get("file_integrity_valid", verified),
-            "certificate_valid": result.get("certificate_valid", has_certificate),
+            "certificate_valid": bool(result.get("certificate_valid", False)),
             "certificate_authoritative": result.get("certificate_authoritative", False),
             "has_certificate": has_certificate,
             "algorithm": signer.get("algorithm") or result.get("algorithm"),

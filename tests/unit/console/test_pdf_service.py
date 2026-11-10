@@ -463,3 +463,87 @@ def test_generate_run_pdf_verified_and_pqc_status(tmp_path):
     assert res_classical is True
     classical_txt = output_classical.with_suffix(".txt").read_text(encoding="utf-8")
     assert "CLASSICAL" in classical_txt
+
+
+def test_pdf_service_unverified_verdict_never_claims_verified(tmp_path):
+    """Missing or unverified verdicts must render UNVERIFIED or PASSED, never VERIFIED."""
+    # Run completed (passed=True) with a certificate present, but missing verifier verdict
+    unverified_run = {
+        "run_id": "run-unverified-pdf",
+        "scenario": "loan-audit",
+        "passed": True,
+        "has_certificate": True,
+        "is_certified": True,
+        "verification_status": "UNVERIFIED",
+        "is_authoritative": False,
+    }
+    pdf_path_1 = tmp_path / "unverified_report.pdf"
+    assert generate_run_pdf(unverified_run, pdf_path_1) is True
+    assert pdf_path_1.exists()
+
+    unverified_missing_status = {
+        "run_id": "run-unverified-pdf-missing",
+        "scenario": "loan-audit",
+        "passed": None,
+        "has_certificate": True,
+        "status": "OPEN",
+    }
+    pdf_path_2 = tmp_path / "missing_status_report.pdf"
+    assert generate_run_pdf(unverified_missing_status, pdf_path_2) is True
+    assert pdf_path_2.exists()
+
+    # Authoritative verification verdict strictly renders VERIFIED
+    verified_run = {
+        "run_id": "run-verified-pdf",
+        "scenario": "loan-audit",
+        "passed": True,
+        "verification_status": "CERTIFIED_PASS",
+        "is_authoritative": True,
+    }
+    pdf_path_3 = tmp_path / "verified_report.pdf"
+    assert generate_run_pdf(verified_run, pdf_path_3) is True
+    assert pdf_path_3.exists()
+
+
+def test_pdf_service_all_verdict_branches(tmp_path):
+    """Test all verdict branch mappings in generate_run_pdf."""
+    # 1. ATTESTED_FAIL branch
+    attested_fail_run = {
+        "run_id": "run-attested-fail",
+        "verification_status": "ATTESTED_FAIL",
+        "is_authoritative": True,
+    }
+    p1 = tmp_path / "attested_fail.pdf"
+    assert generate_run_pdf(attested_fail_run, p1) is True
+
+    # 2. FAILED_VERIFICATION branch
+    failed_verif_run = {
+        "run_id": "run-failed-verif",
+        "verification_status": "FAILED_VERIFICATION",
+    }
+    p2 = tmp_path / "failed_verif.pdf"
+    assert generate_run_pdf(failed_verif_run, p2) is True
+
+    # 3. Passed is False -> FAILED branch
+    failed_run = {
+        "run_id": "run-failed",
+        "passed": False,
+    }
+    p3 = tmp_path / "failed.pdf"
+    assert generate_run_pdf(failed_run, p3) is True
+
+    # 4. raw_status UNKNOWN / UNVERIFIED branch
+    unknown_run = {
+        "run_id": "run-unknown",
+        "status": "UNKNOWN",
+    }
+    p4 = tmp_path / "unknown.pdf"
+    assert generate_run_pdf(unknown_run, p4) is True
+
+    # 5. Custom status fallback
+    custom_run = {
+        "run_id": "run-custom",
+        "status": "IN_PROGRESS",
+    }
+    p5 = tmp_path / "custom.pdf"
+    assert generate_run_pdf(custom_run, p5) is True

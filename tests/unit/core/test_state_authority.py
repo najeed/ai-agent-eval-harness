@@ -510,3 +510,415 @@ class TestSessionStateParityWithExternalAuthority:
         ):
             res_bad = verifier._before_value(state_before, {"target": "external_state"}, "bad_path")
             assert res_bad is None
+
+
+def test_state_authority_connector_identity_and_receipt_tokens(monkeypatch: pytest.MonkeyPatch):
+    """Verify HttpStateAuthorityConnector observation identity and cryptographic tokens."""
+    from eval_runner.state_authority import (
+        HttpStateAuthorityConnector,
+        compute_connector_receipt_token,
+    )
+
+    monkeypatch.setattr(
+        "eval_runner.state_authority._validate_external_authority_url",
+        lambda url: url,
+    )
+
+    # 1. Authenticated HTTPS connector
+    https_conn = HttpStateAuthorityConnector(
+        base_url="https://api.authority.example.com/v1",
+        default_headers={"Authorization": "Bearer secret_token"},
+    )
+    ident_auth = https_conn.observation_identity()
+    assert ident_auth["authenticated"] is True
+    assert ident_auth["transport"] == "https"
+    assert ident_auth["connector_id"].startswith("connector:http:")
+    receipt_auth = ident_auth["connector_receipt"]
+    assert receipt_auth["authenticated"] is True
+    assert receipt_auth["source_id"] == ident_auth["source_id"]
+    assert receipt_auth["connector_id"] == ident_auth["connector_id"]
+    assert receipt_auth["retrieval_token"] == compute_connector_receipt_token(
+        ident_auth["connector_id"], ident_auth["source_id"]
+    )
+
+    # 2. Unauthenticated HTTP connector
+    http_conn = HttpStateAuthorityConnector(
+        base_url="http://insecure.authority.local",
+        default_headers={},
+    )
+    ident_unauth = http_conn.observation_identity()
+    assert ident_unauth["authenticated"] is False
+    assert ident_unauth["transport"] == "http"
+    receipt_unauth = ident_unauth["connector_receipt"]
+    assert receipt_unauth["authenticated"] is False
+    assert receipt_unauth["retrieval_token"] == compute_connector_receipt_token(
+        ident_unauth["connector_id"], ident_unauth["source_id"]
+    )
+
+
+def test_state_authority_receipt_tampering_and_forgery_rejection():
+    """Verify authenticated connector receipt creation and authenticity verification."""
+    import hashlib
+    import os
+    import tempfile
+    from pathlib import Path
+
+    from eval_runner import config
+    from eval_runner.certification_truth import state_claim_failures
+    from eval_runner.state_authority import (
+        StateAuthorityKeyMissingError,
+        bound_state_snapshot,
+        compute_connector_receipt_token,
+        create_authenticated_connector_receipt,
+        get_state_authority_trust_key,
+        verify_connector_receipt_authenticity,
+    )
+    from eval_runner.utils import crypto
+
+    source_id = "sha3_256:" + crypto.checksum("https://api.authority.example/orders")
+    connector_id = f"connector:http:{source_id}"
+    resp_digest = "sha3_256:" + hashlib.sha3_256(b'{"status":"approved"}').hexdigest()
+
+    # 1. Authentic receipt verifies cleanly
+    receipt = create_authenticated_connector_receipt(
+        connector_id=connector_id,
+        source_id=source_id,
+        is_authenticated=True,
+        request_spec="GET /orders/123",
+        response_digest=resp_digest,
+        execution_id="exec-1",
+        timestamp="2026-01-01T00:00:00Z",
+    )
+    assert verify_connector_receipt_authenticity(receipt) is True
+
+    # 2. Tampered request is rejected
+    receipt_tampered_req = dict(receipt)
+    receipt_tampered_req["request"] = "GET /orders/999"
+    assert verify_connector_receipt_authenticity(receipt_tampered_req) is False
+
+    # 3. Tampered response_digest is rejected
+    receipt_tampered_digest = dict(receipt)
+    receipt_tampered_digest["response_digest"] = "sha3_256:" + "0" * 64
+    assert verify_connector_receipt_authenticity(receipt_tampered_digest) is False
+
+    # 4. Tampered MAC/signature is rejected
+    receipt_tampered_mac = dict(receipt)
+    receipt_tampered_mac["mac"] = "bad_forged_mac_0000"
+    receipt_tampered_mac["signature"] = "bad_forged_mac_0000"
+    receipt_tampered_mac.pop("retrieval_token", None)
+    assert verify_connector_receipt_authenticity(receipt_tampered_mac) is False
+
+    # 5. Non-mapping or empty receipt is rejected
+    assert verify_connector_receipt_authenticity("not-a-dict") is False  # type: ignore[arg-type]
+    assert verify_connector_receipt_authenticity({}) is False
+
+    # 6. Mismatched response_digest in state_claim_failures produces failure
+    assertion = {"target": "authority:orders", "property": "status", "expected": "approved"}
+    scenario = {
+        "metadata": {
+            "agent": {"endpoint": "https://agent.example/api"},
+            "state_authorities": {"orders": {"url": "https://api.authority.example/orders"}},
+        },
+        "workflow": {"nodes": [{"id": "node-1", "expected_outcome": [assertion]}]},
+    }
+    before, before_hash = bound_state_snapshot({"status": "pending"})
+    after, after_hash = bound_state_snapshot({"status": "approved"})
+
+    # Receipt claiming a different response digest than actual post_snapshot_hash
+    tampered_receipt = create_authenticated_connector_receipt(
+        connector_id=connector_id,
+        source_id=source_id,
+        is_authenticated=True,
+        response_digest="sha3_256:" + "f" * 64,
+    )
+    row = {
+        "assertion": assertion,
+        "source": "authority:orders",
+        "pre_snapshot_hash": before_hash,
+        "post_snapshot_hash": after_hash,
+        "pre_observation": before,
+        "post_observation": after,
+        "pre_observation_identity": {
+            "authenticated": True,
+            "source_id": source_id,
+            "connector_id": connector_id,
+            "connector_receipt": tampered_receipt,
+        },
+        "post_observation_identity": {
+            "authenticated": True,
+            "source_id": source_id,
+            "connector_id": connector_id,
+            "connector_receipt": tampered_receipt,
+        },
+        "actual_before": "pending",
+        "actual_after": "approved",
+        "passed": True,
+    }
+    events = [
+        {
+            "event": "execution_graph_node",
+            "scenario_node_id": "node-1",
+            "execution_instance_id": "node-1:attempt:1",
+            "status": "completed",
+            "transition_evidence": [row],
+        }
+    ]
+    failures = state_claim_failures(scenario, events)
+    assert any("InvalidIndependentStateEvidence" in f for f in failures)
+
+    # 7. Additional branch coverage for receipt validation and trust keys
+    # Environment variable trust key resolution
+    os.environ["AGENTV_STATE_AUTHORITY_KEY"] = "custom_test_env_key"
+    try:
+        assert get_state_authority_trust_key() == b"custom_test_env_key"
+    finally:
+        os.environ.pop("AGENTV_STATE_AUTHORITY_KEY", None)
+
+    # Trust root file on disk and fail-closed OSError behavior
+    with tempfile.TemporaryDirectory() as td:
+        tdp = Path(td)
+        key_file = tdp / "state_authority.key"
+        key_file.write_bytes(b"file_based_key_123")
+        old_root = getattr(config, "TRUST_ROOT", None)
+        try:
+            config.TRUST_ROOT = str(tdp)
+            assert get_state_authority_trust_key() == b"file_based_key_123"
+
+            # Test OSError reading key file fails closed rather than deriving synthetic keys
+            def mock_read_bytes():
+                raise OSError("Permission denied")
+
+            with patch.object(Path, "read_bytes", side_effect=mock_read_bytes):
+                with pytest.raises(StateAuthorityKeyMissingError):
+                    get_state_authority_trust_key()
+        finally:
+            config.TRUST_ROOT = old_root
+
+    # Default trust key fails closed when TRUST_ROOT is None or key missing
+    old_root = getattr(config, "TRUST_ROOT", None)
+    try:
+        config.TRUST_ROOT = None
+        with pytest.raises(StateAuthorityKeyMissingError):
+            get_state_authority_trust_key()
+    finally:
+        config.TRUST_ROOT = old_root
+
+    # Token-only receipt without MAC must fail verification
+    token_only_receipt = {
+        "connector_id": connector_id,
+        "source_id": source_id,
+        "authenticated": True,
+        "retrieval_token": compute_connector_receipt_token(
+            connector_id, source_id, key=b"custom_test_env_key"
+        ),
+    }
+    assert (
+        verify_connector_receipt_authenticity(token_only_receipt, key=b"custom_test_env_key")
+        is False
+    )
+
+    bad_token_receipt = dict(token_only_receipt, retrieval_token="bad_token_123")
+    assert verify_connector_receipt_authenticity(bad_token_receipt) is False
+
+    invalid_types_receipt = {
+        "connector_id": connector_id,
+        "source_id": source_id,
+        "mac": 12345,
+        "retrieval_token": 12345,
+    }
+    assert verify_connector_receipt_authenticity(invalid_types_receipt) is False
+
+    # Coverage for state_claim_failures failure branches
+    # a. Receipt not mapping
+    row_bad_receipt = dict(
+        row,
+        pre_observation_identity=dict(
+            row["pre_observation_identity"], connector_receipt="not-a-dict"
+        ),
+    )
+    assert any(
+        "InvalidIndependentStateEvidence" in f
+        for f in state_claim_failures(
+            scenario,
+            [
+                {
+                    "event": "execution_graph_node",
+                    "scenario_node_id": "node-1",
+                    "execution_instance_id": "node-1:attempt:1",
+                    "status": "completed",
+                    "transition_evidence": [row_bad_receipt],
+                }
+            ],
+        )
+    )
+
+    # b. Receipt source mismatch
+    row_source_mismatch = dict(
+        row,
+        pre_observation_identity=dict(
+            row["pre_observation_identity"],
+            connector_receipt=dict(receipt, source_id="sha3_256:other"),
+        ),
+    )
+    assert any(
+        "InvalidIndependentStateEvidence" in f
+        for f in state_claim_failures(
+            scenario,
+            [
+                {
+                    "event": "execution_graph_node",
+                    "scenario_node_id": "node-1",
+                    "execution_instance_id": "node-1:attempt:1",
+                    "status": "completed",
+                    "transition_evidence": [row_source_mismatch],
+                }
+            ],
+        )
+    )
+
+    # c. Receipt unauthenticated
+    row_unauth = dict(
+        row,
+        pre_observation_identity=dict(
+            row["pre_observation_identity"], connector_receipt=dict(receipt, authenticated=False)
+        ),
+    )
+    assert any(
+        "InvalidIndependentStateEvidence" in f
+        for f in state_claim_failures(
+            scenario,
+            [
+                {
+                    "event": "execution_graph_node",
+                    "scenario_node_id": "node-1",
+                    "execution_instance_id": "node-1:attempt:1",
+                    "status": "completed",
+                    "transition_evidence": [row_unauth],
+                }
+            ],
+        )
+    )
+
+    # d. Observation snapshot hash mismatch
+    row_hash_mismatch = dict(row, pre_snapshot_hash="sha3_256:corrupt_hash")
+    assert any(
+        "InvalidIndependentStateEvidence" in f
+        for f in state_claim_failures(
+            scenario,
+            [
+                {
+                    "event": "execution_graph_node",
+                    "scenario_node_id": "node-1",
+                    "execution_instance_id": "node-1:attempt:1",
+                    "status": "completed",
+                    "transition_evidence": [row_hash_mismatch],
+                }
+            ],
+        )
+    )
+
+    # e. Pre vs post authority mismatch
+    row_diff_auth = dict(
+        row,
+        post_observation_identity=dict(
+            row["post_observation_identity"], connector_id="connector:http:different"
+        ),
+    )
+    assert any(
+        "InvalidIndependentStateEvidence" in f
+        for f in state_claim_failures(
+            scenario,
+            [
+                {
+                    "event": "execution_graph_node",
+                    "scenario_node_id": "node-1",
+                    "execution_instance_id": "node-1:attempt:1",
+                    "status": "completed",
+                    "transition_evidence": [row_diff_auth],
+                }
+            ],
+        )
+    )
+
+    # f. Receipt missing response digest binding
+    receipt_no_resp_digest = dict(receipt)
+    receipt_no_resp_digest.pop("response_digest", None)
+    row_no_resp_digest = dict(
+        row,
+        pre_observation_identity=dict(
+            row["pre_observation_identity"],
+            connector_receipt=receipt_no_resp_digest,
+        ),
+    )
+    assert any(
+        "InvalidIndependentStateEvidence" in f
+        for f in state_claim_failures(
+            scenario,
+            [
+                {
+                    "event": "execution_graph_node",
+                    "scenario_node_id": "node-1",
+                    "execution_instance_id": "node-1:attempt:1",
+                    "status": "completed",
+                    "transition_evidence": [row_no_resp_digest],
+                }
+            ],
+        )
+    )
+
+
+def test_connector_receipt_mac_binds_authenticated_field():
+    """Flipping authenticated from False to True invalidates the connector receipt MAC."""
+    from eval_runner.state_authority import (
+        create_authenticated_connector_receipt,
+        verify_connector_receipt_authenticity,
+    )
+
+    unauth_receipt = create_authenticated_connector_receipt(
+        connector_id="connector:http:test",
+        source_id="sha3_256:abc",
+        is_authenticated=False,
+        request_spec="GET /test",
+        response_digest="sha3_256:123",
+    )
+    assert unauth_receipt["authenticated"] is False
+    assert verify_connector_receipt_authenticity(unauth_receipt) is True
+
+    # Tamper authenticated: False -> True without recomputing MAC
+    tampered = dict(unauth_receipt, authenticated=True)
+    assert verify_connector_receipt_authenticity(tampered) is False
+
+
+def test_private_ip_guard_rejects_non_global_addresses(monkeypatch):
+    """_validate_external_authority_url rejects non-global addresses unless explicit CI loopback."""
+    import socket
+
+    from eval_runner.state_authority import (
+        StateAuthorityPolicyError,
+        _validate_external_authority_url,
+    )
+
+    # Allowlist an external domain
+    monkeypatch.setenv("AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST", "https://api.partner.example")
+
+    # If api.partner.example resolves to 10.0.0.1 (private RFC 1918), must be rejected
+    mock_addrs = [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("10.0.0.1", 443))]
+    with patch("socket.getaddrinfo", return_value=mock_addrs):
+        with pytest.raises(StateAuthorityPolicyError) as exc_info:
+            _validate_external_authority_url("https://api.partner.example/state")
+        assert "resolves to a non-global address" in str(exc_info.value)
+
+    # If api.partner.example resolves to 169.254.169.254 (cloud metadata), must be rejected
+    mock_meta_addrs = [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("169.254.169.254", 443))]
+    with patch("socket.getaddrinfo", return_value=mock_meta_addrs):
+        with pytest.raises(StateAuthorityPolicyError) as exc_info:
+            _validate_external_authority_url("https://api.partner.example/state")
+        assert "resolves to a non-global address" in str(exc_info.value)
+
+    # Opt-in via AGENTV_ALLOW_PRIVATE_STATE_AUTHORITIES allows private IPs
+    monkeypatch.setenv("AGENTV_ALLOW_PRIVATE_STATE_AUTHORITIES", "1")
+    with patch("socket.getaddrinfo", return_value=mock_addrs):
+        assert (
+            _validate_external_authority_url("https://api.partner.example/state")
+            == "https://api.partner.example/state"
+        )

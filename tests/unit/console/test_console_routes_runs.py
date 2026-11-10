@@ -12,6 +12,9 @@ import pytest
 from flask import Flask
 
 import eval_runner.console.routes.runs as runs
+from eval_runner import config
+from eval_runner.console.app import create_app
+from eval_runner.reference.local_run_store import LocalFileRunStore
 
 
 @pytest.fixture
@@ -474,3 +477,470 @@ def test_get_verification_certificate_sanitizes_credentials(app, provider_scope)
             "Authorization"
         ]
         assert auth_header == "[REDACTED]"
+
+
+@pytest.fixture
+def run_app_and_store(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    runs_dir = tmp_path / "runs"
+    reports_dir = tmp_path / "reports"
+    keys_dir = tmp_path / "keys"
+    runs_dir.mkdir(parents=True, exist_ok=True)
+    reports_dir.mkdir(parents=True, exist_ok=True)
+    keys_dir.mkdir(parents=True, exist_ok=True)
+
+    monkeypatch.setenv("AGENTV_TEST_AUTH_BYPASS", "1")
+    monkeypatch.setattr(config, "RUN_LOG_DIR", runs_dir)
+    monkeypatch.setattr(config, "REPORTS_DIR", reports_dir)
+    monkeypatch.setattr(config, "TRUST_ROOT", keys_dir)
+
+    store = LocalFileRunStore(log_dir=runs_dir)
+    application = create_app(run_store=store)
+    application.config["TESTING"] = True
+    return application, store
+
+
+def test_certificate_endpoint_marks_unverified_manifest_explicitly(run_app_and_store):
+    """/v1/certificates/<run_id> invokes TraceVerifier and tags unverified status."""
+    app, store = run_app_and_store
+    client = app.test_client()
+
+    run_id = "run-unverified-cert-test"
+    store.create_run(run_id, scenario_id="sec-1")
+
+    manifest = {
+        "run_id": run_id,
+        "vc_version": "2.0.0",
+        "status": "PASS",
+        "verification_status": "CLAIMED_PASS",
+        "certificate": {"signature": "mock_unverified_sig"},
+    }
+    store.save_run_manifest(run_id, manifest)
+
+    mock_verif = MagicMock()
+    mock_verif.is_valid = False
+    mock_verif.certificate_valid = False
+    mock_verif.cryptographically_valid = False
+    mock_verif.file_integrity_valid = True
+    mock_verif.evaluation_passed = False
+    mock_verif.is_authoritative = False
+    mock_verif.certificate_authoritative = False
+    mock_verif.status = "UNVERIFIED"
+    mock_verif.terminal_verdict = "UNVERIFIED"
+    mock_verif.claim_scope = {}
+
+    with patch("eval_runner.verifier.TraceVerifier.verify_run", return_value=mock_verif):
+        resp = client.get(f"/v1/certificates/{run_id}")
+        assert resp.status_code == 200
+        data = resp.get_json()
+
+        assert data["verification_status"] == "UNVERIFIED"
+        assert data["certificate_authoritative"] is False
+        assert data["is_authoritative"] is False
+        assert data["certificate_valid"] is False
+        assert data["cryptographically_valid"] is False
+        assert data["file_integrity_valid"] is True
+        assert data["evaluation_passed"] is False
+
+    with patch(
+        "eval_runner.verifier.TraceVerifier.verify_run",
+        side_effect=RuntimeError("verifier error"),
+    ):
+        resp2 = client.get(f"/v1/certificates/{run_id}")
+        assert resp2.status_code == 200
+        data2 = resp2.get_json()
+        assert data2["verification_status"] == "UNVERIFIED"
+        assert data2["certificate_authoritative"] is False
+        assert data2["is_authoritative"] is False
+
+
+def test_public_certificate_endpoint_reflects_authoritative_verification(
+    run_app_and_store,
+):
+    """/v1/certificates/<run_id>/public projects verified facts without unverified claims."""
+    app, store = run_app_and_store
+    client = app.test_client()
+
+    run_id = "run-public-cert-test"
+    store.create_run(run_id, scenario_id="sec-1")
+
+    manifest = {
+        "run_id": run_id,
+        "vc_version": "2.0.0",
+        "status": "PASS",
+        "algorithm": "ML-DSA-65",
+        "signature": "valid_pqc_sig",
+        "is_public": True,
+    }
+    store.save_run_manifest(run_id, manifest)
+
+    mock_verif = MagicMock()
+    mock_verif.is_valid = True
+    mock_verif.certificate_valid = True
+    mock_verif.cryptographically_valid = True
+    mock_verif.file_integrity_valid = True
+    mock_verif.evaluation_passed = True
+    mock_verif.is_authoritative = True
+    mock_verif.status = "CERTIFIED_PASS"
+    mock_verif.terminal_verdict = "CERTIFIED_PASS"
+    mock_verif.claim_scope = {}
+
+    with patch("eval_runner.verifier.TraceVerifier.verify_run", return_value=mock_verif):
+        resp = client.get(f"/v1/certificates/{run_id}/public")
+        assert resp.status_code == 200
+        data = resp.get_json()
+
+        assert data["verification_status"] == "CERTIFIED_PASS"
+        assert data["certificate_authoritative"] is True
+        assert data["certificate_valid"] is True
+        assert data["cryptographically_valid"] is True
+        assert data["algorithm"] == "ML-DSA-65"
+
+
+def test_certificate_endpoints_error_and_edge_branches(run_app_and_store):
+    """Test error paths in /v1/certificates/<run_id> and public projection."""
+    app, store = run_app_and_store
+    client = app.test_client()
+
+    # 1. Non-existent run -> 404
+    resp = client.get("/v1/certificates/run-non-existent")
+    assert resp.status_code == 404
+    resp_pub = client.get("/v1/certificates/run-non-existent/public")
+    assert resp_pub.status_code == 404
+
+    # 2. Corrupted run record -> 500
+    corrupt_id = "run-corrupted-test"
+    store.create_run(corrupt_id, scenario_id="s1")
+    vault = store._get_run_vault(corrupt_id)
+    store._write_json_durable(store._record_path(vault), {"corrupted": True, "run_id": corrupt_id})
+    resp_corrupt = client.get(f"/v1/certificates/{corrupt_id}")
+    assert resp_corrupt.status_code == 500
+    resp_corrupt_pub = client.get(f"/v1/certificates/{corrupt_id}/public")
+    assert resp_corrupt_pub.status_code == 500
+
+    # 3. Manifest missing on disk -> 404
+    valid_id = "run-no-manifest-test"
+    store.create_run(valid_id, scenario_id="s1")
+    resp_no_man = client.get(f"/v1/certificates/{valid_id}")
+    assert resp_no_man.status_code == 404
+    resp_no_man_pub = client.get(f"/v1/certificates/{valid_id}/public")
+    assert resp_no_man_pub.status_code == 404
+
+    # 4. Manifest corruption exception -> 500
+    with patch.object(store, "get_manifest", side_effect=ValueError("Corrupt manifest")):
+        resp_man_err = client.get(f"/v1/certificates/{valid_id}")
+        assert resp_man_err.status_code == 500
+        resp_man_err_pub = client.get(f"/v1/certificates/{valid_id}/public")
+        assert resp_man_err_pub.status_code == 500
+
+    # 5. Manifest exception other than corrupt raises
+    with patch.object(store, "get_manifest", side_effect=ValueError("schema mismatch")):
+        with pytest.raises(ValueError, match="schema mismatch"):
+            client.get(f"/v1/certificates/{valid_id}")
+        with pytest.raises(ValueError, match="schema mismatch"):
+            client.get(f"/v1/certificates/{valid_id}/public")
+
+    # 6. Unverified manifest with NO status key
+    no_status_id = "run-no-status-manifest"
+    store.create_run(no_status_id, scenario_id="s1")
+    store.save_run_manifest(no_status_id, {"run_id": no_status_id, "vc_version": "2.0.0"})
+    with patch("eval_runner.verifier.TraceVerifier.verify_run", side_effect=RuntimeError("fail")):
+        resp_no_stat = client.get(f"/v1/certificates/{no_status_id}")
+        assert resp_no_stat.status_code == 200
+        assert resp_no_stat.get_json()["verification_status"] == "UNVERIFIED"
+
+    # 7. Inactive context returns 404
+    with patch("eval_runner.console.routes.runs._run_is_in_active_context", return_value=False):
+        resp_ctx = client.get(f"/v1/certificates/{no_status_id}")
+        assert resp_ctx.status_code == 404
+
+
+def test_public_certificate_publication_control_and_projection(run_app_and_store):
+    """Verify private runs return 403 and public projections strip sensitive data."""
+    import os
+
+    from eval_runner.console.routes.runs import (
+        PUBLIC_CERTIFICATE_FIELDS,
+        project_public_certificate,
+    )
+
+    app, store = run_app_and_store
+    client = app.test_client()
+
+    # 1. Private run returns 403 Forbidden on public endpoint
+    priv_run_id = "run-private-cert-test"
+    store.create_run(priv_run_id, scenario_id="sec-1")
+    store.save_run_manifest(
+        priv_run_id,
+        {
+            "run_id": priv_run_id,
+            "vc_version": "2.0.0",
+            "is_private": True,
+            "status": "PASS",
+        },
+    )
+    resp_priv = client.get(f"/v1/certificates/{priv_run_id}/public")
+    assert resp_priv.status_code == 403
+    assert "private" in resp_priv.get_json()["error"].lower()
+
+    # 2. Explicit is_public=False returns 403 Forbidden
+    no_pub_run_id = "run-no-public-test"
+    store.create_run(no_pub_run_id, scenario_id="sec-1")
+    store.save_run_manifest(
+        no_pub_run_id,
+        {
+            "run_id": no_pub_run_id,
+            "vc_version": "2.0.0",
+            "is_public": False,
+            "status": "PASS",
+        },
+    )
+    resp_no_pub = client.get(f"/v1/certificates/{no_pub_run_id}/public")
+    assert resp_no_pub.status_code == 403
+
+    # 2b. Secure by default: Unmarked run without is_public returns 403
+    default_unmarked_id = "run-unmarked-public-test"
+    store.create_run(default_unmarked_id, scenario_id="sec-1")
+    store.save_run_manifest(
+        default_unmarked_id,
+        {
+            "run_id": default_unmarked_id,
+            "vc_version": "2.0.0",
+            "status": "PASS",
+        },
+    )
+    resp_unmarked = client.get(f"/v1/certificates/{default_unmarked_id}/public")
+    assert resp_unmarked.status_code == 403
+    assert "private" in resp_unmarked.get_json()["error"].lower()
+
+    # 2c. Global toggle AGENTV_ENABLE_PUBLIC_CERTIFICATES allows publication
+    os.environ["AGENTV_ENABLE_PUBLIC_CERTIFICATES"] = "true"
+    try:
+        with patch(
+            "eval_runner.verifier.TraceVerifier.verify_run", return_value={"is_valid": True}
+        ):
+            resp_env_pub = client.get(f"/v1/certificates/{default_unmarked_id}/public")
+            assert resp_env_pub.status_code == 200
+    finally:
+        os.environ.pop("AGENTV_ENABLE_PUBLIC_CERTIFICATES", None)
+
+    # 3. project_public_certificate strips internal/sensitive fields
+    full_manifest = {
+        "run_id": "run-proj-test",
+        "vc_version": "2.0.0",
+        "status": "CERTIFIED_PASS",
+        "verification_status": "CERTIFIED_PASS",
+        "certificate_authoritative": True,
+        "is_authoritative": True,
+        "evidence_valid": True,
+        "certificate_valid": True,
+        "cryptographically_valid": True,
+        "file_integrity_valid": True,
+        "evaluation_passed": True,
+        "algorithm": "ML-DSA-65",
+        "signature": "valid_sig",
+        "raw_evidence": {"private_key": "sec_12345"},
+        "scenario_inputs": {"customer_ssn": "000-11-2222"},
+        "internal_jwt_secret": "secret_abc",
+        "environment_variables": {"API_KEY": "sk-123456"},
+    }
+    projected = project_public_certificate(full_manifest)
+    assert "raw_evidence" not in projected
+    assert "scenario_inputs" not in projected
+    assert "internal_jwt_secret" not in projected
+    assert "environment_variables" not in projected
+    assert set(projected.keys()).issubset(PUBLIC_CERTIFICATE_FIELDS)
+    assert projected["run_id"] == "run-proj-test"
+    assert projected["algorithm"] == "ML-DSA-65"
+
+
+def test_certificate_endpoints_preserve_attested_fail(run_app_and_store):
+    """Verify authoritative ATTESTED_FAIL is preserved and not collapsed to UNVERIFIED."""
+    app, store = run_app_and_store
+    client = app.test_client()
+
+    run_id = "run-attested-fail-test"
+    store.create_run(run_id, scenario_id="audit-1")
+    manifest = {
+        "run_id": run_id,
+        "vc_version": "2.0.0",
+        "status": "FAILED",
+        "verification_status": "ATTESTED_FAIL",
+        "is_public": True,
+    }
+    store.save_run_manifest(run_id, manifest)
+
+    mock_verif = MagicMock()
+    mock_verif.is_valid = False
+    mock_verif.certificate_valid = False
+    mock_verif.cryptographically_valid = True
+    mock_verif.file_integrity_valid = True
+    mock_verif.evaluation_passed = False
+    mock_verif.is_authoritative = True
+    mock_verif.certificate_authoritative = True
+    mock_verif.status = "ATTESTED_FAIL"
+    mock_verif.terminal_verdict = "ATTESTED_FAIL"
+    mock_verif.claim_scope = {"scope": "external_business_state"}
+
+    with patch("eval_runner.verifier.TraceVerifier.verify_run", return_value=mock_verif):
+        resp = client.get(f"/v1/certificates/{run_id}")
+        assert resp.status_code == 200
+        data = resp.get_json()
+        assert data["verification_status"] == "ATTESTED_FAIL"
+        assert data["terminal_verdict"] == "ATTESTED_FAIL"
+        assert data["certificate_authoritative"] is True
+        assert data["evaluation_passed"] is False
+
+        resp_pub = client.get(f"/v1/certificates/{run_id}/public")
+        assert resp_pub.status_code == 200
+        pub_data = resp_pub.get_json()
+        assert pub_data["verification_status"] == "ATTESTED_FAIL"
+        assert pub_data["terminal_verdict"] == "ATTESTED_FAIL"
+        assert pub_data["certificate_authoritative"] is True
+
+
+def test_run_verify_endpoint_preserves_independent_validity_dimensions(run_app_and_store):
+    """Endpoint preserves cryptographically_valid independently from is_valid."""
+    app, store = run_app_and_store
+    client = app.test_client()
+
+    run_id = "run-verify-dimensions-test"
+    store.create_run(run_id, scenario_id="sec-1")
+    manifest = {
+        "run_id": run_id,
+        "vc_version": "2.0.0",
+        "status": "FAIL",
+        "signatures": [{"identity": "sec-oracle", "algorithm": "ED25519"}],
+    }
+    store.save_run_manifest(run_id, manifest)
+    store.append_events(run_id, [{"event": "start"}])
+
+    mock_verif_result = {
+        "is_valid": False,
+        "cryptographically_valid": True,
+        "file_integrity_valid": True,
+        "certificate_valid": True,
+        "certificate_authoritative": True,
+        "verification_status": "ATTESTED_FAIL",
+        "claim_scope": "external_business_state",
+    }
+
+    with patch("eval_runner.verifier.TraceVerifier.verify_run", return_value=mock_verif_result):
+        resp = client.get(f"/api/v1/runs/{run_id}/verify")
+        assert resp.status_code == 200
+        data = resp.get_json()
+
+        assert data["is_valid"] is False
+        assert data["cryptographically_valid"] is True
+        assert data["file_integrity_valid"] is True
+        assert data["certificate_valid"] is True
+        assert data["certificate_authoritative"] is True
+        assert data["verification_status"] == "ATTESTED_FAIL"
+        assert data["algorithm"] == "ED25519"
+        assert data["signer_identity"] == "sec-oracle"
+
+
+def test_readiness_blocks_tampered_or_unverified_runs():
+    """Readiness blocks runs with tampered trace or failed verification."""
+    from eval_runner.console.routes.runs import _assess_run_certification_readiness
+
+    base_run = {"run_id": "r-tamper", "execution_mode": "live"}
+    manifest = {}
+    events = [
+        {"event": "run_start", "data": {"execution_mode": "live"}},
+        {"event": "evaluator_finalization", "data": {"outcome": "pass"}},
+    ]
+
+    # Tampered trace integrity blocks certification
+    tampered_run = dict(base_run, trace_integrity="TAMPERED")
+    elig, reasons = _assess_run_certification_readiness(
+        run=tampered_run,
+        manifest=manifest,
+        events=events,
+        raw_status="COMPLETED",
+        terminal=True,
+        evidence_nodes=3,
+    )
+    assert elig == "ineligible"
+    assert any("Trace integrity verification failed" in r for r in reasons)
+
+    # Failed verification blocks certification
+    failed_verif_run = dict(base_run, verification_status="FAILED_VERIFICATION")
+    elig_v, reasons_v = _assess_run_certification_readiness(
+        run=failed_verif_run,
+        manifest=manifest,
+        events=events,
+        raw_status="COMPLETED",
+        terminal=True,
+        evidence_nodes=3,
+    )
+    assert elig_v == "ineligible"
+    assert any("failed cryptographic verification" in r for r in reasons_v)
+
+    # Corrupted manifest blocks certification
+    corrupt_manifest = {"corrupted": True}
+    elig_c, reasons_c = _assess_run_certification_readiness(
+        run=base_run,
+        manifest=corrupt_manifest,
+        events=events,
+        raw_status="COMPLETED",
+        terminal=True,
+        evidence_nodes=3,
+    )
+    assert elig_c == "ineligible"
+    assert any("corrupted" in r for r in reasons_c)
+
+
+def test_has_certificate_disentangled_from_artifact_presence(run_app_and_store):
+    """Verification endpoint does not set certificate_valid from artifact presence alone."""
+    app, store = run_app_and_store
+    client = app.test_client()
+
+    run_id = "run-failed-cert-presence"
+    store.create_run(run_id, scenario_id="sec-1")
+    store.save_run_manifest(
+        run_id,
+        {
+            "run_id": run_id,
+            "vc_version": "2.0.0",
+            "certificate": {"signature": "invalid"},
+            "verification_status": "FAILED_VERIFICATION",
+            "status": "FAILED_VERIFICATION",
+        },
+    )
+    store.append_events(run_id, [{"event": "start"}])
+
+    mock_verif = {
+        "is_valid": False,
+        "cryptographically_valid": False,
+        "file_integrity_valid": True,
+        "certificate_valid": False,
+        "certificate_authoritative": False,
+        "verification_status": "FAILED_VERIFICATION",
+    }
+    with patch("eval_runner.verifier.TraceVerifier.verify_run", return_value=mock_verif):
+        resp = client.get(f"/api/v1/runs/{run_id}/verify")
+        assert resp.status_code == 200
+        data = resp.get_json()
+        assert data["has_certificate"] is True
+        assert data["certificate_valid"] is False
+
+    corrupt_run_id = "run-corrupted-manifest"
+    store.create_run(corrupt_run_id, scenario_id="sec-1")
+    store.save_run_manifest(
+        corrupt_run_id,
+        {
+            "run_id": corrupt_run_id,
+            "corrupted": True,
+            "certificate": {"pkg": True},
+        },
+    )
+    from eval_runner.console.routes.runs import _summary_from_provider
+
+    summary = _summary_from_provider(
+        {
+            "run_id": corrupt_run_id,
+            "corrupted": True,
+            "manifest": {"corrupted": True, "certificate": {"pkg": True}},
+        }
+    )
+    assert summary["has_certificate"] is False

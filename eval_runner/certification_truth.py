@@ -59,7 +59,11 @@ def _extract_scenario_nodes(scenario: Mapping) -> list[dict]:
 
 
 def authority_is_independent(url, scenario):
-    """An evaluated agent endpoint cannot serve as its own state authority."""
+    """An evaluated agent endpoint cannot serve as its own state authority.
+
+    Fails closed: when verifying external state claims, the evaluated agent
+    endpoint must be explicitly declared and distinct from the authority origin.
+    """
 
     def origin(value):
         parsed = urlparse(value)
@@ -69,14 +73,31 @@ def authority_is_independent(url, scenario):
             parsed.port or (443 if parsed.scheme == "https" else 80),
         )
 
-    agents = [(scenario.get("metadata") or {}).get("agent"), scenario.get("agent")]
-    agents.extend(node.get("agent") for node in _extract_scenario_nodes(scenario))
-    return all(
-        not isinstance(agent, Mapping)
-        or not isinstance(agent.get("endpoint"), str)
-        or origin(agent["endpoint"]) != origin(url)
-        for agent in agents
-    )
+    raw_agents = [(scenario.get("metadata") or {}).get("agent"), scenario.get("agent")]
+    raw_agents.extend(node.get("agent") for node in _extract_scenario_nodes(scenario))
+    exec_manifest = scenario.get("execution_manifest") or {}
+    if isinstance(exec_manifest, Mapping):
+        raw_agents.append(exec_manifest.get("agent_config"))
+        raw_agents.append(exec_manifest.get("agent"))
+    meta = scenario.get("metadata") or {}
+    if isinstance(meta, Mapping):
+        raw_agents.append(meta.get("agent_config"))
+    raw_agents.append(scenario.get("agent_config"))
+
+    declared_endpoints = []
+    for agent in raw_agents:
+        if isinstance(agent, Mapping):
+            ep = agent.get("endpoint") or agent.get("url")
+            if isinstance(ep, str) and ep.strip():
+                declared_endpoints.append(ep.strip())
+        elif isinstance(agent, str) and agent.startswith(("http://", "https://")):
+            declared_endpoints.append(agent.strip())
+
+    if not declared_endpoints:
+        return False
+
+    auth_origin = origin(url)
+    return all(origin(ep) != auth_origin for ep in declared_endpoints)
 
 
 def state_claim_failures(scenario, events):
@@ -207,12 +228,18 @@ def state_claim_failures(scenario, events):
                             ) != _digest(row[f"{phase}_observation"]):
                                 raise ValueError("Observation content digest mismatch")
                             resp_digest = receipt.get("response_digest")
-                            if resp_digest and resp_digest != row.get(f"{phase}_snapshot_hash"):
+                            if not resp_digest:
+                                raise ValueError("Missing response digest in connector receipt")
+                            if resp_digest != row.get(f"{phase}_snapshot_hash"):
                                 raise ValueError(
                                     "Receipt response digest mismatch with observation"
                                 )
-                        if row.get("pre_observation_identity") != row.get(
-                            "post_observation_identity"
+                        pre_ident = row.get("pre_observation_identity") or {}
+                        post_ident = row.get("post_observation_identity") or {}
+                        if (
+                            pre_ident.get("source_id") != post_ident.get("source_id")
+                            or pre_ident.get("connector_id") != post_ident.get("connector_id")
+                            or pre_ident.get("authenticated") != post_ident.get("authenticated")
                         ):
                             raise ValueError("Observation authority changed")
                         path = assertion.get("property")

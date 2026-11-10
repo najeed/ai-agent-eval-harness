@@ -137,24 +137,41 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
 
     assertion = {"target": "authority:orders", "property": "status", "expected": "approved"}
     scenario = {
-        "metadata": {"state_authorities": {"orders": {"url": "https://authority.example/state"}}},
+        "metadata": {
+            "agent": {"endpoint": "https://agent.example/api"},
+            "state_authorities": {"orders": {"url": "https://authority.example/state"}},
+        },
         "workflow": {"nodes": [{"id": "approve", "expected_outcome": [assertion]}]},
     }
     before, before_hash = bound_state_snapshot({"status": "pending"})
     after, after_hash = bound_state_snapshot({"status": "approved"})
     source_id = "sha3_256:" + crypto.checksum("https://authority.example/state")
     connector_id = f"connector:http:{source_id}"
-    receipt = create_authenticated_connector_receipt(
+    pre_receipt = create_authenticated_connector_receipt(
         connector_id=connector_id,
         source_id=source_id,
         is_authenticated=True,
+        response_digest=before_hash,
     )
-    identity = {
+    post_receipt = create_authenticated_connector_receipt(
+        connector_id=connector_id,
+        source_id=source_id,
+        is_authenticated=True,
+        response_digest=after_hash,
+    )
+    pre_identity = {
         "authenticated": True,
         "source_id": source_id,
         "transport": "https",
         "connector_id": connector_id,
-        "connector_receipt": receipt,
+        "connector_receipt": pre_receipt,
+    }
+    post_identity = {
+        "authenticated": True,
+        "source_id": source_id,
+        "transport": "https",
+        "connector_id": connector_id,
+        "connector_receipt": post_receipt,
     }
     row = {
         "assertion": assertion,
@@ -163,8 +180,8 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
         "post_snapshot_hash": after_hash,
         "pre_observation": before,
         "post_observation": after,
-        "pre_observation_identity": dict(identity),
-        "post_observation_identity": dict(identity),
+        "pre_observation_identity": pre_identity,
+        "post_observation_identity": post_identity,
         "actual_before": "pending",
         "actual_after": "approved",
         "passed": True,
@@ -181,7 +198,7 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
         row["passed"] = False
     elif defect == "forged_receipt":
         row["post_observation_identity"]["connector_receipt"] = dict(
-            receipt,
+            post_receipt,
             mac="0" * 64,
             signature="0" * 64,
             retrieval_token="forged_token_0000",
@@ -2498,3 +2515,32 @@ async def test_ci_gate_rejects_a_valid_negative_attestation(provider, monkeypatc
         },
     )
     assert await handle_gate(SimpleNamespace(run_id="negative", hash=None)) == 1
+
+
+def test_authority_is_independent_fails_closed_without_agent_endpoint():
+    """authority_is_independent fails closed when agent endpoint is undeclared."""
+    from eval_runner.certification_truth import authority_is_independent
+
+    url = "https://authority.example/state"
+
+    # 1. No agent declared -> fails closed (False)
+    scenario_no_agent = {"metadata": {"state_authorities": {"auth": {"url": url}}}}
+    assert authority_is_independent(url, scenario_no_agent) is False
+
+    # 2. Agent declared with same origin -> rejected (False)
+    scenario_same_origin = {
+        "metadata": {
+            "agent": {"endpoint": "https://authority.example/agent"},
+            "state_authorities": {"auth": {"url": url}},
+        }
+    }
+    assert authority_is_independent(url, scenario_same_origin) is False
+
+    # 3. Agent declared with distinct origin -> accepted (True)
+    scenario_independent = {
+        "metadata": {
+            "agent": {"endpoint": "https://agent.example/agent"},
+            "state_authorities": {"auth": {"url": url}},
+        }
+    }
+    assert authority_is_independent(url, scenario_independent) is True

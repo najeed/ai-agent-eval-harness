@@ -90,14 +90,19 @@ def _validate_external_authority_url(url: str) -> str:
 
     if not addresses:
         raise StateAuthorityPolicyError("External state authority host resolved to no addresses")
+    allow_private = os.getenv("AGENTV_ALLOW_PRIVATE_STATE_AUTHORITIES", "").lower() in ("1", "true")
     for address in addresses:
         ip = ipaddress.ip_address(address)
-        if not ip.is_global and origin not in allowed_origins:
-            # Kept as a defense-in-depth guard if the allow-list implementation
-            # is changed: private destinations must *never* be implicit.
-            raise StateAuthorityPolicyError(
-                f"External state authority resolves to a non-global address: {address}"
+        if not ip.is_global:
+            is_local_ci_exception = allow_private or (
+                ip.is_loopback
+                and parsed.hostname in {"127.0.0.1", "localhost", "::1"}
+                and origin in allowed_origins
             )
+            if not is_local_ci_exception:
+                raise StateAuthorityPolicyError(
+                    f"External state authority resolves to a non-global address: {address}"
+                )
     return url
 
 
@@ -243,6 +248,7 @@ def compute_connector_receipt_mac(
     fields = [
         str(receipt_data.get("connector_id", "")),
         str(receipt_data.get("source_id", "")),
+        str(bool(receipt_data.get("authenticated", False))).lower(),
         str(receipt_data.get("request", "")),
         str(receipt_data.get("response_digest", "")),
         str(receipt_data.get("timestamp", "")),
@@ -345,7 +351,11 @@ def verify_connector_receipt_authenticity(
 class StateAuthorityConnector(ABC):
     """Abstract interface for observing external system state authorities."""
 
-    def observation_identity(self) -> dict[str, Any]:
+    def observation_identity(
+        self,
+        response_digest: str | None = None,
+        execution_id: str | None = None,
+    ) -> dict[str, Any]:
         """Custom connectors must establish authenticated provenance explicitly."""
         return {"authenticated": False}
 
@@ -375,7 +385,11 @@ class HttpStateAuthorityConnector(StateAuthorityConnector):
         self.default_headers = default_headers or {}
         self.ssl_context = ssl_context
 
-    def observation_identity(self) -> dict[str, Any]:
+    def observation_identity(
+        self,
+        response_digest: str | None = None,
+        execution_id: str | None = None,
+    ) -> dict[str, Any]:
         credentials = any(
             name.lower() in {"authorization", "x-api-key", "api-key"}
             and isinstance(value, str)
@@ -390,6 +404,8 @@ class HttpStateAuthorityConnector(StateAuthorityConnector):
             source_id=source_id,
             is_authenticated=is_auth,
             request_spec=self.base_url,
+            response_digest=response_digest,
+            execution_id=execution_id,
         )
         return {
             "source_id": source_id,

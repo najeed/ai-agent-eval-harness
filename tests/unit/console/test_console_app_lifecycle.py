@@ -1,5 +1,6 @@
 import json
 import os
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import psutil
@@ -1296,3 +1297,105 @@ class TestConsoleAppExhaustiveCoverage:
         client_debug.get("/api/debugger/state")
         debug_trace_output = stderr_capture.getvalue()
         assert "[Trace] GET /api/debugger/state" in debug_trace_output
+
+
+def test_demo_reset_clears_runs_and_resets_loan_agent(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+):
+    """/api/demo/reset cleans demo runs and restores loan_agent.py from baseline."""
+    from eval_runner import config
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    runs_dir = tmp_path / "runs"
+    reports_dir = tmp_path / "reports"
+    keys_dir = tmp_path / "keys"
+    runs_dir.mkdir(parents=True, exist_ok=True)
+    reports_dir.mkdir(parents=True, exist_ok=True)
+    keys_dir.mkdir(parents=True, exist_ok=True)
+
+    monkeypatch.setenv("AGENTV_TEST_AUTH_BYPASS", "1")
+    monkeypatch.setattr(config, "ENABLE_DEMO", True)
+    monkeypatch.setattr(config, "RUN_LOG_DIR", runs_dir)
+    monkeypatch.setattr(config, "REPORTS_DIR", reports_dir)
+    monkeypatch.setattr(config, "TRUST_ROOT", keys_dir)
+    monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
+
+    store = LocalFileRunStore(log_dir=runs_dir)
+    app = create_app(run_store=store)
+    app.config["TESTING"] = True
+    client = app.test_client()
+
+    # Setup isolated sample_agent/loan_agent_demo in tmp_path
+    demo_dir = tmp_path / "sample_agent" / "loan_agent_demo"
+    demo_dir.mkdir(parents=True, exist_ok=True)
+    baseline_file = demo_dir / "loan_agent_baseline.py"
+    target_file = demo_dir / "loan_agent.py"
+
+    baseline_content = "# Pristine Baseline Loan Agent Code\n"
+    baseline_file.write_text(baseline_content, encoding="utf-8")
+
+    # Simulate tampered / modified loan_agent.py
+    tampered_content = "# Tampered Modified Code from Demo\n"
+    target_file.write_text(tampered_content, encoding="utf-8")
+
+    # Create dummy demo runs in the store
+    demo_run_1 = "run-loan-risk-fail"
+    demo_run_2 = "run-live-baseline-test1"
+    store.create_run(demo_run_1, scenario_id="demo")
+    store.create_run(demo_run_2, scenario_id="demo")
+    assert store.get_run(demo_run_1) is not None
+    assert store.get_run(demo_run_2) is not None
+
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=store):
+        resp = client.post("/api/demo/reset")
+        assert resp.status_code == 200
+        data = resp.get_json()
+
+        assert data["status"] == "reset"
+        assert data["mode"] == "fresh"
+        assert "loan_agent.py" in data["files_reset"]
+        assert demo_run_1 in data["cleared_runs"] or demo_run_2 in data["cleared_runs"]
+
+        # Confirm target_file was restored to pristine baseline
+        assert target_file.read_text(encoding="utf-8") == baseline_content
+
+        # Confirm demo runs deleted
+        assert store.get_run(demo_run_1) is None
+        assert store.get_run(demo_run_2) is None
+
+    # Test error handling branch during demo run deletion
+    broken_store = MagicMock()
+    broken_store.delete_run.side_effect = OSError("filesystem locked")
+    broken_store.list_runs.return_value = [{"run_id": "run-loan-risk-fail"}]
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=broken_store):
+        resp_err = client.post("/api/demo/reset")
+        assert resp_err.status_code == 200
+        assert resp_err.get_json()["status"] == "reset"
+
+    # Test when baseline file does not exist (files_reset is empty)
+    baseline_file.unlink()
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=store):
+        resp_no_base = client.post("/api/demo/reset")
+        assert resp_no_base.status_code == 200
+        assert resp_no_base.get_json()["files_reset"] == []
+
+    # Test error handling when resolve_run_store fails completely
+    with patch(
+        "eval_runner.runtime_services.resolve_run_store",
+        side_effect=RuntimeError("store resolution failure"),
+    ):
+        resp_res_err = client.post("/api/demo/reset")
+        assert resp_res_err.status_code == 200
+        assert resp_res_err.get_json()["status"] == "reset"
+
+    # Test branches where delete_run returns False and non-demo run IDs are present
+    mock_store_branches = MagicMock()
+    mock_store_branches.delete_run.return_value = False
+    mock_store_branches.list_runs.return_value = [
+        {"run_id": "non-demo-run-123"},
+        {"run_id": "run-loan-demo-false"},
+    ]
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=mock_store_branches):
+        resp_branches = client.post("/api/demo/reset")
+        assert resp_branches.status_code == 200
+        assert resp_branches.get_json()["status"] == "reset"

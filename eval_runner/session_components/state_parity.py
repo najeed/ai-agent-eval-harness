@@ -99,11 +99,30 @@ class SessionStateParityVerifier:
                 observations[source] = {"invalid": True}
                 continue
             _, snapshot_hash = bound_state_snapshot(observed)
+            raw_ident = (self._observation_identities.get() or {}).get(source, {})
+            ident = dict(raw_ident) if isinstance(raw_ident, dict) else {}
+            receipt = ident.get("connector_receipt")
+            if (
+                isinstance(receipt, dict)
+                and ident.get("authenticated") is True
+                and receipt.get("response_digest") != snapshot_hash
+            ):
+                from eval_runner.state_authority import create_authenticated_connector_receipt
+
+                ident["connector_receipt"] = create_authenticated_connector_receipt(
+                    connector_id=ident.get("connector_id", ""),
+                    source_id=ident.get("source_id", ""),
+                    is_authenticated=True,
+                    request_spec=receipt.get("request"),
+                    response_digest=snapshot_hash,
+                    execution_id=receipt.get("execution_id"),
+                    timestamp=receipt.get("timestamp"),
+                )
             observations[source] = {
                 "state": copy.deepcopy(observed),
                 "property_path": property_path,
                 "snapshot_hash": snapshot_hash,
-                "observation_identity": (self._observation_identities.get() or {}).get(source, {}),
+                "observation_identity": ident,
             }
         return observations
 
@@ -254,20 +273,39 @@ class SessionStateParityVerifier:
                         "Independent authenticated authority is required for live state evidence"
                     )
                 raw_state = await connector.fetch_state()
+
+                # P0-06: Apply Bounded State Capture & Projection
+                proj = assertion.get("projection") or (
+                    node.get("state_projection") if node else None
+                )
+                bounded_state, snapshot_hash = bound_state_snapshot(raw_state, projection=proj)
+
+                exec_id = getattr(self.session_manager, "run_id", None) or getattr(
+                    self.session_manager, "session_id", None
+                )
+                try:
+                    observation_identity = connector.observation_identity(
+                        response_digest=snapshot_hash,
+                        execution_id=exec_id,
+                    )
+                except (TypeError, AttributeError):
+                    observation_identity = connector.observation_identity()
+
+                if not isinstance(observation_identity, dict):
+                    if inspect.iscoroutine(observation_identity):
+                        observation_identity.close()
+                    observation_identity = {"authenticated": False}
+
                 identities = dict(self._observation_identities.get() or {})
                 identities[target_str] = observation_identity
                 self._observation_identities.set(identities)
+                return bounded_state, property_path
             except Exception as auth_err:
                 logger.warning(
                     f"[StateParity] External state authority '{auth_name}' observation failed: "
                     f"{auth_err}"
                 )
                 return None, "__unobserved_source__"
-
-            # P0-06: Apply Bounded State Capture & Projection
-            proj = assertion.get("projection") or (node.get("state_projection") if node else None)
-            bounded_state, _ = bound_state_snapshot(raw_state, projection=proj)
-            return bounded_state, property_path
 
         # A policy assertion is evaluated against an explicitly declared,
         # independently observable evidence source.  Runtime never infers a

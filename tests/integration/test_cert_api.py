@@ -62,6 +62,7 @@ def test_public_certificate_endpoint_v3(client, tmp_path, monkeypatch):
             }
         },
     }
+    manifest["is_public"] = True
     run_store.save_run_manifest(run_id, manifest)
 
     # 3. Test Anonymous Access to /v1/certificates/<run_id> (Must fail closed with 401)
@@ -113,6 +114,7 @@ def test_certificate_vault_resolution(client, tmp_path, monkeypatch):
         "run_id": run_id,
         "status": "success",
         "provenance_chain": [],
+        "is_public": True,
     }
     manifest_path = run_dir / "run_manifest.json"
     with open(manifest_path, "w") as f:

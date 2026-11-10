@@ -3282,3 +3282,113 @@ def test_uncertified_provider_run_handling(tmp_path, monkeypatch):
     assert res["has_certificate"] is False
     assert res["has_signature"] is False
     assert res["failure_reason"] == "Certification manifest not returned by storage provider."
+
+
+def test_evidence_ledger_verification_with_local_run_store(tmp_path: Path):
+    """LocalFileRunStore.verify_evidence_ledger and get_artifact_bytes contracts."""
+    runs_dir = tmp_path / "ledger_runs"
+    store = LocalFileRunStore(log_dir=runs_dir)
+    run_id = "run-ledger-verify-test"
+    store.create_run(run_id, scenario_id="ledger-scen")
+
+    # Write a test artifact inside the run vault
+    vault = store._get_run_vault(run_id)
+    artifacts_dir = vault / "artifacts"
+    artifacts_dir.mkdir(parents=True, exist_ok=True)
+    evidence_file = artifacts_dir / "db_export.csv"
+    evidence_data = b"id,name,balance\n1,Alice,1000\n2,Bob,500\n"
+    evidence_file.write_bytes(evidence_data)
+
+    expected_hash = "sha3_256:" + hashlib.sha3_256(evidence_data).hexdigest()
+
+    # 1. get_artifact_bytes retrieves matching bytes
+    assert store.get_artifact_bytes(run_id, "artifacts/db_export.csv") == evidence_data
+    assert store.get_artifact_bytes(run_id, "artifacts/missing.csv") is None
+    # Path traversal protection
+    assert store.get_artifact_bytes(run_id, "../../etc/passwd") is None
+
+    # 2. verify_evidence_ledger succeeds with correct hash
+    valid_ledger = {"artifacts/db_export.csv": expected_hash}
+    assert store.verify_evidence_ledger(run_id, valid_ledger) is True
+
+    # 3. verify_evidence_ledger fails with tampered hash
+    tampered_ledger = {"artifacts/db_export.csv": "sha3_256:" + "0" * 64}
+    assert store.verify_evidence_ledger(run_id, tampered_ledger) is False
+
+    # 4. verify_evidence_ledger fails when artifact is missing
+    missing_ledger = {"artifacts/not_found.csv": expected_hash}
+    assert store.verify_evidence_ledger(run_id, missing_ledger) is False
+
+    # 5. verify_evidence_ledger fails with non-mapping input
+    assert store.verify_evidence_ledger(run_id, None) is False  # type: ignore[arg-type]
+
+
+def test_trace_verifier_verify_trace_bytes_with_ledger():
+    """TraceVerifier.verify_trace_bytes executes explicit evidence ledger verification."""
+    run_id = "run-trace-ledger-test"
+    trace_content = b'{"event":"start"}\n'
+    trace_hash = "sha3_256:" + hashlib.sha3_256(trace_content).hexdigest()
+
+    mock_store = MagicMock()
+    mock_store.get_trace_bytes.return_value = trace_content
+
+    # 1. verify_ledger=True with missing evidence_ledger fails
+    manifest_no_ledger = {
+        "run_id": run_id,
+        "trace_hash": trace_hash,
+    }
+    with patch("eval_runner.run_lifecycle.get_run_lifecycle_state", return_value="SEALED"):
+        res_no_ledger = TraceVerifier.verify_trace_bytes(
+            trace_content,
+            manifest_no_ledger,
+            run_store=mock_store,
+            verify_ledger=True,
+            trace_only=True,
+        )
+        assert res_no_ledger is False
+
+    # 2. verify_ledger=True with provider verify_evidence_ledger failing
+    mock_store.verify_evidence_ledger.return_value = False
+    manifest_with_ledger = {
+        "run_id": run_id,
+        "trace_hash": trace_hash,
+        "evidence_ledger": {"artifacts/data.bin": "sha3_256:1111"},
+    }
+    with patch("eval_runner.run_lifecycle.get_run_lifecycle_state", return_value="SEALED"):
+        res_fail = TraceVerifier.verify_trace_bytes(
+            trace_content,
+            manifest_with_ledger,
+            run_store=mock_store,
+            verify_ledger=True,
+            trace_only=True,
+        )
+        assert res_fail is False
+        mock_store.verify_evidence_ledger.assert_called_once_with(
+            run_id, manifest_with_ledger["evidence_ledger"], context=None
+        )
+
+    # 3. verify_ledger=True using get_artifact_bytes fallback when verify_evidence_ledger is absent
+    store_no_verifier = MagicMock(spec=["get_trace_bytes", "get_artifact_bytes"])
+    store_no_verifier.get_trace_bytes.return_value = trace_content
+    store_no_verifier.get_artifact_bytes.return_value = None  # Missing artifact
+    with patch("eval_runner.run_lifecycle.get_run_lifecycle_state", return_value="SEALED"):
+        res_fallback_missing = TraceVerifier.verify_trace_bytes(
+            trace_content,
+            manifest_with_ledger,
+            run_store=store_no_verifier,
+            verify_ledger=True,
+            trace_only=True,
+        )
+        assert res_fallback_missing is False
+
+    # 4. Fallback with artifact bytes hash mismatch
+    store_no_verifier.get_artifact_bytes.return_value = b"mismatched artifact content"
+    with patch("eval_runner.run_lifecycle.get_run_lifecycle_state", return_value="SEALED"):
+        res_fallback_mismatch = TraceVerifier.verify_trace_bytes(
+            trace_content,
+            manifest_with_ledger,
+            run_store=store_no_verifier,
+            verify_ledger=True,
+            trace_only=True,
+        )
+        assert res_fallback_mismatch is False
