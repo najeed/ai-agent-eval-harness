@@ -2573,6 +2573,28 @@ def test_verify_certification_artifact_coverage_booster():
                 # canonical_manifest execution_mode accepted
                 assert not any("UncertifiedExecutionMode" in f for f in res_split["failures"])
 
+                man_rc_only = {
+                    "manifest_id": "man_1",
+                    "run_id": "run_1",
+                    "provisional": False,
+                    "metadata": {"required_oracle_ids": ["o1"]},
+                    "scenario_hash": "sha3_256:scen_hash",
+                    "agent_config": {},
+                    "runtime_config": {"execution_mode": "live"},
+                    "environment": {},
+                }
+                res_dict_rc = TraceVerifier.verify_certification_artifact(
+                    pkg_valid,
+                    raw_trace_bytes=tb,
+                    raw_trace_events=events,
+                    canonical_manifest=man_rc_only,
+                    scenario_data={"id": "scen_1", "required_oracle_ids": ["o1"]},
+                    require_signature=False,
+                    key_registry={"eval_kernel": "dummy_pem"},
+                )
+                assert not any("ExecutionModeMismatch" in f for f in res_dict_rc["failures"])
+                assert not any("UncertifiedExecutionMode" in f for f in res_dict_rc["failures"])
+
                 class CanonicalManifestObj:
                     execution_mode = "live"
                     runtime_config = {}
@@ -2589,6 +2611,25 @@ def test_verify_certification_artifact_coverage_booster():
                 assert not any("ExecutionModeMismatch" in f for f in res_obj_fallback["failures"])
                 assert not any(
                     "UncertifiedExecutionMode" in f for f in res_obj_fallback["failures"]
+                )
+
+                class CanonicalManifestRuntimeConfigOnlyObj:
+                    runtime_config = {"execution_mode": "live"}
+
+                res_obj_rc_fallback = TraceVerifier.verify_certification_artifact(
+                    pkg_valid,
+                    raw_trace_bytes=tb,
+                    raw_trace_events=events,
+                    canonical_manifest=CanonicalManifestRuntimeConfigOnlyObj(),
+                    scenario_data={"id": "scen_1", "required_oracle_ids": ["o1"]},
+                    require_signature=False,
+                    key_registry={"eval_kernel": "dummy_pem"},
+                )
+                assert not any(
+                    "ExecutionModeMismatch" in f for f in res_obj_rc_fallback["failures"]
+                )
+                assert not any(
+                    "UncertifiedExecutionMode" in f for f in res_obj_rc_fallback["failures"]
                 )
 
     # pkg_reqs != fin_reqs when manifest_reqs == fin_reqs
