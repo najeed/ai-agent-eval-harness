@@ -19,6 +19,7 @@ from agentv_runtime.manifest import resolve_artifact_scope
 from agentv_runtime.versions import VERIFICATION_PACKAGE_VERSION
 from eval_runner.console.auth_manager import active_runtime_context, require_permission
 from eval_runner.console.routes.runs import _active_run_store, _run_is_in_active_context
+from eval_runner.sanitizer import sanitize_credentials
 
 logger = logging.getLogger(__name__)
 
@@ -456,8 +457,8 @@ def build_verification_package(
             or "production"
         ),
         "chain": chain,
-        "manifest": manifest_data,
-        "scenario": scenario_resolved,
+        "manifest": sanitize_credentials(manifest_data),
+        "scenario": sanitize_credentials(scenario_resolved),
         "verdict": {
             "execution_status": execution_status,
             "verified_outcome": verified_outcome,

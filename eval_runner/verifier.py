@@ -2015,6 +2015,31 @@ class VerificationAuthority:
     """
 
     @staticmethod
+    def _resolve_package_inputs(
+        package: Any,
+        canonical_manifest: Any = None,
+        scenario_data: Any | None = None,
+    ) -> tuple[Any, Any, Any]:
+        """Unwraps agentv_verification_package presentation envelopes if provided."""
+        if isinstance(package, dict) and package.get("format") == "agentv_verification_package":
+            pkg_manifest = package.get("manifest") or {}
+            if canonical_manifest is None:
+                canonical_manifest = (
+                    pkg_manifest.get("execution_manifest")
+                    if isinstance(pkg_manifest, dict) and "execution_manifest" in pkg_manifest
+                    else pkg_manifest
+                )
+            if scenario_data is None:
+                scenario_data = package.get("scenario")
+            pkg_data = (
+                pkg_manifest.get("verification_package")
+                if isinstance(pkg_manifest, dict) and "verification_package" in pkg_manifest
+                else package
+            )
+            return pkg_data, canonical_manifest, scenario_data
+        return package, canonical_manifest, scenario_data
+
+    @staticmethod
     def verify_package_signature_only(
         package: Any,
         public_key_pem: str | None = None,
@@ -2027,6 +2052,8 @@ class VerificationAuthority:
         Requires an external trust anchor (public_key_pem, trust_root, or key_registry).
         """
         from agentv_runtime.package import VerificationPackage
+
+        package, _, _ = VerificationAuthority._resolve_package_inputs(package)
 
         if isinstance(package, dict):
             pkg = VerificationPackage.from_dict(package)
@@ -2086,6 +2113,10 @@ class VerificationAuthority:
         import hashlib
 
         from agentv_runtime.package import VerificationPackage
+
+        package, canonical_manifest, scenario_data = VerificationAuthority._resolve_package_inputs(
+            package, canonical_manifest=canonical_manifest, scenario_data=scenario_data
+        )
 
         if isinstance(package, dict):
             pkg = VerificationPackage.from_dict(package)
@@ -2776,6 +2807,10 @@ class VerificationAuthority:
         import hashlib
 
         from agentv_runtime.package import VerificationPackage
+
+        package, canonical_manifest, scenario_data = VerificationAuthority._resolve_package_inputs(
+            package, canonical_manifest=canonical_manifest, scenario_data=scenario_data
+        )
 
         if isinstance(package, dict):
             pkg = VerificationPackage.from_dict(package)
@@ -3483,6 +3518,10 @@ class VerificationAuthority:
         """
         from agentv_runtime.package import VerificationPackage
 
+        package, canonical_manifest, scenario_data = cls._resolve_package_inputs(
+            package, canonical_manifest=canonical_manifest, scenario_data=scenario_data
+        )
+
         if isinstance(package, dict):
             pkg = VerificationPackage.from_dict(package)
         else:
@@ -3923,7 +3962,13 @@ class VerificationAuthority:
                     (pkg.metadata or {}).get("evidence_capture"), raw_trace_bytes, effective_events
                 )
             )
-        failures.extend(state_claim_failures(scenario_data, effective_events))
+        failures.extend(
+            state_claim_failures(
+                scenario_data,
+                effective_events,
+                execution_manifest=canonical_manifest,
+            )
+        )
         pkg_art_res = cls.verify_package_artifacts(
             package=pkg,
             raw_trace_bytes=raw_trace_bytes,

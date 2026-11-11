@@ -460,6 +460,17 @@ async def handle_verify_package(args):
                 with open(scen_p, encoding="utf-8") as sf:
                     scenario_data = json.load(sf)
 
+        if isinstance(pkg_data, dict) and pkg_data.get("format") == "agentv_verification_package":
+            if execution_manifest is None:
+                pkg_manifest = pkg_data.get("manifest") or {}
+                execution_manifest = (
+                    pkg_manifest.get("execution_manifest")
+                    if isinstance(pkg_manifest, dict) and "execution_manifest" in pkg_manifest
+                    else pkg_manifest
+                )
+            if scenario_data is None:
+                scenario_data = pkg_data.get("scenario")
+
         require_scen = getattr(args, "require_scenario", False) is True or scenario_data is not None
 
         from .. import verifier

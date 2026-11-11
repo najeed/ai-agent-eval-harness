@@ -26,7 +26,7 @@ def test_matching_expectations_reconcile():
     )
     assert rec["reconciled"] is True
     assert rec["expected_change_checks"] == [
-        {"path": "balance", "expected": 50, "actual": 50, "matched": True}
+        {"path": "balance", "expected": 50, "actual": 50, "exists": True, "matched": True}
     ]
     assert rec["observations"] == {"used_tools": ["withdraw"]}
     assert rec["execution_mode"] == "live"
@@ -86,3 +86,44 @@ def test_mode_is_recorded_verbatim(mode):
         node_id="n", execution_mode=mode, state_before={}, state_after={}
     )
     assert rec["execution_mode"] == mode
+
+
+def test_missing_path_vs_explicit_null_reconciliation():
+    """Distinguish missing properties from explicit null values."""
+    # Case 1: Missing property expecting None -> MUST FAIL
+    rec_missing = build_reconciliation_record(
+        node_id="n1",
+        execution_mode="live",
+        state_before={},
+        state_after={"user": {}},
+        expected_state_changes=[{"path": "user.email", "value": None}],
+    )
+    assert rec_missing["reconciled"] is False
+    assert rec_missing["expected_change_checks"][0]["exists"] is False
+    assert rec_missing["expected_change_checks"][0]["matched"] is False
+
+    # Case 2: Explicit null property expecting None -> MUST PASS
+    rec_explicit_null = build_reconciliation_record(
+        node_id="n1",
+        execution_mode="live",
+        state_before={},
+        state_after={"user": {"email": None}},
+        expected_state_changes=[{"path": "user.email", "value": None}],
+    )
+    assert rec_explicit_null["reconciled"] is True
+    assert rec_explicit_null["expected_change_checks"][0]["exists"] is True
+    assert rec_explicit_null["expected_change_checks"][0]["matched"] is True
+
+
+def test_idempotent_convergence_reconciles_without_state_delta():
+    """Declarative convergence: achieving target state without state delta is valid."""
+    rec = build_reconciliation_record(
+        node_id="n1",
+        execution_mode="live",
+        state_before={"account": {"status": "ACTIVE"}},
+        state_after={"account": {"status": "ACTIVE"}},
+        expected_state_changes=[{"path": "account.status", "value": "ACTIVE"}],
+    )
+    assert rec["reconciled"] is True
+    assert rec["state_hash_before"] == rec["state_hash_after"]
+    assert rec["expected_change_checks"][0]["matched"] is True

@@ -16,6 +16,7 @@ import socket
 import ssl
 from abc import ABC, abstractmethod
 from collections.abc import Mapping
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 from urllib.parse import urljoin, urlparse
@@ -286,7 +287,7 @@ def create_authenticated_connector_receipt(
     key: bytes | None = None,
 ) -> dict[str, Any]:
     """Create an authenticated connector receipt with cryptographic MAC."""
-    ts = str(timestamp or "")
+    ts = str(timestamp or datetime.now(UTC).isoformat())
     req = str(request_spec or "")
     resp_digest = str(response_digest or "")
     exec_id = str(execution_id or "")
@@ -389,6 +390,7 @@ class HttpStateAuthorityConnector(StateAuthorityConnector):
         self,
         response_digest: str | None = None,
         execution_id: str | None = None,
+        timestamp: str | None = None,
     ) -> dict[str, Any]:
         credentials = any(
             name.lower() in {"authorization", "x-api-key", "api-key"}
@@ -406,6 +408,7 @@ class HttpStateAuthorityConnector(StateAuthorityConnector):
             request_spec=self.base_url,
             response_digest=response_digest,
             execution_id=execution_id,
+            timestamp=timestamp,
         )
         return {
             "source_id": source_id,

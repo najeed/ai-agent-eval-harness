@@ -433,6 +433,46 @@ async def test_handle_verify_package_branches(tmp_path):
     )
     assert await evaluation.handle_verify_package(args_fail) == 1
 
+    # 5. Envelope format verification (exported .agentv-package.json)
+    from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
+
+    scen = {"id": "scen-01"}
+    scen_hash = compute_scenario_hash(scen)
+    em = ExecutionManifest(
+        manifest_id="man-01",
+        scenario_id="scen-01",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+        agent_config={},
+        runtime_config={},
+        environment={},
+    )
+    man_hash = em.compute_manifest_hash()
+    pkg_envelope_data = {
+        "format": "agentv_verification_package",
+        "package_version": "2.0.0",
+        "run_id": "envelope-run-01",
+        "manifest": {
+            "execution_manifest": em.to_dict(),
+            "verification_package": dict(
+                pkg_data,
+                scenario_hash=scen_hash,
+                manifest_hash=man_hash,
+            ),
+        },
+        "scenario": scen,
+    }
+    pkg_envelope_file = tmp_path / "envelope.agentv-package.json"
+    pkg_envelope_file.write_text(json.dumps(pkg_envelope_data), encoding="utf-8")
+    args_envelope = MagicMock(
+        package_path=str(pkg_envelope_file),
+        raw_trace_path=None,
+        public_key_pem=None,
+        require_signature=False,
+        diagnostic=True,
+    )
+    assert await evaluation.handle_verify_package(args_envelope) == 0
+
 
 @pytest.mark.asyncio
 async def test_handler_replay_uses_provider_events_only():

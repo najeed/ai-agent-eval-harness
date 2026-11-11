@@ -47,13 +47,14 @@ def build_reconciliation_record(
         if not path:
             continue
         expected = change.get("value")
-        actual = PathResolver.resolve(state_after or {}, path)
+        exists, actual = PathResolver.resolve_with_existence(state_after or {}, path)
         checks.append(
             {
                 "path": path,
                 "expected": expected,
                 "actual": actual,
-                "matched": actual == expected,
+                "exists": exists,
+                "matched": exists and (actual == expected),
             }
         )
 

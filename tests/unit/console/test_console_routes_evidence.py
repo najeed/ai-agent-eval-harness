@@ -307,6 +307,40 @@ def test_download_verification_package(client, tmp_path):
     assert f"{run_id}.agentv-package.json" in res.headers.get("Content-Disposition", "")
 
 
+def test_get_verification_package_sanitizes_credentials(client, tmp_path):
+    runs_dir = tmp_path / "runs"
+    run_id = "run-cred-redact"
+
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    store = LocalFileRunStore(log_dir=runs_dir)
+    scenario_with_secrets = {
+        "id": "scenario-with-secrets",
+        "api_key": "sk-secret-token-12345",
+        "headers": {"Authorization": "Bearer super-secret-jwt"},
+    }
+    manifest_with_secrets = {
+        "scenario_data": scenario_with_secrets,
+        "token": "secret-auth-token",
+        "password": "plain-text-password",
+    }
+    store.create_run(run_id, scenario_id="scenario-with-secrets")
+    store.save_run_manifest(run_id, manifest_with_secrets)
+    store.append_events(run_id, [{"event": "run_start", "data": {}}])
+
+    res = client.get(f"/api/v1/evidence/packages/{run_id}")
+    assert res.status_code == 200
+    pkg = res.get_json()
+    assert pkg["scenario"]["api_key"] == "[REDACTED]"
+    assert pkg["scenario"]["headers"]["Authorization"] == "[REDACTED]"
+    assert pkg["manifest"]["token"] == "[REDACTED]"
+    assert pkg["manifest"]["password"] == "[REDACTED]"
+    raw_text = res.get_data(as_text=True)
+    assert "sk-secret-token-12345" not in raw_text
+    assert "super-secret-jwt" not in raw_text
+    assert "plain-text-password" not in raw_text
+
+
 def test_list_verification_packages(client, tmp_path):
     runs_dir = tmp_path / "runs"
 

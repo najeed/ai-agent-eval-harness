@@ -109,13 +109,24 @@ class SessionStateParityVerifier:
             ):
                 from eval_runner.state_authority import create_authenticated_connector_receipt
 
+                fallback_id = (
+                    f"{node.get('id')}:attempt:1"
+                    if isinstance(node, dict) and node.get("id")
+                    else None
+                )
+                exec_id = (
+                    getattr(self.session_manager, "current_execution_instance_id", None)
+                    or fallback_id
+                    or receipt.get("execution_id")
+                    or getattr(self.session_manager, "run_id", None)
+                )
                 ident["connector_receipt"] = create_authenticated_connector_receipt(
                     connector_id=ident.get("connector_id", ""),
                     source_id=ident.get("source_id", ""),
                     is_authenticated=True,
                     request_spec=receipt.get("request"),
                     response_digest=snapshot_hash,
-                    execution_id=receipt.get("execution_id"),
+                    execution_id=exec_id,
                     timestamp=receipt.get("timestamp"),
                 )
             observations[source] = {
@@ -267,7 +278,10 @@ class SessionStateParityVerifier:
                         "source_id"
                     ) == "sha3_256:" + crypto.checksum(url.rstrip("/"))
                 if live and declared:
-                    declared = authority_is_independent(url, scenario)
+                    exec_manifest = getattr(self.session_manager, "execution_manifest", None)
+                    declared = authority_is_independent(
+                        url, scenario, execution_manifest=exec_manifest
+                    )
                 if live and (not declared or observation_identity.get("authenticated") is not True):
                     raise ValueError(
                         "Independent authenticated authority is required for live state evidence"
@@ -280,8 +294,16 @@ class SessionStateParityVerifier:
                 )
                 bounded_state, snapshot_hash = bound_state_snapshot(raw_state, projection=proj)
 
-                exec_id = getattr(self.session_manager, "run_id", None) or getattr(
-                    self.session_manager, "session_id", None
+                fallback_id = (
+                    f"{node.get('id')}:attempt:1"
+                    if isinstance(node, dict) and node.get("id")
+                    else None
+                )
+                exec_id = (
+                    getattr(self.session_manager, "current_execution_instance_id", None)
+                    or fallback_id
+                    or getattr(self.session_manager, "run_id", None)
+                    or getattr(self.session_manager, "session_id", None)
                 )
                 try:
                     observation_identity = connector.observation_identity(

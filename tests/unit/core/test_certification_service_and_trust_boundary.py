@@ -125,6 +125,9 @@ def test_authoritative_state_claims_cannot_use_sandbox_or_simulator_evidence(tar
         "missing_receipt",
         "receipt_source_mismatch",
         "receipt_unauthenticated",
+        "receipt_exec_mismatch",
+        "receipt_missing_timestamp",
+        "receipt_causal_inversion",
     ],
 )
 def test_independent_state_claim_verifier_recomputes_source_and_content_binding(defect):
@@ -147,17 +150,22 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
     after, after_hash = bound_state_snapshot({"status": "approved"})
     source_id = "sha3_256:" + crypto.checksum("https://authority.example/state")
     connector_id = f"connector:http:{source_id}"
+    exec_inst_id = "approve:attempt:1"
     pre_receipt = create_authenticated_connector_receipt(
         connector_id=connector_id,
         source_id=source_id,
         is_authenticated=True,
         response_digest=before_hash,
+        execution_id=exec_inst_id,
+        timestamp="2026-11-11T10:00:00+00:00",
     )
     post_receipt = create_authenticated_connector_receipt(
         connector_id=connector_id,
         source_id=source_id,
         is_authenticated=True,
         response_digest=after_hash,
+        execution_id=exec_inst_id,
+        timestamp="2026-11-11T10:00:01+00:00",
     )
     pre_identity = {
         "authenticated": True,
@@ -213,6 +221,7 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
                 connector_id=connector_id,
                 source_id="sha3_256:" + "f" * 64,
                 is_authenticated=True,
+                execution_id=exec_inst_id,
             )
         )
     elif defect == "receipt_unauthenticated":
@@ -221,8 +230,42 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
                 connector_id=connector_id,
                 source_id=source_id,
                 is_authenticated=False,
+                execution_id=exec_inst_id,
             )
         )
+    elif defect == "receipt_exec_mismatch":
+        row["post_observation_identity"]["connector_receipt"] = (
+            create_authenticated_connector_receipt(
+                connector_id=connector_id,
+                source_id=source_id,
+                is_authenticated=True,
+                response_digest=after_hash,
+                execution_id="different:execution:id",
+            )
+        )
+    elif defect == "receipt_missing_timestamp":
+        bad_receipt = dict(post_receipt)
+        bad_receipt["timestamp"] = ""
+        row["post_observation_identity"]["connector_receipt"] = bad_receipt
+    elif defect == "receipt_causal_inversion":
+        inverted_pre = create_authenticated_connector_receipt(
+            connector_id=connector_id,
+            source_id=source_id,
+            is_authenticated=True,
+            response_digest=before_hash,
+            execution_id=exec_inst_id,
+            timestamp="2026-11-11T12:00:00+00:00",
+        )
+        inverted_post = create_authenticated_connector_receipt(
+            connector_id=connector_id,
+            source_id=source_id,
+            is_authenticated=True,
+            response_digest=after_hash,
+            execution_id=exec_inst_id,
+            timestamp="2026-11-11T11:00:00+00:00",
+        )
+        row["pre_observation_identity"]["connector_receipt"] = inverted_pre
+        row["post_observation_identity"]["connector_receipt"] = inverted_post
     events = (
         []
         if defect == "missing"
@@ -238,6 +281,23 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
     )
     failures = state_claim_failures(scenario, events)
     assert bool(failures) is (defect is not None)
+
+
+def test_state_authority_independence_enforces_execution_manifest_endpoint():
+    from eval_runner.certification_truth import authority_is_independent
+
+    url = "https://authority.example/state"
+    scenario = {
+        "metadata": {
+            "agent": {"endpoint": "https://independent-agent.example/api"},
+        }
+    }
+    # Independent scenario endpoint passes
+    assert authority_is_independent(url, scenario) is True
+
+    # Execution manifest overrides agent endpoint to match authority origin -> fails closed
+    conflict_manifest = {"agent_config": {"endpoint": "https://authority.example/api"}}
+    assert authority_is_independent(url, scenario, execution_manifest=conflict_manifest) is False
 
 
 def test_certification_rollback_failure_preserves_signing_error(provider, monkeypatch, caplog):

@@ -3,6 +3,7 @@
 import hashlib
 import logging
 from collections.abc import Mapping
+from datetime import datetime
 from urllib.parse import urlparse
 
 from agentv_runtime.canonical import canonical_json_encode
@@ -58,7 +59,7 @@ def _extract_scenario_nodes(scenario: Mapping) -> list[dict]:
     return []
 
 
-def authority_is_independent(url, scenario):
+def authority_is_independent(url, scenario, execution_manifest=None):
     """An evaluated agent endpoint cannot serve as its own state authority.
 
     Fails closed: when verifying external state claims, the evaluated agent
@@ -75,10 +76,16 @@ def authority_is_independent(url, scenario):
 
     raw_agents = [(scenario.get("metadata") or {}).get("agent"), scenario.get("agent")]
     raw_agents.extend(node.get("agent") for node in _extract_scenario_nodes(scenario))
-    exec_manifest = scenario.get("execution_manifest") or {}
+    exec_manifest = execution_manifest or scenario.get("execution_manifest") or {}
+    if hasattr(exec_manifest, "to_dict"):
+        exec_manifest = exec_manifest.to_dict()
     if isinstance(exec_manifest, Mapping):
         raw_agents.append(exec_manifest.get("agent_config"))
         raw_agents.append(exec_manifest.get("agent"))
+        rc = exec_manifest.get("runtime_config")
+        if isinstance(rc, Mapping):
+            raw_agents.append(rc.get("agent_config"))
+            raw_agents.append(rc.get("agent"))
     meta = scenario.get("metadata") or {}
     if isinstance(meta, Mapping):
         raw_agents.append(meta.get("agent_config"))
@@ -100,7 +107,7 @@ def authority_is_independent(url, scenario):
     return all(origin(ep) != auth_origin for ep in declared_endpoints)
 
 
-def state_claim_failures(scenario, events):
+def state_claim_failures(scenario, events, execution_manifest=None):
     """Require source-bound, authenticated pre/post observations for business state.
 
     Sandbox assertions remain useful diagnostics; they cannot establish an
@@ -179,7 +186,7 @@ def state_claim_failures(scenario, events):
                 failures.append(f"AuthenticatedStateAuthorityUndeclared:{node_id}:{name}")
                 continue
             expected_source = "sha3_256:" + hashlib.sha3_256(url.rstrip("/").encode()).hexdigest()
-            if not authority_is_independent(url, scenario):
+            if not authority_is_independent(url, scenario, execution_manifest=execution_manifest):
                 failures.append(f"AgentCannotBeItsOwnStateAuthority:{node_id}:{name}")
                 continue
             if not carriers:
@@ -215,6 +222,23 @@ def state_claim_failures(scenario, events):
                                 raise ValueError("Connector receipt source or connector mismatch")
                             if receipt.get("authenticated") is not True:
                                 raise ValueError("Connector receipt unauthenticated")
+
+                            # Instance binding: receipt must match execution instance ID
+                            receipt_exec_id = str(receipt.get("execution_id") or "")
+                            if not receipt_exec_id or receipt_exec_id != str(execution_id):
+                                raise ValueError("Connector receipt execution_id mismatch")
+
+                            # Temporal binding: receipt must have a valid non-empty ISO timestamp
+                            receipt_ts = str(receipt.get("timestamp") or "")
+                            if not receipt_ts:
+                                raise ValueError("Connector receipt missing timestamp")
+                            try:
+                                datetime.fromisoformat(receipt_ts)
+                            except (ValueError, TypeError):
+                                raise ValueError(
+                                    "Connector receipt invalid timestamp format"
+                                ) from None
+
                             from eval_runner.state_authority import (
                                 verify_connector_receipt_authenticity,
                             )
@@ -233,6 +257,27 @@ def state_claim_failures(scenario, events):
                             if resp_digest != row.get(f"{phase}_snapshot_hash"):
                                 raise ValueError(
                                     "Receipt response digest mismatch with observation"
+                                )
+
+                        # Pre/Post temporal causal ordering check
+                        pre_receipt = (
+                            (row.get("pre_observation_identity") or {}).get("connector_receipt")
+                            or row.get("pre_connector_receipt")
+                            or {}
+                        )
+                        post_receipt = (
+                            (row.get("post_observation_identity") or {}).get("connector_receipt")
+                            or row.get("post_connector_receipt")
+                            or {}
+                        )
+                        pre_ts_str = str(pre_receipt.get("timestamp") or "")
+                        post_ts_str = str(post_receipt.get("timestamp") or "")
+                        if pre_ts_str and post_ts_str:
+                            if datetime.fromisoformat(pre_ts_str) > datetime.fromisoformat(
+                                post_ts_str
+                            ):
+                                raise ValueError(
+                                    "Pre-observation timestamp after post-observation timestamp"
                                 )
                         pre_ident = row.get("pre_observation_identity") or {}
                         post_ident = row.get("post_observation_identity") or {}

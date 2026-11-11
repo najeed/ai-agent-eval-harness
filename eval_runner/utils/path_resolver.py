@@ -20,6 +20,50 @@ class PathResolver:
     """
 
     @staticmethod
+    def resolve_with_existence(data: Any, path: str) -> tuple[bool, Any]:
+        """
+        Resolves a property path from the provided data structure.
+        Returns (exists: bool, value: Any).
+        - (False, None) if any part of the path is unreachable or missing.
+        - (True, None) if the target field exists and its value is explicitly None (null).
+        - (True, value) if the target field exists with a non-null value.
+        """
+        if not path:
+            return (data is not None, data)
+        if data is None:
+            return (False, None)
+
+        tokens = PathResolver._tokenize(path)
+        if not tokens:
+            return (False, None)
+
+        current = data
+        for token in tokens:
+            try:
+                if isinstance(current, dict):
+                    if token not in current:
+                        return (False, None)
+                    current = current[token]
+                elif isinstance(current, list):
+                    try:
+                        idx = int(token)
+                        if 0 <= idx < len(current):
+                            current = current[idx]
+                        else:
+                            return (False, None)
+                    except ValueError:
+                        return (False, None)
+                else:
+                    return (False, None)
+            except (KeyError, IndexError, TypeError, ValueError, AttributeError):
+                logging.getLogger(__name__).debug(
+                    "Failure in PathResolver.resolve_with_existence", exc_info=True
+                )
+                return (False, None)
+
+        return (True, current)
+
+    @staticmethod
     def resolve(data: Any, path: str) -> Any:
         """
         Resolves a property path from the provided data structure.

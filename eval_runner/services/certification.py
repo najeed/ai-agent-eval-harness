@@ -902,7 +902,11 @@ class CertificationService:
             "evaluator_identity": finalization.evaluator_identity,
             "required_oracle_ids": list(finalization.required_oracle_ids),
         }
-        state_failures = state_claim_failures(effective_scenario, events)
+        state_failures = state_claim_failures(
+            effective_scenario,
+            events,
+            execution_manifest=execution_manifest_dict,
+        )
         if state_failures:
             raise ValueError("; ".join(state_failures))
         for ev in events:

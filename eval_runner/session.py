@@ -1418,6 +1418,7 @@ class SessionManager:
             if execution_context
             else f"{node_id}:attempt:{attempt_number}"
         )
+        self.current_execution_instance_id = exec_inst_id
         parent_exec_id = execution_context.get("parent_execution_id") if execution_context else None
         attempt_id = getattr(self, "attempt_id", f"att-{self.run_id}-{attempt_number}")
 
@@ -1863,8 +1864,8 @@ class SessionManager:
 
         # Transition evidence is instance-addressable and hash-bound:
         # attempt_id + execution_instance_id + before/after content hashes.
-        exec_id = execution_context.get("execution_instance_id")
-        attempt_id = execution_context.get("attempt_id")
+        exec_id = execution_context.get("execution_instance_id") or exec_inst_id
+        attempt_id = execution_context.get("attempt_id") or attempt_id
         if parity_evidence:
             state_after_for_hash = None
             try:
