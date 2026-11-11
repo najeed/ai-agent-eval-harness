@@ -43,13 +43,13 @@ dependencies = [
 # 1. Direct Native Provider SDKs
 # (OpenAI, Anthropic, Grok, Ollama connect directly via aiohttp; no external Python SDKs required)
 provider-gemini = [
-    "google-genai==3.1.0",
+    "google-genai==3.2.0",
 ]
 
 # 2. Framework Environments (Evaluated and verified agent architectures)
 framework-langchain = [
-    "langchain==1.4.10",
-    "langchain-core>=1.7.7",
+    "langchain==1.5.0",
+    "langchain-core>=1.8.0",
 ]
 framework-langserve = [
     "langserve>=0.3.3",
@@ -72,7 +72,7 @@ langchain-anthropic = [
     "langchain-anthropic>=1.7.10",
 ]
 langchain-gemini = [
-    "langchain-google-genai>=4.4.2",
+    "langchain-google-genai>=4.5.0",
 ]
 langchain-ollama = [
     "langchain-ollama>=1.1.0",
@@ -83,7 +83,7 @@ langsmith = [
 
 # 4. Domain & Task Extras
 nlp = [
-    "sentence-transformers==6.2.0",
+    "sentence-transformers==6.3.0",
     "transformers==5.22.2",
     "datasets==5.2.0",
 ]
@@ -103,37 +103,37 @@ vcs = [
 
 # 5. Composed Ecosystem Extras
 frameworks = [
-    "langchain==1.4.10",
-    "langchain-core>=1.7.7",
+    "langchain==1.5.0",
+    "langchain-core>=1.8.0",
     "langserve>=0.3.3",
     "langgraph==1.2.20",
     "ag2==1.3.1",
 #    "crewai==1.15.37; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
 ]
 langchain-all = [
-    "langchain==1.4.10",
-    "langchain-core>=1.7.7",
+    "langchain==1.5.0",
+    "langchain-core>=1.8.0",
     "langchain-openai==1.7.4",
     "langchain-anthropic>=1.7.10",
-    "langchain-google-genai>=4.4.2",
+    "langchain-google-genai>=4.5.0",
     "langchain-ollama>=1.1.0",
     "langsmith==0.14.17",
 ]
 
 all = [
-    "sentence-transformers==6.2.0",
+    "sentence-transformers==6.3.0",
     "transformers==5.22.2",
     "datasets==5.2.0",
-    "google-genai==3.1.0",
-    "langchain==1.4.10",
-    "langchain-core>=1.7.7",
+    "google-genai==3.2.0",
+    "langchain==1.5.0",
+    "langchain-core>=1.8.0",
     "langserve>=0.3.3",
     "langgraph==1.2.20",
     "ag2==1.3.1",
 #    "crewai==1.15.37; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
     "langchain-openai==1.7.4",
     "langchain-anthropic>=1.7.10",
-    "langchain-google-genai>=4.4.2",
+    "langchain-google-genai>=4.5.0",
     "langchain-ollama>=1.1.0",
     "langsmith==0.14.17",
     "pypdf==7.0.1",
