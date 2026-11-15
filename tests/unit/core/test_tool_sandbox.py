@@ -1545,3 +1545,14 @@ async def test_tool_sandbox_atomic_commit_pre_validates_shared_permissions(tmp_p
     assert sb.state["local_counter"] == 10
     assert "new_secret" not in sb.state
     assert "forbidden_ns:key" not in sb.shared_state.registry
+
+    # Attempt to execute tool with an unauthorized shared_read namespace
+    result_read = await sb.execute(
+        "side_effect_tool",
+        {"shared_read": {"path": "forbidden_ns:secret"}},
+        agent_name="restricted_agent",
+    )
+    assert result_read["status"] == "error"
+    assert "no read permission" in result_read["message"]
+    assert sb.state["local_counter"] == 10
+    assert "new_secret" not in sb.state

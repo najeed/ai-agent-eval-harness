@@ -628,12 +628,11 @@ class ToolSandbox(AbstractSandbox):
                 }
         if "shared_read" in params:
             read_path = params["shared_read"].get("path")
-            if read_path and read_path in self.shared_state.registry:
-                if not self.shared_state.can_read(active_agent, read_path):
-                    return {
-                        "status": "error",
-                        "message": f"Agent {active_agent} has no read permission for {read_path}",
-                    }
+            if read_path and not self.shared_state.can_read(active_agent, read_path):
+                return {
+                    "status": "error",
+                    "message": f"Agent {active_agent} has no read permission for {read_path}",
+                }
 
         # Atomic commit boundary: apply staged local diff and execute shared mutations together.
         for path, value in proposed_diff.items():

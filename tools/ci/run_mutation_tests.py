@@ -350,6 +350,7 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_sandbox_state_changes_and_shared_state_edge_cases",
                 "test_sandbox_shared_state_success",
                 "test_tool_sandbox_execution_quiesce_and_policy_branches",
+                "test_tool_sandbox_atomic_commit_pre_validates_shared_permissions",
             ),
             "get_bounded_state": ("test_sandbox_get_bounded_state_projection",),
             "_sanitize_path": ("test_sanitize_path",),
