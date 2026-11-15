@@ -504,6 +504,16 @@ class RunStorageProvider(ABC):
         """Streams events starting at a sequence index."""
         raise NotImplementedError
 
+    def get_lifecycle(self, run_id: str, context: dict[str, Any] | None = None) -> str | None:
+        """Query the authoritative lifecycle state for an evaluation run.
+
+        Returns the persistent lifecycle string or None if run does not exist.
+        """
+        run = self.get_run(run_id, context=context)
+        if run and isinstance(run, dict):
+            return run.get("lifecycle") or run.get("status")
+        return None
+
     # Certification leases are intentionally provider-owned.  They are
     # concrete opt-in methods (rather than ABC additions) so an older provider
     # fails closed at certification time with a precise compatibility error.

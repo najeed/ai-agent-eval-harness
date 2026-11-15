@@ -568,7 +568,8 @@ def test_revision_service_and_config_coverage_branches(
             consumed_fingerprint="fp",
         )
 
-    # Empty target_instances in record_instance_observation
+    # Empty target_instances in record_instance_observation reports partial coverage
+    # (PARTIALLY_APPLIED) without asserting fleet-wide OBSERVED status.
     rev_dyn = revision_service.accept_revision(
         context=sample_scope,
         desired_fingerprint="sha3_256:dynamic_fp",
@@ -582,14 +583,30 @@ def test_revision_service_and_config_coverage_branches(
         consumed_fingerprint="sha3_256:dynamic_fp",
         reload_status="reloaded",
     )
-    assert obs_dyn.status == ConfigurationRevisionState.OBSERVED.value
+    assert obs_dyn.status == ConfigurationRevisionState.PARTIALLY_APPLIED.value
+
+    # Explicitly declared target cohort achieves OBSERVED when all targets report
+    rev_explicit = revision_service.accept_revision(
+        context=sample_scope,
+        desired_fingerprint="sha3_256:explicit_fp",
+        target_instances=["dyn-node-1"],
+    )
+    revision_service.acknowledge_deployment(sample_scope, rev_explicit.revision_id)
+    obs_explicit = revision_service.record_instance_observation(
+        context=sample_scope,
+        revision_id=rev_explicit.revision_id,
+        instance_id="dyn-node-1",
+        consumed_fingerprint="sha3_256:explicit_fp",
+        reload_status="reloaded",
+    )
+    assert obs_explicit.status == ConfigurationRevisionState.OBSERVED.value
 
     # Rollback with expected_base_revision_id matching active
     active = revision_service.get_active_revision(sample_scope)
     assert active is not None
     rb = revision_service.rollback(
         context=sample_scope,
-        target_revision_id=rev_dyn.revision_id,
+        target_revision_id=rev_explicit.revision_id,
         expected_base_revision_id=active.revision_id,
     )
     assert rb.is_rollback is True

@@ -941,6 +941,8 @@ def test_v2_receipt_canonical_encoding_defeats_delimiter_collision(monkeypatch):
         connector_id="conn:test",
         source_id="src_1",
         execution_id="exec_1",
+        phase="pre",
+        run_id="exec_1",
         encoding_version="v2",
     )
     # Tuple B: connector_id is "conn", source_id is "test:src_1"
@@ -948,13 +950,51 @@ def test_v2_receipt_canonical_encoding_defeats_delimiter_collision(monkeypatch):
         connector_id="conn",
         source_id="test:src_1",
         execution_id="exec_1",
+        phase="pre",
+        run_id="exec_1",
         encoding_version="v2",
     )
     # In v2, their MACs MUST be distinct!
     assert r_a["mac"] != r_b["mac"]
     assert verify_connector_receipt_authenticity(r_a) is True
     assert verify_connector_receipt_authenticity(r_b) is True
+    assert r_a["phase"] == "pre"
+    assert r_a["run_id"] == "exec_1"
 
     # Tampering phase in v2 receipt invalidates MAC
     r_a_tampered_phase = dict(r_a, phase="post")
     assert verify_connector_receipt_authenticity(r_a_tampered_phase) is False
+
+    # Tampering run_id in v2 receipt invalidates MAC
+    r_a_tampered_run = dict(r_a, run_id="run_different")
+    assert verify_connector_receipt_authenticity(r_a_tampered_run) is False
+
+    # Invalid phase or empty run_id fails authentication check
+    r_a_invalid_phase = dict(r_a, phase="mid_flight")
+    assert verify_connector_receipt_authenticity(r_a_invalid_phase) is False
+
+    r_a_empty_run = dict(r_a, run_id="")
+    assert verify_connector_receipt_authenticity(r_a_empty_run) is False
+
+    # Direct canonical_receipt_payload_bytes enforces RFC 8785 JCS and mandatory phase/run_id
+    from agentv_runtime.canonical import canonical_json_encode
+    from eval_runner.state_authority import canonical_receipt_payload_bytes
+
+    with pytest.raises(ValueError, match="phase to be 'pre' or 'post'"):
+        canonical_receipt_payload_bytes({"version": "v2", "phase": "invalid", "run_id": "r1"})
+
+    expected_payload = canonical_json_encode(
+        {
+            "authenticated": True,
+            "connector_id": "conn:test",
+            "execution_id": "exec_1",
+            "phase": "pre",
+            "profile": "agentv.connector-receipt.v2",
+            "request": "",
+            "response_digest": "",
+            "run_id": "exec_1",
+            "source_id": "src_1",
+            "timestamp": r_a["timestamp"],
+        }
+    )
+    assert canonical_receipt_payload_bytes(r_a) == expected_payload

@@ -1502,6 +1502,23 @@ def test_verify_trace_bytes_mutant_branches():
             is False
         )
 
+        # Empty dict evidence_ledger must return False immediately
+        manifest_empty_ledger = dict(manifest, evidence_ledger={})
+        assert (
+            TraceVerifier.verify_trace_bytes(
+                tb, manifest_empty_ledger, run_store=run_store, verify_ledger=True, trace_only=True
+            )
+            is False
+        )
+        # Non-mapping evidence_ledger (e.g. list) must return False immediately
+        manifest_list_ledger = dict(manifest, evidence_ledger=["artifacts/audit.log"])
+        assert (
+            TraceVerifier.verify_trace_bytes(
+                tb, manifest_list_ledger, run_store=run_store, verify_ledger=True, trace_only=True
+            )
+            is False
+        )
+
         # verify_ledger=True succeeds when valid evidence_ledger is provided and verified
         art_content = b"artifact valid data"
         art_hash = f"sha3_256:{hashlib.sha3_256(art_content).hexdigest()}"
@@ -1642,6 +1659,21 @@ def test_verify_run_uncertified_and_verified_matrix_booster():
         assert res_sig["has_certificate"] is True
         assert res_sig["has_signature"] is True
         assert res_sig["execution_mode"] == "live"
+
+    # When verify_trace_bytes returns False but trace_bytes match the manifest trace_hash,
+    # file_integrity_valid must be True (verifying the `if not valid:` block).
+    manifest_fail_sig = {
+        "run_id": "run_fail_sig",
+        "trace_hash": f"sha3_256:{hashlib.sha3_256(tb).hexdigest()}",
+        "verification_package": {"pkg": 1},
+    }
+    run_store.get_run.return_value = {"run_id": "run_fail_sig"}
+    run_store.get_manifest.return_value = manifest_fail_sig
+    run_store.get_trace_bytes.return_value = tb
+    with patch.object(TraceVerifier, "verify_trace_bytes", return_value=False):
+        res_fail_sig = TraceVerifier.verify_run("run_fail_sig", run_store=run_store)
+        assert res_fail_sig["file_integrity_valid"] is True
+        assert res_fail_sig["cryptographically_valid"] is False
 
 
 def test_verify_trace_certificate_mutant_branches(tmp_path):

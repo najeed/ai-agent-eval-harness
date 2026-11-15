@@ -11,7 +11,11 @@ import pytest
 from agentv_runtime.canonical import canonical_json_encode
 from eval_runner.events import CoreEvents, Event
 from eval_runner.flight_recorder import FlightRecorderPlugin
-from eval_runner.reference.local_run_store import LocalFileRunStore, RunManifestImmutableError
+from eval_runner.reference.local_run_store import (
+    LocalFileRunStore,
+    RunManifestImmutableError,
+    _canonical_digest,
+)
 from eval_runner.run_lifecycle import (
     RunLifecycleState,
     assert_can_write_trace,
@@ -174,7 +178,7 @@ def test_local_provider_recovers_journaled_certification_commit_after_interrupti
             "run_id": run_id,
             "manifest": manifest,
             "sealed_record": sealed_record,
-            "manifest_digest": "ignored-by-recovery",
+            "manifest_digest": _canonical_digest(manifest),
         },
     )
 
@@ -182,6 +186,37 @@ def test_local_provider_recovers_journaled_certification_commit_after_interrupti
     assert store.get_run(run_id)["lifecycle"] == "SEALED"
     assert (vault / ".sealed").exists()
     assert not store._commit_journal_path(vault).exists()
+
+
+def test_local_provider_rejects_recovery_when_journal_manifest_digest_corrupt(tmp_path):
+    """
+    Corrupted journal manifest digest must fail closed
+    with CertificationRecoveryJournalCorrupt.
+    """
+    store = LocalFileRunStore(tmp_path)
+    run_id = "run-recovery-corrupt"
+    store.create_run(run_id, "scenario")
+    vault = store._get_run_vault(run_id)
+    original = store.get_run(run_id)
+    manifest = {"run_id": run_id, "trace_hash": "sha3_256:recovery"}
+    sealed_record = {
+        **original,
+        "status": "SEALED",
+        "lifecycle": "SEALED",
+    }
+    store._write_json_durable(
+        store._commit_journal_path(vault),
+        {
+            "version": 1,
+            "run_id": run_id,
+            "manifest": manifest,
+            "sealed_record": sealed_record,
+            "manifest_digest": "corrupted_or_tampered_manifest_digest",
+        },
+    )
+
+    with pytest.raises(RuntimeError, match="CertificationRecoveryJournalCorrupt"):
+        store.get_manifest(run_id)
 
 
 @pytest.mark.parametrize("existing_manifest", [False, True])

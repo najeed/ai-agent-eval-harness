@@ -634,18 +634,31 @@ class ToolSandbox(AbstractSandbox):
                     "message": f"Agent {active_agent} has no read permission for {read_path}",
                 }
 
-        # Atomic commit boundary: apply staged local diff and execute shared mutations together.
-        for path, value in proposed_diff.items():
-            self._set_state_path(str(path), value)
-        if "shared_write" in params:
-            write_path = params["shared_write"].get("path")
-            write_val = params["shared_write"].get("value")
-            if write_path:
-                self.shared_state.write(active_agent, write_path, write_val)
-        if "shared_read" in params:
-            read_path = params["shared_read"].get("path")
-            if read_path:
-                self.shared_state.read(active_agent, read_path)
+        # Transactional commit boundary: snapshot pre-mutation state to guarantee
+        # all-or-nothing atomicity. If shared_state write or read fails, rollback
+        # all local state mutations immediately.
+        local_state_snapshot = copy.deepcopy(self.state)
+        shared_state_snapshot = copy.deepcopy(self.shared_state.registry)
+        try:
+            for path, value in proposed_diff.items():
+                self._set_state_path(str(path), value)
+            if "shared_write" in params:
+                write_path = params["shared_write"].get("path")
+                write_val = params["shared_write"].get("value")
+                if write_path:
+                    self.shared_state.write(active_agent, write_path, write_val)
+            if "shared_read" in params:
+                read_path = params["shared_read"].get("path")
+                if read_path:
+                    self.shared_state.read(active_agent, read_path)
+        except Exception as exc:
+            self.state = local_state_snapshot
+            self.shared_state.registry = shared_state_snapshot
+            return {
+                "status": "error",
+                "error_code": "ATOMIC_COMMIT_FAILURE",
+                "message": f"Transactional commit failed, changes rolled back: {exc}",
+            }
         output = tool_def.get("output", {"status": "success", "message": f"Executed {tool_name}"})
         safe_state = {}
         for k, v in self.state.items():

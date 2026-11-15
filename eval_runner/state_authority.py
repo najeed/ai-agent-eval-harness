@@ -254,6 +254,11 @@ def canonical_receipt_payload_bytes(receipt_data: Mapping[str, Any]) -> bytes:
         or ""
     )
     if version in ("2", "v2", CONNECTOR_RECEIPT_PROFILE_V2):
+        phase_raw = receipt_data.get("phase")
+        if phase_raw is not None and str(phase_raw) not in ("", "pre", "post"):
+            raise ValueError(
+                f"Connector receipt v2 requires phase to be 'pre' or 'post', got {phase_raw!r}"
+            )
         canonical_dict = {
             "authenticated": bool(receipt_data.get("authenticated", False)),
             "connector_id": str(receipt_data.get("connector_id", "")),
@@ -266,7 +271,7 @@ def canonical_receipt_payload_bytes(receipt_data: Mapping[str, Any]) -> bytes:
             "source_id": str(receipt_data.get("source_id", "")),
             "timestamp": str(receipt_data.get("timestamp", "")),
         }
-        return json.dumps(canonical_dict, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        return canonical_json_encode(canonical_dict)
     else:
         # Legacy v1 delimiter-based encoding for backward compatibility with v1 receipts
         fields = [
@@ -346,6 +351,8 @@ def create_authenticated_connector_receipt(
         "retrieval_token": compute_connector_receipt_token(connector_id, source_id, key=key),
     }
     if phase:
+        if str(phase) not in ("pre", "post"):
+            raise ValueError(f"Connector receipt phase must be 'pre' or 'post', got {phase!r}")
         receipt["phase"] = str(phase)
     if run_id:
         receipt["run_id"] = str(run_id)
@@ -373,10 +380,9 @@ def verify_connector_receipt_authenticity(
 
     try:
         resolved_key = key if key is not None else get_state_authority_trust_key()
-    except StateAuthorityKeyMissingError:
+        expected_mac = compute_connector_receipt_mac(receipt, key=resolved_key)
+    except (ValueError, StateAuthorityKeyMissingError):
         return False
-
-    expected_mac = compute_connector_receipt_mac(receipt, key=resolved_key)
     if not hmac.compare_digest(mac, expected_mac):
         return False
 

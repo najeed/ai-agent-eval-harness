@@ -318,7 +318,7 @@ class LocalFileRunStore(RunStore):
         ):
             raise RuntimeError("CertificationRecoveryJournalCorrupt")
         expected_digest = _canonical_digest(manifest)
-        if stored_manifest_digest not in (expected_digest, "ignored-by-recovery"):
+        if stored_manifest_digest != expected_digest:
             raise RuntimeError("CertificationRecoveryJournalCorrupt")
         target = run_vault / "run_manifest.json"
         existing = self._read_json(target) if target.exists() else None
@@ -983,6 +983,23 @@ class LocalFileRunStore(RunStore):
                 "_fragment_path": candidate.name,
             }
 
+        return None
+
+    def get_lifecycle(self, run_id: str, context: dict[str, Any] | None = None) -> str | None:
+        """Query authoritative lifecycle state directly from provider storage."""
+        try:
+            run_vault = self._get_run_vault(run_id, create=False)
+        except (ValueError, PermissionError):
+            return None
+        if not run_vault or not run_vault.exists() or not run_vault.is_dir():
+            return None
+        self._recover_pending_certification(run_vault)
+        status = self._read_lifecycle_status(run_vault)
+        if status:
+            return status
+        record = self.get_run(run_id, context=context)
+        if record and isinstance(record, dict):
+            return record.get("lifecycle") or record.get("status")
         return None
 
     def list_runs(

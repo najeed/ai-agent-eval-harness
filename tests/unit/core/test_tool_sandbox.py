@@ -1556,3 +1556,50 @@ async def test_tool_sandbox_atomic_commit_pre_validates_shared_permissions(tmp_p
     assert "no read permission" in result_read["message"]
     assert sb.state["local_counter"] == 10
     assert "new_secret" not in sb.state
+
+
+@pytest.mark.asyncio
+async def test_tool_sandbox_atomic_commit_rolls_back_local_state_on_shared_write_failure(tmp_path):
+    """Failure injection: verify that an unexpected exception during shared_state.write
+    causes full transactional rollback of staged local sandbox state.
+    """
+    scenario = {
+        "id": "atomic_rollback_test",
+        "initial_state": {"counter": 42, "critical_flag": True},
+        "metadata": {
+            "agent_topology": {
+                "active_agent": {"writes": ["allowed_ns:*"], "reads": ["allowed_ns:*"]}
+            }
+        },
+        "tools": {
+            "mutating_tool": {
+                "state_changes": [
+                    {"path": "counter", "value": 100},
+                    {"path": "uncommitted_key", "value": "dirty"},
+                ],
+                "output": {"status": "success"},
+            }
+        },
+    }
+    sb = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+    assert sb.state["counter"] == 42
+    assert "uncommitted_key" not in sb.state
+
+    # Inject a failure into shared_state.write
+    def fail_write(*args, **kwargs):
+        raise OSError("Disk or storage engine failure during shared write commit")
+
+    with patch.object(sb.shared_state, "write", side_effect=fail_write):
+        res = await sb.execute(
+            "mutating_tool",
+            {"shared_write": {"path": "allowed_ns:target", "value": "val"}},
+            agent_name="active_agent",
+        )
+        assert res["status"] == "error"
+        assert res["error_code"] == "ATOMIC_COMMIT_FAILURE"
+        assert "changes rolled back" in res["message"]
+
+    # Verify complete transactional rollback
+    assert sb.state["counter"] == 42
+    assert "uncommitted_key" not in sb.state
+    assert sb.state["critical_flag"] is True

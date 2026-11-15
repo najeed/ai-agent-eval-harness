@@ -231,14 +231,10 @@ class ConfigurationRevisionService:
 
             # Authoritative State Aggregation
             all_targets = set(record.target_instances)
-            if not all_targets:
-                # If no static target instances were declared, aggregate reporting instances
-                all_targets = set(record.instances.keys())
-
             successful_targets: set[str] = set()
             failed_targets: set[str] = set()
 
-            for t_id in all_targets:
+            for t_id in all_targets or set(record.instances.keys()):
                 inst_obs = record.instances.get(t_id)
                 if not inst_obs:
                     continue
@@ -255,7 +251,10 @@ class ConfigurationRevisionService:
                 ):
                     failed_targets.add(t_id)
 
-            if len(successful_targets) == len(all_targets) and len(all_targets) > 0:
+            # Strict convergence predicate: fleet-wide OBSERVED requires an explicitly
+            # declared target cohort and 100% convergence across all targets.
+            # An undeclared cohort can only report partial coverage (PARTIALLY_APPLIED).
+            if all_targets and len(successful_targets) == len(all_targets):
                 record.status = ConfigurationRevisionState.OBSERVED.value
                 # Update active revision pointer on full verified observation
                 self._set_active_pointer_locked(scope, record)
@@ -264,7 +263,7 @@ class ConfigurationRevisionService:
                     record.status = ConfigurationRevisionState.PARTIALLY_APPLIED.value
                 else:
                     record.status = ConfigurationRevisionState.FAILED.value
-            elif successful_targets and len(successful_targets) < len(all_targets):
+            elif successful_targets:
                 record.status = ConfigurationRevisionState.PARTIALLY_APPLIED.value
             else:
                 if record.provider_acknowledged:
