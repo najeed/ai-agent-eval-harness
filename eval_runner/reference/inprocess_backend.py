@@ -487,23 +487,29 @@ class InProcessExecutionBackend(ExecutionBackend):
                 if isinstance(res, str):
                     provider_lifecycle = res
             except Exception as exc:
-                logger.debug(
+                logger.error(
                     "Failed to query authoritative provider lifecycle for run %s: %s",
                     run_id,
                     exc,
+                    exc_info=True,
                 )
+                raise RuntimeError(
+                    f"Cannot resume run '{run_id}': authoritative provider lifecycle query failed."
+                ) from exc
 
         with self._lock:
             current_entry = self._active_runs.get(run_id)
             current_status = current_entry.get("status") if current_entry else None
 
-            # Provider state is authoritative over local/checkpoint claims
-            if provider_lifecycle:
-                current_status = provider_lifecycle
-            elif current_status is None and checkpoint:
-                current_status = checkpoint.get("status") or (
-                    checkpoint.get("session_state") or {}
-                ).get("status", "PAUSED")
+            # If not in active_runs (cold process restart), derive status from
+            # authoritative provider state rather than trusting unverified checkpoints
+            if current_status is None:
+                if provider_lifecycle:
+                    current_status = provider_lifecycle
+                elif checkpoint:
+                    current_status = checkpoint.get("status") or (
+                        checkpoint.get("session_state") or {}
+                    ).get("status", "PAUSED")
 
             # Never mutate lifecycle state for a run whose execution contract
             # cannot be recovered. This preserves the fail-closed boundary for
@@ -539,11 +545,7 @@ class InProcessExecutionBackend(ExecutionBackend):
                         f"Cannot resume run '{run_id}': invalid state '{current_status}'."
                     )
 
-        requires_approval = (
-            bool(expected_token)
-            or current_status in approval_states
-            or (provider_lifecycle in approval_states)
-        )
+        requires_approval = bool(expected_token) or current_status in approval_states
         if requires_approval:
             if not resumption_token:
                 raise PermissionError(
@@ -573,8 +575,8 @@ class InProcessExecutionBackend(ExecutionBackend):
                     f"Cannot resume run '{run_id}': approval token does not bind to checkpoint."
                 )
 
-            # Always verify action_payload digest against expected approval record
-            # (including empty payloads)
+            # Verify action_payload digest against expected approval record
+            # (including empty payloads {}). Retains backward compatibility for legacy checkpoints.
             action_payload = checkpoint_state.get("action_payload")
             if action_payload is not None and approval.outbound_payload_hash:
                 payload_dict = action_payload if isinstance(action_payload, dict) else {}

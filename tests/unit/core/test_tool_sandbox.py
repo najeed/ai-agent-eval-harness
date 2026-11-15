@@ -1603,3 +1603,19 @@ async def test_tool_sandbox_atomic_commit_rolls_back_local_state_on_shared_write
     assert sb.state["counter"] == 42
     assert "uncommitted_key" not in sb.state
     assert sb.state["critical_flag"] is True
+
+    # Inject shared_state.write returning False (permission check denial without exception)
+    with patch.object(sb.shared_state, "write", return_value=False):
+        res = await sb.execute(
+            "mutating_tool",
+            {"shared_write": {"path": "allowed_ns:target", "value": "val"}},
+            agent_name="active_agent",
+        )
+        assert res["status"] == "error"
+        assert res["error_code"] == "ATOMIC_COMMIT_FAILURE"
+        assert "changes rolled back" in res["message"]
+
+    # Verify complete rollback after write() == False
+    assert sb.state["counter"] == 42
+    assert "uncommitted_key" not in sb.state
+    assert sb.state["critical_flag"] is True

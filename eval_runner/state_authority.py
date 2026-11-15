@@ -255,19 +255,22 @@ def canonical_receipt_payload_bytes(receipt_data: Mapping[str, Any]) -> bytes:
     )
     if version in ("2", "v2", CONNECTOR_RECEIPT_PROFILE_V2):
         phase_raw = receipt_data.get("phase")
-        if phase_raw is not None and str(phase_raw) not in ("", "pre", "post"):
+        if not phase_raw or str(phase_raw) not in ("pre", "post"):
             raise ValueError(
                 f"Connector receipt v2 requires phase to be 'pre' or 'post', got {phase_raw!r}"
             )
+        run_id_raw = receipt_data.get("run_id")
+        if not run_id_raw or not str(run_id_raw).strip():
+            raise ValueError("Connector receipt v2 requires nonempty 'run_id'")
         canonical_dict = {
             "authenticated": bool(receipt_data.get("authenticated", False)),
             "connector_id": str(receipt_data.get("connector_id", "")),
             "execution_id": str(receipt_data.get("execution_id", "")),
-            "phase": str(receipt_data.get("phase", "")),
+            "phase": str(phase_raw),
             "profile": CONNECTOR_RECEIPT_PROFILE_V2,
             "request": str(receipt_data.get("request", "")),
             "response_digest": str(receipt_data.get("response_digest", "")),
-            "run_id": str(receipt_data.get("run_id", "")),
+            "run_id": str(run_id_raw).strip(),
             "source_id": str(receipt_data.get("source_id", "")),
             "timestamp": str(receipt_data.get("timestamp", "")),
         }
@@ -334,13 +337,18 @@ def create_authenticated_connector_receipt(
     resp_digest = str(response_digest or "")
     exec_id = str(execution_id or "")
 
+    is_v2 = encoding_version in ("2", "v2", CONNECTOR_RECEIPT_PROFILE_V2)
+    if is_v2:
+        if not phase or str(phase) not in ("pre", "post"):
+            raise ValueError(
+                f"Connector receipt v2 requires phase to be 'pre' or 'post', got {phase!r}"
+            )
+        if not run_id or not str(run_id).strip():
+            raise ValueError("Connector receipt v2 requires nonempty 'run_id'")
+
     receipt: dict[str, Any] = {
         "encoding_version": encoding_version,
-        "profile": (
-            CONNECTOR_RECEIPT_PROFILE_V2
-            if encoding_version in ("2", "v2", CONNECTOR_RECEIPT_PROFILE_V2)
-            else "v1"
-        ),
+        "profile": (CONNECTOR_RECEIPT_PROFILE_V2 if is_v2 else "v1"),
         "connector_id": connector_id,
         "source_id": source_id,
         "authenticated": bool(is_authenticated),
@@ -351,11 +359,9 @@ def create_authenticated_connector_receipt(
         "retrieval_token": compute_connector_receipt_token(connector_id, source_id, key=key),
     }
     if phase:
-        if str(phase) not in ("pre", "post"):
-            raise ValueError(f"Connector receipt phase must be 'pre' or 'post', got {phase!r}")
         receipt["phase"] = str(phase)
     if run_id:
-        receipt["run_id"] = str(run_id)
+        receipt["run_id"] = str(run_id).strip()
     receipt["mac"] = compute_connector_receipt_mac(receipt, key=key)
     receipt["signature"] = receipt["mac"]
     return receipt
@@ -456,6 +462,7 @@ class HttpStateAuthorityConnector(StateAuthorityConnector):
         source_id = "sha3_256:" + hashlib.sha3_256(self.base_url.encode()).hexdigest()
         is_auth = urlparse(self.base_url).scheme == "https" and credentials
         connector_id = f"connector:http:{source_id}"
+        enc_ver = "v2" if (phase and run_id) else "v1"
         receipt = create_authenticated_connector_receipt(
             connector_id=connector_id,
             source_id=source_id,
@@ -466,6 +473,7 @@ class HttpStateAuthorityConnector(StateAuthorityConnector):
             phase=phase,
             run_id=run_id,
             timestamp=timestamp,
+            encoding_version=enc_ver,
         )
         return {
             "source_id": source_id,

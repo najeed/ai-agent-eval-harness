@@ -1041,6 +1041,17 @@ class TestInProcessExecutionBackend:
         )
         assert res_no_chk == {"status": "resumed_ok"}
 
+        # 10. Fail-closed on provider lifecycle query error
+        failing_provider = MagicMock()
+        failing_provider.get_lifecycle.side_effect = OSError("Storage connection dropped")
+        backend_failing_prov = InProcessExecutionBackend(run_store=failing_provider)
+        with pytest.raises(RuntimeError, match="authoritative provider lifecycle query failed"):
+            backend_failing_prov.resume(run_id)
+        failing_provider.get_lifecycle.side_effect = OSError("Storage connection dropped")
+        backend_failing_prov = InProcessExecutionBackend(run_store=failing_provider)
+        with pytest.raises(RuntimeError, match="authoritative provider lifecycle query failed"):
+            backend_failing_prov.resume(run_id)
+
     def test_inprocess_backend_resume_manifest_and_metadata_recovery(self, tmp_path, monkeypatch):
         import eval_runner.runner as runner
 

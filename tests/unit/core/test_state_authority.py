@@ -587,6 +587,8 @@ def test_state_authority_receipt_tampering_and_forgery_rejection():
         request_spec="GET /orders/123",
         response_digest=resp_digest,
         execution_id="exec-1",
+        phase="pre",
+        run_id="run-auth-test",
         timestamp="2026-01-01T00:00:00Z",
     )
     assert verify_connector_receipt_authenticity(receipt) is True
@@ -630,6 +632,8 @@ def test_state_authority_receipt_tampering_and_forgery_rejection():
         source_id=source_id,
         is_authenticated=True,
         response_digest="sha3_256:" + "f" * 64,
+        phase="post",
+        run_id="run-auth-test",
     )
     row = {
         "assertion": assertion,
@@ -880,6 +884,8 @@ def test_connector_receipt_mac_binds_authenticated_field():
         is_authenticated=False,
         request_spec="GET /test",
         response_digest="sha3_256:123",
+        phase="pre",
+        run_id="run-test",
     )
     assert unauth_receipt["authenticated"] is False
     assert verify_connector_receipt_authenticity(unauth_receipt) is True
@@ -998,3 +1004,28 @@ def test_v2_receipt_canonical_encoding_defeats_delimiter_collision(monkeypatch):
         }
     )
     assert canonical_receipt_payload_bytes(r_a) == expected_payload
+
+    # Mandatory phase and run_id in create_authenticated_connector_receipt for v2
+    with pytest.raises(ValueError, match="phase to be 'pre' or 'post'"):
+        create_authenticated_connector_receipt(
+            connector_id="c1",
+            source_id="s1",
+            phase=None,
+            run_id="r1",
+            encoding_version="v2",
+        )
+
+    with pytest.raises(ValueError, match="nonempty 'run_id'"):
+        create_authenticated_connector_receipt(
+            connector_id="c1",
+            source_id="s1",
+            phase="pre",
+            run_id="",
+            encoding_version="v2",
+        )
+
+    with pytest.raises(ValueError, match="phase to be 'pre' or 'post'"):
+        canonical_receipt_payload_bytes({"version": "v2", "phase": None, "run_id": "r1"})
+
+    with pytest.raises(ValueError, match="nonempty 'run_id'"):
+        canonical_receipt_payload_bytes({"version": "v2", "phase": "pre", "run_id": ""})

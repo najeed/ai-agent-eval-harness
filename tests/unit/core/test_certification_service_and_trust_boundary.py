@@ -128,6 +128,10 @@ def test_authoritative_state_claims_cannot_use_sandbox_or_simulator_evidence(tar
         "receipt_exec_mismatch",
         "receipt_missing_timestamp",
         "receipt_causal_inversion",
+        "receipt_phase_missing",
+        "receipt_phase_swapped",
+        "receipt_run_mismatch",
+        "receipt_v1_downgrade",
     ],
 )
 def test_independent_state_claim_verifier_recomputes_source_and_content_binding(defect):
@@ -138,6 +142,7 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
     )
     from eval_runner.utils import crypto
 
+    run_id = "run-cert-boundary-001"
     assertion = {"target": "authority:orders", "property": "status", "expected": "approved"}
     scenario = {
         "metadata": {
@@ -157,6 +162,8 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
         is_authenticated=True,
         response_digest=before_hash,
         execution_id=exec_inst_id,
+        phase="pre",
+        run_id=run_id,
         timestamp="2026-11-11T10:00:00+00:00",
     )
     post_receipt = create_authenticated_connector_receipt(
@@ -165,6 +172,8 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
         is_authenticated=True,
         response_digest=after_hash,
         execution_id=exec_inst_id,
+        phase="post",
+        run_id=run_id,
         timestamp="2026-11-11T10:00:01+00:00",
     )
     pre_identity = {
@@ -222,6 +231,8 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
                 source_id="sha3_256:" + "f" * 64,
                 is_authenticated=True,
                 execution_id=exec_inst_id,
+                phase="post",
+                run_id=run_id,
             )
         )
     elif defect == "receipt_unauthenticated":
@@ -231,6 +242,8 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
                 source_id=source_id,
                 is_authenticated=False,
                 execution_id=exec_inst_id,
+                phase="post",
+                run_id=run_id,
             )
         )
     elif defect == "receipt_exec_mismatch":
@@ -241,6 +254,8 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
                 is_authenticated=True,
                 response_digest=after_hash,
                 execution_id="different:execution:id",
+                phase="post",
+                run_id=run_id,
             )
         )
     elif defect == "receipt_missing_timestamp":
@@ -254,6 +269,8 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
             is_authenticated=True,
             response_digest=before_hash,
             execution_id=exec_inst_id,
+            phase="pre",
+            run_id=run_id,
             timestamp="2026-11-11T12:00:00+00:00",
         )
         inverted_post = create_authenticated_connector_receipt(
@@ -262,16 +279,55 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
             is_authenticated=True,
             response_digest=after_hash,
             execution_id=exec_inst_id,
+            phase="post",
+            run_id=run_id,
             timestamp="2026-11-11T11:00:00+00:00",
         )
         row["pre_observation_identity"]["connector_receipt"] = inverted_pre
         row["post_observation_identity"]["connector_receipt"] = inverted_post
+    elif defect == "receipt_phase_missing":
+        bad_receipt = dict(post_receipt)
+        bad_receipt.pop("phase", None)
+        row["post_observation_identity"]["connector_receipt"] = bad_receipt
+    elif defect == "receipt_phase_swapped":
+        swapped_receipt = create_authenticated_connector_receipt(
+            connector_id=connector_id,
+            source_id=source_id,
+            is_authenticated=True,
+            response_digest=after_hash,
+            execution_id=exec_inst_id,
+            phase="pre",
+            run_id=run_id,
+        )
+        row["post_observation_identity"]["connector_receipt"] = swapped_receipt
+    elif defect == "receipt_run_mismatch":
+        cross_run_receipt = create_authenticated_connector_receipt(
+            connector_id=connector_id,
+            source_id=source_id,
+            is_authenticated=True,
+            response_digest=after_hash,
+            execution_id=exec_inst_id,
+            phase="post",
+            run_id="different-run-999",
+        )
+        row["post_observation_identity"]["connector_receipt"] = cross_run_receipt
+    elif defect == "receipt_v1_downgrade":
+        v1_receipt = create_authenticated_connector_receipt(
+            connector_id=connector_id,
+            source_id=source_id,
+            is_authenticated=True,
+            response_digest=after_hash,
+            execution_id=exec_inst_id,
+            encoding_version="v1",
+        )
+        row["post_observation_identity"]["connector_receipt"] = v1_receipt
     events = (
         []
         if defect == "missing"
         else [
             {
                 "event": "execution_graph_node",
+                "run_id": run_id,
                 "scenario_node_id": "approve",
                 "execution_instance_id": "approve:attempt:1",
                 "status": "completed",

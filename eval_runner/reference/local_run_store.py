@@ -317,6 +317,19 @@ class LocalFileRunStore(RunStore):
             or not stored_manifest_digest
         ):
             raise RuntimeError("CertificationRecoveryJournalCorrupt")
+        vault_run_id = run_vault.name
+        journal_run_id = journal.get("run_id")
+        if not journal_run_id or str(journal_run_id) != vault_run_id:
+            raise RuntimeError("CertificationRecoveryJournalCorrupt")
+        if manifest.get("run_id") and str(manifest.get("run_id")) != vault_run_id:
+            raise RuntimeError("CertificationRecoveryJournalCorrupt")
+        if sealed_record.get("run_id") and str(sealed_record.get("run_id")) != vault_run_id:
+            raise RuntimeError("CertificationRecoveryJournalCorrupt")
+        if sealed_record.get("lifecycle") != "SEALED" or sealed_record.get("status") != "SEALED":
+            raise RuntimeError("CertificationRecoveryJournalCorrupt")
+        pkg = manifest.get("verification_package")
+        if isinstance(pkg, dict) and pkg.get("run_id") and str(pkg.get("run_id")) != vault_run_id:
+            raise RuntimeError("CertificationRecoveryJournalCorrupt")
         expected_digest = _canonical_digest(manifest)
         if stored_manifest_digest != expected_digest:
             raise RuntimeError("CertificationRecoveryJournalCorrupt")
@@ -987,9 +1000,19 @@ class LocalFileRunStore(RunStore):
 
     def get_lifecycle(self, run_id: str, context: dict[str, Any] | None = None) -> str | None:
         """Query authoritative lifecycle state directly from provider storage."""
+        if context is not None:
+            # Check context scope authorization before reading vault internals
+            record = self.get_run(run_id, context=context)
+            if record is None:
+                return None
         try:
             run_vault = self._get_run_vault(run_id, create=False)
         except (ValueError, PermissionError):
+            logger.debug(
+                "Could not resolve run vault for get_lifecycle",
+                extra={"operation": "get_lifecycle", "run_id": run_id},
+                exc_info=True,
+            )
             return None
         if not run_vault or not run_vault.exists() or not run_vault.is_dir():
             return None

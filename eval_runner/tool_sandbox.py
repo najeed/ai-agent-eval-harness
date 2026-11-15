@@ -646,12 +646,18 @@ class ToolSandbox(AbstractSandbox):
                 write_path = params["shared_write"].get("path")
                 write_val = params["shared_write"].get("value")
                 if write_path:
-                    self.shared_state.write(active_agent, write_path, write_val)
+                    write_ok = self.shared_state.write(active_agent, write_path, write_val)
+                    if not write_ok:
+                        raise PermissionError(
+                            f"Agent '{active_agent}' denied write access to shared path "
+                            f"'{write_path}'."
+                        )
             if "shared_read" in params:
                 read_path = params["shared_read"].get("path")
                 if read_path:
                     self.shared_state.read(active_agent, read_path)
         except Exception as exc:
+            logger.error("Transactional commit failed, changes rolled back: %s", exc, exc_info=True)
             self.state = local_state_snapshot
             self.shared_state.registry = shared_state_snapshot
             return {

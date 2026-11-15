@@ -966,3 +966,43 @@ def test_local_run_store_rejects_corrupted_jsonl(tmp_path: Path):
     with pytest.raises(ValueError) as exc_info:
         store.get_events(run_id)
     assert "MalformedTraceRecord" in str(exc_info.value)
+
+
+def test_local_provider_rejects_journal_cross_run_identity_and_lifecycle_invariants(tmp_path):
+    """Corrupted or cross-run journal identities must fail closed and never seal."""
+    from eval_runner.reference.local_run_store import _canonical_digest
+
+    store = LocalFileRunStore(tmp_path)
+    run_id = "run-ident-check"
+    store.create_run(run_id, "scenario")
+    vault = store._get_run_vault(run_id)
+    manifest = {"run_id": run_id, "trace_hash": "sha3_256:valid"}
+
+    # 1. Journal run_id mismatch (cross-run swap attack)
+    bad_journal = {
+        "version": 1,
+        "run_id": "different-run-id",
+        "manifest": manifest,
+        "sealed_record": {"run_id": run_id, "status": "SEALED", "lifecycle": "SEALED"},
+        "manifest_digest": _canonical_digest(manifest),
+    }
+    store._write_json_durable(store._commit_journal_path(vault), bad_journal)
+    with pytest.raises(RuntimeError, match="CertificationRecoveryJournalCorrupt"):
+        store.get_run(run_id)
+
+    # 2. Manifest run_id mismatch
+    bad_manifest = {"run_id": "spoofed-manifest-run", "trace_hash": "sha3_256:valid"}
+    bad_journal["run_id"] = run_id
+    bad_journal["manifest"] = bad_manifest
+    bad_journal["manifest_digest"] = _canonical_digest(bad_manifest)
+    store._write_json_durable(store._commit_journal_path(vault), bad_journal)
+    with pytest.raises(RuntimeError, match="CertificationRecoveryJournalCorrupt"):
+        store.get_run(run_id)
+
+    # 3. Sealed record lifecycle not SEALED
+    bad_journal["manifest"] = manifest
+    bad_journal["manifest_digest"] = _canonical_digest(manifest)
+    bad_journal["sealed_record"] = {"run_id": run_id, "status": "OPEN", "lifecycle": "OPEN"}
+    store._write_json_durable(store._commit_journal_path(vault), bad_journal)
+    with pytest.raises(RuntimeError, match="CertificationRecoveryJournalCorrupt"):
+        store.get_run(run_id)
