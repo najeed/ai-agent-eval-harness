@@ -751,6 +751,116 @@ class TestInProcessBackendResumptionGuard:
                     "run_cold_restart", RunLifecycleState.OPEN, run_store=run_store, context=None
                 )
 
+    def test_resume_rejects_payload_digest_mismatch_even_for_empty_payload(self):
+        import hashlib
+
+        run_store = MagicMock()
+        backend = InProcessExecutionBackend(run_store=run_store)
+        run_id = "run_payload_tamper"
+        # Approved record expects payload hash for {"action": "approved_val"}
+        expected_hash = hashlib.sha3_256(
+            str(sorted({"action": "approved_val"}.items())).encode()
+        ).hexdigest()
+        approved = ApprovalRequest(
+            approval_token="tok_payload_check",
+            run_id=run_id,
+            turn_index=1,
+            outbound_payload_hash=expected_hash,
+            status="APPROVED",
+        )
+        # Checkpoint contains empty payload {} (or tampered payload)
+        with backend._lock:
+            backend._active_runs[run_id] = {
+                "status": "PAUSED_FOR_APPROVAL",
+                "scenario_data": {"id": "test_scenario"},
+                "resumption_checkpoint": {
+                    "session_state": {
+                        "approval_token": "tok_payload_check",
+                        "action_payload": {},  # empty payload must not bypass verification!
+                    }
+                },
+            }
+        approval_store = MagicMock()
+        approval_store.get_request.return_value = approved
+        with patch(
+            "eval_runner.reference.approval_store.get_default_approval_store",
+            return_value=approval_store,
+        ):
+            with pytest.raises(PermissionError, match="approval payload binding is invalid"):
+                backend.resume(run_id=run_id, resumption_token="tok_payload_check")
+
+    def test_resume_rejects_checkpoint_manifest_and_scope_mismatch(self):
+        import hashlib
+
+        run_store = MagicMock()
+        backend = InProcessExecutionBackend(run_store=run_store)
+        run_id = "run_scope_tamper"
+        approved = ApprovalRequest(
+            approval_token="tok_scope_check",
+            run_id=run_id,
+            turn_index=1,
+            outbound_payload_hash=hashlib.sha3_256(b"[]").hexdigest(),
+            manifest_id="manifest_orig",
+            scope_digest="sha3:scope_orig",
+            status="APPROVED",
+        )
+        # 1. Manifest mismatch
+        with backend._lock:
+            backend._active_runs[run_id] = {
+                "status": "PAUSED_FOR_APPROVAL",
+                "scenario_data": {"id": "test_scenario"},
+                "resumption_checkpoint": {
+                    "session_state": {
+                        "approval_token": "tok_scope_check",
+                        "action_payload": {},
+                        "manifest_id": "manifest_tampered",
+                        "scope_digest": "sha3:scope_orig",
+                    }
+                },
+            }
+        approval_store = MagicMock()
+        approval_store.get_request.return_value = approved
+        with patch(
+            "eval_runner.reference.approval_store.get_default_approval_store",
+            return_value=approval_store,
+        ):
+            with pytest.raises(PermissionError, match="approval manifest binding mismatch"):
+                backend.resume(run_id=run_id, resumption_token="tok_scope_check")
+
+        # 2. Scope digest mismatch
+        with backend._lock:
+            backend._active_runs[run_id]["resumption_checkpoint"]["session_state"][
+                "manifest_id"
+            ] = "manifest_orig"
+            backend._active_runs[run_id]["resumption_checkpoint"]["session_state"][
+                "scope_digest"
+            ] = "sha3:scope_tampered"
+        with patch(
+            "eval_runner.reference.approval_store.get_default_approval_store",
+            return_value=approval_store,
+        ):
+            with pytest.raises(PermissionError, match="approval scope binding mismatch"):
+                backend.resume(run_id=run_id, resumption_token="tok_scope_check")
+
+    def test_resume_enforces_authoritative_provider_approval_gating(self):
+        # Provider lifecycle is PAUSED_FOR_APPROVAL, even if checkpoint status claims "PAUSED"
+        run_store = MagicMock()
+        run_store.get_lifecycle.return_value = "PAUSED_FOR_APPROVAL"
+        mock_checkpoint_store = MagicMock()
+        mock_checkpoint_store.load.return_value = {
+            "status": "PAUSED",  # Crafty checkpoint claims ordinary non-HITL PAUSED
+            "session_state": {"status": "PAUSED"},
+        }
+        backend = InProcessExecutionBackend(
+            checkpoint_store=mock_checkpoint_store, run_store=run_store
+        )
+        run_id = "run_auth_provider_gate"
+
+        # Must reject resumption without token because provider lifecycle
+        # is authoritatively PAUSED_FOR_APPROVAL
+        with pytest.raises(PermissionError, match="approval-gated checkpoint requires a token"):
+            backend.resume(run_id=run_id, resumption_token=None)
+
 
 @pytest.mark.asyncio
 class TestHitlResumeCliHandler:

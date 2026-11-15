@@ -64,37 +64,45 @@ class SharedStateRegistry:
         self.redundant_reads = 0
         self.event_bus = event_bus
 
-    def write(self, agent_name: str, path: str, value: Any) -> bool:
-        """Writes to a namespace if agent has permission."""
+    def can_write(self, agent_name: str, path: str) -> bool:
+        """Checks if agent has write permission for the given namespace/path."""
         namespace = path.split(":")[0] if ":" in path else "global"
         agent_config = self.topology.get(agent_name, {})
         allowed_writes = agent_config.get("writes", [])
-        if (
+        return (
             any(self._match_namespace(namespace, pattern) for pattern in allowed_writes)
             or "*" in allowed_writes
-        ):
-            self.registry[path] = value
-            event_data = {"agent": agent_name, "path": path, "value": value}
-            if self.event_bus:
-                self.event_bus.emit("state_write", event_data)
-            return True
-        return False
+        )
 
-    def read(self, agent_name: str, path: str) -> Any:
-        """Reads from a namespace if agent has permission."""
+    def can_read(self, agent_name: str, path: str) -> bool:
+        """Checks if agent has read permission for the given namespace/path."""
         namespace = path.split(":")[0] if ":" in path else "global"
         agent_config = self.topology.get(agent_name, {})
         allowed_reads = agent_config.get("reads", [])
-        if (
+        return (
             any(self._match_namespace(namespace, pattern) for pattern in allowed_reads)
             or "*" in allowed_reads
-        ):
-            val = self.registry.get(path)
-            event_data = {"agent": agent_name, "path": path, "value": val}
-            if self.event_bus:
-                self.event_bus.emit("state_read", event_data)
-            return val
-        return None
+        )
+
+    def write(self, agent_name: str, path: str, value: Any) -> bool:
+        """Writes to a namespace if agent has permission."""
+        if not self.can_write(agent_name, path):
+            return False
+        self.registry[path] = value
+        event_data = {"agent": agent_name, "path": path, "value": value}
+        if self.event_bus:
+            self.event_bus.emit("state_write", event_data)
+        return True
+
+    def read(self, agent_name: str, path: str) -> Any:
+        """Reads from a namespace if agent has permission."""
+        if not self.can_read(agent_name, path):
+            return None
+        val = self.registry.get(path)
+        event_data = {"agent": agent_name, "path": path, "value": val}
+        if self.event_bus:
+            self.event_bus.emit("state_read", event_data)
+        return val
 
     def _match_namespace(self, namespace: str, pattern: str) -> bool:
         if pattern == "*":
@@ -608,27 +616,37 @@ class ToolSandbox(AbstractSandbox):
                         {"category": "MUTATION_DELIVERY", "mutation_receipt": receipt},
                     )
 
+        # Pre-validate all shared write and read permissions before applying
+        # any local or shared state mutations. An execution failure at a later
+        # parameter check must NEVER leave partially committed local state mutations.
+        if "shared_write" in params:
+            write_path = params["shared_write"].get("path")
+            if write_path and not self.shared_state.can_write(active_agent, write_path):
+                return {
+                    "status": "error",
+                    "message": f"Agent {active_agent} has no write permission for {write_path}",
+                }
+        if "shared_read" in params:
+            read_path = params["shared_read"].get("path")
+            if read_path and read_path in self.shared_state.registry:
+                if not self.shared_state.can_read(active_agent, read_path):
+                    return {
+                        "status": "error",
+                        "message": f"Agent {active_agent} has no read permission for {read_path}",
+                    }
+
+        # Atomic commit boundary: apply staged local diff and execute shared mutations together.
         for path, value in proposed_diff.items():
             self._set_state_path(str(path), value)
         if "shared_write" in params:
             write_path = params["shared_write"].get("path")
             write_val = params["shared_write"].get("value")
             if write_path:
-                success = self.shared_state.write(active_agent, write_path, write_val)
-                if not success:
-                    return {
-                        "status": "error",
-                        "message": f"Agent {active_agent} has no write permission for {write_path}",
-                    }
+                self.shared_state.write(active_agent, write_path, write_val)
         if "shared_read" in params:
             read_path = params["shared_read"].get("path")
             if read_path:
-                val = self.shared_state.read(active_agent, read_path)
-                if val is None and read_path in self.shared_state.registry:
-                    return {
-                        "status": "error",
-                        "message": f"Agent {active_agent} has no read permission for {read_path}",
-                    }
+                self.shared_state.read(active_agent, read_path)
         output = tool_def.get("output", {"status": "success", "message": f"Executed {tool_name}"})
         safe_state = {}
         for k, v in self.state.items():

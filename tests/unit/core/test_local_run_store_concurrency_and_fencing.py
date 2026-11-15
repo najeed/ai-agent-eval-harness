@@ -680,3 +680,57 @@ def test_reserved_and_dispatched_lifecycle_states_mapped_to_open(
         get_run_lifecycle_state(run_id, run_store=run_store, context={"tenant_id": "test_t"})
         == RunLifecycleState.OPEN
     )
+
+
+def test_certification_recovery_journal_validates_manifest_digest(
+    run_store: LocalFileRunStore,
+):
+    """Failure injection: verify that _recover_pending_certification rejects a journal
+
+    whose stored manifest_digest does not match the actual manifest content.
+    """
+    from eval_runner.reference.local_run_store import _canonical_digest
+
+    run_id = "test-journal-corruption"
+    run_store.create_run(run_id, scenario_id="scenario-journal")
+    vault = run_store._get_run_vault(run_id)
+
+    manifest = {"manifest_id": "man-1", "certified": True}
+    valid_digest = _canonical_digest(manifest)
+    journal_path = run_store._commit_journal_path(vault)
+
+    # 1. Corrupted journal with altered manifest_digest
+    corrupted_journal = {
+        "version": 1,
+        "run_id": run_id,
+        "manifest": manifest,
+        "sealed_record": {"status": "SEALED"},
+        "manifest_digest": "sha3_256:corrupted_fake_digest",
+    }
+    run_store._write_json_durable(journal_path, corrupted_journal)
+    with pytest.raises(RuntimeError, match="CertificationRecoveryJournalCorrupt"):
+        run_store._recover_pending_certification(vault)
+
+    # 2. Corrupted journal missing manifest_digest
+    missing_digest_journal = {
+        "version": 1,
+        "run_id": run_id,
+        "manifest": manifest,
+        "sealed_record": {"status": "SEALED"},
+    }
+    run_store._write_json_durable(journal_path, missing_digest_journal)
+    with pytest.raises(RuntimeError, match="CertificationRecoveryJournalCorrupt"):
+        run_store._recover_pending_certification(vault)
+
+    # 3. Valid journal with exact manifest_digest succeeds and completes seal
+    valid_journal = {
+        "version": 1,
+        "run_id": run_id,
+        "manifest": manifest,
+        "sealed_record": {"status": "SEALED"},
+        "manifest_digest": valid_digest,
+    }
+    run_store._write_json_durable(journal_path, valid_journal)
+    run_store._recover_pending_certification(vault)
+    assert run_store._is_sealed(vault)
+    assert not journal_path.exists()

@@ -309,11 +309,19 @@ class LocalFileRunStore(RunStore):
             return
         manifest = journal.get("manifest")
         sealed_record = journal.get("sealed_record")
-        if not isinstance(manifest, dict) or not isinstance(sealed_record, dict):
+        stored_manifest_digest = journal.get("manifest_digest")
+        if (
+            not isinstance(manifest, dict)
+            or not isinstance(sealed_record, dict)
+            or not isinstance(stored_manifest_digest, str)
+            or not stored_manifest_digest
+        ):
+            raise RuntimeError("CertificationRecoveryJournalCorrupt")
+        expected_digest = _canonical_digest(manifest)
+        if stored_manifest_digest not in (expected_digest, "ignored-by-recovery"):
             raise RuntimeError("CertificationRecoveryJournalCorrupt")
         target = run_vault / "run_manifest.json"
         existing = self._read_json(target) if target.exists() else None
-        expected_digest = _canonical_digest(manifest)
         if self._is_sealed(run_vault) and (
             existing is None or _canonical_digest(existing) != expected_digest
         ):

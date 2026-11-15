@@ -1502,3 +1502,46 @@ async def test_tool_sandbox_event_bus_and_register_artifact(tmp_path):
     # Event bus emit on execute
     await sb.execute("test_tool", {})
     assert mock_bus.emit.called
+
+
+@pytest.mark.asyncio
+async def test_tool_sandbox_atomic_commit_pre_validates_shared_permissions(tmp_path):
+    """Failure injection: verify that an unauthorized shared_write fails closed
+
+    and leaves local sandbox state untouched without partial mutation.
+    """
+    scenario = {
+        "id": "atomic_commit_test",
+        "initial_state": {"local_counter": 10, "untouched_flag": True},
+        "metadata": {
+            "agent_topology": {
+                "restricted_agent": {"writes": ["allowed_ns:*"], "reads": ["allowed_ns:*"]}
+            }
+        },
+        "tools": {
+            "side_effect_tool": {
+                "state_changes": [
+                    {"path": "local_counter", "value": 999},
+                    {"path": "new_secret", "value": "leaked"},
+                ],
+                "output": {"status": "success"},
+            }
+        },
+    }
+    sb = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+    assert sb.state["local_counter"] == 10
+    assert "new_secret" not in sb.state
+
+    # Attempt to execute tool with an unauthorized shared_write namespace
+    result = await sb.execute(
+        "side_effect_tool",
+        {"shared_write": {"path": "forbidden_ns:key", "value": "malicious"}},
+        agent_name="restricted_agent",
+    )
+    assert result["status"] == "error"
+    assert "no write permission" in result["message"]
+
+    # Verify atomic rejection: local state must NOT have applied proposed_diff!
+    assert sb.state["local_counter"] == 10
+    assert "new_secret" not in sb.state
+    assert "forbidden_ns:key" not in sb.shared_state.registry

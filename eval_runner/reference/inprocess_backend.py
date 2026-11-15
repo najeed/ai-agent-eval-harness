@@ -472,12 +472,35 @@ class InProcessExecutionBackend(ExecutionBackend):
         checkpoint_state = (checkpoint or {}).get("session_state") or (checkpoint or {})
         expected_token = checkpoint_state.get("approval_token")
 
+        requested_run_store = kwargs.pop("run_store", None)
+        requested_context = kwargs.get("context") or (kwargs.get("metadata") or {}).get(
+            "runtime_context"
+        )
+        with self._lock:
+            bound_provider = self._run_providers.get(run_id)
+        provider = requested_run_store or (bound_provider[0] if bound_provider else self._run_store)
+
+        provider_lifecycle = None
+        if provider and hasattr(provider, "get_lifecycle"):
+            try:
+                res = provider.get_lifecycle(run_id, context=requested_context)
+                if isinstance(res, str):
+                    provider_lifecycle = res
+            except Exception as exc:
+                logger.debug(
+                    "Failed to query authoritative provider lifecycle for run %s: %s",
+                    run_id,
+                    exc,
+                )
+
         with self._lock:
             current_entry = self._active_runs.get(run_id)
             current_status = current_entry.get("status") if current_entry else None
 
-            # If not in active_runs (cold process restart), check durable checkpoint status
-            if current_status is None and checkpoint:
+            # Provider state is authoritative over local/checkpoint claims
+            if provider_lifecycle:
+                current_status = provider_lifecycle
+            elif current_status is None and checkpoint:
                 current_status = checkpoint.get("status") or (
                     checkpoint.get("session_state") or {}
                 ).get("status", "PAUSED")
@@ -485,7 +508,7 @@ class InProcessExecutionBackend(ExecutionBackend):
             # Never mutate lifecycle state for a run whose execution contract
             # cannot be recovered. This preserves the fail-closed boundary for
             # unknown IDs before any durable write is attempted.
-            if current_entry is None and not checkpoint:
+            if current_entry is None and not checkpoint and not provider_lifecycle:
                 raise RuntimeError(
                     f"Cannot resume run '{run_id}': execution state is unavailable (fail-closed)."
                 )
@@ -516,7 +539,11 @@ class InProcessExecutionBackend(ExecutionBackend):
                         f"Cannot resume run '{run_id}': invalid state '{current_status}'."
                     )
 
-        requires_approval = bool(expected_token) or current_status in approval_states
+        requires_approval = (
+            bool(expected_token)
+            or current_status in approval_states
+            or (provider_lifecycle in approval_states)
+        )
         if requires_approval:
             if not resumption_token:
                 raise PermissionError(
@@ -545,15 +572,41 @@ class InProcessExecutionBackend(ExecutionBackend):
                 raise PermissionError(
                     f"Cannot resume run '{run_id}': approval token does not bind to checkpoint."
                 )
+
+            # Always verify action_payload digest against expected approval record
+            # (including empty payloads)
             action_payload = checkpoint_state.get("action_payload")
-            if action_payload and approval.outbound_payload_hash:
+            if action_payload is not None and approval.outbound_payload_hash:
+                payload_dict = action_payload if isinstance(action_payload, dict) else {}
                 payload_hash = hashlib.sha3_256(
-                    str(sorted(action_payload.items())).encode("utf-8")
+                    str(sorted(payload_dict.items())).encode("utf-8")
                 ).hexdigest()
-                if not hmac.compare_digest(payload_hash, approval.outbound_payload_hash):
+                if not hmac.compare_digest(payload_hash, str(approval.outbound_payload_hash)):
                     raise PermissionError(
                         f"Cannot resume run '{run_id}': approval payload binding is invalid."
                     )
+
+            # Strict checkpoint manifest and scope binding verification
+            cp_manifest_id = checkpoint_state.get("manifest_id")
+            if (
+                approval.manifest_id
+                and cp_manifest_id
+                and str(cp_manifest_id) != str(approval.manifest_id)
+            ):
+                raise PermissionError(
+                    f"Cannot resume run '{run_id}': approval manifest binding mismatch "
+                    f"({cp_manifest_id} != {approval.manifest_id})."
+                )
+            cp_scope_digest = checkpoint_state.get("scope_digest")
+            if (
+                approval.scope_digest
+                and cp_scope_digest
+                and str(cp_scope_digest) != str(approval.scope_digest)
+            ):
+                raise PermissionError(
+                    f"Cannot resume run '{run_id}': approval scope binding mismatch "
+                    f"({cp_scope_digest} != {approval.scope_digest})."
+                )
 
         # Re-open the durable lifecycle before the background runner emits its
         # first event.  The approval gate deliberately closes trace writes;
@@ -561,13 +614,6 @@ class InProcessExecutionBackend(ExecutionBackend):
         # RunStore at PAUSED_FOR_APPROVAL and rejects every resumed event.
         # This is deliberately after approval validation, so an unapproved
         # token can never reopen a paused evidence stream.
-        requested_run_store = kwargs.pop("run_store", None)
-        requested_context = kwargs.get("context") or (kwargs.get("metadata") or {}).get(
-            "runtime_context"
-        )
-        with self._lock:
-            bound_provider = self._run_providers.get(run_id)
-        provider = requested_run_store or (bound_provider[0] if bound_provider else self._run_store)
         if provider is None:
             raise RuntimeError(
                 f"Cannot resume run '{run_id}': Provider ownership is unavailable (fail-closed)."

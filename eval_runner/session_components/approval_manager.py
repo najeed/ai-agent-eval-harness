@@ -160,8 +160,9 @@ class SessionApprovalManager:
         scope = dict(verified_token.tags)
         scope_digest = verified_token.digest
 
-        if not outbound_payload_hash and action_payload:
-            payload_str = str(sorted(action_payload.items()))
+        if not outbound_payload_hash:
+            payload_dict = action_payload if isinstance(action_payload, dict) else {}
+            payload_str = str(sorted(payload_dict.items()))
             outbound_payload_hash = hashlib.sha3_256(payload_str.encode("utf-8")).hexdigest()
 
         if not idempotency_key:

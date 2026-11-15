@@ -94,6 +94,7 @@ class SessionStateParityVerifier:
                 history,
                 {},
                 node=node,
+                phase="pre",
             )
             if property_path in ("__unobserved_source__", "__unsupported__"):
                 observations[source] = {"invalid": True}
@@ -105,7 +106,9 @@ class SessionStateParityVerifier:
             if (
                 isinstance(receipt, dict)
                 and ident.get("authenticated") is True
-                and receipt.get("response_digest") != snapshot_hash
+                and (
+                    receipt.get("response_digest") != snapshot_hash or receipt.get("phase") != "pre"
+                )
             ):
                 from eval_runner.state_authority import create_authenticated_connector_receipt
 
@@ -127,6 +130,8 @@ class SessionStateParityVerifier:
                     request_spec=receipt.get("request"),
                     response_digest=snapshot_hash,
                     execution_id=exec_id,
+                    phase="pre",
+                    run_id=getattr(self.session_manager, "run_id", None),
                     timestamp=receipt.get("timestamp"),
                 )
             observations[source] = {
@@ -214,6 +219,7 @@ class SessionStateParityVerifier:
         history: list[dict[str, Any]],
         shim_snapshots: dict[str, Any],
         node: dict[str, Any] | None = None,
+        phase: str = "post",
     ) -> tuple[Any, str | None]:
         target = assertion.get("target", "message")
         property_path = assertion.get("property")
@@ -305,13 +311,22 @@ class SessionStateParityVerifier:
                     or getattr(self.session_manager, "run_id", None)
                     or getattr(self.session_manager, "session_id", None)
                 )
+                run_id = getattr(self.session_manager, "run_id", None)
                 try:
                     observation_identity = connector.observation_identity(
                         response_digest=snapshot_hash,
                         execution_id=exec_id,
+                        phase=phase,
+                        run_id=run_id,
                     )
                 except (TypeError, AttributeError):
-                    observation_identity = connector.observation_identity()
+                    try:
+                        observation_identity = connector.observation_identity(
+                            response_digest=snapshot_hash,
+                            execution_id=exec_id,
+                        )
+                    except (TypeError, AttributeError):
+                        observation_identity = connector.observation_identity()
 
                 if not isinstance(observation_identity, dict):
                     if inspect.iscoroutine(observation_identity):

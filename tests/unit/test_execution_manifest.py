@@ -195,7 +195,7 @@ def test_compute_preflight_fingerprint_with_max_turns_precedence():
         max_turns=10,
     )
     assert len(fp) == 64
-    assert fp == "7185f3da3007bc5acdca5054b9bee6df909344a963b82084158bd9e7d1d1cd91"
+    assert fp == "2223047f5891c329da0966be1c94ff168a2cf09dcac47d247a786504acc0410d"
 
     fp_hermetic = compute_preflight_fingerprint(
         scenario_id="scen_preflight_override",
@@ -204,6 +204,25 @@ def test_compute_preflight_fingerprint_with_max_turns_precedence():
         execution_mode="hermetic",
     )
     assert fp != fp_hermetic
+
+    # Test scope_digest sensitivity
+    fp_scoped = compute_preflight_fingerprint(
+        scenario_id="scen_preflight_override",
+        agent_config={"endpoint": "http://localhost:8000", "protocol": "http"},
+        runtime_config={"max_turns": 5},
+        scope_digest="sha3:scope_alpha",
+    )
+    assert fp_scoped != fp
+
+    # Test organization and environment sensitivity
+    fp_org = compute_preflight_fingerprint(
+        scenario_id="scen_preflight_override",
+        agent_config={"endpoint": "http://localhost:8000", "protocol": "http"},
+        runtime_config={"max_turns": 5},
+        scope={"organization_id": "org_123", "environment": "production"},
+    )
+    assert fp_org != fp
+    assert fp_org != fp_scoped
 
 
 def test_manifest_builder_execution_mode_resolution_hierarchy():

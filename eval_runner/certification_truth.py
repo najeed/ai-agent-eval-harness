@@ -228,6 +228,11 @@ def state_claim_failures(scenario, events, execution_manifest=None):
                             if not receipt_exec_id or receipt_exec_id != str(execution_id):
                                 raise ValueError("Connector receipt execution_id mismatch")
 
+                            # Phase binding: receipt phase must match observation phase
+                            receipt_phase = receipt.get("phase")
+                            if receipt_phase and str(receipt_phase) != str(phase):
+                                raise ValueError("Connector receipt phase mismatch")
+
                             # Temporal binding: receipt must have a valid non-empty ISO timestamp
                             receipt_ts = str(receipt.get("timestamp") or "")
                             if not receipt_ts:

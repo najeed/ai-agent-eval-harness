@@ -922,3 +922,39 @@ def test_private_ip_guard_rejects_non_global_addresses(monkeypatch):
             _validate_external_authority_url("https://api.partner.example/state")
             == "https://api.partner.example/state"
         )
+
+
+def test_v2_receipt_canonical_encoding_defeats_delimiter_collision(monkeypatch):
+    """
+    Failure injection: verify that colon-delimiter tuple collision
+    is defeated by v2 canonical encoding.
+    """
+    from eval_runner.state_authority import (
+        create_authenticated_connector_receipt,
+        verify_connector_receipt_authenticity,
+    )
+
+    monkeypatch.setenv("AGENTV_STATE_AUTHORITY_KEY", "bWFzdGVyX3NlY3JldF9mb3Jfc3RhdGVfYXV0aF8=")
+
+    # Tuple A: connector_id contains colon
+    r_a = create_authenticated_connector_receipt(
+        connector_id="conn:test",
+        source_id="src_1",
+        execution_id="exec_1",
+        encoding_version="v2",
+    )
+    # Tuple B: connector_id is "conn", source_id is "test:src_1"
+    r_b = create_authenticated_connector_receipt(
+        connector_id="conn",
+        source_id="test:src_1",
+        execution_id="exec_1",
+        encoding_version="v2",
+    )
+    # In v2, their MACs MUST be distinct!
+    assert r_a["mac"] != r_b["mac"]
+    assert verify_connector_receipt_authenticity(r_a) is True
+    assert verify_connector_receipt_authenticity(r_b) is True
+
+    # Tampering phase in v2 receipt invalidates MAC
+    r_a_tampered_phase = dict(r_a, phase="post")
+    assert verify_connector_receipt_authenticity(r_a_tampered_phase) is False

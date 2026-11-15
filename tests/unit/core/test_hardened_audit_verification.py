@@ -216,11 +216,16 @@ def test_server_side_preflight_fingerprint_enforcement(tmp_path, monkeypatch):
 
     loaded_scen = eval_runner.loader.load_scenario(str(scen_file))
 
-    from eval_runner.console.routes.scenarios import resolve_execution_configs
+    from eval_runner.console.routes.scenarios import (
+        _execution_scope_for_request,
+        resolve_execution_configs,
+    )
 
     # Compute expected fingerprint matching check_execution_readiness
     agent_cfg, runtime_cfg = resolve_execution_configs({}, loaded_scen)
     scen_meta = loaded_scen.get("metadata") or {}
+    with app.test_request_context():
+        req_scope = _execution_scope_for_request({})
     valid_fp = compute_preflight_fingerprint(
         scenario_id="sec_01",
         scen_hash=compute_scenario_hash(loaded_scen),
@@ -230,8 +235,9 @@ def test_server_side_preflight_fingerprint_enforcement(tmp_path, monkeypatch):
         agent_config=agent_cfg,
         runtime_config=runtime_cfg,
         scenario_version=str(scen_meta.get("version", "1.0.0")),
-        tenant_id="default",
-        workspace_id="default",
+        tenant_id=str((req_scope or {}).get("tenant_id") or "default"),
+        workspace_id=str((req_scope or {}).get("workspace_id") or "default"),
+        scope=req_scope,
         seed=scen_meta.get("seed"),
         execution_mode=str(scen_meta.get("execution_mode", "")),
         evaluators=None,
@@ -257,6 +263,7 @@ def test_server_side_preflight_fingerprint_enforcement(tmp_path, monkeypatch):
             json={"path": str(scen_file), "preflight_fingerprint": valid_fp},
         )
         assert res_valid.status_code == 200
+        assert res_valid.get_json()["status"] == "started"
         assert res_valid.get_json()["status"] == "started"
 
 

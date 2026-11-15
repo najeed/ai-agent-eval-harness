@@ -238,6 +238,49 @@ def get_state_authority_trust_key() -> bytes:
     )
 
 
+CONNECTOR_RECEIPT_PROFILE_V2 = "agentv.connector-receipt.v2"
+
+
+def canonical_receipt_payload_bytes(receipt_data: Mapping[str, Any]) -> bytes:
+    """Generate unambiguous canonical bytes for receipt MAC computation.
+
+    Uses versioned, structured canonical JSON encoding to prevent delimiter-injection
+    and tuple-collision attacks.
+    """
+    version = str(
+        receipt_data.get("encoding_version")
+        or receipt_data.get("version")
+        or receipt_data.get("profile")
+        or ""
+    )
+    if version in ("2", "v2", CONNECTOR_RECEIPT_PROFILE_V2):
+        canonical_dict = {
+            "authenticated": bool(receipt_data.get("authenticated", False)),
+            "connector_id": str(receipt_data.get("connector_id", "")),
+            "execution_id": str(receipt_data.get("execution_id", "")),
+            "phase": str(receipt_data.get("phase", "")),
+            "profile": CONNECTOR_RECEIPT_PROFILE_V2,
+            "request": str(receipt_data.get("request", "")),
+            "response_digest": str(receipt_data.get("response_digest", "")),
+            "run_id": str(receipt_data.get("run_id", "")),
+            "source_id": str(receipt_data.get("source_id", "")),
+            "timestamp": str(receipt_data.get("timestamp", "")),
+        }
+        return json.dumps(canonical_dict, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    else:
+        # Legacy v1 delimiter-based encoding for backward compatibility with v1 receipts
+        fields = [
+            str(receipt_data.get("connector_id", "")),
+            str(receipt_data.get("source_id", "")),
+            str(bool(receipt_data.get("authenticated", False))).lower(),
+            str(receipt_data.get("request", "")),
+            str(receipt_data.get("response_digest", "")),
+            str(receipt_data.get("timestamp", "")),
+            str(receipt_data.get("execution_id", "")),
+        ]
+        return ":".join(fields).encode("utf-8")
+
+
 def compute_connector_receipt_mac(
     receipt_data: Mapping[str, Any],
     key: bytes | None = None,
@@ -246,16 +289,7 @@ def compute_connector_receipt_mac(
     import hmac
 
     resolved_key = key if key is not None else get_state_authority_trust_key()
-    fields = [
-        str(receipt_data.get("connector_id", "")),
-        str(receipt_data.get("source_id", "")),
-        str(bool(receipt_data.get("authenticated", False))).lower(),
-        str(receipt_data.get("request", "")),
-        str(receipt_data.get("response_digest", "")),
-        str(receipt_data.get("timestamp", "")),
-        str(receipt_data.get("execution_id", "")),
-    ]
-    payload = ":".join(fields).encode("utf-8")
+    payload = canonical_receipt_payload_bytes(receipt_data)
     return hmac.new(resolved_key, payload, hashlib.sha3_256).hexdigest()
 
 
@@ -283,7 +317,10 @@ def create_authenticated_connector_receipt(
     request_spec: str | dict[str, Any] | None = None,
     response_digest: str | None = None,
     execution_id: str | None = None,
+    phase: str | None = None,
+    run_id: str | None = None,
     timestamp: str | None = None,
+    encoding_version: str = "v2",
     key: bytes | None = None,
 ) -> dict[str, Any]:
     """Create an authenticated connector receipt with cryptographic MAC."""
@@ -293,6 +330,12 @@ def create_authenticated_connector_receipt(
     exec_id = str(execution_id or "")
 
     receipt: dict[str, Any] = {
+        "encoding_version": encoding_version,
+        "profile": (
+            CONNECTOR_RECEIPT_PROFILE_V2
+            if encoding_version in ("2", "v2", CONNECTOR_RECEIPT_PROFILE_V2)
+            else "v1"
+        ),
         "connector_id": connector_id,
         "source_id": source_id,
         "authenticated": bool(is_authenticated),
@@ -302,6 +345,10 @@ def create_authenticated_connector_receipt(
         "execution_id": exec_id,
         "retrieval_token": compute_connector_receipt_token(connector_id, source_id, key=key),
     }
+    if phase:
+        receipt["phase"] = str(phase)
+    if run_id:
+        receipt["run_id"] = str(run_id)
     receipt["mac"] = compute_connector_receipt_mac(receipt, key=key)
     receipt["signature"] = receipt["mac"]
     return receipt
@@ -391,6 +438,8 @@ class HttpStateAuthorityConnector(StateAuthorityConnector):
         response_digest: str | None = None,
         execution_id: str | None = None,
         timestamp: str | None = None,
+        phase: str | None = None,
+        run_id: str | None = None,
     ) -> dict[str, Any]:
         credentials = any(
             name.lower() in {"authorization", "x-api-key", "api-key"}
@@ -408,6 +457,8 @@ class HttpStateAuthorityConnector(StateAuthorityConnector):
             request_spec=self.base_url,
             response_digest=response_digest,
             execution_id=execution_id,
+            phase=phase,
+            run_id=run_id,
             timestamp=timestamp,
         )
         return {

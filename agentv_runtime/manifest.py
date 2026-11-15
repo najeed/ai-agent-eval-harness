@@ -120,18 +120,20 @@ def compute_preflight_fingerprint(
     scenario_version: str = "1.0.0",
     tenant_id: str = "default",
     workspace_id: str = "default",
+    organization_id: str = "",
+    environment: str = "",
     scope: Mapping[str, Any] | None = None,
     scope_digest: str = "",
     seed: Any = None,
     execution_mode: str = "",
     evaluators: Any = None,
 ) -> str:
-    """
-    Canonical preflight fingerprint calculation shared between
+    """Canonical preflight fingerprint calculation shared between
+
     readiness probe, evaluation launch, and certification.
     Binds the canonical resolved execution manifest:
     scenario ID/version/hash, complete agent config (including model and endpoint),
-    runtime config, evaluators, execution mode, seed, and tenant/workspace context.
+    runtime config, evaluators, execution mode, seed, scope digest, and tenant/workspace context.
     """
     from agentv_runtime.scope import ScopeToken
 
@@ -151,18 +153,25 @@ def compute_preflight_fingerprint(
         scope_digest = scope_digest or token.digest
         tenant_id = str(scope.get("tenant_id") or tenant_id or "default")
         workspace_id = str(scope.get("workspace_id") or workspace_id or "default")
+        organization_id = str(
+            scope.get("organization_id") or scope.get("org_id") or organization_id or ""
+        )
+        environment = str(scope.get("environment") or scope.get("env") or environment or "")
 
     raw = {
         "agent_config": _to_json_compatible(ac),
         "endpoint": str(ac.get("endpoint") or endpoint or ""),
+        "environment": str(environment or ""),
         "evaluators": eval_list,
         "execution_mode": str(execution_mode or ""),
         "max_turns": int(rc.get("max_turns", max_turns)),
+        "organization_id": str(organization_id or ""),
         "protocol": str(ac.get("protocol") or protocol or "").lower(),
         "runtime_config": _to_json_compatible(rc),
         "scen_hash": str(scen_hash or ""),
         "scenario_id": str(scenario_id or ""),
         "scenario_version": str(scenario_version or "1.0.0"),
+        "scope_digest": str(scope_digest or ""),
         "seed": seed,
         "tenant_id": str(tenant_id or "default"),
         "workspace_id": str(workspace_id or "default"),
