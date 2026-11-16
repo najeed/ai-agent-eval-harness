@@ -321,15 +321,19 @@ class LocalFileRunStore(RunStore):
         journal_run_id = journal.get("run_id")
         if not journal_run_id or str(journal_run_id) != vault_run_id:
             raise RuntimeError("CertificationRecoveryJournalCorrupt")
-        if manifest.get("run_id") and str(manifest.get("run_id")) != vault_run_id:
+        manifest_run_id = manifest.get("run_id")
+        if not manifest_run_id or str(manifest_run_id) != vault_run_id:
             raise RuntimeError("CertificationRecoveryJournalCorrupt")
-        if sealed_record.get("run_id") and str(sealed_record.get("run_id")) != vault_run_id:
+        sealed_record_run_id = sealed_record.get("run_id")
+        if not sealed_record_run_id or str(sealed_record_run_id) != vault_run_id:
             raise RuntimeError("CertificationRecoveryJournalCorrupt")
         if sealed_record.get("lifecycle") != "SEALED" or sealed_record.get("status") != "SEALED":
             raise RuntimeError("CertificationRecoveryJournalCorrupt")
         pkg = manifest.get("verification_package")
-        if isinstance(pkg, dict) and pkg.get("run_id") and str(pkg.get("run_id")) != vault_run_id:
-            raise RuntimeError("CertificationRecoveryJournalCorrupt")
+        if isinstance(pkg, dict):
+            pkg_run_id = (pkg.get("execution_identity") or {}).get("run_id") or pkg.get("run_id")
+            if pkg_run_id and str(pkg_run_id) != vault_run_id:
+                raise RuntimeError("CertificationRecoveryJournalCorrupt")
         expected_digest = _canonical_digest(manifest)
         if stored_manifest_digest != expected_digest:
             raise RuntimeError("CertificationRecoveryJournalCorrupt")
@@ -1499,6 +1503,8 @@ class LocalFileRunStore(RunStore):
                 record.get("status_details") or {}
             ).get("evidence_capture_failed") is True:
                 return False
+            if not manifest.get("run_id"):
+                manifest = dict(manifest, run_id=run_id)
             incoming_digest = _canonical_digest(manifest)
             existing = self._read_json(target) if target.exists() else None
             if self._is_sealed(vault):
@@ -1508,6 +1514,7 @@ class LocalFileRunStore(RunStore):
                 **record,
                 "status": "SEALED",
                 "lifecycle": "SEALED",
+                "run_id": run_id,
                 "updated_at": datetime.now().astimezone().isoformat(),
             }
             journal = {

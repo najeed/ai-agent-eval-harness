@@ -497,16 +497,23 @@ class InProcessExecutionBackend(ExecutionBackend):
                     f"Cannot resume run '{run_id}': authoritative provider lifecycle query failed."
                 ) from exc
 
+        approval_states = {"WAITING_FOR_APPROVAL", "AWAITING_APPROVAL", "PAUSED_FOR_APPROVAL"}
+        terminal_states = {"COMPLETED", "FAILED", "ABORTED", "CANCELLED"}
+
         with self._lock:
             current_entry = self._active_runs.get(run_id)
             current_status = current_entry.get("status") if current_entry else None
 
-            # If not in active_runs (cold process restart), derive status from
-            # authoritative provider state rather than trusting unverified checkpoints
-            if current_status is None:
-                if provider_lifecycle:
+            # Reconcile status with authoritative provider lifecycle:
+            # If the provider is approval-gated or in-memory is unset,
+            # authoritative provider governs.
+            if provider_lifecycle:
+                if provider_lifecycle in approval_states:
                     current_status = provider_lifecycle
-                elif checkpoint:
+                elif current_status is None:
+                    current_status = provider_lifecycle
+            elif current_status is None:
+                if checkpoint:
                     current_status = checkpoint.get("status") or (
                         checkpoint.get("session_state") or {}
                     ).get("status", "PAUSED")
@@ -519,22 +526,21 @@ class InProcessExecutionBackend(ExecutionBackend):
                     f"Cannot resume run '{run_id}': execution state is unavailable (fail-closed)."
                 )
 
-            approval_states = {"WAITING_FOR_APPROVAL", "AWAITING_APPROVAL", "PAUSED_FOR_APPROVAL"}
-            if current_status in approval_states and not resumption_token:
-                raise PermissionError(
-                    f"Cannot resume run '{run_id}': approval-gated checkpoint requires a token."
-                )
-
             # Execution State Machine Guard
             if not force_recovery:
                 # 1. Reject active running executions
-                if current_status == "RUNNING":
+                if current_status == "RUNNING" or provider_lifecycle == "RUNNING":
                     raise RuntimeError(
                         f"Cannot resume run '{run_id}': run is currently in RUNNING state."
                     )
 
-                # 2. Reject terminal execution states
-                if current_status in ("COMPLETED", "FAILED", "ABORTED", "CANCELLED"):
+                # 2. Reject terminal execution states (both in-memory and authoritative provider)
+                if provider_lifecycle in terminal_states:
+                    raise RuntimeError(
+                        f"Cannot resume run '{run_id}': provider reached terminal state "
+                        f"'{provider_lifecycle}'."
+                    )
+                if current_status in terminal_states:
                     raise RuntimeError(
                         f"Cannot resume run '{run_id}': reached terminal state '{current_status}'."
                     )
@@ -545,7 +551,19 @@ class InProcessExecutionBackend(ExecutionBackend):
                         f"Cannot resume run '{run_id}': invalid state '{current_status}'."
                     )
 
-        requires_approval = bool(expected_token) or current_status in approval_states
+            if (
+                current_status in approval_states
+                or (provider_lifecycle and provider_lifecycle in approval_states)
+            ) and not resumption_token:
+                raise PermissionError(
+                    f"Cannot resume run '{run_id}': approval-gated checkpoint requires a token."
+                )
+
+        requires_approval = (
+            bool(expected_token)
+            or (current_status in approval_states)
+            or bool(provider_lifecycle and provider_lifecycle in approval_states)
+        )
         if requires_approval:
             if not resumption_token:
                 raise PermissionError(

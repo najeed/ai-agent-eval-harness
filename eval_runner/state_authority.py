@@ -245,15 +245,33 @@ def canonical_receipt_payload_bytes(receipt_data: Mapping[str, Any]) -> bytes:
     """Generate unambiguous canonical bytes for receipt MAC computation.
 
     Uses versioned, structured canonical JSON encoding to prevent delimiter-injection
-    and tuple-collision attacks.
+    and tuple-collision attacks. Enforces strict, unambiguous v2 encoding/profile
+    consistency to prevent field-level downgrade attacks.
     """
-    version = str(
-        receipt_data.get("encoding_version")
-        or receipt_data.get("version")
-        or receipt_data.get("profile")
-        or ""
+    enc_ver = str(receipt_data.get("encoding_version") or "").strip()
+    profile = str(receipt_data.get("profile") or "").strip()
+    ver = str(receipt_data.get("version") or "").strip()
+    has_v2_fields = bool(receipt_data.get("phase") or receipt_data.get("run_id"))
+
+    is_v2 = (
+        enc_ver in ("2", "v2", CONNECTOR_RECEIPT_PROFILE_V2)
+        or profile in ("2", "v2", CONNECTOR_RECEIPT_PROFILE_V2)
+        or ver in ("2", "v2", CONNECTOR_RECEIPT_PROFILE_V2)
+        or has_v2_fields
     )
-    if version in ("2", "v2", CONNECTOR_RECEIPT_PROFILE_V2):
+    if is_v2:
+        # Prevent field-level downgrade/spoofing: ALL present version fields must be consistent v2
+        if enc_ver and enc_ver not in ("2", "v2", CONNECTOR_RECEIPT_PROFILE_V2):
+            raise ValueError(
+                f"Ambiguous or conflicting receipt version: encoding_version={enc_ver!r} is not v2"
+            )
+        if profile and profile not in ("2", "v2", CONNECTOR_RECEIPT_PROFILE_V2):
+            raise ValueError(
+                f"Ambiguous or conflicting receipt version: profile={profile!r} is not v2"
+            )
+        if ver and ver not in ("2", "v2", CONNECTOR_RECEIPT_PROFILE_V2):
+            raise ValueError(f"Ambiguous or conflicting receipt version: version={ver!r} is not v2")
+
         phase_raw = receipt_data.get("phase")
         if not phase_raw or str(phase_raw) not in ("pre", "post"):
             raise ValueError(

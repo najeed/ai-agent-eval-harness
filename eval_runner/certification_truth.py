@@ -107,7 +107,7 @@ def authority_is_independent(url, scenario, execution_manifest=None):
     return all(origin(ep) != auth_origin for ep in declared_endpoints)
 
 
-def state_claim_failures(scenario, events, execution_manifest=None):
+def state_claim_failures(scenario, events, execution_manifest=None, run_id=None):
     """Require source-bound, authenticated pre/post observations for business state.
 
     Sandbox assertions remain useful diagnostics; they cannot establish an
@@ -115,26 +115,12 @@ def state_claim_failures(scenario, events, execution_manifest=None):
     """
     if not isinstance(scenario, Mapping):
         return ["StateClaimScenarioMissing"]
-    expected_run_id = None
-    if execution_manifest:
-        expected_run_id = getattr(execution_manifest, "run_id", None) or (
-            execution_manifest.get("run_id") if isinstance(execution_manifest, Mapping) else None
-        )
-    if not expected_run_id and events:
-        for ev in events:
-            if isinstance(ev, Mapping) and ev.get("run_id"):
-                expected_run_id = ev.get("run_id")
-                break
-    expected_run_id = None
-    if execution_manifest:
-        expected_run_id = getattr(execution_manifest, "run_id", None) or (
-            execution_manifest.get("run_id") if isinstance(execution_manifest, Mapping) else None
-        )
-    if not expected_run_id and events:
-        for ev in events:
-            if isinstance(ev, Mapping) and ev.get("run_id"):
-                expected_run_id = ev.get("run_id")
-                break
+    expected_run_id = (
+        run_id
+        or (getattr(execution_manifest, "run_id", None) if execution_manifest else None)
+        or (execution_manifest.get("run_id") if isinstance(execution_manifest, Mapping) else None)
+    )
+    expected_run_id = str(expected_run_id).strip() if expected_run_id else None
     authorities = (
         (scenario.get("metadata") or {}).get("state_authorities")
         or (scenario.get("metadata") or {}).get("state_authority")
@@ -176,6 +162,9 @@ def state_claim_failures(scenario, events, execution_manifest=None):
             ):
                 failures.append(f"IndependentStateAuthorityRequired:{node_id}:{change.get('path')}")
         if not external_assertions:
+            continue
+        if not expected_run_id:
+            failures.append(f"AuthoritativeRunIdentityRequired:{node_id}")
             continue
         carriers = {}
         for event in events or []:
@@ -243,24 +232,30 @@ def state_claim_failures(scenario, events, execution_manifest=None):
                             if receipt.get("authenticated") is not True:
                                 raise ValueError("Connector receipt unauthenticated")
 
-                            # Profile validation: reject legacy v1 receipts in certification
-                            profile = str(
-                                receipt.get("profile") or receipt.get("encoding_version") or ""
-                            )
+                            # Profile & encoding validation: require unambiguous
+                            # v2 receipts in certification.
+                            # Reject legacy v1 receipts or mixed v1/v2 downgrade attempts.
+                            profile = str(receipt.get("profile") or "").strip()
+                            enc_ver = str(receipt.get("encoding_version") or "").strip()
+                            ver = str(receipt.get("version") or "").strip()
                             if profile not in ("2", "v2", "agentv.connector-receipt.v2"):
                                 raise ValueError(
                                     "Connector receipt legacy profile v1 rejected in "
                                     "certification; v2 required"
                                 )
-
-                            # Profile validation: reject legacy v1 receipts in certification
-                            profile = str(
-                                receipt.get("profile") or receipt.get("encoding_version") or ""
-                            )
-                            if profile not in ("2", "v2", "agentv.connector-receipt.v2"):
+                            if enc_ver and enc_ver not in (
+                                "2",
+                                "v2",
+                                "agentv.connector-receipt.v2",
+                            ):
                                 raise ValueError(
-                                    "Connector receipt legacy profile v1 rejected "
-                                    "in certification; v2 required"
+                                    f"Connector receipt ambiguous encoding_version {enc_ver!r}; "
+                                    "v2 required in certification"
+                                )
+                            if ver and ver not in ("2", "v2", "agentv.connector-receipt.v2"):
+                                raise ValueError(
+                                    f"Connector receipt ambiguous version {ver!r}; "
+                                    "v2 required in certification"
                                 )
 
                             # Instance binding: receipt must match execution instance ID
@@ -281,12 +276,12 @@ def state_claim_failures(scenario, events, execution_manifest=None):
                                     f"got {receipt_phase!r}"
                                 )
 
-                            # Run ID binding: mandatory nonempty run_id
-                            # matching authoritative provider
+                            # Run ID binding: mandatory nonempty run_id matching
+                            # authoritative provider
                             receipt_run_id = str(receipt.get("run_id") or "").strip()
                             if not receipt_run_id:
                                 raise ValueError("Connector receipt missing mandatory run_id")
-                            if expected_run_id and receipt_run_id != str(expected_run_id):
+                            if receipt_run_id != str(expected_run_id):
                                 raise ValueError(
                                     f"Connector receipt run_id mismatch ({receipt_run_id} "
                                     f"!= {expected_run_id})"

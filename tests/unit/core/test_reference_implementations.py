@@ -1215,6 +1215,21 @@ class TestInProcessExecutionBackend:
         with pytest.raises(RuntimeError, match="reached terminal state"):
             backend_guard.resume("run-guard-completed")
 
+        # Provider authoritative lifecycle cannot be bypassed by in-memory 'PAUSED'
+        mock_prov_hitl = MagicMock()
+        mock_prov_hitl.get_lifecycle.return_value = "PAUSED_FOR_APPROVAL"
+        backend_prov = InProcessExecutionBackend(run_store=mock_prov_hitl)
+        backend_prov._active_runs["run-prov-hitl"] = {"status": "PAUSED"}
+        with pytest.raises(PermissionError, match="approval-gated checkpoint requires a token"):
+            backend_prov.resume("run-prov-hitl")
+
+        mock_prov_term = MagicMock()
+        mock_prov_term.get_lifecycle.return_value = "COMPLETED"
+        backend_term = InProcessExecutionBackend(run_store=mock_prov_term)
+        backend_term._active_runs["run-prov-term"] = {"status": "PAUSED"}
+        with pytest.raises(RuntimeError, match="provider reached terminal state 'COMPLETED'"):
+            backend_term.resume("run-prov-term")
+
         InProcessExecutionBackend.clear_instance()
 
 

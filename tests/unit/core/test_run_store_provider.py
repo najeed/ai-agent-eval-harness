@@ -388,7 +388,10 @@ def test_unbound_flight_recorder_fails_closed_when_event_is_recorded(tmp_path, m
 
 
 def test_inprocess_resume_uses_owned_provider_and_never_re_resolves_global(tmp_path):
+
+    from agentv_runtime.interfaces import ApprovalRequest
     from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+    from eval_runner.runtime_services import resolve_approval_store
 
     provider_a = LocalFileRunStore(tmp_path / "provider-a")
     provider_b = LocalFileRunStore(tmp_path / "provider-b")
@@ -399,7 +402,27 @@ def test_inprocess_resume_uses_owned_provider_and_never_re_resolves_global(tmp_p
     backend._active_runs[run_id] = {"status": "PAUSED", "scenario_data": {"id": "scenario-a"}}
     set_active_run_storage_provider(provider_b)
 
-    backend.resume(run_id)
+    # In-memory "PAUSED" status cannot bypass provider's authoritative PAUSED_FOR_APPROVAL
+    with pytest.raises(PermissionError, match="approval-gated checkpoint requires a token"):
+        backend.resume(run_id)
+
+    token = "approved-token-affinity"
+    backend.checkpoint_store.save(
+        run_id,
+        "chk-affinity",
+        {"session_state": {"approval_token": token, "status": "PAUSED"}},
+    )
+    resolve_approval_store().create_request(
+        ApprovalRequest(
+            approval_token=token,
+            run_id=run_id,
+            checkpoint_id="chk-affinity",
+            status="APPROVED",
+            outbound_payload_hash="",
+        )
+    )
+
+    backend.resume(run_id, resumption_token=token, background=True)
 
     assert get_run_lifecycle_state(run_id, run_store=provider_a) == RunLifecycleState.OPEN
     assert provider_b.get_run(run_id) is None
@@ -1003,6 +1026,23 @@ def test_local_provider_rejects_journal_cross_run_identity_and_lifecycle_invaria
     bad_journal["manifest"] = manifest
     bad_journal["manifest_digest"] = _canonical_digest(manifest)
     bad_journal["sealed_record"] = {"run_id": run_id, "status": "OPEN", "lifecycle": "OPEN"}
+    store._write_json_durable(store._commit_journal_path(vault), bad_journal)
+    with pytest.raises(RuntimeError, match="CertificationRecoveryJournalCorrupt"):
+        store.get_run(run_id)
+
+    # 4. Manifest missing mandatory run_id
+    bad_manifest_no_run = {"trace_hash": "sha3_256:valid"}
+    bad_journal["manifest"] = bad_manifest_no_run
+    bad_journal["manifest_digest"] = _canonical_digest(bad_manifest_no_run)
+    bad_journal["sealed_record"] = {"run_id": run_id, "status": "SEALED", "lifecycle": "SEALED"}
+    store._write_json_durable(store._commit_journal_path(vault), bad_journal)
+    with pytest.raises(RuntimeError, match="CertificationRecoveryJournalCorrupt"):
+        store.get_run(run_id)
+
+    # 5. Sealed record missing mandatory run_id
+    bad_journal["manifest"] = manifest
+    bad_journal["manifest_digest"] = _canonical_digest(manifest)
+    bad_journal["sealed_record"] = {"status": "SEALED", "lifecycle": "SEALED"}
     store._write_json_durable(store._commit_journal_path(vault), bad_journal)
     with pytest.raises(RuntimeError, match="CertificationRecoveryJournalCorrupt"):
         store.get_run(run_id)

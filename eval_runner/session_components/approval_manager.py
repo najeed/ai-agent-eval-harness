@@ -275,7 +275,26 @@ class SessionApprovalManager:
                     if isinstance(state_data, dict):
                         checkpoint_state.update(state_data)
                 except Exception as exc:
-                    logger.debug("Failed extracting state snapshot for durable approval: %s", exc)
+                    logger.debug(
+                        "Failed extracting state snapshot for durable approval: %s",
+                        exc,
+                        exc_info=True,
+                    )
+            # Freeze/reapply reserved binding context to prevent state_provider overwrites
+            checkpoint_state.update(
+                {
+                    "turn": turn_index,
+                    "task_id": task_id,
+                    "prompt": prompt,
+                    "status": "PAUSED_FOR_APPROVAL",
+                    "approval_token": token,
+                    "action_payload": action_payload or {},
+                    "scope": scope,
+                    "scope_digest": scope_digest,
+                    "manifest_id": resolved_manifest_id,
+                    "idempotency_key": idempotency_key,
+                }
+            )
             checkpoint_id = self.checkpoint_manager.create_checkpoint(
                 checkpoint_state,
                 metadata={

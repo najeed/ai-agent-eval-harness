@@ -906,6 +906,7 @@ class CertificationService:
             effective_scenario,
             events,
             execution_manifest=execution_manifest_dict,
+            run_id=run_id,
         )
         if state_failures:
             raise ValueError("; ".join(state_failures))

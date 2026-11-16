@@ -667,7 +667,11 @@ def test_state_authority_receipt_tampering_and_forgery_rejection():
             "transition_evidence": [row],
         }
     ]
-    failures = state_claim_failures(scenario, events)
+    # Authoritative run identity is mandatory: without it, certification rejects external claims
+    assert state_claim_failures(scenario, events) == ["AuthoritativeRunIdentityRequired:node-1"]
+
+    manifest = {"run_id": "run-auth-test"}
+    failures = state_claim_failures(scenario, events, execution_manifest=manifest)
     assert any("InvalidIndependentStateEvidence" in f for f in failures)
 
     # 7. Additional branch coverage for receipt validation and trust keys
@@ -753,6 +757,7 @@ def test_state_authority_receipt_tampering_and_forgery_rejection():
                     "transition_evidence": [row_bad_receipt],
                 }
             ],
+            execution_manifest=manifest,
         )
     )
 
@@ -777,6 +782,7 @@ def test_state_authority_receipt_tampering_and_forgery_rejection():
                     "transition_evidence": [row_source_mismatch],
                 }
             ],
+            execution_manifest=manifest,
         )
     )
 
@@ -800,6 +806,7 @@ def test_state_authority_receipt_tampering_and_forgery_rejection():
                     "transition_evidence": [row_unauth],
                 }
             ],
+            execution_manifest=manifest,
         )
     )
 
@@ -818,6 +825,7 @@ def test_state_authority_receipt_tampering_and_forgery_rejection():
                     "transition_evidence": [row_hash_mismatch],
                 }
             ],
+            execution_manifest=manifest,
         )
     )
 
@@ -841,6 +849,7 @@ def test_state_authority_receipt_tampering_and_forgery_rejection():
                     "transition_evidence": [row_diff_auth],
                 }
             ],
+            execution_manifest=manifest,
         )
     )
 
@@ -867,6 +876,7 @@ def test_state_authority_receipt_tampering_and_forgery_rejection():
                     "transition_evidence": [row_no_resp_digest],
                 }
             ],
+            execution_manifest=manifest,
         )
     )
 
@@ -1029,3 +1039,49 @@ def test_v2_receipt_canonical_encoding_defeats_delimiter_collision(monkeypatch):
 
     with pytest.raises(ValueError, match="nonempty 'run_id'"):
         canonical_receipt_payload_bytes({"version": "v2", "phase": "pre", "run_id": ""})
+
+
+def test_v2_receipt_downgrade_guard_defeats_field_level_spoofing(monkeypatch):
+    """
+    Verify that an attacker cannot forge v2 features (profile, phase, run_id)
+    onto a valid v1 receipt to bypass certification while reusing a v1 MAC.
+    """
+    from eval_runner.state_authority import (
+        canonical_receipt_payload_bytes,
+        create_authenticated_connector_receipt,
+        verify_connector_receipt_authenticity,
+    )
+
+    monkeypatch.setenv("AGENTV_STATE_AUTHORITY_KEY", "bWFzdGVyX3NlY3JldF9mb3Jfc3RhdGVfYXV0aF8=")
+
+    # 1. Authentic v1 receipt
+    r_v1 = create_authenticated_connector_receipt(
+        connector_id="conn:v1",
+        source_id="src:v1",
+        execution_id="exec_1",
+        encoding_version="v1",
+    )
+    assert r_v1["encoding_version"] == "v1"
+    assert "phase" not in r_v1
+    assert "run_id" not in r_v1
+    assert verify_connector_receipt_authenticity(r_v1) is True
+
+    # 2. Attacker injects v2 profile, phase, and run_id onto the
+    # v1 receipt while keeping encoding_version='v1'
+    spoofed = dict(
+        r_v1,
+        profile="agentv.connector-receipt.v2",
+        phase="pre",
+        run_id="run_forged_123",
+    )
+    # Payload bytes generator strictly rejects conflicting version markers
+    with pytest.raises(ValueError, match="Ambiguous or conflicting receipt version"):
+        canonical_receipt_payload_bytes(spoofed)
+
+    # Verification fails closed
+    assert verify_connector_receipt_authenticity(spoofed) is False
+
+    # 3. Attacker also flips encoding_version='v2' to bypass the conflict check:
+    # Now it is parsed as v2 canonical JSON, so the original v1 delimiter MAC does NOT match!
+    spoofed_v2 = dict(spoofed, encoding_version="v2")
+    assert verify_connector_receipt_authenticity(spoofed_v2) is False

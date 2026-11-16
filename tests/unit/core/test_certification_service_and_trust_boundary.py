@@ -132,6 +132,8 @@ def test_authoritative_state_claims_cannot_use_sandbox_or_simulator_evidence(tar
         "receipt_phase_swapped",
         "receipt_run_mismatch",
         "receipt_v1_downgrade",
+        "receipt_v1_spoofed_v2_profile",
+        "missing_authoritative_run_id",
     ],
 )
 def test_independent_state_claim_verifier_recomputes_source_and_content_binding(defect):
@@ -321,6 +323,24 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
             encoding_version="v1",
         )
         row["post_observation_identity"]["connector_receipt"] = v1_receipt
+    elif defect == "receipt_v1_spoofed_v2_profile":
+        v1_receipt = create_authenticated_connector_receipt(
+            connector_id=connector_id,
+            source_id=source_id,
+            is_authenticated=True,
+            response_digest=after_hash,
+            execution_id=exec_inst_id,
+            encoding_version="v1",
+        )
+        # Attacker adds v2 profile, phase, and run_id onto
+        # authentic v1 receipt while keeping encoding_version='v1'
+        spoofed = dict(
+            v1_receipt,
+            profile="agentv.connector-receipt.v2",
+            phase="post",
+            run_id=run_id,
+        )
+        row["post_observation_identity"]["connector_receipt"] = spoofed
     events = (
         []
         if defect == "missing"
@@ -335,8 +355,11 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
             }
         ]
     )
-    failures = state_claim_failures(scenario, events)
+    manifest = None if defect == "missing_authoritative_run_id" else {"run_id": run_id}
+    failures = state_claim_failures(scenario, events, execution_manifest=manifest)
     assert bool(failures) is (defect is not None)
+    if defect == "missing_authoritative_run_id":
+        assert any("AuthoritativeRunIdentityRequired" in f for f in failures)
 
 
 def test_state_authority_independence_enforces_execution_manifest_endpoint():

@@ -3962,11 +3962,22 @@ class VerificationAuthority:
                     (pkg.metadata or {}).get("evidence_capture"), raw_trace_bytes, effective_events
                 )
             )
+        target_run_id = (
+            (pkg.execution_identity or {}).get("run_id")
+            or (pkg.metadata or {}).get("run_id")
+            or getattr(fin_record, "run_id", None)
+            or (
+                canonical_manifest.get("run_id")
+                if isinstance(canonical_manifest, Mapping)
+                else getattr(canonical_manifest, "run_id", None)
+            )
+        )
         failures.extend(
             state_claim_failures(
                 scenario_data,
                 effective_events,
                 execution_manifest=canonical_manifest,
+                run_id=target_run_id,
             )
         )
         pkg_art_res = cls.verify_package_artifacts(
