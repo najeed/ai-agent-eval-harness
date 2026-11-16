@@ -622,6 +622,8 @@ class TraceVerifier:
             manifest["scenario_data"] = dict(scenario_data)
         if execution_manifest is not None:
             manifest["execution_manifest"] = dict(execution_manifest)
+            if "run_id" not in manifest["execution_manifest"]:
+                manifest["execution_manifest"]["run_id"] = run_id
         if consensus is not None:
             manifest["consensus"] = dict(consensus)
         if rubrics is not None:
@@ -1086,6 +1088,12 @@ class TraceVerifier:
         execution_manifest = manifest.get("execution_manifest")
         if not package or not execution_manifest:
             return False
+        if (
+            isinstance(execution_manifest, Mapping)
+            and "run_id" not in execution_manifest
+            and manifest.get("run_id")
+        ):
+            execution_manifest = {**execution_manifest, "run_id": manifest["run_id"]}
         result = VerificationAuthority.verify_certification_artifact(
             package,
             raw_trace_bytes=bytes(trace_bytes),
@@ -2024,11 +2032,20 @@ class VerificationAuthority:
         if isinstance(package, dict) and package.get("format") == "agentv_verification_package":
             pkg_manifest = package.get("manifest") or {}
             if canonical_manifest is None:
-                canonical_manifest = (
+                m_exec = (
                     pkg_manifest.get("execution_manifest")
                     if isinstance(pkg_manifest, dict) and "execution_manifest" in pkg_manifest
                     else pkg_manifest
                 )
+                if (
+                    isinstance(m_exec, Mapping)
+                    and "run_id" not in m_exec
+                    and isinstance(pkg_manifest, Mapping)
+                    and pkg_manifest.get("run_id")
+                ):
+                    canonical_manifest = {**m_exec, "run_id": pkg_manifest["run_id"]}
+                else:
+                    canonical_manifest = m_exec
             if scenario_data is None:
                 scenario_data = package.get("scenario")
             pkg_data = (
@@ -3967,8 +3984,14 @@ class VerificationAuthority:
         )
         manifest_run_id = (
             canonical_manifest.get("run_id")
+            or (canonical_manifest.get("metadata") or {}).get("run_id")
             if isinstance(canonical_manifest, Mapping)
             else getattr(canonical_manifest, "run_id", None)
+            or (
+                getattr(getattr(canonical_manifest, "metadata", None), "get", lambda k: None)(
+                    "run_id"
+                )
+            )
         )
         fin_run_id = getattr(fin_record, "run_id", None)
         run_identities = {

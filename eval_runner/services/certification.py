@@ -697,6 +697,10 @@ class CertificationService:
 
         # ExecutionManifest resolution & validation
         execution_manifest_dict = provider_manifest.get("execution_manifest")
+        if isinstance(execution_manifest_dict, Mapping):
+            execution_manifest_dict = dict(execution_manifest_dict)
+            if "run_id" not in execution_manifest_dict:
+                execution_manifest_dict["run_id"] = provider_manifest.get("run_id") or run_id
 
         if not isinstance(execution_manifest_dict, Mapping) or not execution_manifest_dict:
             raise ValueError(
