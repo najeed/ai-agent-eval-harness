@@ -920,6 +920,7 @@ class TestInProcessExecutionBackend:
         run_id = "run-resume-val-001"
         run_store = LocalFileRunStore(tmp_path / "runs")
         run_store.create_run(run_id, "s1")
+        run_store.update_run_status(run_id, "PAUSED_FOR_APPROVAL")
         backend = InProcessExecutionBackend(run_store=run_store)
 
         # 1. Approval-gated status without resumption_token raises PermissionError
@@ -992,10 +993,10 @@ class TestInProcessExecutionBackend:
         with pytest.raises(PermissionError, match="approval-gated checkpoint requires a token"):
             backend.resume(run_id, resumption_token=None, force_recovery=True)
 
-        # 8. Successful approval resumption with matching payload hash
-        valid_hash = hashlib.sha3_256(
-            str(sorted({"amount": 100}.items())).encode("utf-8")
-        ).hexdigest()
+        # 8. Successful approval resumption with matching canonical RFC 8785 payload hash
+        from agentv_runtime.canonical import canonical_json_encode
+
+        valid_hash = hashlib.sha3_256(canonical_json_encode({"amount": 100})).hexdigest()
         valid_req = ApprovalRequest(
             approval_token="tok_valid",
             run_id=run_id,
@@ -1056,6 +1057,70 @@ class TestInProcessExecutionBackend:
         }
         with pytest.raises(PermissionError, match="checkpoint scope_digest missing or mismatched"):
             backend.resume(run_id, resumption_token="tok_scope_check", force_recovery=True)
+
+        # 8c. Canonical JSON digest matches across nested dicts and reordered keys
+        nested_payload_a = {"b": 2, "a": {"z": 9, "y": 8}, "utf": "こんにちは"}
+        nested_payload_b = {"a": {"y": 8, "z": 9}, "b": 2, "utf": "こんにちは"}
+        canonical_hash = hashlib.sha3_256(canonical_json_encode(nested_payload_a)).hexdigest()
+        assert (
+            hashlib.sha3_256(canonical_json_encode(nested_payload_b)).hexdigest() == canonical_hash
+        )
+
+        req_canonical = ApprovalRequest(
+            approval_token="tok_canonical",
+            run_id=run_id,
+            turn_index=1,
+            outbound_payload_hash=f"sha3_256:{canonical_hash}",
+            status="APPROVED",
+            checkpoint_id="chk_canonical",
+        )
+        store.create_request(req_canonical)
+        mock_chk_store.load.return_value = {
+            "session_state": {
+                "approval_token": "tok_canonical",
+                "action_payload": nested_payload_b,
+            },
+            "scenario_data": {"id": "s_valid"},
+        }
+        res_canon = backend.resume(run_id, resumption_token="tok_canonical", force_recovery=True)
+        assert res_canon["status"] == "resumed_ok"
+
+        # 8d. Explicit legacy profile allows legacy str(sorted(...)) format
+        legacy_hash = hashlib.sha3_256(
+            str(sorted({"z": 1, "a": 2}.items())).encode("utf-8")
+        ).hexdigest()
+        req_legacy = ApprovalRequest(
+            approval_token="tok_legacy",
+            run_id=run_id,
+            turn_index=1,
+            outbound_payload_hash=legacy_hash,
+            status="APPROVED",
+            checkpoint_id="chk_legacy",
+        )
+        store.create_request(req_legacy)
+        # Without legacy profile: fails closed because legacy format
+        # differs from RFC 8785 canonical JSON
+        mock_chk_store.load.return_value = {
+            "session_state": {
+                "approval_token": "tok_legacy",
+                "action_payload": {"z": 1, "a": 2},
+            },
+            "scenario_data": {"id": "s_valid"},
+        }
+        with pytest.raises(PermissionError, match="approval payload binding is invalid"):
+            backend.resume(run_id, resumption_token="tok_legacy", force_recovery=True)
+
+        # With explicit legacy profile: successfully accepted
+        mock_chk_store.load.return_value = {
+            "session_state": {
+                "approval_token": "tok_legacy",
+                "action_payload": {"z": 1, "a": 2},
+                "profile": "legacy",
+            },
+            "scenario_data": {"id": "s_valid"},
+        }
+        res_legacy = backend.resume(run_id, resumption_token="tok_legacy", force_recovery=True)
+        assert res_legacy["status"] == "resumed_ok"
 
         # 9. Approval without checkpoint_id and without payload
         run_id_no_chk = "run-resume-no-chk-001"
@@ -1264,6 +1329,25 @@ class TestInProcessExecutionBackend:
         backend_prov._active_runs["run-prov-hitl"] = {"status": "PAUSED"}
         with pytest.raises(PermissionError, match="approval-gated checkpoint requires a token"):
             backend_prov.resume("run-prov-hitl")
+
+        # Provider lifecycle OPEN rejects approval resume even if in-memory claims PAUSED
+        mock_prov_open = MagicMock()
+        mock_prov_open.get_lifecycle.return_value = "OPEN"
+        backend_open = InProcessExecutionBackend(run_store=mock_prov_open)
+        backend_open._active_runs["run-prov-open"] = {"status": "PAUSED_FOR_APPROVAL"}
+        with pytest.raises(
+            RuntimeError,
+            match="provider lifecycle is 'OPEN', not in approval-gated state",
+        ):
+            backend_open.resume("run-prov-open", resumption_token="tok_test")
+
+        # Provider lifecycle None (unresolved) rejects approval-gated resume fail-closed
+        mock_prov_none = MagicMock()
+        mock_prov_none.get_lifecycle.return_value = None
+        backend_none = InProcessExecutionBackend(run_store=mock_prov_none)
+        backend_none._active_runs["run-prov-none"] = {"status": "PAUSED_FOR_APPROVAL"}
+        with pytest.raises(RuntimeError, match="authoritative provider lifecycle unavailable"):
+            backend_none.resume("run-prov-none", resumption_token="tok_test")
 
         mock_prov_term = MagicMock()
         mock_prov_term.get_lifecycle.return_value = "COMPLETED"

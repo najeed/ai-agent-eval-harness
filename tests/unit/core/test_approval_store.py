@@ -673,6 +673,7 @@ class TestSessionApprovalManagerLegacyAndGates:
 class TestInProcessBackendResumptionGuard:
     def test_resume_accepts_paused_for_approval(self):
         run_store = MagicMock()
+        run_store.get_lifecycle.return_value = "PAUSED_FOR_APPROVAL"
         backend = InProcessExecutionBackend(run_store=run_store)
         run_id = "run_paused_hitl_01"
         approved = ApprovalRequest(
@@ -755,6 +756,7 @@ class TestInProcessBackendResumptionGuard:
         import hashlib
 
         run_store = MagicMock()
+        run_store.get_lifecycle.return_value = "PAUSED_FOR_APPROVAL"
         backend = InProcessExecutionBackend(run_store=run_store)
         run_id = "run_payload_tamper"
         # Approved record expects payload hash for {"action": "approved_val"}
@@ -793,13 +795,14 @@ class TestInProcessBackendResumptionGuard:
         import hashlib
 
         run_store = MagicMock()
+        run_store.get_lifecycle.return_value = "PAUSED_FOR_APPROVAL"
         backend = InProcessExecutionBackend(run_store=run_store)
         run_id = "run_scope_tamper"
         approved = ApprovalRequest(
             approval_token="tok_scope_check",
             run_id=run_id,
             turn_index=1,
-            outbound_payload_hash=hashlib.sha3_256(b"[]").hexdigest(),
+            outbound_payload_hash=hashlib.sha3_256(b"{}").hexdigest(),
             manifest_id="manifest_orig",
             scope_digest="sha3:scope_orig",
             status="APPROVED",

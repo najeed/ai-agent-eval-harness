@@ -3,7 +3,7 @@
 import hashlib
 import logging
 from collections.abc import Mapping
-from datetime import datetime
+from datetime import UTC, datetime, timedelta
 from urllib.parse import urlparse
 
 from agentv_runtime.canonical import canonical_json_encode
@@ -287,16 +287,69 @@ def state_claim_failures(scenario, events, execution_manifest=None, run_id=None)
                                     f"!= {expected_run_id})"
                                 )
 
-                            # Temporal binding: receipt must have a valid non-empty ISO timestamp
+                            # Temporal binding: receipt must have a valid
+                            # non-empty timezone-aware ISO timestamp
                             receipt_ts = str(receipt.get("timestamp") or "")
                             if not receipt_ts:
                                 raise ValueError("Connector receipt missing timestamp")
                             try:
-                                datetime.fromisoformat(receipt_ts)
+                                dt = datetime.fromisoformat(receipt_ts)
                             except (ValueError, TypeError):
                                 raise ValueError(
                                     "Connector receipt invalid timestamp format"
                                 ) from None
+                            if dt.tzinfo is None or dt.tzinfo.utcoffset(dt) is None:
+                                raise ValueError(
+                                    "Connector receipt timestamp missing timezone offset; "
+                                    "UTC-normalizable ISO format required"
+                                )
+                            dt_utc = dt.astimezone(UTC)
+
+                            # Authenticated run interval bounded check:
+                            # If authenticated execution window is available,
+                            # enforce bounded pre/post windows
+                            # and reject impossible future/old receipts.
+                            if isinstance(execution_manifest, Mapping):
+                                run_start_str = (
+                                    execution_manifest.get("started_at")
+                                    or execution_manifest.get("created_at")
+                                    or (execution_manifest.get("metadata") or {}).get("started_at")
+                                )
+                                run_end_str = execution_manifest.get("completed_at") or (
+                                    execution_manifest.get("metadata") or {}
+                                ).get("completed_at")
+                                if run_start_str:
+                                    try:
+                                        s_dt = datetime.fromisoformat(str(run_start_str))
+                                        if (
+                                            s_dt.tzinfo is not None
+                                            and s_dt.tzinfo.utcoffset(s_dt) is not None
+                                        ):
+                                            s_utc = s_dt.astimezone(UTC)
+                                            if dt_utc < s_utc - timedelta(seconds=60):
+                                                raise ValueError(
+                                                    "Connector receipt timestamp predates "
+                                                    "authenticated run execution window"
+                                                )
+                                    except (ValueError, TypeError) as ts_err:
+                                        if "Connector receipt timestamp" in str(ts_err):
+                                            raise
+                                if run_end_str:
+                                    try:
+                                        e_dt = datetime.fromisoformat(str(run_end_str))
+                                        if (
+                                            e_dt.tzinfo is not None
+                                            and e_dt.tzinfo.utcoffset(e_dt) is not None
+                                        ):
+                                            e_utc = e_dt.astimezone(UTC)
+                                            if dt_utc > e_utc + timedelta(seconds=60):
+                                                raise ValueError(
+                                                    "Connector receipt timestamp postdates "
+                                                    "authenticated run execution window"
+                                                )
+                                    except (ValueError, TypeError) as ts_err:
+                                        if "Connector receipt timestamp" in str(ts_err):
+                                            raise
 
                             from eval_runner.state_authority import (
                                 verify_connector_receipt_authenticity,
@@ -332,9 +385,17 @@ def state_claim_failures(scenario, events, execution_manifest=None, run_id=None)
                         pre_ts_str = str(pre_receipt.get("timestamp") or "")
                         post_ts_str = str(post_receipt.get("timestamp") or "")
                         if pre_ts_str and post_ts_str:
-                            if datetime.fromisoformat(pre_ts_str) > datetime.fromisoformat(
-                                post_ts_str
-                            ):
+                            pre_dt = datetime.fromisoformat(pre_ts_str)
+                            post_dt = datetime.fromisoformat(post_ts_str)
+                            if pre_dt.tzinfo is None or pre_dt.tzinfo.utcoffset(pre_dt) is None:
+                                raise ValueError(
+                                    "Pre-observation timestamp missing timezone offset"
+                                )
+                            if post_dt.tzinfo is None or post_dt.tzinfo.utcoffset(post_dt) is None:
+                                raise ValueError(
+                                    "Post-observation timestamp missing timezone offset"
+                                )
+                            if pre_dt.astimezone(UTC) > post_dt.astimezone(UTC):
                                 raise ValueError(
                                     "Pre-observation timestamp after post-observation timestamp"
                                 )

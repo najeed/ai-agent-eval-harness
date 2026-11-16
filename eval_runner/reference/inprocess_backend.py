@@ -12,7 +12,7 @@ import hashlib
 import hmac
 import logging
 import threading
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from typing import Any
 
 from eval_runner.interfaces.backend import ExecutionBackend
@@ -503,15 +503,12 @@ class InProcessExecutionBackend(ExecutionBackend):
         with self._lock:
             current_entry = self._active_runs.get(run_id)
             current_status = current_entry.get("status") if current_entry else None
+            in_mem_status = current_status
 
             # Reconcile status with authoritative provider lifecycle:
-            # If the provider is approval-gated or in-memory is unset,
-            # authoritative provider governs.
+            # The provider is the single source of truth for the run's lifecycle.
             if provider_lifecycle:
-                if provider_lifecycle in approval_states:
-                    current_status = provider_lifecycle
-                elif current_status is None:
-                    current_status = provider_lifecycle
+                current_status = provider_lifecycle
             elif current_status is None:
                 if checkpoint:
                     current_status = checkpoint.get("status") or (
@@ -528,8 +525,39 @@ class InProcessExecutionBackend(ExecutionBackend):
 
             # Execution State Machine Guard
             if not force_recovery:
+                # 0. Reject corrupted or unrecognized in-memory state
+                valid_states = (*approval_states, "PAUSED", "UNKNOWN", "RUNNING", *terminal_states)
+                if in_mem_status and in_mem_status not in valid_states:
+                    raise RuntimeError(
+                        f"Cannot resume run '{run_id}': invalid state '{in_mem_status}'."
+                    )
+
+                # Authoritative provider lifecycle checks for approval-gated resumption:
+                is_approval_resume = bool(
+                    resumption_token
+                    or expected_token
+                    or (in_mem_status and in_mem_status in approval_states)
+                    or current_status in approval_states
+                )
+                if is_approval_resume and provider and hasattr(provider, "get_lifecycle"):
+                    if provider_lifecycle is None:
+                        raise RuntimeError(
+                            f"Cannot resume run '{run_id}': "
+                            "authoritative provider lifecycle unavailable."
+                        )
+                    if provider_lifecycle not in approval_states:
+                        raise RuntimeError(
+                            f"Cannot resume run '{run_id}': "
+                            f"provider lifecycle is '{provider_lifecycle}', "
+                            "not in approval-gated state."
+                        )
+
                 # 1. Reject active running executions
-                if current_status == "RUNNING" or provider_lifecycle == "RUNNING":
+                if (
+                    current_status == "RUNNING"
+                    or provider_lifecycle == "RUNNING"
+                    or in_mem_status == "RUNNING"
+                ):
                     raise RuntimeError(
                         f"Cannot resume run '{run_id}': run is currently in RUNNING state."
                     )
@@ -540,9 +568,10 @@ class InProcessExecutionBackend(ExecutionBackend):
                         f"Cannot resume run '{run_id}': provider reached terminal state "
                         f"'{provider_lifecycle}'."
                     )
-                if current_status in terminal_states:
+                if in_mem_status in terminal_states or current_status in terminal_states:
+                    term_st = in_mem_status if in_mem_status in terminal_states else current_status
                     raise RuntimeError(
-                        f"Cannot resume run '{run_id}': reached terminal state '{current_status}'."
+                        f"Cannot resume run '{run_id}': reached terminal state '{term_st}'."
                     )
 
                 # 3. Reject invalid intermediate execution states
@@ -554,6 +583,7 @@ class InProcessExecutionBackend(ExecutionBackend):
             if (
                 current_status in approval_states
                 or (provider_lifecycle and provider_lifecycle in approval_states)
+                or (in_mem_status and in_mem_status in approval_states)
             ) and not resumption_token:
                 raise PermissionError(
                     f"Cannot resume run '{run_id}': approval-gated checkpoint requires a token."
@@ -594,14 +624,36 @@ class InProcessExecutionBackend(ExecutionBackend):
                 )
 
             # Verify action_payload digest against expected approval record
-            # (including empty payloads {}). Retains backward compatibility for legacy checkpoints.
+            # Uses RFC 8785 canonical JSON bytes for modern checkpoints;
+            # preserves legacy compatibility strictly behind an explicit profile.
             action_payload = checkpoint_state.get("action_payload")
             if action_payload is not None and approval.outbound_payload_hash:
                 payload_dict = action_payload if isinstance(action_payload, dict) else {}
-                payload_hash = hashlib.sha3_256(
-                    str(sorted(payload_dict.items())).encode("utf-8")
-                ).hexdigest()
-                if not hmac.compare_digest(payload_hash, str(approval.outbound_payload_hash)):
+                expected_hash = str(approval.outbound_payload_hash).strip()
+                cp_profile = (
+                    str(
+                        checkpoint_state.get("profile")
+                        or (checkpoint.get("profile") if isinstance(checkpoint, Mapping) else None)
+                        or getattr(approval, "profile", "")
+                        or ""
+                    )
+                    .strip()
+                    .lower()
+                )
+
+                if cp_profile in ("legacy", "v1", "agentv.approval.v1"):
+                    raw_hash = hashlib.sha3_256(
+                        str(sorted(payload_dict.items())).encode("utf-8")
+                    ).hexdigest()
+                    hashes_to_compare = [raw_hash, f"sha3_256:{raw_hash}"]
+                else:
+                    from agentv_runtime.canonical import canonical_json_encode
+
+                    c_bytes = canonical_json_encode(payload_dict)
+                    c_hash = hashlib.sha3_256(c_bytes).hexdigest()
+                    hashes_to_compare = [c_hash, f"sha3_256:{c_hash}"]
+
+                if not any(hmac.compare_digest(h, expected_hash) for h in hashes_to_compare):
                     raise PermissionError(
                         f"Cannot resume run '{run_id}': approval payload binding is invalid."
                     )
@@ -613,14 +665,14 @@ class InProcessExecutionBackend(ExecutionBackend):
                 if not cp_manifest_id or str(cp_manifest_id) != str(approval.manifest_id):
                     raise PermissionError(
                         f"Cannot resume run '{run_id}': checkpoint "
-                        f"manifest_id missing or mismatched "
-                        f"({cp_manifest_id} != {approval.manifest_id})."
+                        f"manifest_id missing or mismatched (approval manifest binding mismatch: "
+                        f"{cp_manifest_id} != {approval.manifest_id})."
                     )
             elif cp_manifest_id:
                 raise PermissionError(
                     f"Cannot resume run '{run_id}': checkpoint defines "
                     f"manifest_id '{cp_manifest_id}' "
-                    f"missing from approval record."
+                    f"missing from approval record (approval manifest binding mismatch)."
                 )
 
             cp_scope_digest = checkpoint_state.get("scope_digest")
@@ -628,14 +680,14 @@ class InProcessExecutionBackend(ExecutionBackend):
                 if not cp_scope_digest or str(cp_scope_digest) != str(approval.scope_digest):
                     raise PermissionError(
                         f"Cannot resume run '{run_id}': checkpoint scope_digest "
-                        f"missing or mismatched "
-                        f"({cp_scope_digest} != {approval.scope_digest})."
+                        f"missing or mismatched (approval scope binding mismatch: "
+                        f"{cp_scope_digest} != {approval.scope_digest})."
                     )
             elif cp_scope_digest:
                 raise PermissionError(
                     f"Cannot resume run '{run_id}': checkpoint defines "
                     f"scope_digest '{cp_scope_digest}' "
-                    f"missing from approval record."
+                    f"missing from approval record (approval scope binding mismatch)."
                 )
 
         # Re-open the durable lifecycle before the background runner emits its

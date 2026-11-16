@@ -265,3 +265,89 @@ def test_manifest_builder_execution_mode_resolution_hierarchy():
     )
     assert m5.runtime_config["execution_mode"] == "scenario_top_mode"
     assert m5.metadata["execution_mode"] == "scenario_top_mode"
+
+
+def test_manifest_builder_preflight_projection_and_roundtrip():
+    from agentv_runtime.manifest import (
+        ExecutionManifest,
+        ManifestBuilder,
+        compute_preflight_fingerprint,
+    )
+
+    scen = {"metadata": {"id": "scen_d8_test", "version": "1.0.0"}}
+    agent = {"endpoint": "https://api.example.com", "protocol": "http"}
+    pfp = compute_preflight_fingerprint(
+        scenario_id="scen_d8_test",
+        endpoint="https://api.example.com",
+        protocol="http",
+        max_turns=10,
+        seed=1337,
+        evaluators=["eval_precision", "eval_recall"],
+    )
+
+    manifest = ManifestBuilder.build(
+        scenario_data=scen,
+        agent_config=agent,
+        preflight_fingerprint=pfp,
+        seed=1337,
+        evaluators=["eval_precision", "eval_recall"],
+    )
+
+    assert manifest.preflight_fingerprint == pfp
+    assert manifest.metadata["preflight_fingerprint"] == pfp
+    assert manifest.runtime_config["seed"] == 1337
+    assert manifest.runtime_config["evaluators"] == ["eval_precision", "eval_recall"]
+
+    # Roundtrip serialization parity
+    m_dict = manifest.to_dict()
+    assert m_dict["preflight_fingerprint"] == pfp
+    restored = ExecutionManifest.from_dict(m_dict)
+    assert restored.preflight_fingerprint == pfp
+    assert restored.runtime_config["seed"] == 1337
+    assert restored.runtime_config["evaluators"] == ["eval_precision", "eval_recall"]
+
+
+def test_preflight_fingerprint_evaluator_and_seed_drift_detection():
+    from agentv_runtime.manifest import compute_preflight_fingerprint
+
+    base_fp = compute_preflight_fingerprint(
+        scenario_id="scen_drift",
+        endpoint="https://api.example.com",
+        protocol="http",
+        max_turns=10,
+        seed=42,
+        evaluators=["eval_a", "eval_b"],
+    )
+
+    # Changed evaluator set produces distinct fingerprint
+    changed_eval_fp = compute_preflight_fingerprint(
+        scenario_id="scen_drift",
+        endpoint="https://api.example.com",
+        protocol="http",
+        max_turns=10,
+        seed=42,
+        evaluators=["eval_a", "eval_c"],
+    )
+    assert changed_eval_fp != base_fp
+
+    # Changed seed produces distinct fingerprint
+    changed_seed_fp = compute_preflight_fingerprint(
+        scenario_id="scen_drift",
+        endpoint="https://api.example.com",
+        protocol="http",
+        max_turns=10,
+        seed=0,
+        evaluators=["eval_a", "eval_b"],
+    )
+    assert changed_seed_fp != base_fp
+
+    # Zero seed vs None seed distinction
+    none_seed_fp = compute_preflight_fingerprint(
+        scenario_id="scen_drift",
+        endpoint="https://api.example.com",
+        protocol="http",
+        max_turns=10,
+        seed=None,
+        evaluators=["eval_a", "eval_b"],
+    )
+    assert none_seed_fp != changed_seed_fp

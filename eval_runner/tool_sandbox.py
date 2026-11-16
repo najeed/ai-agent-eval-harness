@@ -587,6 +587,7 @@ class ToolSandbox(AbstractSandbox):
         # commit interceptor before they reach the sandbox state.  This is the
         # only local state-write boundary, so partial/stale commit mutations
         # now affect a real state transition rather than a metadata flag.
+        receipt = None
         if proposed_diff and self.plugin_manager:
             intercept = self.plugin_manager.trigger_interceptor(
                 "on_before_commit", self, dict(proposed_diff)
@@ -610,11 +611,6 @@ class ToolSandbox(AbstractSandbox):
                     raise TypeError("on_before_commit state_diff must be a mapping")
                 proposed_diff = candidate
                 receipt = intercept.get("mutation_receipt")
-                if isinstance(receipt, dict) and self.event_bus:
-                    self.event_bus.emit(
-                        "mutation_delivery",
-                        {"category": "MUTATION_DELIVERY", "mutation_receipt": receipt},
-                    )
 
         # Pre-validate all shared write and read permissions before applying
         # any local or shared state mutations. An execution failure at a later
@@ -660,11 +656,28 @@ class ToolSandbox(AbstractSandbox):
             logger.error("Transactional commit failed, changes rolled back: %s", exc, exc_info=True)
             self.state = local_state_snapshot
             self.shared_state.registry = shared_state_snapshot
+            if isinstance(receipt, dict) and self.event_bus:
+                self.event_bus.emit(
+                    "mutation_delivery_rollback",
+                    {
+                        "category": "MUTATION_DELIVERY",
+                        "status": "rolled_back",
+                        "mutation_receipt": receipt,
+                        "error": str(exc),
+                    },
+                )
             return {
                 "status": "error",
                 "error_code": "ATOMIC_COMMIT_FAILURE",
                 "message": f"Transactional commit failed, changes rolled back: {exc}",
             }
+
+        # Emit mutation delivery receipt strictly after successful state commit
+        if isinstance(receipt, dict) and self.event_bus:
+            self.event_bus.emit(
+                "mutation_delivery",
+                {"category": "MUTATION_DELIVERY", "mutation_receipt": receipt},
+            )
         output = tool_def.get("output", {"status": "success", "message": f"Executed {tool_name}"})
         safe_state = {}
         for k, v in self.state.items():

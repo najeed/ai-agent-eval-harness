@@ -1589,6 +1589,9 @@ def evaluate_scenario():
             "runtime_context": dict(scope),
         },
         execution_mode=exec_mode,
+        preflight_fingerprint=expected_fingerprint,
+        seed=data.get("seed") or scen_meta.get("seed"),
+        evaluators=data.get("evaluators"),
     )
 
     # Materialize the accepted run in the active provider before dispatch.

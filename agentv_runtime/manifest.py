@@ -205,6 +205,7 @@ class ExecutionManifest:
     producer_identity: str = "agentv.manifest_builder"
     producer_version: str = "2.0.0"
     parent_artifact_refs: list[str] = field(default_factory=list)
+    preflight_fingerprint: str = ""
 
     def __post_init__(self):
         if not self.parent_artifact_refs and self.scenario_hash:
@@ -276,6 +277,11 @@ class ExecutionManifest:
             producer_identity=str(data.get("producer_identity", "agentv.manifest_builder")),
             producer_version=str(data.get("producer_version", "2.0.0")),
             parent_artifact_refs=parent_refs,
+            preflight_fingerprint=str(
+                data.get("preflight_fingerprint")
+                or (data.get("metadata") or {}).get("preflight_fingerprint")
+                or ""
+            ),
         )
 
     def compute_manifest_hash(self) -> str:
@@ -318,6 +324,9 @@ class ManifestBuilder:
         created_by: str = "system",
         metadata: Mapping[str, Any] | None = None,
         execution_mode: str | None = None,
+        preflight_fingerprint: str = "",
+        seed: Any = None,
+        evaluators: Any = None,
     ) -> ExecutionManifest:
         meta = dict(scenario_data.get("metadata") or {})
         scen_id = meta.get("id") or str(scenario_data.get("id", "unnamed_scenario"))
@@ -335,6 +344,22 @@ class ManifestBuilder:
         agent_dict = dict(agent_config or {})
         runtime_dict = dict(runtime_config or {})
         meta_dict = dict(metadata or {})
+
+        if seed is not None:
+            runtime_dict["seed"] = seed
+            meta_dict["seed"] = seed
+        if evaluators is not None:
+            runtime_dict["evaluators"] = evaluators
+            meta_dict["evaluators"] = evaluators
+
+        preflight_fp = (
+            preflight_fingerprint
+            or meta_dict.get("preflight_fingerprint")
+            or runtime_dict.get("preflight_fingerprint")
+            or ""
+        )
+        if preflight_fp:
+            meta_dict["preflight_fingerprint"] = str(preflight_fp)
 
         resolved_mode = (
             execution_mode
@@ -359,8 +384,8 @@ class ManifestBuilder:
 
         now_iso = datetime.now(UTC).isoformat()
         agent_hex = _canonical_json_bytes(agent_dict).hex()
-        seed = f"{tenant_id}:{workspace_id}:{scope_digest}:{scen_hash}:{agent_hex}:{now_iso}"
-        manifest_id = f"man_{hashlib.sha3_256(seed.encode('utf-8')).hexdigest()[:16]}"
+        seed_str = f"{tenant_id}:{workspace_id}:{scope_digest}:{scen_hash}:{agent_hex}:{now_iso}"
+        manifest_id = f"man_{hashlib.sha3_256(seed_str.encode('utf-8')).hexdigest()[:16]}"
 
         return ExecutionManifest(
             manifest_id=manifest_id,
@@ -377,6 +402,7 @@ class ManifestBuilder:
             created_at=now_iso,
             created_by=created_by,
             metadata=meta_dict,
+            preflight_fingerprint=str(preflight_fp),
         )
 
 

@@ -1,5 +1,6 @@
 import asyncio
 import hashlib
+import json
 import logging
 import secrets
 from collections.abc import Mapping
@@ -161,9 +162,14 @@ class SessionApprovalManager:
         scope_digest = verified_token.digest
 
         if not outbound_payload_hash:
+            from agentv_runtime.canonical import canonical_json_encode
+
             payload_dict = action_payload if isinstance(action_payload, dict) else {}
-            payload_str = str(sorted(payload_dict.items()))
-            outbound_payload_hash = hashlib.sha3_256(payload_str.encode("utf-8")).hexdigest()
+            try:
+                c_bytes = canonical_json_encode(payload_dict)
+            except (TypeError, ValueError):
+                c_bytes = json.dumps(payload_dict, sort_keys=True, default=str).encode("utf-8")
+            outbound_payload_hash = f"sha3_256:{hashlib.sha3_256(c_bytes).hexdigest()}"
 
         if not idempotency_key:
             idempotency_key = meta.get("idempotency_key") or (

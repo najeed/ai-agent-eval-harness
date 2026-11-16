@@ -141,3 +141,62 @@ async def test_malformed_intercepted_diff_is_rejected_before_any_state_write(tmp
     with pytest.raises(TypeError, match="state_diff must be a mapping"):
         await sandbox.execute("transfer", {})
     assert sandbox.state == {"balance": 100}
+
+
+@pytest.mark.asyncio
+async def test_mutation_delivery_never_emitted_when_precheck_fails(tmp_path):
+    p_receipt = SimpleNamespace(
+        trigger_interceptor=lambda *args: {
+            "allowed": True,
+            "mutation_receipt": {"receipt_id": "rcpt_denied"},
+        }
+    )
+    sandbox = sandbox_for(tmp_path, allowed=True, plugin=p_receipt)
+    # Configure shared write path where agent has no permission
+    res = await sandbox.execute(
+        "transfer", {"shared_write": {"path": "forbidden/secret", "value": 42}}
+    )
+    assert res["status"] == "error"
+    delivery_calls = [
+        c
+        for c in sandbox.event_bus.emit.call_args_list
+        if c[0] and c[0][0] in ("mutation_delivery", "mutation_delivery_rollback")
+    ]
+    assert len(delivery_calls) == 0
+
+
+@pytest.mark.asyncio
+async def test_mutation_delivery_rollback_emitted_on_commit_failure(tmp_path):
+    p_receipt = SimpleNamespace(
+        trigger_interceptor=lambda *args: {
+            "allowed": True,
+            "mutation_receipt": {"receipt_id": "rcpt_rollback"},
+        }
+    )
+    sandbox = sandbox_for(tmp_path, allowed=True, plugin=p_receipt)
+    # Mock write permission check to succeed, but write() itself to fail
+    sandbox.shared_state.can_write = lambda agent, path: True
+    sandbox.shared_state.write = lambda agent, path, val: False
+
+    res = await sandbox.execute(
+        "transfer", {"shared_write": {"path": "shared/balance", "value": 999}}
+    )
+    assert res["status"] == "error"
+    assert res["error_code"] == "ATOMIC_COMMIT_FAILURE"
+    assert sandbox.state == {"balance": 100}
+
+    # Verify mutation_delivery was NOT emitted
+    delivered_calls = [
+        c for c in sandbox.event_bus.emit.call_args_list if c[0] and c[0][0] == "mutation_delivery"
+    ]
+    assert len(delivered_calls) == 0
+
+    # Verify mutation_delivery_rollback WAS emitted
+    rollback_calls = [
+        c
+        for c in sandbox.event_bus.emit.call_args_list
+        if c[0] and c[0][0] == "mutation_delivery_rollback"
+    ]
+    assert len(rollback_calls) == 1
+    assert rollback_calls[0][0][1]["status"] == "rolled_back"
+    assert rollback_calls[0][0][1]["mutation_receipt"] == {"receipt_id": "rcpt_rollback"}

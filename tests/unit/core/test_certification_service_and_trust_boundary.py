@@ -134,6 +134,9 @@ def test_authoritative_state_claims_cannot_use_sandbox_or_simulator_evidence(tar
         "receipt_v1_downgrade",
         "receipt_v1_spoofed_v2_profile",
         "missing_authoritative_run_id",
+        "receipt_naive_timestamp",
+        "receipt_predates_run_window",
+        "receipt_postdates_run_window",
     ],
 )
 def test_independent_state_claim_verifier_recomputes_source_and_content_binding(defect):
@@ -341,6 +344,42 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
             run_id=run_id,
         )
         row["post_observation_identity"]["connector_receipt"] = spoofed
+    elif defect == "receipt_naive_timestamp":
+        naive_receipt = create_authenticated_connector_receipt(
+            connector_id=connector_id,
+            source_id=source_id,
+            is_authenticated=True,
+            response_digest=after_hash,
+            execution_id=exec_inst_id,
+            phase="post",
+            run_id=run_id,
+            timestamp="2026-11-11T12:00:00",
+        )
+        row["post_observation_identity"]["connector_receipt"] = naive_receipt
+    elif defect == "receipt_predates_run_window":
+        old_receipt = create_authenticated_connector_receipt(
+            connector_id=connector_id,
+            source_id=source_id,
+            is_authenticated=True,
+            response_digest=after_hash,
+            execution_id=exec_inst_id,
+            phase="post",
+            run_id=run_id,
+            timestamp="2026-11-11T09:00:00+00:00",
+        )
+        row["post_observation_identity"]["connector_receipt"] = old_receipt
+    elif defect == "receipt_postdates_run_window":
+        future_receipt = create_authenticated_connector_receipt(
+            connector_id=connector_id,
+            source_id=source_id,
+            is_authenticated=True,
+            response_digest=after_hash,
+            execution_id=exec_inst_id,
+            phase="post",
+            run_id=run_id,
+            timestamp="2026-11-11T15:00:00+00:00",
+        )
+        row["post_observation_identity"]["connector_receipt"] = future_receipt
     events = (
         []
         if defect == "missing"
@@ -355,7 +394,16 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
             }
         ]
     )
-    manifest = None if defect == "missing_authoritative_run_id" else {"run_id": run_id}
+    if defect == "missing_authoritative_run_id":
+        manifest = None
+    elif defect in ("receipt_predates_run_window", "receipt_postdates_run_window"):
+        manifest = {
+            "run_id": run_id,
+            "started_at": "2026-11-11T11:30:00+00:00",
+            "completed_at": "2026-11-11T12:30:00+00:00",
+        }
+    else:
+        manifest = {"run_id": run_id}
     failures = state_claim_failures(scenario, events, execution_manifest=manifest)
     assert bool(failures) is (defect is not None)
     if defect == "missing_authoritative_run_id":
