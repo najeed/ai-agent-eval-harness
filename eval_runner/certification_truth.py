@@ -324,16 +324,21 @@ def state_claim_failures(
                             run_start_raw = None
                             run_end_raw = None
                             if isinstance(execution_manifest, Mapping):
-                                run_start_raw = (
-                                    execution_manifest.get("started_at")
-                                    or execution_manifest.get("created_at")
-                                    or (execution_manifest.get("metadata") or {}).get("started_at")
-                                )
-                                run_end_raw = execution_manifest.get("completed_at") or (
+                                explicit_start = execution_manifest.get("started_at") or (
+                                    execution_manifest.get("metadata") or {}
+                                ).get("started_at")
+                                explicit_end = execution_manifest.get("completed_at") or (
                                     execution_manifest.get("metadata") or {}
                                 ).get("completed_at")
-                                if run_start_raw or run_end_raw:
+                                if explicit_start or explicit_end:
                                     enforce_bounds = True
+                                    run_start_raw = explicit_start
+                                    run_end_raw = explicit_end
+                                elif require_temporal_bounds:
+                                    run_start_raw = explicit_start or execution_manifest.get(
+                                        "created_at"
+                                    )
+                                    run_end_raw = explicit_end
 
                             if enforce_bounds:
                                 if not run_start_raw:

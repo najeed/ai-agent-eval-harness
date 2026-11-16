@@ -3138,7 +3138,7 @@ def test_verify_certification_artifact_successful_authoritative_certification():
         scenario_id="scen_100",
         scenario_version="1.0.0",
         scenario_hash=scen_hash,
-        metadata={"required_oracle_ids": ["oracle_auth"]},
+        metadata={"required_oracle_ids": ["oracle_auth"], "run_id": run_id},
         runtime_config={"execution_mode": "live"},
     )
     man_hash = man_manifest_obj.compute_manifest_hash()

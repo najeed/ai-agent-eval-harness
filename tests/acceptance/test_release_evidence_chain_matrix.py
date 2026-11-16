@@ -203,6 +203,7 @@ def _independent_review(
             not in {
                 "content_hash",
                 "commitment_graph",
+                "run_id",
             }
         }
         manifest_payload["parent_artifact_refs"] = sorted(manifest_payload["parent_artifact_refs"])

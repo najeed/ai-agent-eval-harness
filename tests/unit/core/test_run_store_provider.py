@@ -406,11 +406,25 @@ def test_inprocess_resume_uses_owned_provider_and_never_re_resolves_global(tmp_p
     with pytest.raises(PermissionError, match="approval-gated checkpoint requires a token"):
         backend.resume(run_id)
 
+    import hashlib
+
+    from agentv_runtime.canonical import canonical_json_encode
+
+    action_payload = {"tool": "noop", "params": {}}
+    payload_digest = hashlib.sha3_256(canonical_json_encode(action_payload)).hexdigest()
+    canonical_hash = f"sha3_256:{payload_digest}"
+
     token = "approved-token-affinity"
     backend.checkpoint_store.save(
         run_id,
         "chk-affinity",
-        {"session_state": {"approval_token": token, "status": "PAUSED"}},
+        {
+            "session_state": {
+                "approval_token": token,
+                "status": "PAUSED",
+                "action_payload": action_payload,
+            }
+        },
     )
     resolve_approval_store().create_request(
         ApprovalRequest(
@@ -418,7 +432,8 @@ def test_inprocess_resume_uses_owned_provider_and_never_re_resolves_global(tmp_p
             run_id=run_id,
             checkpoint_id="chk-affinity",
             status="APPROVED",
-            outbound_payload_hash="",
+            outbound_payload_hash=canonical_hash,
+            action_payload=action_payload,
         )
     )
 

@@ -115,6 +115,15 @@ class TestColdRestartDurabilityContract:
                 )
 
                 # 1. Simulate active execution pausing at HITL checkpoint
+                import hashlib
+
+                from agentv_runtime.canonical import canonical_json_encode
+
+                action_payload = {"tool": "noop", "params": {"amount": 1000}}
+                canonical_hash = f"sha3_256:{
+                    hashlib.sha3_256(canonical_json_encode(action_payload)).hexdigest()
+                }"
+
                 checkpoint_data = {
                     "run_id": run_id,
                     "status": "PAUSED_FOR_APPROVAL",
@@ -127,6 +136,7 @@ class TestColdRestartDurabilityContract:
                         "approval_token": resumption_token,
                         "manifest_id": manifest.manifest_id,
                         "scope_digest": manifest.scope_digest,
+                        "action_payload": action_payload,
                         "completed_node_results": {},
                     },
                 }
@@ -138,11 +148,12 @@ class TestColdRestartDurabilityContract:
                         run_id=run_id,
                         turn_index=1,
                         manifest_id=manifest.manifest_id,
-                        outbound_payload_hash="sha256:fedcba",
+                        outbound_payload_hash=canonical_hash,
                         checkpoint_id="checkpoint_turn_1",
                         status="APPROVED",
                         scope=scope_a,
                         metadata={"org_id": "org_corp_fin", "task_id": "step_1"},
+                        action_payload=action_payload,
                     )
                 )
 

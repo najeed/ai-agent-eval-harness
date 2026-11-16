@@ -540,22 +540,24 @@ class InProcessExecutionBackend(ExecutionBackend):
                     or (provider_lifecycle and provider_lifecycle in approval_states)
                 )
                 if is_approval_resume:
-                    if not (provider and hasattr(provider, "get_lifecycle")):
-                        raise RuntimeError(
-                            f"Cannot resume run '{run_id}': "
-                            "provider lifecycle capability required for approval-gated resumption."
-                        )
-                    if provider_lifecycle is None:
-                        raise RuntimeError(
-                            f"Cannot resume run '{run_id}': "
-                            "authoritative provider lifecycle unavailable."
-                        )
-                    if provider_lifecycle not in approval_states:
-                        raise RuntimeError(
-                            f"Cannot resume run '{run_id}': "
-                            f"provider lifecycle is '{provider_lifecycle}', "
-                            "not in approval-gated state."
-                        )
+                    if provider:
+                        if not hasattr(provider, "get_lifecycle"):
+                            raise RuntimeError(
+                                f"Cannot resume run '{run_id}': "
+                                "provider lifecycle capability required for "
+                                "approval-gated resumption."
+                            )
+                        if provider_lifecycle is None:
+                            raise RuntimeError(
+                                f"Cannot resume run '{run_id}': "
+                                "authoritative provider lifecycle unavailable."
+                            )
+                        if provider_lifecycle not in approval_states:
+                            raise RuntimeError(
+                                f"Cannot resume run '{run_id}': "
+                                f"provider lifecycle is '{provider_lifecycle}', "
+                                "not in approval-gated state."
+                            )
 
                 # 1. Reject active running executions
                 if (
@@ -610,6 +612,11 @@ class InProcessExecutionBackend(ExecutionBackend):
             if not approval or approval.run_id != run_id or approval.status != "APPROVED":
                 raise PermissionError(
                     f"Cannot resume run '{run_id}': approval has not been authoritatively approved."
+                )
+            if not (provider and hasattr(provider, "get_lifecycle")):
+                raise RuntimeError(
+                    f"Cannot resume run '{run_id}': "
+                    "provider lifecycle capability required for approval-gated resumption."
                 )
             if approval.checkpoint_id:
                 checkpoint_ref = str(approval.checkpoint_id)
