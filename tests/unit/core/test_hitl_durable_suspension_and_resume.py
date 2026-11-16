@@ -13,10 +13,11 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
+from agentv_runtime.canonical import canonical_json_encode
 from agentv_runtime.interfaces import ApprovalRequest
 from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
 from eval_runner import config
@@ -124,7 +125,7 @@ def test_lifecycle_paused_for_approval_state_transitions(tmp_path: Path):
 
 
 @pytest.mark.asyncio
-async def test_p0_1_session_durable_suspension_emits_and_preserves_state(
+async def test_session_durable_suspension_emits_and_preserves_state(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ):
     monkeypatch.setenv("AGENTV_CLI_HITL_SUSPEND", "1")
@@ -222,7 +223,7 @@ def test_pending_durable_approval_suspends_before_state_parity(tmp_path: Path):
 
 
 @pytest.mark.asyncio
-async def test_p0_2_flight_recorder_monotonic_resumption_sequence(tmp_path: Path):
+async def test_flight_recorder_monotonic_resumption_sequence(tmp_path: Path):
     run_id = "run-fr-monotonic"
     runs_root = tmp_path / "runs"
     runs_root.mkdir(parents=True, exist_ok=True)
@@ -280,7 +281,7 @@ async def test_p0_2_flight_recorder_monotonic_resumption_sequence(tmp_path: Path
 
 
 @pytest.mark.asyncio
-async def test_p0_2_runner_resumption_preserves_manifest_and_completes(
+async def test_runner_resumption_preserves_manifest_and_completes(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ):
     run_id = "run-runner-resume-001"
@@ -383,7 +384,7 @@ async def test_p0_2_runner_resumption_preserves_manifest_and_completes(
     )
 
 
-def test_p0_2_runner_fresh_run_rejects_existing_vault(tmp_path: Path):
+def test_runner_fresh_run_rejects_existing_vault(tmp_path: Path):
     run_id = "run-existing-vault"
     runs_dir = tmp_path / "runs"
     vault_dir = runs_dir / run_id
@@ -402,7 +403,7 @@ def test_p0_2_runner_fresh_run_rejects_existing_vault(tmp_path: Path):
         )
 
 
-def test_p0_2_runner_resumption_fails_closed_on_terminal_state(tmp_path: Path):
+def test_runner_resumption_fails_closed_on_terminal_state(tmp_path: Path):
     run_id = "run-sealed-resume"
     runs_dir = tmp_path / "runs"
     vault_dir = runs_dir / run_id
@@ -433,7 +434,7 @@ def test_p0_2_runner_resumption_fails_closed_on_terminal_state(tmp_path: Path):
 
 
 @pytest.mark.asyncio
-async def test_p0_3_and_p0_4_cold_restart_hitl_bridge(tmp_path: Path):
+async def test_cold_restart_hitl_bridge(tmp_path: Path):
     run_id = "run-cold-bridge-001"
     token = "tok-cold-999"
     db_path = str(tmp_path / "checkpoints.db")
@@ -472,6 +473,7 @@ async def test_p0_3_and_p0_4_cold_restart_hitl_bridge(tmp_path: Path):
     (vault_dir / "scenario_resolved.json").write_text(json.dumps(scenario), encoding="utf-8")
 
     # Persist durable checkpoint and approval request
+    action_payload = {"amount": 50000}
     chk_store.save(
         run_id,
         "checkpoint_turn_1",
@@ -484,6 +486,7 @@ async def test_p0_3_and_p0_4_cold_restart_hitl_bridge(tmp_path: Path):
             "session_state": {
                 "status": "PAUSED_FOR_APPROVAL",
                 "approval_token": token,
+                "action_payload": action_payload,
                 "completed_node_results": {},
             },
         },
@@ -494,7 +497,9 @@ async def test_p0_3_and_p0_4_cold_restart_hitl_bridge(tmp_path: Path):
             approval_token=token,
             run_id=run_id,
             turn_index=1,
-            outbound_payload_hash="sha256:fedcba",
+            outbound_payload_hash="sha3_256:"
+            + hashlib.sha3_256(canonical_json_encode(action_payload)).hexdigest(),
+            action_payload=action_payload,
             checkpoint_id="checkpoint_turn_1",
             status="APPROVED",
             metadata={"org_id": "org_corp_fin", "task_id": "step_1"},
@@ -547,12 +552,87 @@ async def test_p0_3_and_p0_4_cold_restart_hitl_bridge(tmp_path: Path):
     assert backend.status(run_id)["status"] == "COMPLETED"
 
 
+@pytest.mark.parametrize("force_recovery", [False, True])
+@pytest.mark.parametrize(
+    ("defect", "message"),
+    [
+        ("missing_hash", "requires non-empty outbound_payload_hash"),
+        ("blank_hash", "requires non-empty outbound_payload_hash"),
+        ("missing_payload", "action_payload missing or invalid"),
+        ("invalid_payload", "action_payload missing or invalid"),
+        ("changed_payload", "approval payload binding is invalid"),
+        ("noncanonical_hash", "approval payload binding is invalid"),
+    ],
+)
+def test_cold_approval_resume_rejects_unbound_payload_before_execution(
+    tmp_path, monkeypatch, force_recovery, defect, message
+):
+    run_id = "run-payload-binding"
+    token = "approved-payload-token"
+    payload = {"amount": 50000, "destination": {"account": "approved"}}
+    expected_hash = "sha3_256:" + hashlib.sha3_256(canonical_json_encode(payload)).hexdigest()
+    checkpoint_state = {"approval_token": token, "action_payload": payload}
+    if defect == "missing_hash":
+        expected_hash = ""
+    elif defect == "blank_hash":
+        expected_hash = "   "
+    elif defect == "missing_payload":
+        checkpoint_state.pop("action_payload")
+    elif defect == "invalid_payload":
+        # Even a matching digest of {} must not authorize a malformed action.
+        checkpoint_state["action_payload"] = []
+        expected_hash = "sha3_256:" + hashlib.sha3_256(canonical_json_encode({})).hexdigest()
+    elif defect == "changed_payload":
+        checkpoint_state["action_payload"] = {**payload, "amount": 1}
+    elif defect == "noncanonical_hash":
+        expected_hash = hashlib.sha3_256(str(sorted(payload.items())).encode()).hexdigest()
+        checkpoint_state["profile"] = "legacy"
+
+    checkpoints = SQLiteCheckpointStore(db_path=str(tmp_path / "checkpoints.db"))
+    checkpoints.save(
+        run_id,
+        "approved-checkpoint",
+        {
+            "status": "PAUSED_FOR_APPROVAL",
+            "scenario_data": {"id": "payload-binding"},
+            "session_state": checkpoint_state,
+        },
+    )
+    approvals = FileApprovalStore(base_dir=tmp_path / "approvals")
+    approvals.create_request(
+        ApprovalRequest(
+            approval_token=token,
+            run_id=run_id,
+            status="APPROVED",
+            checkpoint_id="approved-checkpoint",
+            action_payload=payload,
+            outbound_payload_hash=expected_hash,
+        )
+    )
+    monkeypatch.setattr("eval_runner.runtime_services.resolve_approval_store", lambda: approvals)
+    provider = LocalFileRunStore(tmp_path / "runs")
+    provider.create_run(run_id, "payload-binding")
+    provider.update_run_status(run_id, "PAUSED_FOR_APPROVAL")
+    execute = MagicMock(side_effect=AssertionError("unbound action must not execute"))
+    backend = InProcessExecutionBackend(
+        checkpoint_store=checkpoints, run_store=provider, runner_callable=execute
+    )
+
+    with pytest.raises(PermissionError, match=message):
+        backend.resume(run_id, resumption_token=token, force_recovery=force_recovery)
+
+    execute.assert_not_called()
+    assert provider.get_lifecycle(run_id) == "PAUSED_FOR_APPROVAL"
+    assert provider.get_events(run_id) == []
+    assert approvals.get_request(token).status == "APPROVED"
+
+
 # ---------------------------------------------------------------------------
 # P0-5: Scenario-Declared HITL Governance Gate
 # ---------------------------------------------------------------------------
 
 
-def test_p0_5_node_ir_compilation_detects_manual_approval():
+def test_node_ir_compilation_detects_manual_approval():
     raw_node_1 = {
         "id": "node_audit",
         "name": "Audit Transfer",
@@ -579,7 +659,7 @@ def test_p0_5_node_ir_compilation_detects_manual_approval():
 
 
 @pytest.mark.asyncio
-async def test_p0_5_session_enforces_scenario_declared_manual_approval_gate(
+async def test_session_enforces_scenario_declared_manual_approval_gate(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ):
     # A scenario-declared gate is durable without a CLI-only override, even
@@ -628,7 +708,7 @@ async def test_p0_5_session_enforces_scenario_declared_manual_approval_gate(
     assert "Manual approval required" in err.prompt
 
 
-def test_p0_session_checkpoint_manager_loading_and_listing(tmp_path: Path):
+def test_session_checkpoint_manager_loading_and_listing(tmp_path: Path):
     db_file = str(tmp_path / "chk.db")
     store = SQLiteCheckpointStore(db_path=db_file)
     mgr = SessionCheckpointManager(run_id="run-mgr-chk", store=store)
@@ -715,7 +795,7 @@ def test_sqlite_checkpoint_store_load_normalizes_numeric_checkpoint_identifier(t
     assert store.load("run-numeric", 42) == {"turn": 42}
 
 
-def test_p0_run_lifecycle_edge_branches(tmp_path: Path):
+def test_run_lifecycle_edge_branches(tmp_path: Path):
     runs_dir = tmp_path / "runs"
     runs_dir.mkdir(parents=True, exist_ok=True)
     store = LocalFileRunStore(runs_dir)
@@ -775,7 +855,7 @@ def test_p0_run_lifecycle_edge_branches(tmp_path: Path):
         assert_can_write_trace(run_paused, run_store=store)
 
 
-def test_p0_flight_recorder_resumption_failure_branches(tmp_path: Path):
+def test_flight_recorder_resumption_failure_branches(tmp_path: Path):
     runs_dir = tmp_path / "runs"
     runs_dir.mkdir(parents=True, exist_ok=True)
     store = LocalFileRunStore(runs_dir)
@@ -818,7 +898,7 @@ def test_p0_flight_recorder_resumption_failure_branches(tmp_path: Path):
 
 
 @pytest.mark.asyncio
-async def test_p0_evaluation_handler_catches_run_suspended_for_approval(capsys):
+async def test_evaluation_handler_catches_run_suspended_for_approval(capsys):
     args = argparse.Namespace(
         scenario="scen_dummy",
         agent=None,
@@ -849,7 +929,7 @@ async def test_p0_evaluation_handler_catches_run_suspended_for_approval(capsys):
 
 
 @pytest.mark.asyncio
-async def test_p0_runner_catches_suspension_and_marks_lifecycle(tmp_path: Path):
+async def test_runner_catches_suspension_and_marks_lifecycle(tmp_path: Path):
     run_id = "run-runner-susp-catch"
     runs_dir = tmp_path / "runs"
     runs_dir.mkdir(parents=True, exist_ok=True)
@@ -876,7 +956,7 @@ async def test_p0_runner_catches_suspension_and_marks_lifecycle(tmp_path: Path):
 
 
 @pytest.mark.asyncio
-async def test_p0_session_hitl_resumption_and_gate_branches(tmp_path: Path):
+async def test_session_hitl_resumption_and_gate_branches(tmp_path: Path):
     run_id = "run-session-branches"
     runs_dir = tmp_path / "runs"
     vault_dir = runs_dir / run_id

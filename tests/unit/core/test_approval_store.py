@@ -672,15 +672,20 @@ class TestSessionApprovalManagerLegacyAndGates:
 
 class TestInProcessBackendResumptionGuard:
     def test_resume_accepts_paused_for_approval(self):
+        import hashlib
+
+        from agentv_runtime.canonical import canonical_json_encode
+
         run_store = MagicMock()
         run_store.get_lifecycle.return_value = "PAUSED_FOR_APPROVAL"
         backend = InProcessExecutionBackend(run_store=run_store)
         run_id = "run_paused_hitl_01"
+        empty_payload_hash = "sha3_256:" + hashlib.sha3_256(canonical_json_encode({})).hexdigest()
         approved = ApprovalRequest(
             approval_token="tok_test_resume",
             run_id=run_id,
             turn_index=1,
-            outbound_payload_hash="",
+            outbound_payload_hash=empty_payload_hash,
             status="APPROVED",
         )
 
@@ -689,7 +694,12 @@ class TestInProcessBackendResumptionGuard:
             backend._active_runs[run_id] = {
                 "status": "PAUSED_FOR_APPROVAL",
                 "scenario_data": {"id": "test_scenario", "metadata": {"name": "Test"}},
-                "resumption_checkpoint": {"session_state": {"approval_token": "tok_test_resume"}},
+                "resumption_checkpoint": {
+                    "session_state": {
+                        "approval_token": "tok_test_resume",
+                        "action_payload": {},
+                    }
+                },
             }
 
         approval_store = MagicMock()
@@ -700,7 +710,7 @@ class TestInProcessBackendResumptionGuard:
                 approval_token=token,
                 run_id="run_cold_restart",
                 turn_index=1,
-                outbound_payload_hash="",
+                outbound_payload_hash=empty_payload_hash,
                 status="APPROVED",
             )
         )
@@ -726,7 +736,10 @@ class TestInProcessBackendResumptionGuard:
         mock_checkpoint_store.load.return_value = {
             "status": "PAUSED_FOR_APPROVAL",
             "scenario_data": {"id": "scen_chk", "metadata": {"name": "Test Checkpoint"}},
-            "session_state": {"approval_token": "tok_chk_123"},
+            "session_state": {
+                "approval_token": "tok_chk_123",
+                "action_payload": {},
+            },
         }
         backend_chk = InProcessExecutionBackend(
             checkpoint_store=mock_checkpoint_store, run_store=run_store

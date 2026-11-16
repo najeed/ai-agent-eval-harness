@@ -1021,7 +1021,7 @@ class TestInProcessExecutionBackend:
             approval_token="tok_man_check",
             run_id=run_id,
             turn_index=1,
-            outbound_payload_hash="",
+            outbound_payload_hash=valid_hash,
             status="APPROVED",
             checkpoint_id="chk_man",
             manifest_id="man_expected_001",
@@ -1030,6 +1030,7 @@ class TestInProcessExecutionBackend:
         mock_chk_store.load.return_value = {
             "session_state": {
                 "approval_token": "tok_man_check",
+                "action_payload": {"amount": 100},
                 # missing manifest_id
             },
             "scenario_data": {"id": "s_valid"},
@@ -1042,7 +1043,7 @@ class TestInProcessExecutionBackend:
             approval_token="tok_scope_check",
             run_id=run_id,
             turn_index=1,
-            outbound_payload_hash="",
+            outbound_payload_hash=valid_hash,
             status="APPROVED",
             checkpoint_id="chk_scope",
             scope_digest="sha3_256:scope_expected",
@@ -1051,6 +1052,7 @@ class TestInProcessExecutionBackend:
         mock_chk_store.load.return_value = {
             "session_state": {
                 "approval_token": "tok_scope_check",
+                "action_payload": {"amount": 100},
                 # missing scope_digest
             },
             "scenario_data": {"id": "s_valid"},
@@ -1085,7 +1087,7 @@ class TestInProcessExecutionBackend:
         res_canon = backend.resume(run_id, resumption_token="tok_canonical", force_recovery=True)
         assert res_canon["status"] == "resumed_ok"
 
-        # 8d. Explicit legacy profile allows legacy str(sorted(...)) format
+        # Non-canonical digests cannot be authorized by a checkpoint profile.
         legacy_hash = hashlib.sha3_256(
             str(sorted({"z": 1, "a": 2}.items())).encode("utf-8")
         ).hexdigest()
@@ -1110,7 +1112,7 @@ class TestInProcessExecutionBackend:
         with pytest.raises(PermissionError, match="approval payload binding is invalid"):
             backend.resume(run_id, resumption_token="tok_legacy", force_recovery=True)
 
-        # With explicit legacy profile: successfully accepted
+        # Caller-controlled profile fields cannot change the digest algorithm.
         mock_chk_store.load.return_value = {
             "session_state": {
                 "approval_token": "tok_legacy",
@@ -1119,17 +1121,18 @@ class TestInProcessExecutionBackend:
             },
             "scenario_data": {"id": "s_valid"},
         }
-        res_legacy = backend.resume(run_id, resumption_token="tok_legacy", force_recovery=True)
-        assert res_legacy["status"] == "resumed_ok"
+        with pytest.raises(PermissionError, match="approval payload binding is invalid"):
+            backend.resume(run_id, resumption_token="tok_legacy", force_recovery=True)
 
-        # 9. Approval without checkpoint_id and without payload
+        # Approval without checkpoint_id still binds an empty action payload.
         run_id_no_chk = "run-resume-no-chk-001"
         run_store.create_run(run_id_no_chk, "s_no_chk")
         valid_no_chk = ApprovalRequest(
             approval_token="tok_no_chk",
             run_id=run_id_no_chk,
             turn_index=1,
-            outbound_payload_hash="",
+            outbound_payload_hash="sha3_256:"
+            + hashlib.sha3_256(canonical_json_encode({})).hexdigest(),
             status="APPROVED",
             checkpoint_id=None,
         )

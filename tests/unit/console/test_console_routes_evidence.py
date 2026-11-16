@@ -86,7 +86,7 @@ def test_get_verification_package_not_found(client):
 
 def test_get_verification_package_success_with_cert_and_provenance(crypto_client, tmp_path):
     """
-    P0-4: VERIFIED requires genuine cryptographic verification of a certificate
+    VERIFIED requires genuine cryptographic verification of a certificate
     produced by the transactional certification pipeline — not merely the
     presence of signature-shaped JSON.
     """
@@ -485,7 +485,7 @@ def test_verification_package_score_default_verified(crypto_client, tmp_path):
 
 def test_fake_certificate_signature_yields_unverified(client, tmp_path):
     """
-    P0-4 negative lock: signature-SHAPED JSON without a verifiable chain must
+    negative lock: signature-SHAPED JSON without a verifiable chain must
     never produce VERIFIED. Presence of signatures is not proof.
     """
     runs_dir = Path(config.RUN_LOG_DIR)
@@ -522,7 +522,7 @@ def test_fake_certificate_signature_yields_unverified(client, tmp_path):
 
 
 def test_package_corruption_policy_blocks_certification(crypto_client, tmp_path):
-    """[E3] Unparseable trace content -> EVIDENCE_INVALID + exact byte offsets."""
+    """Unparseable trace content -> EVIDENCE_INVALID + exact byte offsets."""
     import json as _json
 
     runs_dir = tmp_path / "runs"
@@ -824,8 +824,8 @@ def test_evidence_routes_exhaustive_edge_cases(client, tmp_path: Path, monkeypat
     assert res_nonexistent.status_code == 200
 
 
-def test_p0_03_authority_rejection_blocks_verified_verdict(client, tmp_path):
-    """P0-03: Cryptographically intact package must not report VERIFIED on authority rejection."""
+def test_authority_rejection_blocks_verified_verdict(client, tmp_path):
+    """Cryptographically intact package must not report VERIFIED on authority rejection."""
     from unittest.mock import patch
 
     import eval_runner.console.routes.evidence as ev_module

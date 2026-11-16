@@ -628,44 +628,28 @@ class InProcessExecutionBackend(ExecutionBackend):
                     f"Cannot resume run '{run_id}': approval token does not bind to checkpoint."
                 )
 
-            # Verify action_payload digest against expected approval record
-            # Uses RFC 8785 canonical JSON bytes for modern checkpoints;
-            # preserves legacy compatibility strictly behind an authoritative approval profile.
+            # Every approval must bind the checkpoint action using RFC 8785.
+            # Missing evidence must never bypass payload verification.
             action_payload = checkpoint_state.get("action_payload")
-            approval_profile = str(getattr(approval, "profile", "") or "").strip().lower()
-            is_legacy_profile = approval_profile in ("legacy", "v1", "agentv.approval.v1")
+            expected_hash = str(approval.outbound_payload_hash or "").strip()
+            if not expected_hash:
+                raise PermissionError(
+                    f"Cannot resume run '{run_id}': approval requires "
+                    "non-empty outbound_payload_hash."
+                )
+            if not isinstance(action_payload, dict):
+                raise PermissionError(
+                    f"Cannot resume run '{run_id}': checkpoint action_payload missing or invalid."
+                )
+            from agentv_runtime.canonical import canonical_json_encode
 
-            if action_payload is not None and approval.outbound_payload_hash:
-                payload_dict = action_payload if isinstance(action_payload, dict) else {}
-                expected_hash = str(approval.outbound_payload_hash).strip()
-
-                if is_legacy_profile:
-                    raw_hash = hashlib.sha3_256(
-                        str(sorted(payload_dict.items())).encode("utf-8")
-                    ).hexdigest()
-                    hashes_to_compare = [raw_hash, f"sha3_256:{raw_hash}"]
-                else:
-                    from agentv_runtime.canonical import canonical_json_encode
-
-                    c_bytes = canonical_json_encode(payload_dict)
-                    c_hash = hashlib.sha3_256(c_bytes).hexdigest()
-                    hashes_to_compare = [c_hash, f"sha3_256:{c_hash}"]
-
-                if not any(hmac.compare_digest(h, expected_hash) for h in hashes_to_compare):
-                    raise PermissionError(
-                        f"Cannot resume run '{run_id}': approval payload binding is invalid."
-                    )
-            elif not is_legacy_profile and approval.profile and approval.profile != "legacy":
-                if not approval.outbound_payload_hash:
-                    raise PermissionError(
-                        f"Cannot resume run '{run_id}': modern approval "
-                        f"requires non-empty outbound_payload_hash."
-                    )
-                if action_payload is None:
-                    raise PermissionError(
-                        f"Cannot resume run '{run_id}': checkpoint action_payload "
-                        f"missing for modern approval."
-                    )
+            c_hash = hashlib.sha3_256(canonical_json_encode(action_payload)).hexdigest()
+            if not any(
+                hmac.compare_digest(h, expected_hash) for h in (c_hash, f"sha3_256:{c_hash}")
+            ):
+                raise PermissionError(
+                    f"Cannot resume run '{run_id}': approval payload binding is invalid."
+                )
 
             # Strict checkpoint manifest and scope binding verification:
             # Require mandatory binding fields and reject omissions as well as mismatches.

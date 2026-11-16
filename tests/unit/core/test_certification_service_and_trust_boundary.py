@@ -563,7 +563,9 @@ def _seed_run(
         scenario_id=scenario["id"],
         scenario_version=scenario["version"],
         scenario_hash=scenario_hash,
-        metadata={"required_oracle_ids": manifest_oracles},
+        # Bind identity before hashing/signing; typed manifests retain metadata,
+        # while the provider/certificate projection also carries a top-level ID.
+        metadata={"required_oracle_ids": manifest_oracles, "run_id": run_id},
         runtime_config={"required_oracle_ids": manifest_oracles, "execution_mode": mode},
     )
     provider.create_run(run_id, scenario["id"])
@@ -639,7 +641,7 @@ def _seed_run(
         run_id,
         {
             "run_id": run_id,
-            "execution_manifest": execution_manifest.to_dict(),
+            "execution_manifest": {**execution_manifest.to_dict(), "run_id": run_id},
             "scenario_data": scenario,
         },
     )

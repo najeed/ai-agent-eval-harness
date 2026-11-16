@@ -826,6 +826,9 @@ class DefaultRunner(BaseRunner):
             exec_manifest_scope = dict(scope_tok.tags)
             exec_manifest_scope_digest = scope_tok.digest
 
+        # Bind the provider-owned run identity into the canonical commitment.
+        # Typed manifests retain metadata when presentation fields are stripped.
+        cleaned_manifest_metadata["run_id"] = effective_run_id
         exec_manifest = ExecutionManifest(
             manifest_id=f"man_{effective_run_id}",
             scenario_id=str(scenario_identifier),

@@ -1141,10 +1141,32 @@ def test_verify_trace_bytes_package_and_manifest_present_returns_true():
                 VerificationAuthority,
                 "verify_certification_artifact",
                 return_value={"verified": True, "failures": []},
-            ):
+            ) as mock_artifact_verif:
                 assert (
                     TraceVerifier.verify_trace_bytes(trace, manifest=manifest, run_store=mock_store)
                     is True
+                )
+                assert (
+                    mock_artifact_verif.call_args.kwargs["canonical_manifest"]["run_id"]
+                    == "run-m202-ok"
+                )
+
+                # Mutants guard: execution_manifest with existing run_id preserves it
+                manifest_explicit = {
+                    "run_id": "run-m202-ok",
+                    "trace_hash": thash,
+                    "verification_package": {"package_id": "pkg1"},
+                    "execution_manifest": {"manifest_id": "man1", "run_id": "run-explicit"},
+                }
+                assert (
+                    TraceVerifier.verify_trace_bytes(
+                        trace, manifest=manifest_explicit, run_store=mock_store
+                    )
+                    is True
+                )
+                assert (
+                    mock_artifact_verif.call_args.kwargs["canonical_manifest"]["run_id"]
+                    == "run-explicit"
                 )
 
 
@@ -1386,6 +1408,32 @@ def test_sign_trace_bytes_scenario_hash_and_manifest_hash_edge_cases():
     # manifest hash empty when execution_manifest is None
     # and metadata has no hash
     assert pkg["manifest_hash"] == ""
+
+    # Test execution_manifest run_id propagation when omitted vs present
+    with patch.object(IdentityService, "get_public_key", return_value=None):
+        with patch(
+            "agentv_runtime.signatures.validate_signing_response",
+            side_effect=lambda payload, sig, **kw: sig,
+        ):
+            manifest_no_id = TraceVerifier.sign_trace_bytes(
+                raw_tb,
+                run_id="run_scen_meta",
+                run_store=store,
+                signing_backend=backend,
+                identity_id="test_signer",
+                execution_manifest={"manifest_id": "man_1"},
+            )
+            assert manifest_no_id["execution_manifest"]["run_id"] == "run_scen_meta"
+
+            manifest_with_id = TraceVerifier.sign_trace_bytes(
+                raw_tb,
+                run_id="run_scen_meta",
+                run_store=store,
+                signing_backend=backend,
+                identity_id="test_signer",
+                execution_manifest={"manifest_id": "man_1", "run_id": "run_existing"},
+            )
+            assert manifest_with_id["execution_manifest"]["run_id"] == "run_existing"
 
 
 def test_sign_trace_bytes_finalization_hash_from_top_level_and_cert_payload_execution_mode():

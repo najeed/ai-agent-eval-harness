@@ -273,10 +273,10 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 ("sign_trace_bytes", 642, "evidence_root_hash", "__mutation_missing_commitment__"),
                 ("sign_trace_bytes", 665, "evidence_root_hash", "__mutation_missing_commitment__"),
                 ("sign_trace_bytes", 668, "evidence_root_hash", "__mutation_missing_commitment__"),
-                ("verify_trace_certificate", 1915, "and", "or"),
-                ("verify_trace_certificate", 1923, "and", "or"),
-                ("verify_package_artifacts", 2509, "and", "or"),
-                ("verify_package", 3050, "and", "or"),
+                ("verify_trace_certificate", 1911, "and", "or"),
+                ("verify_trace_certificate", 1919, "and", "or"),
+                ("verify_package_artifacts", 2505, "and", "or"),
+                ("verify_package", 3046, "and", "or"),
                 ("sign_trace_bytes", 898, "or", "and"),
             }
         ),
@@ -307,19 +307,19 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "stored root only when the filtered root equals the declared root; an "
                 "already-matching root is unchanged, and an absent hint cannot match a hash."
             ),
-            ("verify_trace_certificate", 1915, "and", "or"): (
+            ("verify_trace_certificate", 1911, "and", "or"): (
                 "Equivalent for supported JSON evidence: filtering is an extra fallback; "
                 "its result is adopted only if it matches the expected root already verified."
             ),
-            ("verify_trace_certificate", 1923, "and", "or"): (
+            ("verify_trace_certificate", 1919, "and", "or"): (
                 "Equivalent for supported JSON evidence: the extra fallback only replaces "
                 "the graph when its root equals the expected, already-matched root."
             ),
-            ("verify_package_artifacts", 2509, "and", "or"): (
+            ("verify_package_artifacts", 2505, "and", "or"): (
                 "Equivalent for graph-builder outputs (dict or None): both branches yield "
                 "the same nodes; an empty dict has no nodes and defaults to []."
             ),
-            ("verify_package", 3050, "and", "or"): (
+            ("verify_package", 3046, "and", "or"): (
                 "Equivalent redundant-parse guard: replacing and with or only recomputes the "
                 "canonical evidence graph when roots already match (adopting the identical root), "
                 "leaving EvidenceRootMismatch and package validity completely unchanged."
@@ -444,7 +444,7 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_handle_hitl_tty_interactive_and_env_guards",
                 "test_handle_hitl_correlation_id_inheritance",
                 "test_hitl_resumption_wait_uses_decision_time_only_when_available_and_ordered",
-                "test_p0_session_hitl_resumption_and_gate_branches",
+                "test_session_hitl_resumption_and_gate_branches",
             ),
             "restore_from_checkpoint": ("test_save_and_restore_from_checkpoint_contract",),
             "save_checkpoint": ("test_save_and_restore_from_checkpoint_contract",),

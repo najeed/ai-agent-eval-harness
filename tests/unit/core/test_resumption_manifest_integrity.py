@@ -7,11 +7,13 @@ guaranteeing zero ManifestHashMismatch during certification.
 
 from __future__ import annotations
 
+import hashlib
 import json
 from unittest.mock import MagicMock, patch
 
 import pytest
 
+from agentv_runtime.canonical import canonical_json_encode
 from agentv_runtime.finalization import EvaluatorFinalizationRecord
 from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
 from eval_runner import config
@@ -231,7 +233,11 @@ def test_inprocess_backend_resume_preserves_mode_and_contract(tmp_path):
     backend._run_store = MagicMock()
     checkpoint = {
         "status": "PAUSED_FOR_APPROVAL",
-        "session_state": {"approval_token": "tok_valid", "manifest_id": f"man_{run_id}"},
+        "session_state": {
+            "approval_token": "tok_valid",
+            "manifest_id": f"man_{run_id}",
+            "action_payload": {},
+        },
         "metadata": {"execution_mode": "live"},
     }
     mock_store.load.return_value = checkpoint
@@ -249,7 +255,9 @@ def test_inprocess_backend_resume_preserves_mode_and_contract(tmp_path):
         mock_approval.run_id = run_id
         mock_approval.status = "APPROVED"
         mock_approval.checkpoint_id = None
-        mock_approval.outbound_payload_hash = None
+        mock_approval.outbound_payload_hash = (
+            "sha3_256:" + hashlib.sha3_256(canonical_json_encode({})).hexdigest()
+        )
         mock_approval.manifest_id = f"man_{run_id}"
         mock_approval.scope_digest = None
         mock_app_store.return_value.get_request.return_value = mock_approval

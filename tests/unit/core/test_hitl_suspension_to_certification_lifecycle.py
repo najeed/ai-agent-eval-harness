@@ -138,6 +138,7 @@ async def test_full_lifecycle_suspension_to_certification_e2e(
                 "execution_mode": "live",
                 "execution_mode_declared": True,
                 "runtime_context": expected_scope,
+                "run_id": "caller-supplied-identity-must-not-override-provider",
             },
         )
 
@@ -173,6 +174,7 @@ async def test_full_lifecycle_suspension_to_certification_e2e(
     assert manifest.scope == expected_scope
     assert manifest.scope_digest == expected_digest
     assert manifest.runtime_config.get("execution_mode") == "live"
+    assert manifest.metadata["run_id"] == run_id
 
     # Compute canonical manifest hash
     manifest_hash = manifest.compute_manifest_hash()
@@ -264,6 +266,7 @@ async def test_full_lifecycle_suspension_to_certification_e2e(
         runner.run_store.get_manifest(run_id)["execution_manifest"]
     )
     assert fin_record.execution_manifest_hash == store_manifest.compute_manifest_hash()
+    assert store_manifest.compute_manifest_hash() == manifest_hash
     assert fin_record.scenario_hash == manifest.scenario_hash
     assert fin_record.evaluator_signature is not None
 

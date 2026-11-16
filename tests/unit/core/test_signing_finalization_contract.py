@@ -2,6 +2,7 @@
 
 import pytest
 
+from agentv_runtime.manifest import ExecutionManifest
 from eval_runner import config
 from eval_runner.identity import IdentityService
 from eval_runner.reference.local_run_store import LocalFileRunStore
@@ -53,6 +54,37 @@ def test_signing_recovers_finalization_from_trace_without_metadata_hint(finaliza
         scenario_data=scenario,
     )
     assert result["verified"], result["failures"]
+
+
+@pytest.mark.parametrize("typed_manifest", [False, True])
+@pytest.mark.parametrize("identity", [None, "another-run"])
+def test_detached_certification_rejects_missing_or_conflicting_manifest_identity(
+    finalization_source, typed_manifest, identity
+):
+    provider, scenario = finalization_source
+    trace = provider.get_trace_bytes("run-a")
+    certificate = TraceVerifier.sign_trace_bytes(
+        trace,
+        run_id="run-a",
+        run_store=provider,
+        metadata={"required_oracle_ids": ["oracle-1"]},
+        execution_mode="live",
+    )
+    manifest = certificate["execution_manifest"]
+    # Remove both representations so neither can hide a missing identity.
+    manifest.pop("run_id")
+    manifest["metadata"].pop("run_id")
+    if identity is not None:
+        manifest["metadata"]["run_id"] = identity
+    result = VerificationAuthority.verify_certification_artifact(
+        certificate["verification_package"],
+        raw_trace_bytes=trace,
+        canonical_manifest=ExecutionManifest.from_dict(manifest) if typed_manifest else manifest,
+        scenario_data=scenario,
+    )
+    assert result["certified"] is False
+    assert result["authoritative"] is False
+    assert any("RunIdentityMismatch" in failure for failure in result["failures"])
 
 
 @pytest.mark.parametrize(

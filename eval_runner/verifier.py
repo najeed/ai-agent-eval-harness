@@ -1088,12 +1088,8 @@ class TraceVerifier:
         execution_manifest = manifest.get("execution_manifest")
         if not package or not execution_manifest:
             return False
-        if (
-            isinstance(execution_manifest, Mapping)
-            and "run_id" not in execution_manifest
-            and manifest.get("run_id")
-        ):
-            execution_manifest = {**execution_manifest, "run_id": manifest["run_id"]}
+        if isinstance(execution_manifest, Mapping) and "run_id" not in execution_manifest:
+            execution_manifest = {**execution_manifest, "run_id": run_id}
         result = VerificationAuthority.verify_certification_artifact(
             package,
             raw_trace_bytes=bytes(trace_bytes),
