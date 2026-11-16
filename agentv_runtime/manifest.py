@@ -205,7 +205,6 @@ class ExecutionManifest:
     producer_identity: str = "agentv.manifest_builder"
     producer_version: str = "2.0.0"
     parent_artifact_refs: list[str] = field(default_factory=list)
-    preflight_fingerprint: str = ""
 
     def __post_init__(self):
         if not self.parent_artifact_refs and self.scenario_hash:
@@ -224,6 +223,15 @@ class ExecutionManifest:
             if not self.scope:
                 object.__setattr__(self, "scope", derived)
             object.__setattr__(self, "scope_digest", ScopeToken.from_tags(derived).digest)
+
+    @property
+    def preflight_fingerprint(self) -> str:
+        """Canonical preflight fingerprint accessor."""
+        return str(
+            self.metadata.get("preflight_fingerprint")
+            or self.runtime_config.get("preflight_fingerprint")
+            or ""
+        )
 
     @property
     def content_hash(self) -> str:
@@ -248,6 +256,7 @@ class ExecutionManifest:
             "timestamp",
             "status",
             "run_id",
+            "preflight_fingerprint",
         }
         unknown = set(data) - allowed
         if unknown:
@@ -256,6 +265,9 @@ class ExecutionManifest:
         parent_refs = list(data.get("parent_artifact_refs") or ([scen_hash] if scen_hash else []))
         scope_data = dict(data.get("scope") or {})
         scope_digest = str(data.get("scope_digest", ""))
+        meta = dict(data.get("metadata") or {})
+        if "preflight_fingerprint" in data and "preflight_fingerprint" not in meta:
+            meta["preflight_fingerprint"] = str(data["preflight_fingerprint"])
         return cls(
             manifest_id=str(data.get("manifest_id", "")),
             scenario_id=str(data.get("scenario_id", "")),
@@ -272,16 +284,11 @@ class ExecutionManifest:
                 data.get("created_at") or data.get("timestamp") or datetime.now(UTC).isoformat()
             ),
             created_by=str(data.get("created_by", "system")),
-            metadata=dict(data.get("metadata") or {}),
+            metadata=meta,
             schema_version=str(data.get("schema_version", "2.0.0")),
             producer_identity=str(data.get("producer_identity", "agentv.manifest_builder")),
             producer_version=str(data.get("producer_version", "2.0.0")),
             parent_artifact_refs=parent_refs,
-            preflight_fingerprint=str(
-                data.get("preflight_fingerprint")
-                or (data.get("metadata") or {}).get("preflight_fingerprint")
-                or ""
-            ),
         )
 
     def compute_manifest_hash(self) -> str:
@@ -402,7 +409,6 @@ class ManifestBuilder:
             created_at=now_iso,
             created_by=created_by,
             metadata=meta_dict,
-            preflight_fingerprint=str(preflight_fp),
         )
 
 

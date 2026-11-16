@@ -300,7 +300,7 @@ def test_manifest_builder_preflight_projection_and_roundtrip():
 
     # Roundtrip serialization parity
     m_dict = manifest.to_dict()
-    assert m_dict["preflight_fingerprint"] == pfp
+    assert m_dict["metadata"]["preflight_fingerprint"] == pfp
     restored = ExecutionManifest.from_dict(m_dict)
     assert restored.preflight_fingerprint == pfp
     assert restored.runtime_config["seed"] == 1337

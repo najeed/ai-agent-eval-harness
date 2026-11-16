@@ -223,6 +223,7 @@ def test_inprocess_backend_resume_preserves_mode_and_contract(tmp_path):
 
     contract_data = {"id": "scen-001", "execution_mode": "live", "from_snapshot": True}
     (run_vault / "scenario_resolved.json").write_text(json.dumps(contract_data), encoding="utf-8")
+    (run_vault / ".run_lifecycle").write_text("PAUSED_FOR_APPROVAL", encoding="utf-8")
 
     backend = InProcessExecutionBackend.get_instance()
     mock_store = MagicMock()
@@ -230,7 +231,7 @@ def test_inprocess_backend_resume_preserves_mode_and_contract(tmp_path):
     backend._run_store = MagicMock()
     checkpoint = {
         "status": "PAUSED_FOR_APPROVAL",
-        "session_state": {"approval_token": "tok_valid"},
+        "session_state": {"approval_token": "tok_valid", "manifest_id": f"man_{run_id}"},
         "metadata": {"execution_mode": "live"},
     }
     mock_store.load.return_value = checkpoint
@@ -249,6 +250,8 @@ def test_inprocess_backend_resume_preserves_mode_and_contract(tmp_path):
         mock_approval.status = "APPROVED"
         mock_approval.checkpoint_id = None
         mock_approval.outbound_payload_hash = None
+        mock_approval.manifest_id = f"man_{run_id}"
+        mock_approval.scope_digest = None
         mock_app_store.return_value.get_request.return_value = mock_approval
 
         backend.resume(run_id=run_id, resumption_token="tok_valid")

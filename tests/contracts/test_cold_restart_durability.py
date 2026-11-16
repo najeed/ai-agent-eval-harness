@@ -125,6 +125,8 @@ class TestColdRestartDurabilityContract:
                         "status": "PAUSED_FOR_APPROVAL",
                         "turn_number": 1,
                         "approval_token": resumption_token,
+                        "manifest_id": manifest.manifest_id,
+                        "scope_digest": manifest.scope_digest,
                         "completed_node_results": {},
                     },
                 }
@@ -135,6 +137,7 @@ class TestColdRestartDurabilityContract:
                         approval_token=resumption_token,
                         run_id=run_id,
                         turn_index=1,
+                        manifest_id=manifest.manifest_id,
                         outbound_payload_hash="sha256:fedcba",
                         checkpoint_id="checkpoint_turn_1",
                         status="APPROVED",
