@@ -209,17 +209,23 @@ def test_sanitize_format_string():
 # ──────────────────────────────────────────────────────────────────────────────
 
 
-def test_plugin_timeout():
+def test_plugin_timeout(monkeypatch):
     """A hanging plugin hook should be terminated after PLUGIN_TIMEOUT."""
-    import time
+    import threading
 
-    from eval_runner.plugins import PLUGIN_TIMEOUT, _invoke_with_timeout
+    from eval_runner import plugins
+
+    monkeypatch.setattr(plugins, "PLUGIN_TIMEOUT", 0.05)
+    stop_event = threading.Event()
 
     def hanging_hook():
-        time.sleep(PLUGIN_TIMEOUT + 5)
+        stop_event.wait(5.0)
 
-    with pytest.raises(concurrent.futures.TimeoutError):
-        _invoke_with_timeout(hanging_hook)
+    try:
+        with pytest.raises(concurrent.futures.TimeoutError):
+            plugins._invoke_with_timeout(hanging_hook)
+    finally:
+        stop_event.set()
 
 
 # ──────────────────────────────────────────────────────────────────────────────

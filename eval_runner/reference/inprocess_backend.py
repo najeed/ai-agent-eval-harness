@@ -534,10 +534,10 @@ class InProcessExecutionBackend(ExecutionBackend):
 
                 # Authoritative provider lifecycle checks for approval-gated resumption:
                 is_approval_resume = bool(
-                    resumption_token
-                    or expected_token
+                    expected_token
                     or (in_mem_status and in_mem_status in approval_states)
-                    or current_status in approval_states
+                    or (current_status and current_status in approval_states)
+                    or (provider_lifecycle and provider_lifecycle in approval_states)
                 )
                 if is_approval_resume and provider and hasattr(provider, "get_lifecycle"):
                     if provider_lifecycle is None:

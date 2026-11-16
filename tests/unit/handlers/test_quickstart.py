@@ -18,7 +18,7 @@ def test_start_sample_agent(tmp_path, monkeypatch):
     (sa_dir / "agent_app.py").write_text(f"print('{agent_msg}')", encoding="utf-8")
 
     # Use monkeypatch for time.sleep to avoid wait
-    monkeypatch.setattr("time.sleep", lambda _: None)
+    monkeypatch.setattr("eval_runner.quickstart.time.sleep", lambda _: None)
 
     proc = start_sample_agent()
 
@@ -72,7 +72,7 @@ async def test_run_quickstart_flow(tmp_path, monkeypatch, capsys):
     # Mocking time.sleep and engine/reporter *internals* is acceptable if we can't avoid it,
     # but I'll try to reach a real server.
     # Since quickstart.py hardcodes Agent started wait, I'll monkeypatch time.sleep
-    monkeypatch.setattr("time.sleep", lambda _: None)
+    monkeypatch.setattr("eval_runner.quickstart.time.sleep", lambda _: None)
 
     # I'll still use the mock_process for the agent to avoid port collisions in CI
     # but I'll use a REAL subprocess pointing to our mock_agent_api.py

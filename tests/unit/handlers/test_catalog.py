@@ -336,7 +336,7 @@ def test_build_index_rename_permission_error(mock_catalog_dir, monkeypatch):
         raise PermissionError("Simulated locked file")
 
     monkeypatch.setattr("os.rename", mock_rename)
-    monkeypatch.setattr("time.sleep", lambda x: None)
+    monkeypatch.setattr("eval_runner.catalog.time.sleep", lambda x: None)
 
     catalog.build_index()
     assert len(calls) == 3
