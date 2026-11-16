@@ -12,7 +12,7 @@ import hashlib
 import hmac
 import logging
 import threading
-from collections.abc import Callable, Mapping
+from collections.abc import Callable
 from typing import Any
 
 from eval_runner.interfaces.backend import ExecutionBackend
@@ -539,7 +539,12 @@ class InProcessExecutionBackend(ExecutionBackend):
                     or (current_status and current_status in approval_states)
                     or (provider_lifecycle and provider_lifecycle in approval_states)
                 )
-                if is_approval_resume and provider and hasattr(provider, "get_lifecycle"):
+                if is_approval_resume:
+                    if not (provider and hasattr(provider, "get_lifecycle")):
+                        raise RuntimeError(
+                            f"Cannot resume run '{run_id}': "
+                            "provider lifecycle capability required for approval-gated resumption."
+                        )
                     if provider_lifecycle is None:
                         raise RuntimeError(
                             f"Cannot resume run '{run_id}': "
@@ -625,23 +630,16 @@ class InProcessExecutionBackend(ExecutionBackend):
 
             # Verify action_payload digest against expected approval record
             # Uses RFC 8785 canonical JSON bytes for modern checkpoints;
-            # preserves legacy compatibility strictly behind an explicit profile.
+            # preserves legacy compatibility strictly behind an authoritative approval profile.
             action_payload = checkpoint_state.get("action_payload")
+            approval_profile = str(getattr(approval, "profile", "") or "").strip().lower()
+            is_legacy_profile = approval_profile in ("legacy", "v1", "agentv.approval.v1")
+
             if action_payload is not None and approval.outbound_payload_hash:
                 payload_dict = action_payload if isinstance(action_payload, dict) else {}
                 expected_hash = str(approval.outbound_payload_hash).strip()
-                cp_profile = (
-                    str(
-                        checkpoint_state.get("profile")
-                        or (checkpoint.get("profile") if isinstance(checkpoint, Mapping) else None)
-                        or getattr(approval, "profile", "")
-                        or ""
-                    )
-                    .strip()
-                    .lower()
-                )
 
-                if cp_profile in ("legacy", "v1", "agentv.approval.v1"):
+                if is_legacy_profile:
                     raw_hash = hashlib.sha3_256(
                         str(sorted(payload_dict.items())).encode("utf-8")
                     ).hexdigest()
@@ -656,6 +654,17 @@ class InProcessExecutionBackend(ExecutionBackend):
                 if not any(hmac.compare_digest(h, expected_hash) for h in hashes_to_compare):
                     raise PermissionError(
                         f"Cannot resume run '{run_id}': approval payload binding is invalid."
+                    )
+            elif not is_legacy_profile and approval.profile and approval.profile != "legacy":
+                if not approval.outbound_payload_hash:
+                    raise PermissionError(
+                        f"Cannot resume run '{run_id}': modern approval "
+                        f"requires non-empty outbound_payload_hash."
+                    )
+                if action_payload is None:
+                    raise PermissionError(
+                        f"Cannot resume run '{run_id}': checkpoint action_payload "
+                        f"missing for modern approval."
                     )
 
             # Strict checkpoint manifest and scope binding verification:

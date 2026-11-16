@@ -137,6 +137,11 @@ def test_authoritative_state_claims_cannot_use_sandbox_or_simulator_evidence(tar
         "receipt_naive_timestamp",
         "receipt_predates_run_window",
         "receipt_postdates_run_window",
+        "receipt_window_missing_start",
+        "receipt_window_missing_completed",
+        "receipt_window_naive_start",
+        "receipt_window_naive_completed",
+        "receipt_window_inverted",
     ],
 )
 def test_independent_state_claim_verifier_recomputes_source_and_content_binding(defect):
@@ -400,6 +405,34 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
         manifest = {
             "run_id": run_id,
             "started_at": "2026-11-11T11:30:00+00:00",
+            "completed_at": "2026-11-11T12:30:00+00:00",
+        }
+    elif defect == "receipt_window_missing_start":
+        manifest = {
+            "run_id": run_id,
+            "completed_at": "2026-11-11T12:30:00+00:00",
+        }
+    elif defect == "receipt_window_missing_completed":
+        manifest = {
+            "run_id": run_id,
+            "started_at": "2026-11-11T11:30:00+00:00",
+        }
+    elif defect == "receipt_window_naive_start":
+        manifest = {
+            "run_id": run_id,
+            "started_at": "2026-11-11T11:30:00",
+            "completed_at": "2026-11-11T12:30:00+00:00",
+        }
+    elif defect == "receipt_window_naive_completed":
+        manifest = {
+            "run_id": run_id,
+            "started_at": "2026-11-11T11:30:00+00:00",
+            "completed_at": "2026-11-11T12:30:00",
+        }
+    elif defect == "receipt_window_inverted":
+        manifest = {
+            "run_id": run_id,
+            "started_at": "2026-11-11T13:30:00+00:00",
             "completed_at": "2026-11-11T12:30:00+00:00",
         }
     else:

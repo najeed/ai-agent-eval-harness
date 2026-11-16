@@ -2890,3 +2890,75 @@ def test_verify_certification_artifact_coverage_booster():
                     require_signature=False,
                 )
                 assert any("RunIdentityMismatch" in f for f in res_diff_run["failures"])
+
+    # Authoritative certification requires all three run IDs to be non-empty and equal
+    # 1. Missing package run_id
+    pkg_no_run_id = VerificationPackage(
+        scenario_id="scen_1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen_hash",
+        manifest_id="man_1",
+        manifest_hash="sha3_256:man_hash",
+        execution_identity={"system_id": "test"},  # missing run_id
+        trace_hash=th,
+        trace_seal={"trace_digest": th},
+        evidence_root_hash="sha3_256:ev_root",
+        required_oracle_ids=["o1"],
+        executed_oracle_results=[],
+        finalization_hash=fin_hash,
+        evaluation_hash=fin_hash,
+        decision={"decision": "PASS", "score": 1.0},
+        signature="dummy",
+    )
+    with patch(
+        "agentv_runtime.finalization.EvaluatorFinalizationRecord.from_dict",
+        return_value=fin_record,
+    ):
+        with patch.object(EvaluatorFinalizationRecord, "verify_authoritative", return_value=True):
+            with patch.object(IdentityService, "get_public_key", return_value=object()):
+                res_missing_pkg_run = TraceVerifier.verify_certification_artifact(
+                    pkg_no_run_id,
+                    raw_trace_bytes=tb,
+                    canonical_manifest=man_canonical,
+                    scenario_data={"id": "scen_1", "required_oracle_ids": ["o1"]},
+                    require_signature=True,
+                )
+                assert any("RunIdentityMismatch" in f for f in res_missing_pkg_run["failures"])
+                assert any(
+                    "missing mandatory run identity" in f for f in res_missing_pkg_run["failures"]
+                )
+
+                # 2. Missing manifest run_id
+                man_no_run = dict(man_canonical)
+                man_no_run.pop("run_id", None)
+                res_missing_man_run = TraceVerifier.verify_certification_artifact(
+                    pkg_valid,
+                    raw_trace_bytes=tb,
+                    canonical_manifest=man_no_run,
+                    scenario_data={"id": "scen_1", "required_oracle_ids": ["o1"]},
+                    require_signature=True,
+                )
+                assert any("RunIdentityMismatch" in f for f in res_missing_man_run["failures"])
+                assert any(
+                    "missing mandatory run identity" in f for f in res_missing_man_run["failures"]
+                )
+
+                # 3. Missing finalization run_id
+                fin_no_run = MagicMock(spec=fin_record)
+                fin_no_run.run_id = None
+                with patch(
+                    "agentv_runtime.finalization.EvaluatorFinalizationRecord.from_dict",
+                    return_value=fin_no_run,
+                ):
+                    res_missing_fin_run = TraceVerifier.verify_certification_artifact(
+                        pkg_valid,
+                        raw_trace_bytes=tb,
+                        canonical_manifest=man_canonical,
+                        scenario_data={"id": "scen_1", "required_oracle_ids": ["o1"]},
+                        require_signature=True,
+                    )
+                    assert any("RunIdentityMismatch" in f for f in res_missing_fin_run["failures"])
+                    assert any(
+                        "missing mandatory run identity" in f
+                        for f in res_missing_fin_run["failures"]
+                    )

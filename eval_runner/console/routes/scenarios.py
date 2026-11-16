@@ -1526,21 +1526,32 @@ def evaluate_scenario():
         or scen_meta.get("execution_mode")
         or ""
     )
+    # Resolve execution parameters once into canonical variables to guarantee
+    # preflight calculation, manifest building, and backend dispatch consistency.
+    # Preserve explicit seed=0 by checking key presence rather than truthiness.
+    resolved_max_turns = int(runtime_config.get("max_turns", data.get("max_turns", 10)))
+    resolved_seed = (
+        data["seed"]
+        if "seed" in data
+        else (runtime_config.get("seed") if "seed" in runtime_config else scen_meta.get("seed"))
+    )
+    resolved_evaluators = data.get("evaluators")
+
     expected_fingerprint = compute_preflight_fingerprint(
         scenario_id=str(scen.get("id") or scen_meta.get("id") or identifier),
         scen_hash=compute_scenario_hash(scen),
         endpoint=agent_config.get("endpoint"),
         protocol=agent_config.get("protocol"),
-        max_turns=runtime_config.get("max_turns", 10),
+        max_turns=resolved_max_turns,
         agent_config=agent_config,
         runtime_config=runtime_config,
         scenario_version=str(scen_meta.get("version", "1.0.0")),
         tenant_id=str(scope.get("tenant_id") or "default"),
         workspace_id=str(scope.get("workspace_id") or "default"),
         scope=scope,
-        seed=data.get("seed") or scen_meta.get("seed"),
+        seed=resolved_seed,
         execution_mode=exec_mode,
-        evaluators=data.get("evaluators"),
+        evaluators=resolved_evaluators,
     )
 
     if provided_fingerprint:
@@ -1590,8 +1601,8 @@ def evaluate_scenario():
         },
         execution_mode=exec_mode,
         preflight_fingerprint=expected_fingerprint,
-        seed=data.get("seed") or scen_meta.get("seed"),
-        evaluators=data.get("evaluators"),
+        seed=resolved_seed,
+        evaluators=resolved_evaluators,
     )
 
     # Materialize the accepted run in the active provider before dispatch.
@@ -1633,7 +1644,7 @@ def evaluate_scenario():
         # override.  ``Runner.run`` validates that the provider record is an
         # empty OPEN submission in this exact scope before accepting it.
         provider_submission=True,
-        max_turns=data.get("max_turns", 10),
+        max_turns=resolved_max_turns,
         metadata={
             **data.get("metadata", {}),
             # The execution manifest already records this resolved target, but

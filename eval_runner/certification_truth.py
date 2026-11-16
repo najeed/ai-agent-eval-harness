@@ -9,6 +9,8 @@ from urllib.parse import urlparse
 from agentv_runtime.canonical import canonical_json_encode
 from eval_runner.utils.path_resolver import PathResolver
 
+DEFAULT_PERMITTED_CLOCK_SKEW_SECONDS: float = 60.0
+
 
 def _digest(value):
     return "sha3_256:" + hashlib.sha3_256(canonical_json_encode(value)).hexdigest()
@@ -107,7 +109,15 @@ def authority_is_independent(url, scenario, execution_manifest=None):
     return all(origin(ep) != auth_origin for ep in declared_endpoints)
 
 
-def state_claim_failures(scenario, events, execution_manifest=None, run_id=None):
+def state_claim_failures(
+    scenario,
+    events,
+    execution_manifest=None,
+    run_id=None,
+    *,
+    require_temporal_bounds: bool = False,
+    permitted_clock_skew_seconds: float = DEFAULT_PERMITTED_CLOCK_SKEW_SECONDS,
+):
     """Require source-bound, authenticated pre/post observations for business state.
 
     Sandbox assertions remain useful diagnostics; they cannot establish an
@@ -306,50 +316,81 @@ def state_claim_failures(scenario, events, execution_manifest=None, run_id=None)
                             dt_utc = dt.astimezone(UTC)
 
                             # Authenticated run interval bounded check:
-                            # If authenticated execution window is available,
-                            # enforce bounded pre/post windows
-                            # and reject impossible future/old receipts.
+                            # If authenticated execution window is required or provided,
+                            # enforce strictly bounded pre/post windows fail-closed,
+                            # define permitted clock skew, and reject
+                            # missing/naive/out-of-bound bounds.
+                            enforce_bounds = require_temporal_bounds
+                            run_start_raw = None
+                            run_end_raw = None
                             if isinstance(execution_manifest, Mapping):
-                                run_start_str = (
+                                run_start_raw = (
                                     execution_manifest.get("started_at")
                                     or execution_manifest.get("created_at")
                                     or (execution_manifest.get("metadata") or {}).get("started_at")
                                 )
-                                run_end_str = execution_manifest.get("completed_at") or (
+                                run_end_raw = execution_manifest.get("completed_at") or (
                                     execution_manifest.get("metadata") or {}
                                 ).get("completed_at")
-                                if run_start_str:
-                                    try:
-                                        s_dt = datetime.fromisoformat(str(run_start_str))
-                                        if (
-                                            s_dt.tzinfo is not None
-                                            and s_dt.tzinfo.utcoffset(s_dt) is not None
-                                        ):
-                                            s_utc = s_dt.astimezone(UTC)
-                                            if dt_utc < s_utc - timedelta(seconds=60):
-                                                raise ValueError(
-                                                    "Connector receipt timestamp predates "
-                                                    "authenticated run execution window"
-                                                )
-                                    except (ValueError, TypeError) as ts_err:
-                                        if "Connector receipt timestamp" in str(ts_err):
-                                            raise
-                                if run_end_str:
-                                    try:
-                                        e_dt = datetime.fromisoformat(str(run_end_str))
-                                        if (
-                                            e_dt.tzinfo is not None
-                                            and e_dt.tzinfo.utcoffset(e_dt) is not None
-                                        ):
-                                            e_utc = e_dt.astimezone(UTC)
-                                            if dt_utc > e_utc + timedelta(seconds=60):
-                                                raise ValueError(
-                                                    "Connector receipt timestamp postdates "
-                                                    "authenticated run execution window"
-                                                )
-                                    except (ValueError, TypeError) as ts_err:
-                                        if "Connector receipt timestamp" in str(ts_err):
-                                            raise
+                                if run_start_raw or run_end_raw:
+                                    enforce_bounds = True
+
+                            if enforce_bounds:
+                                if not run_start_raw:
+                                    raise ValueError(
+                                        "Execution manifest missing required started_at "
+                                        "timestamp for temporal binding"
+                                    )
+                                if not run_end_raw:
+                                    raise ValueError(
+                                        "Execution manifest missing required completed_at "
+                                        "timestamp for temporal binding"
+                                    )
+
+                                try:
+                                    s_dt = datetime.fromisoformat(str(run_start_raw))
+                                except (ValueError, TypeError):
+                                    raise ValueError(
+                                        "Execution manifest started_at invalid timestamp format"
+                                    ) from None
+                                if s_dt.tzinfo is None or s_dt.tzinfo.utcoffset(s_dt) is None:
+                                    raise ValueError(
+                                        "Execution manifest started_at timestamp missing "
+                                        "timezone offset; UTC-normalizable ISO format required"
+                                    )
+
+                                try:
+                                    e_dt = datetime.fromisoformat(str(run_end_raw))
+                                except (ValueError, TypeError):
+                                    raise ValueError(
+                                        "Execution manifest completed_at invalid timestamp format"
+                                    ) from None
+                                if e_dt.tzinfo is None or e_dt.tzinfo.utcoffset(e_dt) is None:
+                                    raise ValueError(
+                                        "Execution manifest completed_at timestamp missing "
+                                        "timezone offset; UTC-normalizable ISO format required"
+                                    )
+
+                                s_utc = s_dt.astimezone(UTC)
+                                e_utc = e_dt.astimezone(UTC)
+                                if s_utc > e_utc:
+                                    raise ValueError(
+                                        "Execution manifest started_at postdates completed_at"
+                                    )
+
+                                skew = timedelta(
+                                    seconds=max(0.0, float(permitted_clock_skew_seconds))
+                                )
+                                if dt_utc < s_utc - skew:
+                                    raise ValueError(
+                                        "Connector receipt timestamp predates "
+                                        "authenticated run execution window"
+                                    )
+                                if dt_utc > e_utc + skew:
+                                    raise ValueError(
+                                        "Connector receipt timestamp postdates "
+                                        "authenticated run execution window"
+                                    )
 
                             from eval_runner.state_authority import (
                                 verify_connector_receipt_authenticity,

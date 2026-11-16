@@ -1,6 +1,5 @@
 import asyncio
 import hashlib
-import json
 import logging
 import secrets
 from collections.abc import Mapping
@@ -167,8 +166,11 @@ class SessionApprovalManager:
             payload_dict = action_payload if isinstance(action_payload, dict) else {}
             try:
                 c_bytes = canonical_json_encode(payload_dict)
-            except (TypeError, ValueError):
-                c_bytes = json.dumps(payload_dict, sort_keys=True, default=str).encode("utf-8")
+            except (TypeError, ValueError) as enc_err:
+                raise ValueError(
+                    f"ActionPayloadCanonicalizationFailed: payload for run '{self.run_id}' "
+                    f"cannot be canonically encoded: {enc_err}"
+                ) from enc_err
             outbound_payload_hash = f"sha3_256:{hashlib.sha3_256(c_bytes).hexdigest()}"
 
         if not idempotency_key:

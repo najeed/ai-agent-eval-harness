@@ -3983,6 +3983,13 @@ class VerificationAuthority:
                 f"package='{pkg_run_id}', manifest='{manifest_run_id}', finalization='{fin_run_id}'"
             )
             target_run_id = None
+        elif require_signature and not (pkg_run_id and manifest_run_id and fin_run_id):
+            failures.append(
+                f"RunIdentityMismatch: missing mandatory run "
+                f"identity for authoritative certification: "
+                f"package='{pkg_run_id}', manifest='{manifest_run_id}', finalization='{fin_run_id}'"
+            )
+            target_run_id = None
         elif populated_run_ids:
             target_run_id = next(iter(populated_run_ids))
         else:

@@ -654,30 +654,43 @@ class ToolSandbox(AbstractSandbox):
                     self.shared_state.read(active_agent, read_path)
         except Exception as exc:
             logger.error("Transactional commit failed, changes rolled back: %s", exc, exc_info=True)
-            self.state = local_state_snapshot
-            self.shared_state.registry = shared_state_snapshot
+            self.state.clear()
+            self.state.update(local_state_snapshot)
+            self.shared_state.registry.clear()
+            self.shared_state.registry.update(shared_state_snapshot)
             if isinstance(receipt, dict) and self.event_bus:
-                self.event_bus.emit(
-                    "mutation_delivery_rollback",
-                    {
-                        "category": "MUTATION_DELIVERY",
-                        "status": "rolled_back",
-                        "mutation_receipt": receipt,
-                        "error": str(exc),
-                    },
-                )
+                try:
+                    self.event_bus.emit(
+                        "mutation_delivery_rollback",
+                        {
+                            "category": "MUTATION_DELIVERY",
+                            "status": "rolled_back",
+                            "mutation_receipt": receipt,
+                            "error": str(exc),
+                        },
+                    )
+                except Exception as emit_err:
+                    logger.warning("Failed to emit rollback event: %s", emit_err, exc_info=True)
             return {
                 "status": "error",
                 "error_code": "ATOMIC_COMMIT_FAILURE",
                 "message": f"Transactional commit failed, changes rolled back: {exc}",
             }
 
-        # Emit mutation delivery receipt strictly after successful state commit
+        # Emit mutation delivery receipt strictly after successful state commit.
+        # Handle event bus emission failures without misrepresenting committed state.
         if isinstance(receipt, dict) and self.event_bus:
-            self.event_bus.emit(
-                "mutation_delivery",
-                {"category": "MUTATION_DELIVERY", "mutation_receipt": receipt},
-            )
+            try:
+                self.event_bus.emit(
+                    "mutation_delivery",
+                    {"category": "MUTATION_DELIVERY", "mutation_receipt": receipt},
+                )
+            except Exception as emit_err:
+                logger.warning(
+                    "Failed to emit post-commit mutation delivery event: %s",
+                    emit_err,
+                    exc_info=True,
+                )
         output = tool_def.get("output", {"status": "success", "message": f"Executed {tool_name}"})
         safe_state = {}
         for k, v in self.state.items():
