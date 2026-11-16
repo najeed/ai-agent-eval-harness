@@ -200,3 +200,36 @@ async def test_mutation_delivery_rollback_emitted_on_commit_failure(tmp_path):
     assert len(rollback_calls) == 1
     assert rollback_calls[0][0][1]["status"] == "rolled_back"
     assert rollback_calls[0][0][1]["mutation_receipt"] == {"receipt_id": "rcpt_rollback"}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("interceptor_receipt", [None, "non_dict_receipt", 12345])
+async def test_mutation_delivery_rollback_not_emitted_when_no_valid_receipt(
+    tmp_path, interceptor_receipt
+):
+    plugin = None
+    if interceptor_receipt is not None:
+        plugin = SimpleNamespace(
+            trigger_interceptor=lambda *args: {
+                "allowed": True,
+                "mutation_receipt": interceptor_receipt,
+            }
+        )
+    sandbox = sandbox_for(tmp_path, allowed=True, plugin=plugin)
+    sandbox.shared_state.can_write = lambda agent, path: True
+    sandbox.shared_state.write = lambda agent, path, val: False
+
+    res = await sandbox.execute(
+        "transfer", {"shared_write": {"path": "shared/balance", "value": 999}}
+    )
+    assert res["status"] == "error"
+    assert res["error_code"] == "ATOMIC_COMMIT_FAILURE"
+    assert sandbox.state == {"balance": 100}
+
+    # With no valid dict receipt, neither delivery nor rollback should be emitted
+    event_calls = [
+        c
+        for c in sandbox.event_bus.emit.call_args_list
+        if c[0] and c[0][0] in ("mutation_delivery", "mutation_delivery_rollback")
+    ]
+    assert len(event_calls) == 0
