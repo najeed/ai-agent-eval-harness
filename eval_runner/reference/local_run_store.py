@@ -1503,8 +1503,21 @@ class LocalFileRunStore(RunStore):
                 record.get("status_details") or {}
             ).get("evidence_capture_failed") is True:
                 return False
-            if not manifest.get("run_id"):
+            manifest_run_id = manifest.get("run_id")
+            if manifest_run_id and str(manifest_run_id) != str(run_id):
+                raise ValueError(
+                    f"CertificationCommitRejected: manifest run_id '{manifest_run_id}' "
+                    f"does not match vault '{run_id}'."
+                )
+            if not manifest_run_id:
                 manifest = dict(manifest, run_id=run_id)
+
+            record_run_id = record.get("run_id")
+            if record_run_id and str(record_run_id) != str(run_id):
+                raise ValueError(
+                    f"CertificationCommitRejected: record run_id '{record_run_id}' "
+                    f"does not match vault '{run_id}'."
+                )
             incoming_digest = _canonical_digest(manifest)
             existing = self._read_json(target) if target.exists() else None
             if self._is_sealed(vault):

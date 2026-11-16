@@ -3962,16 +3962,31 @@ class VerificationAuthority:
                     (pkg.metadata or {}).get("evidence_capture"), raw_trace_bytes, effective_events
                 )
             )
-        target_run_id = (
-            (pkg.execution_identity or {}).get("run_id")
-            or (pkg.metadata or {}).get("run_id")
-            or getattr(fin_record, "run_id", None)
-            or (
-                canonical_manifest.get("run_id")
-                if isinstance(canonical_manifest, Mapping)
-                else getattr(canonical_manifest, "run_id", None)
-            )
+        pkg_run_id = (pkg.execution_identity or {}).get("run_id") or (pkg.metadata or {}).get(
+            "run_id"
         )
+        manifest_run_id = (
+            canonical_manifest.get("run_id")
+            if isinstance(canonical_manifest, Mapping)
+            else getattr(canonical_manifest, "run_id", None)
+        )
+        fin_run_id = getattr(fin_record, "run_id", None)
+        run_identities = {
+            "package": pkg_run_id,
+            "manifest": manifest_run_id,
+            "finalization": fin_run_id,
+        }
+        populated_run_ids = {str(v) for v in run_identities.values() if v}
+        if len(populated_run_ids) > 1:
+            failures.append(
+                f"RunIdentityMismatch: conflicting run identities across verification boundaries: "
+                f"package='{pkg_run_id}', manifest='{manifest_run_id}', finalization='{fin_run_id}'"
+            )
+            target_run_id = None
+        elif populated_run_ids:
+            target_run_id = next(iter(populated_run_ids))
+        else:
+            target_run_id = None
         failures.extend(
             state_claim_failures(
                 scenario_data,

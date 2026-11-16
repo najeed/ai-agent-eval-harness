@@ -695,7 +695,7 @@ def test_certification_recovery_journal_validates_manifest_digest(
     run_store.create_run(run_id, scenario_id="scenario-journal")
     vault = run_store._get_run_vault(run_id)
 
-    manifest = {"manifest_id": "man-1", "certified": True}
+    manifest = {"manifest_id": "man-1", "run_id": run_id, "certified": True}
     valid_digest = _canonical_digest(manifest)
     journal_path = run_store._commit_journal_path(vault)
 
@@ -704,7 +704,7 @@ def test_certification_recovery_journal_validates_manifest_digest(
         "version": 1,
         "run_id": run_id,
         "manifest": manifest,
-        "sealed_record": {"status": "SEALED"},
+        "sealed_record": {"status": "SEALED", "lifecycle": "SEALED", "run_id": run_id},
         "manifest_digest": "sha3_256:corrupted_fake_digest",
     }
     run_store._write_json_durable(journal_path, corrupted_journal)
@@ -716,7 +716,7 @@ def test_certification_recovery_journal_validates_manifest_digest(
         "version": 1,
         "run_id": run_id,
         "manifest": manifest,
-        "sealed_record": {"status": "SEALED"},
+        "sealed_record": {"status": "SEALED", "lifecycle": "SEALED", "run_id": run_id},
     }
     run_store._write_json_durable(journal_path, missing_digest_journal)
     with pytest.raises(RuntimeError, match="CertificationRecoveryJournalCorrupt"):
@@ -727,7 +727,7 @@ def test_certification_recovery_journal_validates_manifest_digest(
         "version": 1,
         "run_id": run_id,
         "manifest": manifest,
-        "sealed_record": {"status": "SEALED"},
+        "sealed_record": {"status": "SEALED", "lifecycle": "SEALED", "run_id": run_id},
         "manifest_digest": valid_digest,
     }
     run_store._write_json_durable(journal_path, valid_journal)

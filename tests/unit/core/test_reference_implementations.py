@@ -1015,6 +1015,48 @@ class TestInProcessExecutionBackend:
         res_approved = backend.resume(run_id, resumption_token="tok_valid", force_recovery=True)
         assert res_approved == {"status": "resumed_ok"}
 
+        # 8a. Approval requires manifest_id, but checkpoint omits it
+        valid_with_man = ApprovalRequest(
+            approval_token="tok_man_check",
+            run_id=run_id,
+            turn_index=1,
+            outbound_payload_hash="",
+            status="APPROVED",
+            checkpoint_id="chk_man",
+            manifest_id="man_expected_001",
+        )
+        store.create_request(valid_with_man)
+        mock_chk_store.load.return_value = {
+            "session_state": {
+                "approval_token": "tok_man_check",
+                # missing manifest_id
+            },
+            "scenario_data": {"id": "s_valid"},
+        }
+        with pytest.raises(PermissionError, match="checkpoint manifest_id missing or mismatched"):
+            backend.resume(run_id, resumption_token="tok_man_check", force_recovery=True)
+
+        # 8b. Approval requires scope_digest, but checkpoint omits it
+        valid_with_scope = ApprovalRequest(
+            approval_token="tok_scope_check",
+            run_id=run_id,
+            turn_index=1,
+            outbound_payload_hash="",
+            status="APPROVED",
+            checkpoint_id="chk_scope",
+            scope_digest="sha3_256:scope_expected",
+        )
+        store.create_request(valid_with_scope)
+        mock_chk_store.load.return_value = {
+            "session_state": {
+                "approval_token": "tok_scope_check",
+                # missing scope_digest
+            },
+            "scenario_data": {"id": "s_valid"},
+        }
+        with pytest.raises(PermissionError, match="checkpoint scope_digest missing or mismatched"):
+            backend.resume(run_id, resumption_token="tok_scope_check", force_recovery=True)
+
         # 9. Approval without checkpoint_id and without payload
         run_id_no_chk = "run-resume-no-chk-001"
         run_store.create_run(run_id_no_chk, "s_no_chk")

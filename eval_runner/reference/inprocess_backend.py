@@ -606,26 +606,36 @@ class InProcessExecutionBackend(ExecutionBackend):
                         f"Cannot resume run '{run_id}': approval payload binding is invalid."
                     )
 
-            # Strict checkpoint manifest and scope binding verification
+            # Strict checkpoint manifest and scope binding verification:
+            # Require mandatory binding fields and reject omissions as well as mismatches.
             cp_manifest_id = checkpoint_state.get("manifest_id")
-            if (
-                approval.manifest_id
-                and cp_manifest_id
-                and str(cp_manifest_id) != str(approval.manifest_id)
-            ):
+            if approval.manifest_id:
+                if not cp_manifest_id or str(cp_manifest_id) != str(approval.manifest_id):
+                    raise PermissionError(
+                        f"Cannot resume run '{run_id}': checkpoint "
+                        f"manifest_id missing or mismatched "
+                        f"({cp_manifest_id} != {approval.manifest_id})."
+                    )
+            elif cp_manifest_id:
                 raise PermissionError(
-                    f"Cannot resume run '{run_id}': approval manifest binding mismatch "
-                    f"({cp_manifest_id} != {approval.manifest_id})."
+                    f"Cannot resume run '{run_id}': checkpoint defines "
+                    f"manifest_id '{cp_manifest_id}' "
+                    f"missing from approval record."
                 )
+
             cp_scope_digest = checkpoint_state.get("scope_digest")
-            if (
-                approval.scope_digest
-                and cp_scope_digest
-                and str(cp_scope_digest) != str(approval.scope_digest)
-            ):
+            if approval.scope_digest:
+                if not cp_scope_digest or str(cp_scope_digest) != str(approval.scope_digest):
+                    raise PermissionError(
+                        f"Cannot resume run '{run_id}': checkpoint scope_digest "
+                        f"missing or mismatched "
+                        f"({cp_scope_digest} != {approval.scope_digest})."
+                    )
+            elif cp_scope_digest:
                 raise PermissionError(
-                    f"Cannot resume run '{run_id}': approval scope binding mismatch "
-                    f"({cp_scope_digest} != {approval.scope_digest})."
+                    f"Cannot resume run '{run_id}': checkpoint defines "
+                    f"scope_digest '{cp_scope_digest}' "
+                    f"missing from approval record."
                 )
 
         # Re-open the durable lifecycle before the background runner emits its

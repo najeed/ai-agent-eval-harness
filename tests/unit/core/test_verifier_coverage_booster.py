@@ -2770,3 +2770,123 @@ def test_verify_certification_artifact_coverage_booster():
                     require_signature=False,
                 )
                 assert not any("EvaluatorKeyMissing" in f for f in res_m729["failures"])
+
+    # has_simulated_tools detection kills mutant guard or -> and at verifier.py line 3932
+    # Case 1: has_simulated_tools in ev["data"] only
+    events_sim_data = [
+        {"_seq": 1, "event": "run_start", "execution_mode": "live"},
+        {"_seq": 2, "event": "step", "data": {"has_simulated_tools": True}},
+        {"_seq": 3, "event": "evaluator_finalization", "data": fin_dict},
+        {"_seq": 4, "event": "run_end"},
+    ]
+    tb_sim_data = (
+        json.dumps(events_sim_data[0])
+        + "\n"
+        + json.dumps(events_sim_data[1])
+        + "\n"
+        + json.dumps(events_sim_data[2])
+        + "\n"
+        + json.dumps(events_sim_data[3])
+        + "\n"
+    ).encode("utf-8")
+    th_sim_data = f"sha3_256:{hashlib.sha3_256(tb_sim_data).hexdigest()}"
+    pkg_sim_data = VerificationPackage(
+        scenario_id="scen_1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen_hash",
+        manifest_id="man_1",
+        manifest_hash="sha3_256:man_hash",
+        execution_identity={"system_id": "test", "execution_mode": "live", "run_id": "run_1"},
+        trace_hash=th_sim_data,
+        trace_seal={"trace_digest": th_sim_data},
+        evidence_root_hash="sha3_256:ev_root",
+        required_oracle_ids=["o1"],
+        executed_oracle_results=[],
+        finalization_hash=fin_hash,
+        evaluation_hash=fin_hash,
+        decision={"decision": "PASS", "score": 1.0},
+        signature="dummy",
+    )
+    with patch(
+        "agentv_runtime.finalization.EvaluatorFinalizationRecord.from_dict",
+        return_value=fin_record,
+    ):
+        with patch.object(EvaluatorFinalizationRecord, "verify_authoritative", return_value=True):
+            with patch.object(IdentityService, "get_public_key", return_value=object()):
+                res_sim_data = TraceVerifier.verify_certification_artifact(
+                    pkg_sim_data,
+                    raw_trace_bytes=tb_sim_data,
+                    canonical_manifest=man_canonical,
+                    scenario_data={"id": "scen_1", "required_oracle_ids": ["o1"]},
+                    require_signature=False,
+                )
+                assert any(
+                    "SimulatedToolProvenanceInLiveRun" in f for f in res_sim_data["failures"]
+                )
+
+    # Case 2: has_simulated_tools at top-level ev only with separate data dict
+    events_sim_top = [
+        {"_seq": 1, "event": "run_start", "execution_mode": "live"},
+        {"_seq": 2, "event": "step", "has_simulated_tools": True, "data": {}},
+        {"_seq": 3, "event": "evaluator_finalization", "data": fin_dict},
+        {"_seq": 4, "event": "run_end"},
+    ]
+    tb_sim_top = (
+        json.dumps(events_sim_top[0])
+        + "\n"
+        + json.dumps(events_sim_top[1])
+        + "\n"
+        + json.dumps(events_sim_top[2])
+        + "\n"
+        + json.dumps(events_sim_top[3])
+        + "\n"
+    ).encode("utf-8")
+    th_sim_top = f"sha3_256:{hashlib.sha3_256(tb_sim_top).hexdigest()}"
+    pkg_sim_top = VerificationPackage(
+        scenario_id="scen_1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen_hash",
+        manifest_id="man_1",
+        manifest_hash="sha3_256:man_hash",
+        execution_identity={"system_id": "test", "execution_mode": "live", "run_id": "run_1"},
+        trace_hash=th_sim_top,
+        trace_seal={"trace_digest": th_sim_top},
+        evidence_root_hash="sha3_256:ev_root",
+        required_oracle_ids=["o1"],
+        executed_oracle_results=[],
+        finalization_hash=fin_hash,
+        evaluation_hash=fin_hash,
+        decision={"decision": "PASS", "score": 1.0},
+        signature="dummy",
+    )
+    with patch(
+        "agentv_runtime.finalization.EvaluatorFinalizationRecord.from_dict",
+        return_value=fin_record,
+    ):
+        with patch.object(EvaluatorFinalizationRecord, "verify_authoritative", return_value=True):
+            with patch.object(IdentityService, "get_public_key", return_value=object()):
+                res_sim_top = TraceVerifier.verify_certification_artifact(
+                    pkg_sim_top,
+                    raw_trace_bytes=tb_sim_top,
+                    canonical_manifest=man_canonical,
+                    scenario_data={"id": "scen_1", "required_oracle_ids": ["o1"]},
+                    require_signature=False,
+                )
+                assert any("SimulatedToolProvenanceInLiveRun" in f for f in res_sim_top["failures"])
+
+    # Run identity mismatch across package and canonical_manifest
+    man_diff_run = dict(man_canonical, run_id="run_different")
+    with patch(
+        "agentv_runtime.finalization.EvaluatorFinalizationRecord.from_dict",
+        return_value=fin_record,
+    ):
+        with patch.object(EvaluatorFinalizationRecord, "verify_authoritative", return_value=True):
+            with patch.object(IdentityService, "get_public_key", return_value=object()):
+                res_diff_run = TraceVerifier.verify_certification_artifact(
+                    pkg_valid,
+                    raw_trace_bytes=tb,
+                    canonical_manifest=man_diff_run,
+                    scenario_data={"id": "scen_1", "required_oracle_ids": ["o1"]},
+                    require_signature=False,
+                )
+                assert any("RunIdentityMismatch" in f for f in res_diff_run["failures"])

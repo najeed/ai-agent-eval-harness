@@ -1046,3 +1046,18 @@ def test_local_provider_rejects_journal_cross_run_identity_and_lifecycle_invaria
     store._write_json_durable(store._commit_journal_path(vault), bad_journal)
     with pytest.raises(RuntimeError, match="CertificationRecoveryJournalCorrupt"):
         store.get_run(run_id)
+
+    # Clean up corrupt journal so vault is clean for step 6
+    store._commit_journal_path(vault).unlink(missing_ok=True)
+
+    # 6. Commit certification rejects mismatched manifest run_id before journal persistence
+    assert store.acquire_certification_lease(
+        run_id, owner_id="certifier-precheck", fencing_token="fence-precheck", timeout_seconds=60
+    )
+    with pytest.raises(ValueError, match="CertificationCommitRejected: manifest run_id"):
+        store.commit_certification(
+            run_id,
+            {"run_id": "mismatched-run-id", "trace_hash": "sha3_256:foo"},
+            owner_id="certifier-precheck",
+            fencing_token="fence-precheck",
+        )
