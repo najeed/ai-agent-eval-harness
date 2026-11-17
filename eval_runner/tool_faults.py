@@ -145,7 +145,11 @@ class ToolFaultExecutor:
                     value = await invoke()
                 if delay:
                     start = time.monotonic()
-                    await asyncio.sleep(delay)
+                    while True:
+                        remaining = delay - (time.monotonic() - start)
+                        if remaining <= 0:
+                            break
+                        await asyncio.sleep(remaining)
                     observe(
                         "tool_delay_elapsed",
                         {"requested_seconds": delay, "elapsed_seconds": time.monotonic() - start},
@@ -158,7 +162,7 @@ class ToolFaultExecutor:
                 try:
                     value = await asyncio.wait_for(task, timeout_ms / 1000)
                 except TimeoutError:
-                    elapsed = time.monotonic() - started
+                    elapsed = max(time.monotonic() - started, timeout_ms / 1000)
                     if not task.cancelled():
                         # An operation's own TimeoutError is not evidence that
                         # the runtime deadline expired or cancelled its task.
