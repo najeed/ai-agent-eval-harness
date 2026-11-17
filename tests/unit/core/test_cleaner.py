@@ -37,3 +37,19 @@ def test_cleanup_traces_ignores_new(capsys):
     assert cleanup_traces(run_store=store, days=7, force=True) == []
     assert store.deleted == []
     assert capsys.readouterr().out == ""
+
+
+def test_cleanup_traces_invalid_and_fallback_records():
+    old_naive = (datetime.now(UTC) - timedelta(days=10)).strftime("%Y-%m-%dT%H:%M:%S")
+    store = FakeRunStore(
+        [
+            {"run_id": 12345, "created_at": old_naive},
+            {"run_id": "missing-date", "created_at": None},
+            {"run_id": "invalid-date", "created_at": "not-an-iso-date"},
+            {"id": "fallback-started-at", "started_at": old_naive},
+            {"run_id": "fallback-timestamp", "timestamp": old_naive},
+        ]
+    )
+    affected = cleanup_traces(run_store=store, days=7, force=True)
+    assert affected == ["fallback-started-at", "fallback-timestamp"]
+    assert store.deleted == ["fallback-started-at", "fallback-timestamp"]

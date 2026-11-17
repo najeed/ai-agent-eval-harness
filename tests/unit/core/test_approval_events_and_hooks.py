@@ -93,7 +93,7 @@ class TestApprovalEventsAndHooksContracts:
         assert plugin.on_approval_resolved(None, req) is None
         assert plugin.on_approval_preflight(None, {"id": "node_1"}) is True
 
-    def test_approval_preflight_rejects_before_an_agent_can_pause(self):
+    def test_approval_preflight_selects_fault_without_fabricating_delivery(self):
         plugin_manager = PluginManager()
         mutation = RuntimeMutationPlugin()
         mutation.on_step_start(None, "approval_node", {"approval_race": True})
@@ -103,13 +103,10 @@ class TestApprovalEventsAndHooksContracts:
             "on_approval_preflight", object(), {"id": "approval_node", "approval_race": True}
         )
 
-        assert result is False
-        assert plugin_manager.last_rejection_details == {
-            "allowed": False,
-            "error": "ApprovalRaceCondition: approval collided with boundary timeout",
-            "mutation_fault": "approval_race",
-            "failure_category": "APPROVAL_SECURITY_REJECTED",
-        }
+        assert result["runtime_fault"]["fault"] == "approval_race"
+        assert "mutation_receipt" not in result
+        assert plugin_manager.last_rejection_details is None
+        assert mutation.applied_mutations == []
 
     def test_plugin_manager_trigger_hook_alias(self):
         mgr = PluginManager()
@@ -118,27 +115,32 @@ class TestApprovalEventsAndHooksContracts:
 
 class TestSessionApprovalManagerDispatch:
     def test_mutation_rejection_is_structured_and_never_persists_a_pause(self, tmp_path: Path):
-        run_id = "run_approval_race_rejected"
+        run_id = "run_approval_stale_rejected"
         provider = _provider_for_run(tmp_path, run_id)
         plugin_manager = PluginManager()
         mutation = RuntimeMutationPlugin()
-        mutation.on_step_start(None, "approval_node", {"approval_race": True})
+        mutation.on_step_start(None, "approval_node", {"approval_stale": True})
         plugin_manager.plugins.append(mutation)
         approval_store = FileApprovalStore()
+        bus = EventEmitter(run_id=run_id, async_mode=False)
+        bus.subscribe(
+            lambda event: provider.append_events(run_id, [event.to_dict()]), required=True
+        )
         manager = SessionApprovalManager(
             run_id=run_id,
             approval_store=approval_store,
             plugin_manager=plugin_manager,
             run_store=provider,
+            event_bus=bus,
         )
 
         with pytest.raises(ApprovalBoundaryRejected) as exc_info:
             manager.create_durable_request(turn_index=1, action_payload={"action": "hitl_pause"})
 
         rejection = exc_info.value
-        assert rejection.phase == "request"
-        assert rejection.details["mutation_fault"] == "approval_race"
-        assert rejection.details["failure_category"] == "APPROVAL_SECURITY_REJECTED"
+        assert rejection.phase == "observed_fault"
+        assert rejection.details["mutation_fault"] == "approval_stale"
+        assert rejection.details["failure_category"] == "MUTATION_OBSERVED"
         assert approval_store.list_pending(run_id) == []
         assert provider.get_run(run_id)["status"] != "PAUSED_FOR_APPROVAL"
 

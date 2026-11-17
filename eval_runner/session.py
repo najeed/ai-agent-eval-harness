@@ -121,7 +121,11 @@ class SessionManager:
         from .runtime_services import resolve_plugin_registry
 
         self.run_id = run_id
-        self.cancellation_event = cancellation_event
+        import threading
+
+        self.cancellation_event = (
+            cancellation_event if cancellation_event is not None else threading.Event()
+        )
         self.resolved_config = resolved_config
         if run_store is None:
             raise RuntimeError(
@@ -364,8 +368,17 @@ class SessionManager:
                     or n.get("raw_payload_corrupted")
                     or n.get("tool_contract_violation")
                     or n.get("approval_token")
+                    or n.get("approval_stale")
+                    or n.get("approval_mismatch")
+                    or n.get("approval_replay")
+                    or n.get("tool_response_corrupted")
+                    or n.get("duplicate_execution")
+                    or n.get("replay_previous_event")
+                    or n.get("injected_latency_ms")
                     or n.get("approval_status") == "REVOKED"
                     or n.get("approval_race")
+                    or n.get("approval_revocation")
+                    or n.get("commit_after_cancel")
                     or n.get("stale_commit")
                 )
                 for n in wf_nodes
@@ -383,6 +396,7 @@ class SessionManager:
             else:
                 self.mutation_plugin = RuntimeMutationPlugin(self.scenario)
                 self.plugin_manager.plugins.append(self.mutation_plugin)
+            self.mutation_plugin.is_mandatory = True
 
         # 1b. Re-load ad-hoc external plugins from provenance map
         for class_name, prov in self.plugin_manager.provenance_map.items():
@@ -672,6 +686,7 @@ class SessionManager:
             workspace_root=self.workspace_root,
             jail_root=(self.workspace_root / self.run_id / "terminal_jail").resolve(),
             policy_evaluator=self.policy_evaluator,
+            cancellation_event=self.cancellation_event,
         )
         self.sandbox = sandbox
         try:
@@ -1419,6 +1434,7 @@ class SessionManager:
             else f"{node_id}:attempt:{attempt_number}"
         )
         self.current_execution_instance_id = exec_inst_id
+        sandbox.current_execution_instance_id = exec_inst_id
         parent_exec_id = execution_context.get("parent_execution_id") if execution_context else None
         attempt_id = getattr(self, "attempt_id", f"att-{self.run_id}-{attempt_number}")
 
@@ -1442,10 +1458,8 @@ class SessionManager:
 
         # Trigger on_step_start interceptor hook
         self.plugin_manager.trigger_interceptor("on_step_start", self, node_id, node)
-        # Approval faults must be rejected before a scenario-declared gate or
-        # an approval-capable agent can create an external human-pause side
-        # effect.  The interpreter turns this structured boundary rejection
-        # into the authoritative failed graph-node evidence.
+        # Policy may reject a gate before execution. Mutation selection itself
+        # does not establish a fault: durable approval operations do that.
         approval_preflight = self.plugin_manager.trigger_interceptor(
             "on_approval_preflight", self, node
         )
@@ -2651,17 +2665,10 @@ class SessionManager:
             raise RuntimeError(f"Tool result for '{tool_name}' rejected by required interceptor")
         if isinstance(result_intercept, dict):
             result = result_intercept.get("result", result)
-            receipt = result_intercept.get("mutation_receipt")
-            if isinstance(receipt, dict):
-                self.event_bus.emit(
-                    CoreEvents.ADAPTER_DEBUG,
-                    {
-                        "category": "MUTATION_DELIVERY",
-                        "tool": tool_name,
-                        "mutation_receipt": receipt,
-                    },
-                    span_context=turn_ctx.span_context,
-                )
+        from eval_runner.tool_faults import delivery_executor
+
+        executor = delivery_executor(sandbox)
+        delivery_context = executor.take_delivery_context() if executor else None
         state_after = sandbox.state.copy()
 
         # O(N) Forensics: Offload state to disk snapshots
@@ -2680,7 +2687,17 @@ class SessionManager:
             span_context=turn_ctx.span_context,
         )
 
-        self._record_tool_result(turn, tool_name, tool_params, result, history, actions, turn_ctx)
+        self._record_tool_result(
+            turn,
+            tool_name,
+            tool_params,
+            result,
+            history,
+            actions,
+            turn_ctx,
+            delivery_context=delivery_context,
+            delivery_owner=executor,
+        )
 
     async def _handle_multiple_tools(
         self, turn, agent_response, sandbox, history, actions, turn_ctx
@@ -2694,7 +2711,10 @@ class SessionManager:
             # Legacy fallback
             tool_calls = [{"tool": tn, "params": {}} for tn in agent_response["tool_names"]]
 
-        all_tool_results = []
+        from eval_runner.tool_faults import delivery_executor
+
+        executor = delivery_executor(sandbox)
+        delivery_contexts = {}
 
         self.event_bus.emit(
             CoreEvents.ACTION_START,
@@ -2775,17 +2795,8 @@ class SessionManager:
                 )
             if isinstance(result_intercept, dict):
                 res = result_intercept.get("result", res)
-                receipt = result_intercept.get("mutation_receipt")
-                if isinstance(receipt, dict):
-                    self.event_bus.emit(
-                        CoreEvents.ADAPTER_DEBUG,
-                        {
-                            "category": "MUTATION_DELIVERY",
-                            "tool": active_tn,
-                            "mutation_receipt": receipt,
-                        },
-                        span_context=turn_ctx.span_context,
-                    )
+            if executor:
+                delivery_contexts[idx] = executor.take_delivery_context()
             res_prov = self._extract_provenance(
                 active_tn, sandbox=sandbox, result=res, fallback_prov=tp_prov
             )
@@ -2859,6 +2870,9 @@ class SessionManager:
 
         # Record unified environment response for multi-tool execution
         history.append({"role": "environment", "content": all_tool_results})
+        if executor:
+            for idx, context in delivery_contexts.items():
+                executor.acknowledge(context, history[-1]["content"][idx])
 
     def _raise_if_pending_durable_approval(self) -> None:
         """Suspend execution before verification while human approval is pending."""
@@ -3291,6 +3305,8 @@ class SessionManager:
         actions,
         turn_ctx,
         provenance: str | None = None,
+        delivery_context=None,
+        delivery_owner=None,
     ):
         """Unified helper to record tool results across single and short-circuited paths."""
         if provenance is None:
@@ -3312,7 +3328,9 @@ class SessionManager:
                 "content": self._sanitize_for_history(result),
             }
         )
-        self.plugin_manager.trigger("on_tool_result", turn_ctx, tool_name, result)
+        if delivery_owner:
+            delivery_owner.acknowledge(delivery_context, history[-1]["content"])
+        self.plugin_manager.trigger("on_tool_delivered", turn_ctx, tool_name, result)
 
     def _get_last_env_message(self, history):
         if not history:

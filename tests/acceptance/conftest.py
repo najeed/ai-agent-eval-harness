@@ -72,7 +72,15 @@ def isolated_acceptance_env(tmp_path, monkeypatch, signing_identity):
     env["AES_PUBLIC_KEY_SYSTEM_ID"] = pub_bytes.decode("utf-8")
     env["AGENTV_CLI_HITL_SUSPEND"] = "1"
     env["AGENTV_STATE_AUTHORITY_KEY"] = "acceptance_state_authority_key_1234"
-    env["AGENTV_TRUSTED_TOOL_ADAPTER"] = "1"
+    import hashlib
+    import hmac
+
+    auth_token = hmac.new(
+        b"acceptance_state_authority_key_1234",
+        b"authenticated_execution_adapter",
+        hashlib.sha3_256,
+    ).hexdigest()
+    env["AGENTV_AUTHENTICATED_ADAPTER_TOKEN"] = auth_token
 
     runner = AgentVAcceptanceRunner(repo_root=REPO_ROOT, env=env)
     return {

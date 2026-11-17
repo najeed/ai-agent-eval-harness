@@ -14,7 +14,6 @@ from __future__ import annotations
 import copy
 import hashlib
 from typing import Any
-from unittest.mock import MagicMock
 
 import pytest
 from cryptography.hazmat.primitives import serialization
@@ -38,7 +37,8 @@ from eval_runner.verifier import TraceVerifier
 
 
 @pytest.mark.asyncio
-async def test_proof_1_forged_live_sandbox_tool_rejected():
+@pytest.mark.parametrize("override", ["none", "scenario", "environment", "both"])
+async def test_proof_1_forged_live_sandbox_tool_rejected(monkeypatch, override):
     """Proof 1: Scenario-authored tools cannot declare live provenance.
 
     Even if a scenario defines provenance: "live" or canned output declares
@@ -61,6 +61,10 @@ async def test_proof_1_forged_live_sandbox_tool_rejected():
         },
     }
 
+    if override in {"scenario", "both"}:
+        scenario["metadata"] = {"trusted_execution_adapter": True}
+    if override in {"environment", "both"}:
+        monkeypatch.setenv("AGENTV_TRUSTED_TOOL_ADAPTER", "true")
     sandbox = ToolSandbox(scenario=scenario)
     assert sandbox.get_tool_provenance("forged_transfer") == "simulated"
 
@@ -213,7 +217,7 @@ def test_proof_2_mixed_required_oracle_inventories_certified_correctly():
 # ─── Proof 3: Detached Verification Using Public Trust Anchors Alone ──────────
 
 
-def test_proof_3_detached_verification_using_public_trust_anchors_alone(monkeypatch):
+def test_proof_3_detached_verification_using_public_trust_anchors_alone(monkeypatch, tmp_path):
     """Proof 3: Detached verifiers can authenticate connector receipts with public keys alone.
 
     Asymmetric Ed25519 connector receipts verify without the symmetric HMAC secret.
@@ -246,15 +250,58 @@ def test_proof_3_detached_verification_using_public_trust_anchors_alone(monkeypa
     monkeypatch.delenv("AGENTV_STATE_AUTHORITY_KEY", raising=False)
     monkeypatch.delenv("STATE_AUTHORITY_KEY", raising=False)
 
-    # 3a. Public anchor verification succeeds without any shared secret
-    verified = verify_connector_receipt_authenticity(receipt, key=None)
-    assert verified is True
+    # A receipt's self-supplied key is never an independent trust anchor.
+    monkeypatch.setattr("eval_runner.config.TRUST_ROOT", tmp_path / "trusted-connectors")
+    assert verify_connector_receipt_authenticity(receipt, key=None) is False
+
+    # Publish only the independently trusted connector public key, never its secret.
+    anchor_dir = tmp_path / "trusted-connectors" / "connector.ledger.prod"
+    anchor_dir.mkdir(parents=True)
+    (anchor_dir / "public_key.pem").write_text(pub_pem, encoding="utf-8")
+    assert verify_connector_receipt_authenticity(receipt, key=None) is True
 
     # 3b. Verification with explicit trusted public key anchor
     verified_explicit = verify_connector_receipt_authenticity(
         receipt, key=None, trusted_public_key=connector_pub
     )
     assert verified_explicit is True
+
+    attacker_key = ed25519.Ed25519PrivateKey.generate()
+    forged = create_authenticated_connector_receipt(
+        connector_id="connector.ledger.prod",
+        source_id="ledger_db",
+        response_digest="sha3_256:attacker",
+        execution_id="exec_9901",
+        phase="post",
+        run_id="run-rc-001",
+        signing_key=attacker_key,
+    )
+    # A fresh valid signature and its matching embedded key cannot replace the anchor.
+    assert verify_connector_receipt_authenticity(forged) is False
+    forged["public_key_pem"] = pub_pem
+    assert verify_connector_receipt_authenticity(forged) is False
+
+    without_embedded_key = copy.deepcopy(receipt)
+    without_embedded_key.pop("public_key_pem")
+    assert verify_connector_receipt_authenticity(without_embedded_key) is True
+
+    with monkeypatch.context() as invalid_anchor:
+        invalid_anchor.setenv("AES_PUBLIC_KEY_CONNECTOR.LEDGER.PROD", "invalid configured PEM")
+        assert verify_connector_receipt_authenticity(receipt) is False
+
+    rogue_dir = tmp_path / "rogue"
+    rogue_dir.mkdir()
+    (rogue_dir / "public_key.pem").write_text(pub_pem, encoding="utf-8")
+    traversal = create_authenticated_connector_receipt(
+        connector_id="../rogue",
+        source_id="ledger_db",
+        response_digest="sha3_256:observation",
+        execution_id="exec_9901",
+        phase="post",
+        run_id="run-rc-001",
+        signing_key=connector_priv,
+    )
+    assert verify_connector_receipt_authenticity(traversal) is False
 
     # 3c. Tampered observation response digest fails closed
     tampered_receipt = copy.deepcopy(receipt)
@@ -390,7 +437,7 @@ def test_proof_4_certificate_hash_tampering_rejected():
 
 
 @pytest.mark.asyncio
-async def test_proof_5_state_and_concurrency_mutations_fidelity_and_receipts():
+async def test_proof_5_state_and_concurrency_mutations_fidelity_and_receipts(tmp_path):
     """Proof 5: Advertised mutations execute real faults and emit bound delivery receipts.
 
     Unsupported concurrency and duplicate-commit mutations raise UnsupportedMutationError.
@@ -412,17 +459,23 @@ async def test_proof_5_state_and_concurrency_mutations_fidelity_and_receipts():
 
     # 5c. Supported state mutation plugin produces real faults and bound receipts
     plugin = RuntimeMutationPlugin()
-    event_bus = EventEmitter()
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    provider = LocalFileRunStore(tmp_path / "fault-proof")
+    provider.create_run("mutation-proof", "scenario-mutation-proof")
+    event_bus = EventEmitter(run_id="mutation-proof", async_mode=False)
     emitted_events: list[dict[str, Any]] = []
 
     def on_event(event):
+        provider.append_events("mutation-proof", [event.to_dict()])
         if hasattr(event, "name") and event.name == "mutation_delivery":
             emitted_events.append(event.data)
 
-    event_bus.subscribe(on_event)
+    event_bus.subscribe(on_event, required=True)
 
     scenario = {
         "id": "scenario-mutation-proof",
+        "run_id": "mutation-proof",
         "tools": {
             "update_accounts": {
                 "state_changes": [
@@ -434,56 +487,64 @@ async def test_proof_5_state_and_concurrency_mutations_fidelity_and_receipts():
         },
     }
 
-    # Test partial commit: interceptor drops subsequent keys and returns DELIVERED receipt
-    plugin.on_step_start(None, node_id="node_partial", node_data={"partial_commit_simulated": True})
-    res_partial = plugin.on_before_commit(None, {"acc_1": 100, "acc_2": 200})
-    assert isinstance(res_partial, dict)
-    assert res_partial.get("partial_commit_applied") is True
-    assert res_partial.get("state_diff") == {"acc_1": 100}
-    receipt = res_partial.get("mutation_receipt")
-    assert receipt is not None
-    assert receipt["fault"] == "partial_commit"
-    assert receipt["delivery"] == "DELIVERED"
+    # Execute the real cancelled commit through the sandbox boundary.
+    from eval_runner.plugins import PluginManager
 
-    # Test stale commit: interceptor blocks transaction with OptimisticLockError
-    plugin.on_step_start(
-        None,
-        node_id="node_stale",
-        node_data={
-            "stale_commit": True,
-            "expected_base_revision": "rev_deprecated_1970",
-        },
+    manager = PluginManager()
+    manager.plugins.append(plugin)
+    cancelled_sandbox = ToolSandbox(
+        scenario=copy.deepcopy(scenario), event_bus=event_bus, plugin_manager=manager
     )
-    res_stale = plugin.on_before_commit(None, {"acc_1": 100})
-    assert isinstance(res_stale, dict)
-    assert res_stale.get("allowed") is False
-    assert "OptimisticLockError" in res_stale.get("error", "")
-    assert res_stale.get("mutation_receipt")["delivery"] == "BLOCKED"
-
-    # Test commit after cancel: interceptor tracks post-cancellation write with delivery receipt
     plugin.on_step_start(
-        None,
+        cancelled_sandbox,
         node_id="node_cancel",
         node_data={
             "commit_after_cancel": True,
             "allow_post_cancellation_write": True,
         },
     )
-    res_cancel = plugin.on_before_commit(None, {"acc_1": 100})
-    assert isinstance(res_cancel, dict)
-    assert res_cancel.get("commit_after_cancel_tracked") is True
-    assert res_cancel.get("mutation_receipt")["delivery"] == "DELIVERED"
+    await cancelled_sandbox.execute("update_accounts", {})
+    assert cancelled_sandbox.cancellation_event.is_set()
+    assert cancelled_sandbox.state["acc_1"] == 100
+    assert any(row["mutation_receipt"]["fault"] == "commit_after_cancel" for row in emitted_events)
+    emitted_events.clear()
 
     # Test ToolSandbox commit boundary emits mutation_delivery event with receipt
-    mock_pm = MagicMock()
-    mock_pm.trigger_interceptor.return_value = {
-        "state_diff": {"acc_1": 100},
-        "mutation_receipt": {"fault": "partial_commit", "delivery": "DELIVERED", "step": 1},
-    }
-    sandbox = ToolSandbox(scenario=scenario, event_bus=event_bus, plugin_manager=mock_pm)
-    await sandbox.execute("update_accounts", {})
+    partial_sandbox = ToolSandbox(
+        scenario=copy.deepcopy(scenario), event_bus=event_bus, plugin_manager=manager
+    )
+    plugin.on_step_start(
+        partial_sandbox,
+        node_id="node_partial_real",
+        node_data={"partial_commit_simulated": True},
+    )
+    await partial_sandbox.execute("update_accounts", {})
 
+    assert partial_sandbox.state.get("acc_1") == 100
+    assert "acc_2" not in partial_sandbox.state or partial_sandbox.state.get("acc_2") != 200
     assert len(emitted_events) == 1
     assert emitted_events[0]["category"] == "MUTATION_DELIVERY"
     assert emitted_events[0]["mutation_receipt"]["fault"] == "partial_commit"
     assert emitted_events[0]["mutation_receipt"]["delivery"] == "DELIVERED"
+
+    stale_sandbox = ToolSandbox(
+        scenario=copy.deepcopy(scenario), event_bus=event_bus, plugin_manager=manager
+    )
+    plugin.on_step_start(stale_sandbox, node_id="node_stale", node_data={"stale_commit": True})
+    res_stale = await stale_sandbox.execute("update_accounts", {})
+    assert res_stale["error_code"] == "STATE_COMMIT_REJECTED"
+    assert stale_sandbox.commit_boundary.revision == 1
+    from eval_runner.mutation_evidence import fault_receipt_failures
+
+    assert (
+        fault_receipt_failures(
+            provider.get_events("mutation-proof"),
+            [
+                ("commit_after_cancel", "node_cancel"),
+                ("partial_commit", "node_partial_real"),
+                ("stale_commit", "node_stale"),
+            ],
+            run_id="mutation-proof",
+        )
+        == []
+    )

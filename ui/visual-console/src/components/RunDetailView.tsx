@@ -478,23 +478,17 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
       return passedCount / activeAssertions.length;
     }
 
-    // 3. Score from run metadata if positive
-    if (run.score != null && typeof run.score === 'number' && run.score > 0) {
-      return run.score <= 1.0 ? run.score : run.score / 100;
-    }
-
-    // 4. Strict verdict/status fallbacks
-    if (isVerified || run.status === 'CERTIFIED' || run.status === 'PASSED' || run.resultStatus === 'PASS' || (isEvaluationSuccess && run.status === 'COMPLETED')) {
-      return 1.0;
-    }
-    if (isAttestedFail || isBreach || isNotVerified || run.status === 'FAILED' || run.resultStatus === 'FAIL') {
-      return 0.0;
-    }
+    // 3. Score from run metadata if present
     if (run.score != null && typeof run.score === 'number') {
       return run.score <= 1.0 ? run.score : run.score / 100;
     }
+
+    // 4. Negative verdict fallback
+    if (isAttestedFail || isBreach || isNotVerified || run.status === 'FAILED' || run.resultStatus === 'FAIL') {
+      return 0.0;
+    }
     return null;
-  }, [run.score, run.status, run.resultStatus, evidencePackage, assertions, isVerified, isAttestedFail, isBreach, isNotVerified]);
+  }, [run.score, run.status, run.resultStatus, evidencePackage, assertions, assertionEvidence, isVerified, isAttestedFail, isBreach, isNotVerified]);
 
   // Hydrated Start Time / Temporal Identifier
   const derivedStartTime = React.useMemo(() => {

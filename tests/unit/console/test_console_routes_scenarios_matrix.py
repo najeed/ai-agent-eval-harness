@@ -25,6 +25,20 @@ from eval_runner.console.routes.scenarios import (
 )
 
 
+def _competing_scenario_update(path, revision, barrier, outcomes, value):
+    from pathlib import Path
+
+    from eval_runner.console.scenario_store import ScenarioRevisionConflict, write_scenario
+
+    barrier.wait(timeout=15)
+    try:
+        write_scenario(Path(path), {"metadata": {"id": "race"}, "value": value}, revision)
+    except ScenarioRevisionConflict:
+        outcomes.put("conflict")
+    else:
+        outcomes.put("saved")
+
+
 @pytest.fixture
 def client(tmp_path):
     app = Flask(__name__)
@@ -45,6 +59,152 @@ def client(tmp_path):
         with patch("eval_runner.console.auth_manager.require_permission", lambda _: lambda f: f):
             with app.test_client() as c:
                 yield c
+
+
+@pytest.mark.parametrize("carrier", ["root", "metadata"])
+@pytest.mark.parametrize(
+    "industry",
+    [
+        "../escape",
+        "..\\escape",
+        "/outside",
+        "C:\\outside",
+        "//host/share",
+        "a/b",
+        "a\\b",
+        "..",
+        "a:stream",
+        "NUL",
+        "COM1",
+        "space name",
+        "a\n",
+        123,
+        [],
+    ],
+)
+def test_scenario_save_rejects_uncontained_industry_before_writing(
+    client, tmp_path, carrier, industry
+):
+    before = set(tmp_path.rglob("*"))
+    payload = {"id": "escape_probe", "metadata": {}, "workflow": {"nodes": []}}
+    (payload if carrier == "root" else payload["metadata"])["industry"] = industry
+    response = client.post("/scenarios", json=payload)
+    assert response.status_code == 400
+    assert set(tmp_path.rglob("*")) == before
+
+
+def test_scenario_save_rejects_industry_link_outside_root(client, tmp_path):
+    import subprocess
+
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    link = tmp_path / "industries" / "linked"
+    if os.name == "nt":
+        subprocess.run(
+            ["cmd", "/c", "mklink", "/J", str(link), str(outside)], check=True, capture_output=True
+        )
+    else:
+        link.symlink_to(outside, target_is_directory=True)
+    response = client.post("/scenarios", json={"id": "escape_probe", "industry": "linked"})
+    assert response.status_code == 400
+    assert list(outside.iterdir()) == []
+
+
+def test_scenario_save_is_serialized_for_concurrent_requests(client, tmp_path):
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+
+    original = client.post("/scenarios", json={"id": "race", "description": "original"})
+    revision = original.get_json()["scenario_hash"]
+    barrier = Barrier(2)
+
+    def update(value):
+        with client.application.test_client() as independent_client:
+            barrier.wait(timeout=10)
+            result = independent_client.post(
+                "/scenarios",
+                json={
+                    "id": "race",
+                    "description": value,
+                    "expected_revision_hash": revision,
+                },
+            )
+            return result.status_code, value
+
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        results = list(executor.map(update, ["first", "second"]))
+    assert sorted(status for status, _ in results) == [200, 409]
+    persisted = json.loads((tmp_path / "industries/generic/scenarios/race.json").read_text())
+    assert persisted["description"] == next(value for status, value in results if status == 200)
+
+
+def test_scenario_compare_and_write_serializes_independent_processes(tmp_path):
+    import multiprocessing
+
+    from eval_runner.console.scenario_store import write_scenario
+
+    target = tmp_path / "scenarios/race.json"
+    revision = write_scenario(target, {"metadata": {"id": "race"}, "value": "initial"}, None)
+    context = multiprocessing.get_context("spawn")
+    barrier, outcomes = context.Barrier(2), context.Queue()
+    processes = [
+        context.Process(
+            target=_competing_scenario_update,
+            args=(str(target), revision, barrier, outcomes, value),
+        )
+        for value in ("first", "second")
+    ]
+    try:
+        for process in processes:
+            process.start()
+        for process in processes:
+            process.join(timeout=20)
+            assert process.exitcode == 0
+        assert sorted(outcomes.get(timeout=5) for _ in processes) == ["conflict", "saved"]
+        assert json.loads(target.read_text())["value"] in {"first", "second"}
+    finally:
+        for process in processes:
+            if process.is_alive():
+                process.terminate()
+                process.join(timeout=5)
+        outcomes.close()
+
+
+@pytest.mark.parametrize("failure", ["read", "replace"])
+def test_scenario_save_io_failures_preserve_existing_revision(
+    client, tmp_path, monkeypatch, failure
+):
+    from pathlib import Path
+
+    response = client.post("/scenarios", json={"id": "protected", "description": "original"})
+    target = tmp_path / "industries/generic/scenarios/protected.json"
+    original_bytes = target.read_bytes()
+    original_open = Path.open
+
+    def fail_read(path, *args, **kwargs):
+        if path == target:
+            raise PermissionError("Cannot verify current revision")
+        return original_open(path, *args, **kwargs)
+
+    def fail_replace(*args):
+        raise OSError("Replacement interrupted")
+
+    with monkeypatch.context() as failure_patch:
+        if failure == "read":
+            failure_patch.setattr(Path, "open", fail_read)
+        else:
+            failure_patch.setattr("eval_runner.console.scenario_store.os.replace", fail_replace)
+        update = client.post(
+            "/scenarios",
+            json={
+                "id": "protected",
+                "description": "replacement",
+                "expected_revision_hash": response.get_json()["scenario_hash"],
+            },
+        )
+    assert update.status_code == 500
+    assert target.read_bytes() == original_bytes
+    assert list(target.parent.glob("*.tmp")) == []
 
 
 def test_validate_scenario_structure_matrix():
@@ -1397,7 +1557,7 @@ def test_scenario_save_hoisting_and_filesystem_fallbacks(client, tmp_path):
     assert res_t2.status_code == 200
     assert res_t2.get_json()["scenario"]["metadata"]["name"] == "Existing Meta Title"
 
-    # 3. File exists but reading existing status raises exception -> defaults to Draft
+    # Corrupt existing state must never be replaced by a save.
     target_file = tmp_path / "industries" / "generic" / "scenarios" / "sc_read_err.json"
     target_file.parent.mkdir(parents=True, exist_ok=True)
     target_file.write_text("corrupted json", encoding="utf-8")
@@ -1406,10 +1566,10 @@ def test_scenario_save_hoisting_and_filesystem_fallbacks(client, tmp_path):
         "workflow": {"nodes": [{"id": "n1", "task_description": "t"}]},
     }
     res_read_err = client.post("/scenarios", json=sc_read_err)
-    assert res_read_err.status_code == 200
-    assert res_read_err.get_json()["lifecycle_status"] == "Draft"
+    assert res_read_err.status_code == 500
+    assert target_file.read_text(encoding="utf-8") == "corrupted json"
 
-    # 4. Concurrency check read exception bypass
+    # Revision-check failures must leave existing bytes unchanged.
     corrupt_sc_file = tmp_path / "industries" / "generic" / "scenarios" / "sc_concur_corrupt.json"
     corrupt_sc_file.parent.mkdir(parents=True, exist_ok=True)
     corrupt_sc_file.write_text("corrupted json data", encoding="utf-8")
@@ -1421,10 +1581,11 @@ def test_scenario_save_hoisting_and_filesystem_fallbacks(client, tmp_path):
             "workflow": {"nodes": [{"id": "n1", "task_description": "t"}]},
         },
     )
-    assert res_concur_corrupt.status_code == 200
+    assert res_concur_corrupt.status_code == 500
+    assert corrupt_sc_file.read_text(encoding="utf-8") == "corrupted json data"
 
     # 5. Save file write raises OSError -> 500
-    with patch("builtins.open", side_effect=OSError("Disk full on write")):
+    with patch("eval_runner.console.scenario_store.os.replace", side_effect=OSError("Disk full")):
         res_write_err = client.post(
             "/scenarios",
             json={
@@ -1494,7 +1655,10 @@ def test_scenario_transition_and_evaluate_extended(client, tmp_path):
             raise OSError("Write permission denied")
         return orig_open(path, *args, **kwargs)
 
-    with patch("builtins.open", mock_open_write_fail):
+    with patch(
+        "eval_runner.console.routes.scenarios.write_scenario",
+        side_effect=OSError("Write permission denied"),
+    ):
         res_t_write_err = client.post(
             "/scenarios/sc_trans_err/transition",
             json={"target_status": "Validated"},

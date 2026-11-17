@@ -119,15 +119,26 @@ async def test_tool_short_circuit(tmp_path):
 
 @pytest.mark.asyncio
 async def test_runtime_response_mutation_records_delivery_evidence(tmp_path):
+    from eval_runner.tool_sandbox import ToolSandbox
+
     plugin = RuntimeMutationPlugin()
-    plugin.on_step_start(None, "node_1", {"tool_response_corrupted": True})
     manager = PluginManager()
     manager.plugins = [plugin]
-    sandbox = AsyncMock()
-    sandbox.state = {}
-    sandbox.execute = AsyncMock(return_value={"status": "success", "amount": 500})
     session = _session(tmp_path, "run_response_fault")
     session.plugin_manager = manager
+
+    sandbox = ToolSandbox(
+        scenario={
+            "id": "test",
+            "run_id": "run_response_fault",
+            "tools": {"execute_wire": {"output": {"status": "success", "amount": 500}}},
+        },
+        event_bus=session.event_bus,
+        plugin_manager=manager,
+    )
+    session.sandbox = sandbox
+
+    plugin.on_step_start(session, "node_1", {"tool_response_corrupted": True})
     events = []
     session.event_bus.subscribe(lambda event: events.append(event.to_dict()))
 
@@ -138,7 +149,12 @@ async def test_runtime_response_mutation_records_delivery_evidence(tmp_path):
         [],
         {"used_tools": []},
         TurnContext(
-            task_id="t1", turn_number=1, current_message="msg", history=(), span_context=None
+            task_id="t1",
+            turn_number=1,
+            current_message="msg",
+            history=(),
+            span_context=None,
+            sandbox=sandbox,
         ),
     )
 

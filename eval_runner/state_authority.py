@@ -472,33 +472,20 @@ def verify_connector_receipt_authenticity(
                         else trusted_public_key
                     )
                     pub_key = serialization.load_pem_public_key(raw_b)
-            elif receipt.get("public_key_pem"):
-                raw_b = receipt["public_key_pem"].encode("utf-8")
-                pub_key = serialization.load_pem_public_key(raw_b)
             else:
                 conn_id = str(receipt.get("connector_id", "")).strip()
                 if conn_id:
-                    from eval_runner.identity import IdentityService
-
-                    try:
-                        pub_key = IdentityService.get_public_key(conn_id, auto_provision=False)
-                    except (
-                        ValueError,
-                        TypeError,
-                        KeyError,
-                        AttributeError,
-                        OSError,
-                        RuntimeError,
-                    ) as exc:
-                        logger.debug(
-                            "Failed to resolve public key from IdentityService "
-                            "for connector %s: %s",
-                            conn_id,
-                            exc,
-                            exc_info=True,
-                        )
-                    if pub_key is None and getattr(config, "TRUST_ROOT", None):
-                        candidate_file = Path(config.TRUST_ROOT) / conn_id / "public_key.pem"
+                    # Read public anchors only. IdentityService can derive a public
+                    # key from private issuer material, which detached verification
+                    # must never require. Receipt-carried keys are not trust anchors.
+                    env_anchor = os.getenv(f"AES_PUBLIC_KEY_{conn_id.upper()}")
+                    if env_anchor:
+                        pub_key = serialization.load_pem_public_key(env_anchor.encode("utf-8"))
+                    elif getattr(config, "TRUST_ROOT", None):
+                        root = Path(config.TRUST_ROOT).resolve()
+                        candidate_file = (root / conn_id / "public_key.pem").resolve()
+                        if not candidate_file.is_relative_to(root):
+                            return False
                         if candidate_file.is_file():
                             pub_key = serialization.load_pem_public_key(candidate_file.read_bytes())
 

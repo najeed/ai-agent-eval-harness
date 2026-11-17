@@ -335,6 +335,10 @@ class EventEmitter:
         if futures:
             concurrent.futures.wait(futures, timeout=timeout)
 
+    def emit_evidence(self, name, data, span_context=None):
+        """Require synchronous acknowledgement from a mandatory evidence sink."""
+        return self.emit(name, data, span_context, require_acknowledgement=True)
+
     def emit(
         self,
         name: str,
@@ -342,6 +346,7 @@ class EventEmitter:
         span_context: dict[str, Any] | None = None,
         *,
         required_only: bool = False,
+        require_acknowledgement: bool = False,
     ):
         """Emit an event to all subscribers with optional tracing context."""
         sanitized_data = sanitize_payload(data)
@@ -350,7 +355,14 @@ class EventEmitter:
         if self.run_id and "run_id" not in sanitized_data:
             sanitized_data["run_id"] = self.run_id
 
-        event = Event(name, sanitized_data, span_context=span_context)
+        # A committed evidence object must reach its provider byte-for-byte.
+        # Presentation escaping/redaction belongs to optional telemetry consumers.
+        import copy
+
+        evidence_data = copy.deepcopy(data) if require_acknowledgement else sanitized_data
+        if self.run_id and "run_id" not in evidence_data:
+            evidence_data["run_id"] = self.run_id
+        event = Event(name, evidence_data, span_context=span_context)
         all_subs = self._subscribers + list(self._keyed_subscribers.values())
         run_id = sanitized_data.get("run_id") or self.run_id
         import hashlib
@@ -398,12 +410,22 @@ class EventEmitter:
                 with self._lock:
                     self._inflight_counts[run_id] -= 1
                 raise EvidenceDeliveryError(f"Evidence capture failed for run {run_id}") from exc
+        if require_acknowledgement and not mandatory_count:
+            error = EvidenceDeliveryError(f"No mandatory evidence sink is bound for run {run_id}")
+            with self._lock:
+                self._inflight_counts[run_id] -= 1
+                self._delivery_failures[run_id] = error
+            raise error
         with self._lock:
             self._inflight_counts[run_id] -= 1
             if mandatory_count:
                 self._acknowledged_counts[run_id] = self._acknowledged_counts.get(run_id, 0) + 1
         if required_only:
             return
+        if require_acknowledgement:
+            telemetry_event = Event(name, sanitized_data, span_context=span_context)
+            telemetry_event.timestamp = event.timestamp
+            event = telemetry_event
         all_subs = optional_subs
 
         # Capture current OTel context if available

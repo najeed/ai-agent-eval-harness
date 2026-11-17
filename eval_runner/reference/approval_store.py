@@ -27,6 +27,7 @@ from agentv_runtime.interfaces import (
 )
 from agentv_runtime.scope import ScopeToken
 from eval_runner import config
+from eval_runner.utils.file_lock import directory_write_lock
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +63,7 @@ class FileApprovalStore(ApprovalStore):
         else:
             self.base_dir = Path(base_dir).resolve()
 
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
         self._ensure_dir()
 
     def _ensure_dir(self) -> None:
@@ -87,7 +88,12 @@ class FileApprovalStore(ApprovalStore):
             ) from exc
 
     def create_request(self, request: ApprovalRequest) -> ApprovalRequest:
-        with self._lock:
+        with self._lock, directory_write_lock(self.base_dir):
+            token_file = self.base_dir / f"token_{request.approval_token}.json"
+            if token_file.exists():
+                existing = json.loads(token_file.read_text(encoding="utf-8"))
+                if {"revocation", "consumption"}.intersection(existing.get("metadata") or {}):
+                    raise ValueError("A revoked approval token cannot be republished")
             data = request.to_dict()
             # 1. Primary persistence: <run_id>.json
             run_file = self.base_dir / f"{request.run_id}.json"
@@ -163,13 +169,48 @@ class FileApprovalStore(ApprovalStore):
                         ) from exc
             return None
 
+    def revoke_request(
+        self,
+        approval_token,
+        decided_by=None,
+        decision_reason=None,
+        scope=None,
+    ) -> ApprovalRequest:
+        """Withdraw a pending or granted permission; its token can never be reapproved."""
+        return self._transition_request(
+            approval_token,
+            "REJECTED",
+            decided_by,
+            decision_reason or "ApprovalRevoked: permission withdrawn",
+            scope,
+            revocation=True,
+        )
+
     def resolve_request(
+        self,
+        approval_token,
+        decision,
+        decided_by=None,
+        decision_reason=None,
+        scope=None,
+    ) -> ApprovalRequest:
+        return self._transition_request(
+            approval_token,
+            decision,
+            decided_by,
+            decision_reason,
+            scope,
+        )
+
+    def _transition_request(
         self,
         approval_token: str,
         decision: str,
         decided_by: str | None = None,
         decision_reason: str | None = None,
         scope: ScopeToken | None = None,
+        *,
+        revocation: bool = False,
     ) -> ApprovalRequest:
         normalized_decision = decision.upper().strip()
         if normalized_decision not in ("APPROVED", "REJECTED"):
@@ -177,7 +218,7 @@ class FileApprovalStore(ApprovalStore):
                 f"Invalid approval decision '{decision}'. Must be 'APPROVED' or 'REJECTED'."
             )
 
-        with self._lock:
+        with self._lock, directory_write_lock(self.base_dir):
             token_file = self.base_dir / f"token_{approval_token}.json"
             if not token_file.exists():
                 raise KeyError(f"Approval request for token '{approval_token}' not found.")
@@ -200,10 +241,23 @@ class FileApprovalStore(ApprovalStore):
                         f"Scope mismatch: active scope cannot resolve approval '{approval_token}'."
                     )
 
-            if req.status != "PENDING":
+            if req.status not in ({"PENDING", "APPROVED"} if revocation else {"PENDING"}):
                 raise ValueError(
                     f"Approval request for token '{approval_token}' is already resolved."
                 )
+            if revocation:
+                req.metadata = {
+                    **req.metadata,
+                    "revocation": {
+                        "previous_status": req.status,
+                        "revoked_at": time.time(),
+                        "revoked_by": decided_by or "system",
+                    },
+                }
+            elif normalized_decision == "APPROVED":
+                from eval_runner.approval_validation import validate_expiry
+
+                validate_expiry(req)
             req.status = normalized_decision
             req.decision = normalized_decision
             req.decision_reason = decision_reason or (
@@ -220,6 +274,26 @@ class FileApprovalStore(ApprovalStore):
             token_file = self.base_dir / f"token_{req.approval_token}.json"
             self._atomic_write(token_file, data)
 
+            return req
+
+    def consume_request(self, approval_token, *, run_id, payload_hash, scope=None):
+        """Atomically spend an approval once at the actual action boundary."""
+        from eval_runner.approval_validation import consume_approval
+
+        with self._lock, directory_write_lock(self.base_dir):
+            token_path = self.base_dir / f"token_{approval_token}.json"
+            if not token_path.exists():
+                raise KeyError(approval_token)
+            try:
+                req = ApprovalRequest.from_dict(json.loads(token_path.read_text(encoding="utf-8")))
+            except (OSError, ValueError, TypeError) as exc:
+                raise ApprovalStorageDegradedError("Cannot verify authorization record") from exc
+            if not _matches_scope(req, scope):
+                raise ScopeMismatchError("Scope mismatch consuming authorization")
+            consume_approval(req, {"run_id": run_id, "payload_hash": payload_hash})
+            data = req.to_dict()
+            self._atomic_write(self.base_dir / f"{req.run_id}.json", data)
+            self._atomic_write(self.base_dir / f"token_{approval_token}.json", data)
             return req
 
     def list_pending(
@@ -303,7 +377,7 @@ class SQLiteApprovalStore(ApprovalStore):
         else:
             self.db_path = Path(db_path).resolve()
 
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
         self._init_db()
 
     def _get_connection(self) -> sqlite3.Connection:
@@ -408,6 +482,16 @@ class SQLiteApprovalStore(ApprovalStore):
             try:
                 with closing(self._get_connection()) as conn:
                     cursor = conn.cursor()
+                    cursor.execute("BEGIN IMMEDIATE")
+                    cursor.execute(
+                        "SELECT metadata FROM approval_requests WHERE approval_token = ?",
+                        (request.approval_token,),
+                    )
+                    existing = cursor.fetchone()
+                    if existing and {"revocation", "consumption"}.intersection(
+                        json.loads(existing[0] or "{}")
+                    ):
+                        raise ValueError("A revoked approval token cannot be republished")
                     cursor.execute(
                         """
                         INSERT INTO approval_requests (
@@ -518,13 +602,48 @@ class SQLiteApprovalStore(ApprovalStore):
                     f"SQLite database error getting approval by run_id: {exc}"
                 ) from exc
 
+    def revoke_request(
+        self,
+        approval_token,
+        decided_by=None,
+        decision_reason=None,
+        scope=None,
+    ) -> ApprovalRequest:
+        """Atomically invalidate an outstanding or granted permission."""
+        return self._transition_request(
+            approval_token,
+            "REJECTED",
+            decided_by,
+            decision_reason or "ApprovalRevoked: permission withdrawn",
+            scope,
+            revocation=True,
+        )
+
     def resolve_request(
+        self,
+        approval_token,
+        decision,
+        decided_by=None,
+        decision_reason=None,
+        scope=None,
+    ) -> ApprovalRequest:
+        return self._transition_request(
+            approval_token,
+            decision,
+            decided_by,
+            decision_reason,
+            scope,
+        )
+
+    def _transition_request(
         self,
         approval_token: str,
         decision: str,
         decided_by: str | None = None,
         decision_reason: str | None = None,
         scope: ScopeToken | None = None,
+        *,
+        revocation: bool = False,
     ) -> ApprovalRequest:
         normalized_decision = decision.upper().strip()
         if normalized_decision not in ("APPROVED", "REJECTED"):
@@ -570,25 +689,40 @@ class SQLiteApprovalStore(ApprovalStore):
                                 f"'{approval_token}'."
                             )
 
-                    if req.status != "PENDING":
+                    if req.status not in ({"PENDING", "APPROVED"} if revocation else {"PENDING"}):
                         raise ValueError(
                             f"Approval request for token '{approval_token}' is already resolved."
                         )
 
+                    metadata = dict(req.metadata)
+                    if not revocation and normalized_decision == "APPROVED":
+                        from eval_runner.approval_validation import validate_expiry
+
+                        validate_expiry(req)
+                    if revocation:
+                        metadata["revocation"] = {
+                            "previous_status": req.status,
+                            "revoked_at": now,
+                            "revoked_by": reviewer,
+                        }
                     cursor.execute(
                         "UPDATE approval_requests SET "
                         "status = ?, decision = ?, decision_reason = ?, "
-                        "decided_by = ?, decided_at = ? "
-                        "WHERE approval_token = ? AND status = 'PENDING'",
+                        "decided_by = ?, decided_at = ?, metadata = ? "
+                        "WHERE approval_token = ? AND status = ?",
                         (
                             normalized_decision,
                             normalized_decision,
                             reason,
                             reviewer,
                             now,
+                            json.dumps(metadata),
                             approval_token,
+                            req.status,
                         ),
                     )
+                    if cursor.rowcount != 1:
+                        raise ValueError("Approval request was concurrently resolved")
                     conn.commit()
             except sqlite3.Error as exc:
                 raise ApprovalStorageDegradedError(
@@ -599,6 +733,38 @@ class SQLiteApprovalStore(ApprovalStore):
         if not resolved:
             raise KeyError(f"Approval request for token '{approval_token}' not found after update.")
         return resolved
+
+    def consume_request(self, approval_token, *, run_id, payload_hash, scope=None):
+        from eval_runner.approval_validation import consume_approval
+
+        with self._lock, closing(self._get_connection()) as conn:
+            conn.execute("BEGIN IMMEDIATE")
+            try:
+                # Read through this transaction, so independent provider instances
+                # cannot both observe an unspent authorization.
+                row = conn.execute(
+                    "SELECT approval_token, run_id, turn_index, outbound_payload_hash, "
+                    "required_role, reviewer_credentials, status, rule_id, checkpoint_id, "
+                    "action_payload, prompt, created_at, decision, decision_reason, decided_by, "
+                    "decided_at, metadata, scope, scope_digest, manifest_id, idempotency_key "
+                    "FROM approval_requests WHERE approval_token = ?",
+                    (approval_token,),
+                ).fetchone()
+                if row is None:
+                    raise KeyError(approval_token)
+                req = self._row_to_request(row)
+                if not _matches_scope(req, scope):
+                    raise ScopeMismatchError("Scope mismatch consuming authorization")
+                consume_approval(req, {"run_id": run_id, "payload_hash": payload_hash})
+                conn.execute(
+                    "UPDATE approval_requests SET metadata = ? WHERE approval_token = ?",
+                    (json.dumps(req.metadata), approval_token),
+                )
+                conn.commit()
+                return req
+            except BaseException:
+                conn.rollback()
+                raise
 
     def list_pending(
         self, run_id: str | None = None, scope: ScopeToken | None = None

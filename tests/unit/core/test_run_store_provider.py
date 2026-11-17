@@ -23,6 +23,7 @@ from eval_runner.run_lifecycle import (
     transition_run_lifecycle,
 )
 from eval_runner.storage_resolver import (
+    compose_local_run_storage_provider,
     reset_run_storage_provider,
     resolve_run_storage_provider,
     set_active_run_storage_provider,
@@ -126,6 +127,19 @@ def test_resolver_falls_back_to_local_store(monkeypatch):
 def test_set_active_run_storage_provider_invalid_type():
     with pytest.raises(TypeError, match="RunStorageProvider"):
         set_active_run_storage_provider("not-a-provider")
+
+
+def test_set_active_and_reset_run_storage_provider(tmp_path):
+    store = LocalFileRunStore(tmp_path)
+    set_active_run_storage_provider(store)
+    assert resolve_run_storage_provider() is store
+    reset_run_storage_provider()
+
+
+def test_compose_local_run_storage_provider(tmp_path):
+    store = compose_local_run_storage_provider(tmp_path)
+    assert isinstance(store, LocalFileRunStore)
+    assert store.log_dir == tmp_path
 
 
 def test_local_provider_enforces_context_streaming_and_sealed_manifest(tmp_path):

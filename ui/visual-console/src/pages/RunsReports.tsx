@@ -4,6 +4,7 @@ import {
   Search,
   ShieldCheck,
   AlertTriangle,
+  Clock,
   RefreshCw,
   Download,
   Eye,
@@ -335,10 +336,10 @@ export const RunsReports: React.FC = () => {
                       //Server-authoritative verdict only, no inference.
                       // Server-authoritative verdict only, no inference.
                       const isProv = r.provisional || r.verdict === 'VERIFIED_PROVISIONAL';
-                      const isVer = r.verdict === 'VERIFIED' || isProv;
+                      const isVer = r.verdict === 'VERIFIED';
                       const isFailed = r.verdict === 'FAILED_VERIFICATION' || r.verdict === 'ATTESTED_FAIL';
                       const verdictLabel = isProv
-                        ? 'Verified (Provisional)'
+                        ? 'Provisional'
                         : isVer
                           ? 'Verified'
                           : r.verdict === 'ATTESTED_FAIL'
@@ -373,7 +374,7 @@ export const RunsReports: React.FC = () => {
                             <span
                               title={
                                 isProv
-                                  ? 'Certificate signature is valid, but the run was marked provisional.'
+                                  ? 'Provisional run: execution completed under simulated or provisional conditions; not certified.'
                                   : isVer
                                     ? 'Certificate trace-hash matches the current trace (server-verified).'
                                     : isFailed
@@ -389,7 +390,13 @@ export const RunsReports: React.FC = () => {
                                     : 'bg-slate-500/10 border border-slate-500/20 text-slate-400'
                                 }`}
                             >
-                              {isVer ? <ShieldCheck className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
+                              {isVer ? (
+                                <ShieldCheck className="w-3.5 h-3.5" />
+                              ) : isProv ? (
+                                <Clock className="w-3.5 h-3.5" />
+                              ) : (
+                                <AlertTriangle className="w-3.5 h-3.5" />
+                              )}
                               {verdictLabel}
                             </span>
                           </td>

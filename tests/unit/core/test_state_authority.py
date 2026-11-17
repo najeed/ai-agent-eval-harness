@@ -1085,3 +1085,369 @@ def test_v2_receipt_downgrade_guard_defeats_field_level_spoofing(monkeypatch):
     # Now it is parsed as v2 canonical JSON, so the original v1 delimiter MAC does NOT match!
     spoofed_v2 = dict(spoofed, encoding_version="v2")
     assert verify_connector_receipt_authenticity(spoofed_v2) is False
+
+
+def test_validate_external_authority_url_extended_branches(monkeypatch):
+    import socket
+
+    from eval_runner.state_authority import _validate_external_authority_url
+
+    # Scheme not http/https
+    with pytest.raises(StateAuthorityPolicyError, match="absolute HTTP"):
+        _validate_external_authority_url("ftp://example.com/state")
+
+    # Missing hostname
+    with pytest.raises(StateAuthorityPolicyError, match="absolute HTTP"):
+        _validate_external_authority_url("http://:8080/state")
+
+    # DNS resolution error
+    monkeypatch.setattr(socket, "getaddrinfo", MagicMock(side_effect=OSError("DNS lookup failed")))
+    monkeypatch.setenv("AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST", "https://unresolvable.example")
+    with pytest.raises(StateAuthorityPolicyError, match="could not be resolved"):
+        _validate_external_authority_url("https://unresolvable.example/state")
+
+    # No addresses returned
+    monkeypatch.setattr(socket, "getaddrinfo", MagicMock(return_value=[]))
+    with pytest.raises(StateAuthorityPolicyError, match="resolved to no addresses"):
+        _validate_external_authority_url("https://unresolvable.example/state")
+
+    # Global IP address validation branch
+    monkeypatch.setenv("AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST", "https://8.8.8.8")
+    monkeypatch.setattr(
+        socket, "getaddrinfo", MagicMock(return_value=[(2, 1, 6, "", ("8.8.8.8", 443))])
+    )
+    assert _validate_external_authority_url("https://8.8.8.8/state") == "https://8.8.8.8/state"
+
+
+def test_bound_state_snapshot_extra_projection_branches():
+    # val is None in projection
+    bounded, digest = bound_state_snapshot({"a": 1}, projection=["missing_key"])
+    assert bounded == {}
+
+    # Multiple projection keys sharing nested parent dict
+    state = {"parent": {"child1": 10, "child2": 20}}
+    bounded2, digest2 = bound_state_snapshot(state, projection=["parent.child1", "parent.child2"])
+    assert bounded2 == {"parent": {"child1": 10, "child2": 20}}
+
+
+def test_state_authority_trust_key_missing_or_empty_file_branches(tmp_path, monkeypatch):
+    from pathlib import Path
+
+    from eval_runner import config
+    from eval_runner.state_authority import (
+        StateAuthorityKeyMissingError,
+        get_state_authority_trust_key,
+    )
+
+    monkeypatch.delenv("AGENTV_STATE_AUTHORITY_KEY", raising=False)
+    monkeypatch.delenv("STATE_AUTHORITY_KEY", raising=False)
+
+    # Key file does not exist
+    monkeypatch.setattr(config, "TRUST_ROOT", str(tmp_path))
+    with pytest.raises(StateAuthorityKeyMissingError):
+        get_state_authority_trust_key()
+
+    # Key file exists but is empty / whitespace
+    key_file = tmp_path / "state_authority.key"
+    key_file.write_bytes(b"   \n  ")
+    with pytest.raises(StateAuthorityKeyMissingError):
+        get_state_authority_trust_key()
+
+    # Key file read raises OSError
+    monkeypatch.setattr(Path, "read_bytes", MagicMock(side_effect=OSError("Read error")))
+    with pytest.raises(StateAuthorityKeyMissingError):
+        get_state_authority_trust_key()
+
+
+def test_canonical_receipt_version_conflicts():
+    from eval_runner.state_authority import canonical_receipt_payload_bytes
+
+    with pytest.raises(ValueError, match="profile='invalid_profile' is not v2"):
+        canonical_receipt_payload_bytes(
+            {"phase": "pre", "run_id": "r1", "profile": "invalid_profile"}
+        )
+
+    with pytest.raises(ValueError, match="version='invalid_version' is not v2"):
+        canonical_receipt_payload_bytes(
+            {"phase": "pre", "run_id": "r1", "version": "invalid_version"}
+        )
+
+
+def test_ed25519_connector_receipt_signing_and_verification_full(tmp_path, monkeypatch):
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+
+    from eval_runner import config
+    from eval_runner.state_authority import (
+        create_authenticated_connector_receipt,
+        verify_connector_receipt_authenticity,
+    )
+
+    priv = ed25519.Ed25519PrivateKey.generate()
+    pub = priv.public_key()
+    pub_pem_str = pub.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    ).decode("utf-8")
+    priv_pem_str = priv.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption(),
+    ).decode("utf-8")
+
+    # Invalid signing key type
+    with pytest.raises(TypeError, match="signing_key must be"):
+        create_authenticated_connector_receipt(
+            connector_id="c_ed", source_id="s_ed", phase="pre", run_id="r1", signing_key=12345
+        )
+
+    # Valid signing with private key object and PEM string
+    receipt = create_authenticated_connector_receipt(
+        connector_id="c_ed",
+        source_id="s_ed",
+        phase="pre",
+        run_id="run_ed_01",
+        signing_key=priv,
+    )
+    assert receipt["algorithm"] == "ed25519"
+    assert "signature_ed25519" in receipt
+    assert "public_key_pem" in receipt
+
+    receipt_str = create_authenticated_connector_receipt(
+        connector_id="c_ed",
+        source_id="s_ed",
+        phase="pre",
+        run_id="run_ed_01",
+        signing_key=priv_pem_str,
+    )
+    assert receipt_str["algorithm"] == "ed25519"
+
+    # Verify with trusted_public_key object
+    assert verify_connector_receipt_authenticity(receipt, trusted_public_key=pub) is True
+
+    # Verify with trusted_public_key PEM str
+    assert verify_connector_receipt_authenticity(receipt, trusted_public_key=pub_pem_str) is True
+
+    # Verify with trusted_public_key PEM bytes
+    assert (
+        verify_connector_receipt_authenticity(
+            receipt, trusted_public_key=pub_pem_str.encode("utf-8")
+        )
+        is True
+    )
+
+    # Verify with non-Ed25519 trusted_public_key (fails closed)
+    assert verify_connector_receipt_authenticity(receipt, trusted_public_key=12345) is False
+
+    # Verify via env anchor AES_PUBLIC_KEY_{CONN_ID}
+    monkeypatch.setenv("AES_PUBLIC_KEY_C_ED", pub_pem_str)
+    assert verify_connector_receipt_authenticity(receipt) is True
+    monkeypatch.delenv("AES_PUBLIC_KEY_C_ED")
+
+    # Verify via TRUST_ROOT anchor file
+    anchor_dir = tmp_path / "c_ed"
+    anchor_dir.mkdir(parents=True, exist_ok=True)
+    (anchor_dir / "public_key.pem").write_text(pub_pem_str, encoding="utf-8")
+    monkeypatch.setattr(config, "TRUST_ROOT", str(tmp_path))
+    assert verify_connector_receipt_authenticity(receipt) is True
+
+    # Candidate anchor file does not exist in TRUST_ROOT
+    receipt_no_anchor = create_authenticated_connector_receipt(
+        connector_id="no_file_conn",
+        source_id="s_ed",
+        phase="pre",
+        run_id="r1",
+        signing_key=priv,
+    )
+    assert verify_connector_receipt_authenticity(receipt_no_anchor) is False
+
+    # Empty connector_id with no trusted_public_key
+    assert verify_connector_receipt_authenticity(dict(receipt, connector_id="")) is False
+
+    # Path traversal rejects and fails closed
+    traversal_receipt = dict(receipt, connector_id="../escaped")
+    assert verify_connector_receipt_authenticity(traversal_receipt) is False
+
+    # Corrupted / tampered signature fails closed
+    tampered_receipt = dict(receipt, signature_ed25519="00" * 64, mac="00" * 64)
+    assert verify_connector_receipt_authenticity(tampered_receipt, trusted_public_key=pub) is False
+
+    # Unanchored connector fails closed
+    unanchored = create_authenticated_connector_receipt(
+        connector_id="unanchored_c",
+        source_id="s_ed",
+        phase="pre",
+        run_id="run_unanchored",
+        signing_key=priv,
+    )
+    monkeypatch.setattr(config, "TRUST_ROOT", None)
+    assert verify_connector_receipt_authenticity(unanchored) is False
+
+
+def test_generate_and_verify_connector_receipt_retrieval_token_branches(monkeypatch):
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+
+    from eval_runner.state_authority import (
+        StateAuthorityKeyMissingError,
+        create_authenticated_connector_receipt,
+        verify_connector_receipt_authenticity,
+    )
+
+    # create_authenticated_connector_receipt with explicit key
+    r_key = create_authenticated_connector_receipt(
+        connector_id="c_key",
+        source_id="s_key",
+        phase="pre",
+        run_id="r1",
+        key=b"explicit_secret_key_32bytes!!!!",
+    )
+    assert r_key["retrieval_token"]
+
+    # create_authenticated_connector_receipt with signing_key (uses SHA3 hash token)
+    priv = ed25519.Ed25519PrivateKey.generate()
+    r_asym = create_authenticated_connector_receipt(
+        connector_id="c_asym", source_id="s_asym", phase="pre", run_id="r1", signing_key=priv
+    )
+    assert r_asym["retrieval_token"]
+
+    # create_authenticated_connector_receipt fallback when trust key missing
+    monkeypatch.setattr(
+        "eval_runner.state_authority.get_state_authority_trust_key",
+        MagicMock(side_effect=StateAuthorityKeyMissingError("missing")),
+    )
+    with pytest.raises(StateAuthorityKeyMissingError):
+        create_authenticated_connector_receipt(
+            connector_id="c_fb", source_id="s_fb", phase="pre", run_id="r1"
+        )
+    monkeypatch.undo()
+
+    # verify symmetric receipt without retrieval_token
+    monkeypatch.setenv("AGENTV_STATE_AUTHORITY_KEY", "bWFzdGVyX3NlY3JldF9mb3Jfc3RhdGVfYXV0aF8=")
+    r_valid = create_authenticated_connector_receipt(
+        connector_id="c_sym", source_id="s_sym", phase="pre", run_id="r1"
+    )
+    r_no_tok = dict(r_valid)
+    r_no_tok.pop("retrieval_token", None)
+    assert verify_connector_receipt_authenticity(r_no_tok) is True
+
+    # verify with non-str retrieval token -> False
+    r_non_str_tok = dict(r_valid, retrieval_token=9999)
+    assert verify_connector_receipt_authenticity(r_non_str_tok) is False
+
+    # verify with mismatched retrieval token -> False
+    r_mismatch_tok = dict(r_valid, retrieval_token="mismatched_token_hash")
+    assert verify_connector_receipt_authenticity(r_mismatch_tok) is False
+
+
+def test_connector_base_observation_identity_branch():
+    from eval_runner.state_authority import StateAuthorityConnector
+
+    class MinimalConnector(StateAuthorityConnector):
+        async def fetch_state(self, endpoint_or_query=None, headers=None, timeout=10.0):
+            return {}
+
+    conn = MinimalConnector()
+    assert conn.observation_identity() == {"authenticated": False}
+
+
+@pytest.mark.asyncio
+async def test_http_state_authority_connector_extra_branches(aiohttp_client, monkeypatch):
+    from agentv_runtime.contracts import EvidenceBoundednessLimits
+    from eval_runner.state_authority import (
+        HttpStateAuthorityConnector,
+        StateLimitExceededError,
+    )
+
+    async def direct_handler(request):
+        return web.json_response({"root": True})
+
+    async def large_content_length_handler(request):
+        resp = web.StreamResponse(
+            headers={"Content-Length": str(EvidenceBoundednessLimits.MAX_SNAPSHOT_BYTES + 100)}
+        )
+        await resp.prepare(request)
+        await resp.write(b"hello")
+        await resp.write_eof()
+        return resp
+
+    async def invalid_json_handler(request):
+        return web.Response(body=b"{invalid: json broken", content_type="application/json")
+
+    app = web.Application()
+    app.router.add_get("/", direct_handler)
+    app.router.add_get("/large_len", large_content_length_handler)
+    app.router.add_get("/invalid_json", invalid_json_handler)
+    client = await aiohttp_client(app)
+
+    base_url = str(client.make_url(""))
+    monkeypatch.setenv("AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST", base_url)
+    connector = HttpStateAuthorityConnector(base_url=base_url)
+
+    # 1. endpoint_or_query is None -> fetches base_url directly
+    res = await connector.fetch_state(None)
+    assert res == {"root": True}
+
+    # 2. content_length exceeds max_response_bytes
+    with pytest.raises(StateLimitExceededError, match="exceeds bounded snapshot limit"):
+        await connector.fetch_state("/large_len")
+
+    # 3. raw body exceeds max_response_bytes (mocked stream read)
+    mock_resp = AsyncMock()
+    mock_resp.status = 200
+    mock_resp.content_length = None
+    mock_resp.content.read = AsyncMock(
+        return_value=b"x" * (EvidenceBoundednessLimits.MAX_SNAPSHOT_BYTES + 10)
+    )
+    with patch("aiohttp.ClientSession.get") as mock_get:
+        mock_ctx = AsyncMock()
+        mock_ctx.__aenter__.return_value = mock_resp
+        mock_get.return_value = mock_ctx
+        with pytest.raises(StateLimitExceededError, match="exceeds bounded snapshot limit"):
+            await connector.fetch_state("/mocked_large_body")
+
+    # 4. invalid JSON body
+    with pytest.raises(ValueError, match="External state authority returned invalid JSON"):
+        await connector.fetch_state("/invalid_json")
+
+
+def test_external_state_authority_registry_scenario_branches(monkeypatch):
+    import ssl
+
+    from eval_runner.state_authority import (
+        ExternalStateAuthorityRegistry,
+        HttpStateAuthorityConnector,
+    )
+
+    reg = ExternalStateAuthorityRegistry()
+    monkeypatch.setattr("eval_runner.state_authority._validate_external_authority_url", lambda u: u)
+
+    # Scenario authority not a dict
+    with pytest.raises(KeyError):
+        reg.get_connector("auth_str", scenario_authorities={"auth_str": "not_a_dict"})
+
+    # auth_conf has cafile
+    mock_ssl_ctx = MagicMock()
+    monkeypatch.setattr(ssl, "create_default_context", MagicMock(return_value=mock_ssl_ctx))
+    c1 = reg.get_connector(
+        "auth_ca",
+        scenario_authorities={"auth_ca": {"url": "https://example.com/state", "cafile": "ca.pem"}},
+    )
+    assert isinstance(c1, HttpStateAuthorityConnector)
+
+    # auth_conf has ssl_context as string path
+    c2 = reg.get_connector(
+        "auth_ctx_str",
+        scenario_authorities={
+            "auth_ctx_str": {
+                "url": "https://example.com/state",
+                "ssl_context": "/path/to/cert.pem",
+            }
+        },
+    )
+    assert isinstance(c2, HttpStateAuthorityConnector)
+
+    # auth_conf dict has no url or endpoint
+    with pytest.raises(KeyError):
+        reg.get_connector(
+            "auth_nourl", scenario_authorities={"auth_nourl": {"headers": {"Authorization": "x"}}}
+        )

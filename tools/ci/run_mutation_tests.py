@@ -694,6 +694,7 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
             "tests/unit/core/test_approval_store.py",
             "tests/unit/core/test_scope_bound_approval_persistence.py",
             "tests/unit/core/test_approval_events_and_hooks.py",
+            "tests/unit/core/test_runtime_mutation_plugin.py",
         ),
         frozenset(
             {
@@ -701,6 +702,9 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "get_request",
                 "get_request_by_run_id",
                 "resolve_request",
+                "_transition_request",
+                "revoke_request",
+                "consume_request",
                 "list_pending",
                 "delete_request",
             }
@@ -722,6 +726,22 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_hitl_resume_already_resolved",
                 "test_cross_scope_isolation_read_and_resolve",
                 "test_system_scope_can_resolve_legacy_unscoped_request",
+            ),
+            "_transition_request": (
+                "test_real_approval_faults_persist_transitions_and_bound_receipts",
+                "test_revoked_approval_cannot_resume_execution",
+                "test_approval_decision_race_serializes_independent_provider_instances",
+                "test_resolve_errors",
+                "test_cross_scope_isolation_read_and_resolve",
+                "test_system_scope_can_resolve_legacy_unscoped_request",
+            ),
+            "revoke_request": (
+                "test_real_approval_faults_persist_transitions_and_bound_receipts",
+                "test_revoked_approval_cannot_resume_execution",
+            ),
+            "consume_request": (
+                "test_real_approval_faults_persist_transitions_and_bound_receipts",
+                "test_atomic_approval_consumption_across_provider_instances",
             ),
             "list_pending": ("test_lifecycle",),
             "delete_request": (
@@ -801,6 +821,171 @@ CRITICAL_MUTATION_TARGETS += (
             ),
         },
     ),
+)
+
+# Extracted boundaries retain sentinel coverage rather than disappearing when
+# guards move out of the sandbox or approval provider modules.
+CRITICAL_MUTATION_TARGETS += tuple(
+    CriticalMutationTarget(
+        BASE_DIR / "eval_runner" / filename,
+        (
+            (
+                "tests/unit/core/test_approval_store.py::test_approval_consumption_validates_every_authorization_binding",
+                "tests/unit/core/test_approval_store.py::test_expiry_guard_is_shared_by_decision_and_action_consumption",
+                "tests/unit/core/test_approval_store.py::test_approval_expiry_rejects_exact_deadline",
+                "tests/unit/core/test_runtime_mutation_plugin.py::test_atomic_approval_consumption_across_provider_instances",
+            )
+            if filename == "approval_validation.py"
+            else (
+                "tests/unit/core/test_runtime_mutation_plugin.py",
+                "tests/unit/core/test_approval_store.py",
+            )
+        ),
+        frozenset(scopes),
+        scope_test_names=scope_tests,
+    )
+    for filename, scopes, scope_tests in (
+        (
+            "approval_validation.py",
+            ("validate_expiry", "consume_approval"),
+            {
+                "validate_expiry": (
+                    "test_approval_expiry_rejects_exact_deadline",
+                    "test_expiry_guard_is_shared_by_decision_and_action_consumption",
+                ),
+                "consume_approval": (
+                    "test_approval_consumption_validates_every_authorization_binding",
+                    "test_atomic_approval_consumption_across_provider_instances",
+                ),
+            },
+        ),
+        (
+            "commit_faults.py",
+            ("commit", "prepare_partial", "complete_partial", "stale_commit"),
+            {
+                "commit": ("test_commit_boundary_shared_access_and_atomic_rollback",),
+                "prepare_partial": (
+                    "test_partial_commit_delivery_requires_committed_and_omitted_writes",
+                    "test_state_partial_commit_interception",
+                ),
+                "complete_partial": (
+                    "test_partial_commit_observation_rejects_wrong_or_fully_committed_values",
+                    "test_partial_commit_mutates_actual_sandbox_state",
+                ),
+                "stale_commit": (
+                    "test_stale_commit_uses_actual_revision_conflict",
+                    "test_state_stale_commit_interception",
+                ),
+            },
+        ),
+        (
+            "tool_faults.py",
+            ("execute", "prepare_corruption", "acknowledge"),
+            {
+                "execute": (
+                    "test_tool_execute_deadline_validation_and_premature_cancellation",
+                    "test_tool_execute_latency_unjittered_when_timeout_set",
+                    "test_tool_timeout_boundary_interception",
+                    "test_composed_execution_faults_have_independent_receipts",
+                    "test_operation_timeout_error_is_not_runtime_deadline_delivery",
+                ),
+                "prepare_corruption": (
+                    "test_prepare_corruption_mismatched_node_raises",
+                    "test_tool_response_corruption_is_applied_after_execution",
+                ),
+                "acknowledge": (
+                    "test_faults_reach_real_session_consumer_with_bound_proofs",
+                    "test_tool_contract_violation_interception",
+                ),
+            },
+        ),
+        (
+            "runtime_faults.py",
+            (
+                "_identity",
+                "_observe",
+                "_receipt",
+                "cancel_at_tool_boundary",
+                "prepare_cancelled_commit",
+                "observe_cancelled_commit",
+                "approval_fault",
+                "_execute_approval_fault",
+            ),
+            {
+                "_identity": (
+                    "test_runtime_fault_identity_empty_run_id_raises",
+                    "test_composed_execution_faults_have_independent_receipts",
+                ),
+                "_observe": ("test_composed_execution_faults_have_independent_receipts",),
+                "_receipt": (
+                    "test_runtime_fault_receipt_invalid_delivery_raises",
+                    "test_composed_execution_faults_have_independent_receipts",
+                ),
+                "cancel_at_tool_boundary": ("test_tool_cancel_race_interception",),
+                "prepare_cancelled_commit": (
+                    "test_boundary_mutations_compile_requests_without_fabricating_results",
+                ),
+                "observe_cancelled_commit": (
+                    "test_runtime_fault_observe_cancelled_commit_diff_mismatch_raises",
+                    "test_boundary_mutations_compile_requests_without_fabricating_results",
+                ),
+                "approval_fault": (
+                    "test_runtime_approval_fault_cleanup_on_approved",
+                    "test_real_approval_faults_persist_transitions_and_bound_receipts",
+                    "test_approval_interceptions_and_manager_integration",
+                ),
+                "_execute_approval_fault": (
+                    "test_runtime_execute_approval_fault_matrix",
+                    "test_approval_revocation_requires_rejected_status_and_metadata",
+                    "test_real_approval_faults_persist_transitions_and_bound_receipts",
+                    "test_revoked_approval_cannot_resume_execution",
+                ),
+            },
+        ),
+        (
+            "approval_faults.py",
+            ("deliver_authorization_fault",),
+            {
+                "deliver_authorization_fault": (
+                    "test_deliver_authorization_fault_guards_and_stale_pre_approved",
+                    "test_deliver_authorization_fault_cross_run_ownership_mismatch",
+                    "test_real_approval_faults_persist_transitions_and_bound_receipts",
+                    "test_authorization_faults_exercise_existing_granted_requests",
+                )
+            },
+        ),
+        (
+            "mutation_evidence.py",
+            ("fault_receipt_failures", "_valid_fault_observations"),
+            {
+                "fault_receipt_failures": (
+                    "test_fault_receipt_failures_graph_node_parsing",
+                    "test_fault_receipt_failures_observation_schema_mutations",
+                    "test_fault_receipt_failures_ref_not_mapping",
+                    "test_fault_receipt_failures_preflight_rejection_matrix",
+                    "test_fault_delivery_validation_rejects_unbound_or_forged_evidence",
+                    "test_fault_delivery_requires_successful_mandatory_evidence_acknowledgement",
+                ),
+                "_valid_fault_observations": (
+                    "test_valid_fault_observations_approval_and_race_matrix",
+                    "test_valid_fault_observations_rejects_mixed_non_mapping",
+                    "test_fault_delivery_validation_rejects_unbound_or_forged_evidence",
+                ),
+            },
+        ),
+        (
+            "mutation_rules.py",
+            ("valid_extended_observations",),
+            {
+                "valid_extended_observations": (
+                    "test_valid_extended_observations_approval_and_tool_rules",
+                    "test_valid_extended_observations_rejects_mixed_non_mapping",
+                    "test_unknown_or_unbound_delivery_is_rejected_for_every_mutation",
+                    "test_each_execution_instance_requires_its_own_fault_observation",
+                )
+            },
+        ),
+    )
 )
 
 TARGET_MODULES = [target.path for target in CRITICAL_MUTATION_TARGETS]

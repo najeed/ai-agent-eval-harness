@@ -308,9 +308,9 @@ def test_combinator_concurrent(sample_scenario):
         ("enum_drift", "unsupported_enum_value", "UNKNOWN_CONTRACT_VALUE_999"),
         ("malformed_payload", "raw_payload_corrupted", '{"unclosed_json: true'),
         # Authorization & HITL
-        ("approval_stale", "approval_token", "EXPIRED_SIG_1970"),
-        ("approval_mismatch", "approval_transaction_id", "TX_MISMATCH_DIFFERENT_PAYMENT"),
-        ("approval_replay", "replay_token", "TOKEN_REUSED_PREVIOUS_SESSION"),
+        ("approval_stale", "approval_stale", True),
+        ("approval_mismatch", "approval_mismatch", True),
+        ("approval_replay", "approval_replay", True),
         # Context Decay
         ("memory_drift", "corrupted_entry", "inconsistent_intermediate_scratchpad_state"),
     ],
@@ -651,13 +651,12 @@ def test_new_tier_a_mutators(sample_scenario):
 
     # 5. commit_after_cancel
     m_cancel = mutate_scenario(sample_scenario, "commit_after_cancel")
-    assert m_cancel["metadata"]["commit_after_cancel"] is True
     assert m_cancel["workflow"]["nodes"][0]["commit_after_cancel"] is True
-    assert m_cancel["workflow"]["nodes"][0]["allow_post_cancellation_write"] is True
 
     # 6. stale_commit
     m_stale = mutate_scenario(sample_scenario, "stale_commit")
-    assert m_stale["workflow"]["nodes"][0]["expected_base_revision"] == "rev_deprecated_1970"
+    assert m_stale["workflow"]["nodes"][0]["stale_commit"] is True
+    assert "expected_base_revision" not in m_stale["workflow"]["nodes"][0]
 
     # 7. approval_race
     m_race = mutate_scenario(sample_scenario, "approval_race")
@@ -665,7 +664,8 @@ def test_new_tier_a_mutators(sample_scenario):
 
     # 8. approval_revocation
     m_rev = mutate_scenario(sample_scenario, "approval_revocation")
-    assert m_rev["workflow"]["nodes"][0]["approval_status"] == "REVOKED"
+    assert m_rev["workflow"]["nodes"][0]["approval_revocation"] is True
+    assert "approval_status" not in m_rev["workflow"]["nodes"][0]
 
 
 def test_objective_integrity_mutators(sample_scenario):

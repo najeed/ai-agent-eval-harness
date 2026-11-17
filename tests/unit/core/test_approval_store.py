@@ -27,6 +27,180 @@ from eval_runner.run_lifecycle import RunLifecycleState
 from eval_runner.session_components.approval_manager import SessionApprovalManager
 
 
+@pytest.mark.parametrize("kind", ["file", "sqlite"])
+@pytest.mark.parametrize(
+    "violation,code",
+    [
+        ("pending", "ApprovalNotGranted"),
+        ("revoked", "ApprovalNotGranted"),
+        ("expired", "ApprovalExpired"),
+        ("invalid_expiry", "ApprovalExpiryInvalid"),
+        ("nonfinite_expiry", "ApprovalExpiryInvalid"),
+        ("wrong_run", "ApprovalRunMismatch"),
+        ("wrong_payload", "ApprovalPayloadMismatch"),
+        ("empty_payload", "ApprovalPayloadMismatch"),
+        ("spent", "ApprovalReplayBlocked"),
+    ],
+)
+def test_approval_consumption_validates_every_authorization_binding(
+    tmp_path, kind, violation, code
+):
+    from eval_runner.approval_validation import ApprovalValidationError
+    from eval_runner.mutation_evidence import evidence_hash
+
+    store = (
+        FileApprovalStore(tmp_path / "approvals")
+        if kind == "file"
+        else SQLiteApprovalStore(tmp_path / "approvals.db")
+    )
+    metadata = {"expires_at": 9999999999}
+    if violation == "expired":
+        metadata["expires_at"] = 0
+    elif violation == "invalid_expiry":
+        metadata["expires_at"] = "tomorrow"
+    elif violation == "nonfinite_expiry":
+        metadata["expires_at"] = float("inf")
+    elif violation == "revoked":
+        metadata["revocation"] = {"revoked_by": "reviewer"}
+    elif violation == "spent":
+        metadata["consumption"] = {"authorization_id": "previous-authorization"}
+    payload_hash = evidence_hash({"amount": 100})
+    request = ApprovalRequest(
+        approval_token="authorize",
+        run_id="run-authorize",
+        outbound_payload_hash="" if violation == "empty_payload" else payload_hash,
+        status="PENDING" if violation == "pending" else "APPROVED",
+        metadata=metadata,
+    )
+    store.create_request(request)
+    with pytest.raises(ApprovalValidationError) as error:
+        store.consume_request(
+            "authorize",
+            run_id="other-run" if violation == "wrong_run" else request.run_id,
+            payload_hash=evidence_hash({"amount": 200})
+            if violation == "wrong_payload"
+            else payload_hash,
+        )
+    assert error.value.code == code
+    assert store.get_request("authorize").metadata == metadata
+
+
+@pytest.mark.parametrize("kind", ["file", "sqlite"])
+def test_approval_consumption_success_and_replay(tmp_path, kind):
+    from eval_runner.approval_validation import ApprovalValidationError
+    from eval_runner.mutation_evidence import evidence_hash
+
+    store = (
+        FileApprovalStore(tmp_path / "approvals")
+        if kind == "file"
+        else SQLiteApprovalStore(tmp_path / "approvals.db")
+    )
+    payload_hash = evidence_hash({"amount": 500})
+    req = ApprovalRequest(
+        approval_token="tok_valid",
+        run_id="run_valid",
+        outbound_payload_hash=payload_hash,
+        status="APPROVED",
+        metadata={"expires_at": 9999999999},
+    )
+    store.create_request(req)
+    consumed = store.consume_request("tok_valid", run_id="run_valid", payload_hash=payload_hash)
+    assert consumed.approval_token == "tok_valid"
+    assert "consumption" in consumed.metadata
+    assert consumed.metadata["consumption"]["run_id"] == "run_valid"
+    assert consumed.metadata["consumption"]["payload_hash"] == payload_hash
+
+    persisted = store.get_request("tok_valid")
+    assert persisted.metadata["consumption"] == consumed.metadata["consumption"]
+
+    # Replay attempt fails closed
+    with pytest.raises(ApprovalValidationError) as err:
+        store.consume_request("tok_valid", run_id="run_valid", payload_hash=payload_hash)
+    assert err.value.code == "ApprovalReplayBlocked"
+
+
+@pytest.mark.parametrize("kind", ["file", "sqlite"])
+def test_approval_consumption_missing_and_scope_mismatch(tmp_path, kind):
+    from agentv_runtime.interfaces import ScopeMismatchError
+    from agentv_runtime.scope import ScopeToken
+    from eval_runner.mutation_evidence import evidence_hash
+
+    store = (
+        FileApprovalStore(tmp_path / "approvals")
+        if kind == "file"
+        else SQLiteApprovalStore(tmp_path / "approvals.db")
+    )
+    with pytest.raises(KeyError, match="nonexistent_token"):
+        store.consume_request("nonexistent_token", run_id="run_1", payload_hash="hash")
+
+    payload_hash = evidence_hash({"amount": 10})
+    req = ApprovalRequest(
+        approval_token="tok_scoped",
+        run_id="run_scoped",
+        outbound_payload_hash=payload_hash,
+        status="APPROVED",
+        metadata={"expires_at": 9999999999},
+        scope={"tenant": "tenant_a"},
+        scope_digest="sha3_256:scope_a",
+    )
+    store.create_request(req)
+    with pytest.raises(ScopeMismatchError, match="Scope mismatch consuming authorization"):
+        store.consume_request(
+            "tok_scoped",
+            run_id="run_scoped",
+            payload_hash=payload_hash,
+            scope=ScopeToken.from_tags({"tenant": "tenant_b"}),
+        )
+
+
+def test_file_approval_store_consume_degraded_record(tmp_path):
+    from agentv_runtime.interfaces import ApprovalStorageDegradedError
+
+    store = FileApprovalStore(tmp_path / "approvals")
+    store.base_dir.mkdir(parents=True, exist_ok=True)
+    corrupt_token_file = store.base_dir / "token_corrupt_tok.json"
+    corrupt_token_file.write_text("{not valid json", encoding="utf-8")
+
+    with pytest.raises(ApprovalStorageDegradedError, match="Cannot verify authorization record"):
+        store.consume_request("corrupt_tok", run_id="run_1", payload_hash="hash")
+
+
+@pytest.mark.parametrize("kind", ["file", "sqlite"])
+def test_expiry_guard_is_shared_by_decision_and_action_consumption(tmp_path, kind):
+    from eval_runner.approval_validation import ApprovalValidationError
+
+    store = (
+        FileApprovalStore(tmp_path / "approvals")
+        if kind == "file"
+        else SQLiteApprovalStore(tmp_path / "approvals.db")
+    )
+    store.create_request(
+        ApprovalRequest(approval_token="expired", run_id="expired-run", metadata={"expires_at": 0})
+    )
+    with pytest.raises(ApprovalValidationError, match="ApprovalExpired"):
+        store.resolve_request("expired", "APPROVED")
+    assert store.get_request("expired").status == "PENDING"
+    assert store.resolve_request("expired", "REJECTED").status == "REJECTED"
+
+
+def test_approval_expiry_rejects_exact_deadline(monkeypatch):
+    from eval_runner.approval_validation import ApprovalValidationError, validate_expiry
+
+    monkeypatch.setattr("eval_runner.approval_validation.time.time", lambda: 100)
+    with pytest.raises(ApprovalValidationError, match="ApprovalExpired"):
+        validate_expiry(
+            ApprovalRequest(
+                approval_token="boundary", run_id="boundary-run", metadata={"expires_at": 100}
+            )
+        )
+    validate_expiry(
+        ApprovalRequest(
+            approval_token="future", run_id="boundary-run", metadata={"expires_at": 101}
+        )
+    )
+    validate_expiry(ApprovalRequest(approval_token="unbounded", run_id="boundary-run"))
+
+
 class TestApprovalRequest:
     def test_to_dict_and_from_dict(self):
         req = ApprovalRequest(
@@ -1216,3 +1390,488 @@ def test_system_scope_can_resolve_legacy_unscoped_request(tmp_path: Path, store_
         scope=system_scope,
     )
     assert resolved.status == "APPROVED"
+
+
+def test_matches_scope_from_tags_fallback():
+    from agentv_runtime.scope import ScopeToken
+    from eval_runner.reference.approval_store import _matches_scope
+
+    scope = ScopeToken.from_tags({"tenant": "tenant_a"})
+    req_match = ApprovalRequest(
+        approval_token="tok_1",
+        run_id="run_1",
+        turn_index=1,
+        scope={"tenant": "tenant_a"},
+        scope_digest="",  # forces tag matching fallback
+    )
+    assert _matches_scope(req_match, scope) is True
+
+    req_mismatch = ApprovalRequest(
+        approval_token="tok_2",
+        run_id="run_2",
+        turn_index=1,
+        scope={"tenant": "tenant_b"},
+        scope_digest="",
+    )
+    assert _matches_scope(req_mismatch, scope) is False
+
+
+def test_file_approval_store_degraded_and_corrupt_branches(tmp_path: Path, monkeypatch):
+    from agentv_runtime.interfaces import ApprovalStorageDegradedError, ScopeMismatchError
+    from agentv_runtime.scope import ScopeToken
+
+    store = FileApprovalStore(base_dir=tmp_path / "degraded_file_store")
+    tenant_scope = ScopeToken.from_tags({"tenant": "acme"})
+
+    # 1. Atomic write error
+    monkeypatch.setattr("os.replace", MagicMock(side_effect=OSError("disk failure")))
+    with pytest.raises(ApprovalStorageDegradedError, match="Failed writing approval record"):
+        store._atomic_write(tmp_path / "test.json", {"a": 1})
+    monkeypatch.undo()
+
+    # 2. Scanning OSError with scope
+    monkeypatch.setattr(Path, "glob", MagicMock(side_effect=OSError("glob failure")))
+    with pytest.raises(ApprovalStorageDegradedError, match="Error scanning approval directory"):
+        store.get_request("nonexistent", scope=tenant_scope)
+    monkeypatch.undo()
+
+    # 3. Corrupt run_file with scope
+    corrupt_run_file = store.base_dir / "corrupt_run.json"
+    corrupt_run_file.write_text("{bad-json", encoding="utf-8")
+    with pytest.raises(
+        ApprovalStorageDegradedError, match="Corrupt or unreadable run approval file"
+    ):
+        store.get_request_by_run_id("corrupt_run", scope=tenant_scope)
+
+    # 4. Corrupt token file
+    corrupt_token_file = store.base_dir / "token_corrupt_tok.json"
+    corrupt_token_file.write_text("{bad-json", encoding="utf-8")
+    with pytest.raises(ApprovalStorageDegradedError, match="Corrupt or unreadable token file"):
+        store.resolve_request("corrupt_tok", "APPROVED")
+
+    # 5. Resolve already resolved request & legacy unscoped by tenant
+    req = ApprovalRequest(
+        approval_token="tok_leg_unscoped",
+        run_id="run_leg_unscoped",
+        turn_index=1,
+        status="PENDING",
+        scope={},
+        scope_digest="",
+    )
+    store.create_request(req)
+    with pytest.raises(ScopeMismatchError, match="UNSCOPED_LEGACY and cannot be resolved"):
+        store.resolve_request("tok_leg_unscoped", "APPROVED", scope=tenant_scope)
+
+    # Resolve to APPROVED, then re-resolve raises ValueError
+    store.resolve_request("tok_leg_unscoped", "APPROVED")
+    with pytest.raises(ValueError, match="is already resolved"):
+        store.resolve_request("tok_leg_unscoped", "APPROVED")
+
+    # 6. List pending with corrupt file and scope
+    corrupt_pending = store.base_dir / "token_bad_pending.json"
+    corrupt_pending.write_text("{bad-json", encoding="utf-8")
+    with pytest.raises(ApprovalStorageDegradedError, match="Failed parsing pending approval file"):
+        store.list_pending(scope=tenant_scope)
+    corrupt_pending.unlink()
+
+    # 7. Delete request partial existence
+    req_del = ApprovalRequest(
+        approval_token="tok_del_partial",
+        run_id="run_del_partial",
+        turn_index=1,
+        status="PENDING",
+    )
+    store.create_request(req_del)
+    token_file = store.base_dir / "token_tok_del_partial.json"
+    token_file.unlink()  # remove token file so only run file exists
+    assert store.delete_request("tok_del_partial") is True
+    # Delete non-existent
+    assert store.delete_request("nonexistent_token") is False
+
+    # 8. Stream pending on FileApprovalStore
+    req_stream = ApprovalRequest(
+        approval_token="tok_stream_f", run_id="r_str", turn_index=1, status="PENDING"
+    )
+    store.create_request(req_stream)
+    stream_events = list(store.stream_pending())
+    assert any(e.request.approval_token == "tok_stream_f" for e in stream_events)
+
+
+def test_sqlite_approval_store_degraded_and_stream_branches(tmp_path: Path, monkeypatch):
+    import sqlite3
+
+    from agentv_runtime.interfaces import ApprovalStorageDegradedError, ScopeMismatchError
+    from agentv_runtime.scope import ScopeToken
+
+    db_path = str(tmp_path / "sqlite_degraded.db")
+    store = SQLiteApprovalStore(db_path=db_path)
+    tenant_scope = ScopeToken.from_tags({"tenant": "acme"})
+
+    # 1. Stream pending
+    req1 = ApprovalRequest(approval_token="tok_sq1", run_id="r1", turn_index=1, status="PENDING")
+    store.create_request(req1)
+    events = list(store.stream_pending())
+    assert len(events) == 1
+    assert events[0].event_type == "PENDING"
+    assert events[0].request.approval_token == "tok_sq1"
+
+    # 2. SQLite error on operations via mocked connection
+    mock_conn = MagicMock()
+    mock_conn.cursor.return_value.execute.side_effect = sqlite3.OperationalError("db locked")
+    monkeypatch.setattr(store, "_get_connection", lambda: mock_conn)
+
+    with pytest.raises(
+        ApprovalStorageDegradedError, match="SQLite database error writing approval request"
+    ):
+        store.create_request(req1)
+    with pytest.raises(
+        ApprovalStorageDegradedError, match="SQLite database error getting approval request"
+    ):
+        store.get_request("tok_sq1")
+    with pytest.raises(
+        ApprovalStorageDegradedError, match="SQLite database error getting approval by run_id"
+    ):
+        store.get_request_by_run_id("r1")
+    with pytest.raises(
+        ApprovalStorageDegradedError, match="SQLite database error resolving approval request"
+    ):
+        store.resolve_request("tok_sq1", "APPROVED")
+    with pytest.raises(
+        ApprovalStorageDegradedError, match="SQLite database error listing pending approvals"
+    ):
+        store.list_pending(scope=tenant_scope)
+
+    monkeypatch.setattr(store, "get_request", lambda *args, **kwargs: req1)
+    with pytest.raises(
+        ApprovalStorageDegradedError, match="SQLite database error deleting approval request"
+    ):
+        store.delete_request("tok_sq1")
+    monkeypatch.undo()
+
+    # 3. Resolve legacy unscoped by tenant scope in SQLite
+    req_leg = ApprovalRequest(
+        approval_token="tok_sq_leg",
+        run_id="r_leg",
+        turn_index=1,
+        status="PENDING",
+        scope={},
+        scope_digest="",
+    )
+    store.create_request(req_leg)
+    with pytest.raises(ScopeMismatchError, match="UNSCOPED_LEGACY and cannot be resolved"):
+        store.resolve_request("tok_sq_leg", "APPROVED", scope=tenant_scope)
+
+    # 4. Resolve already resolved in SQLite
+    store.resolve_request("tok_sq_leg", "APPROVED")
+    with pytest.raises(ValueError, match="is already resolved"):
+        store.resolve_request("tok_sq_leg", "APPROVED")
+
+    # 5. SQLite row with fewer than 21 items in _row_to_request
+    row_short = (
+        "tok_short",
+        "r_s",
+        0,
+        "hash",
+        "role",
+        "{}",
+        "PENDING",
+        "rule",
+        "chk",
+        "{}",
+        "prompt",
+        123.0,
+        None,
+        None,
+        None,
+        None,
+        "{}",
+    )
+    req_short = store._row_to_request(row_short)
+    assert req_short.approval_token == "tok_short"
+    assert req_short.scope == {}
+
+    # 6. SQLite revoke request
+    req_to_revoke = ApprovalRequest(
+        approval_token="tok_rev_sq", run_id="r_rev", turn_index=1, status="PENDING"
+    )
+    store.create_request(req_to_revoke)
+    rev_sq = store.revoke_request("tok_rev_sq", decided_by="admin", decision_reason="compromised")
+    assert rev_sq.status == "REJECTED"
+    assert "revocation" in rev_sq.metadata
+    with pytest.raises(ValueError, match="A revoked approval token cannot be republished"):
+        store.create_request(
+            ApprovalRequest(
+                approval_token="tok_rev_sq", run_id="r_rev", turn_index=2, status="PENDING"
+            )
+        )
+
+    # 7. Scope mismatch on SQLite resolve
+    other_scope = ScopeToken.from_tags({"tenant": "other"})
+    req_other = ApprovalRequest(
+        approval_token="tok_sq_other",
+        run_id="r_other",
+        turn_index=1,
+        status="PENDING",
+        scope=other_scope.tags,
+        scope_digest=other_scope.digest,
+    )
+    store.create_request(req_other)
+    with pytest.raises(ScopeMismatchError, match="Scope mismatch: active scope cannot resolve"):
+        store.resolve_request("tok_sq_other", "APPROVED", scope=tenant_scope)
+
+    # 8. get_request_by_run_id when rows exist but none match scope
+    assert store.get_request_by_run_id("r_other", scope=tenant_scope) is None
+    # 8b. list_pending when pending rows exist but none match scope
+    assert store.list_pending(scope=tenant_scope) == []
+
+    # 9. Concurrently resolved in SQLite (rowcount != 1)
+    mock_cursor = MagicMock()
+    mock_cursor.fetchone.return_value = (
+        "tok_c",
+        "rc",
+        0,
+        "h",
+        "role",
+        "{}",
+        "PENDING",
+        "rule",
+        "chk",
+        "{}",
+        "prompt",
+        123.0,
+        None,
+        None,
+        None,
+        None,
+        "{}",
+        "{}",
+        "",
+        None,
+        None,
+    )
+    mock_cursor.rowcount = 0
+    mock_c = MagicMock()
+    mock_c.cursor.return_value = mock_cursor
+    monkeypatch.setattr(store, "_get_connection", lambda: mock_c)
+    with pytest.raises(ValueError, match="Approval request was concurrently resolved"):
+        store.resolve_request("tok_c", "APPROVED")
+    monkeypatch.undo()
+
+
+def test_file_approval_store_extra_branches(tmp_path: Path, monkeypatch):
+    from agentv_runtime.interfaces import ApprovalStorageDegradedError, ScopeMismatchError
+    from agentv_runtime.scope import ScopeToken
+
+    base_dir = tmp_path / "file_extra"
+    store = FileApprovalStore(base_dir=base_dir)
+    tenant_scope = ScopeToken.from_tags({"tenant": "acme"})
+    other_scope = ScopeToken.from_tags({"tenant": "other"})
+
+    # Non-existent run_id
+    assert store.get_request_by_run_id("missing_run") is None
+
+    # Revoke request in FileApprovalStore
+    req = ApprovalRequest(
+        approval_token="tok_f_rev", run_id="r_f_rev", turn_index=1, status="PENDING"
+    )
+    store.create_request(req)
+    rev = store.revoke_request("tok_f_rev", decided_by="admin", decision_reason="withdrawn")
+    assert rev.status == "REJECTED"
+    assert "revocation" in rev.metadata
+    with pytest.raises(ValueError, match="A revoked approval token cannot be republished"):
+        store.create_request(
+            ApprovalRequest(
+                approval_token="tok_f_rev", run_id="r_f_rev", turn_index=2, status="PENDING"
+            )
+        )
+
+    # Scope mismatch on resolve in FileApprovalStore
+    req_other = ApprovalRequest(
+        approval_token="tok_f_other",
+        run_id="r_f_other",
+        turn_index=1,
+        status="PENDING",
+        scope=other_scope.tags,
+        scope_digest=other_scope.digest,
+    )
+    store.create_request(req_other)
+    with pytest.raises(ScopeMismatchError, match="Scope mismatch: active scope cannot resolve"):
+        store.resolve_request("tok_f_other", "APPROVED", scope=tenant_scope)
+
+    # list_pending with scope filters out req_other
+    assert store.list_pending(scope=tenant_scope) == []
+
+    # Glob failure in list_pending
+    monkeypatch.setattr(Path, "glob", MagicMock(side_effect=OSError("disk error")))
+    with pytest.raises(ApprovalStorageDegradedError, match="Error scanning approval directory"):
+        store.list_pending(scope=tenant_scope)
+    assert store.list_pending() == []
+    monkeypatch.undo()
+
+
+def test_matches_scope_edge_branches():
+    from agentv_runtime.scope import ScopeToken
+    from eval_runner.reference.approval_store import _matches_scope
+
+    tenant_scope = ScopeToken.from_tags({"tenant": "acme"})
+    # Legacy unscoped request with tenant scope
+    req_leg = ApprovalRequest(
+        approval_token="t_leg", run_id="r", turn_index=0, scope={}, scope_digest=""
+    )
+    assert not _matches_scope(req_leg, tenant_scope)
+
+    # Request is scoped, but scope has no digest: falls back to req_token.matches(scope)
+    req_with_dig = ApprovalRequest(
+        approval_token="t_wd",
+        run_id="r",
+        turn_index=0,
+        scope={"tenant": "acme"},
+        scope_digest="some_digest",
+    )
+    scope_no_dig = ScopeToken(tags={"tenant": "acme"}, digest="", is_system=False)
+    assert not _matches_scope(req_with_dig, scope_no_dig)
+
+
+def test_migrate_unscoped_approval_branches(tmp_path: Path, monkeypatch):
+    from eval_runner.reference.approval_store import migrate_unscoped_approval
+
+    store = FileApprovalStore(base_dir=tmp_path / "mig_approvals")
+
+    # 1. Not found -> KeyError
+    with pytest.raises(KeyError, match="not found"):
+        migrate_unscoped_approval("missing_token", store=store)
+
+    # 2. Already scoped -> return as is
+    req_scoped = ApprovalRequest(
+        approval_token="tok_already_scoped",
+        run_id="run_scoped",
+        turn_index=1,
+        scope={"tenant": "t1"},
+        scope_digest="sha3_digest1",
+    )
+    store.create_request(req_scoped)
+    mig_res = migrate_unscoped_approval("tok_already_scoped", store=store)
+    assert mig_res.approval_token == req_scoped.approval_token
+    assert mig_res.run_id == req_scoped.run_id
+
+    # 3. Run ID mismatch
+    req_unscoped = ApprovalRequest(
+        approval_token="tok_mig",
+        run_id="run_orig",
+        turn_index=1,
+        scope={},
+        scope_digest="",
+    )
+    store.create_request(req_unscoped)
+    with pytest.raises(ValueError, match="Run ID mismatch"):
+        migrate_unscoped_approval("tok_mig", run_id="run_mismatch", store=store)
+
+    # 4. Fallback to manifest when submission has no scope
+    mock_run_store = MagicMock()
+    mock_run_store.get_submission.return_value = None
+    mock_run_store.get_run_manifest.return_value = {
+        "manifest_id": "man_mig_01",
+        "scope": {"tenant": "mig_tenant"},
+        "scope_digest": "",
+    }
+    migrated = migrate_unscoped_approval(
+        "tok_mig", run_id="run_orig", store=store, run_store=mock_run_store
+    )
+    assert migrated.scope == {"tenant": "mig_tenant"}
+    assert migrated.manifest_id == "man_mig_01"
+    assert "migration" in migrated.metadata
+    assert "migrated_at" in migrated.metadata["migration"]
+
+    # 4b. run_store is None (falls back to resolve_run_store)
+    req_unscoped_rs_none = ApprovalRequest(
+        approval_token="tok_mig_rs_none",
+        run_id="run_orig_rs_none",
+        turn_index=1,
+        scope={},
+        scope_digest="",
+    )
+    store.create_request(req_unscoped_rs_none)
+    monkeypatch.setattr("eval_runner.runtime_services.resolve_run_store", lambda: mock_run_store)
+    migrated_rs_none = migrate_unscoped_approval(
+        "tok_mig_rs_none", run_id="run_orig_rs_none", store=store, run_store=None
+    )
+    assert migrated_rs_none.scope == {"tenant": "mig_tenant"}
+
+    # 5. Migration directly from submission
+    req_unscoped2 = ApprovalRequest(
+        approval_token="tok_mig_sub",
+        run_id="run_sub_orig",
+        turn_index=1,
+        scope={},
+        scope_digest="",
+    )
+    store.create_request(req_unscoped2)
+    mock_run_store.get_submission.return_value = {"context": {"tenant": "sub_tenant"}}
+    migrated_sub = migrate_unscoped_approval(
+        "tok_mig_sub", run_id="run_sub_orig", store=store, run_store=mock_run_store
+    )
+    assert migrated_sub.scope == {"tenant": "sub_tenant"}
+
+    # 6. Cannot migrate when no scope exists
+    req_unscoped3 = ApprovalRequest(
+        approval_token="tok_mig_noscope",
+        run_id="run_noscope",
+        turn_index=1,
+        scope={},
+        scope_digest="",
+    )
+    store.create_request(req_unscoped3)
+    mock_run_store.get_submission.return_value = None
+    mock_run_store.get_run_manifest.return_value = None
+    with pytest.raises(ValueError, match="no verified run or unambiguous scope"):
+        migrate_unscoped_approval(
+            "tok_mig_noscope", run_id="run_noscope", store=store, run_store=mock_run_store
+        )
+
+    # 6b. Cannot migrate when manifest has non-mapping context/scope
+    req_unscoped3b = ApprovalRequest(
+        approval_token="tok_mig_nomap",
+        run_id="run_nomap",
+        turn_index=1,
+        scope={},
+        scope_digest="",
+    )
+    store.create_request(req_unscoped3b)
+    mock_run_store.get_run_manifest.return_value = {
+        "manifest_id": "m_nomap",
+        "context": "not_a_mapping",
+    }
+    with pytest.raises(ValueError, match="no verified run or unambiguous scope"):
+        migrate_unscoped_approval(
+            "tok_mig_nomap", run_id="run_nomap", store=store, run_store=mock_run_store
+        )
+        migrate_unscoped_approval(
+            "tok_mig_noscope", run_id="run_noscope", store=store, run_store=mock_run_store
+        )
+
+    # 7. Scope digest mismatch in provenance
+    req_unscoped4 = ApprovalRequest(
+        approval_token="tok_mig_mismatch",
+        run_id="run_mismatch_digest",
+        turn_index=1,
+        scope={},
+        scope_digest="",
+    )
+    store.create_request(req_unscoped4)
+    mock_run_store.get_submission.return_value = None
+    mock_run_store.get_run_manifest.return_value = {
+        "context": {"tenant": "mismatch_tenant"},
+        "scope_digest": "corrupted_or_different_digest",
+    }
+    with pytest.raises(ValueError, match="Scope digest mismatch in run provenance"):
+        migrate_unscoped_approval(
+            "tok_mig_mismatch", run_id="run_mismatch_digest", store=store, run_store=mock_run_store
+        )
+
+
+def test_get_default_approval_store_extension_branch(monkeypatch):
+    mock_resolve = MagicMock(return_value="mock_extension_store")
+    monkeypatch.setattr("agentv_runtime.discovery.resolve_extension", mock_resolve)
+    res = get_default_approval_store(store_type="custom_extension")
+    assert res == "mock_extension_store"
+    mock_resolve.assert_called_once()

@@ -13,7 +13,7 @@ decomposed session components under `eval_runner/session_components/`:
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -21,6 +21,7 @@ import eval_runner.metrics as metrics
 from eval_runner.events import EventEmitter
 from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.session_components import (
+    ApprovalBoundaryRejected,
     SessionApprovalManager,
     SessionCheckpointManager,
     SessionMetricsCalculator,
@@ -143,7 +144,7 @@ async def test_session_metrics_calculator_comprehensive():
     # metrics are recorded as EVALUATION_INVALID rows, never silently skipped.
     assert len(res["metrics"]) == 4
     assert res["metrics"][0]["metric"] == "test_sync_metric"
-    assert res["metrics"][0]["success"] is True
+    assert res["metrics"][0]["success"] is True, f"Metric 0 details: {res['metrics'][0]}"
     assert res["metrics"][1]["metric"] == "test_async_metric"
     assert res["metrics"][1]["success"] is True
     assert res["metrics"][2]["metric"] == "unknown_metric_skipped"
@@ -350,6 +351,23 @@ async def test_tool_execution_coordinator_all_branches():
         coord4.execute("boom", {}, handler=fail_handler)
     assert coord4.executed_tools[0]["status"] == "error"
 
+    # 5. Snapshot and Restore coverage
+    coord_res = ToolExecutionCoordinator()
+    coord_res.restore(None)
+    assert coord_res.executed_tools == []
+    coord_res.restore("non-dict")
+    assert coord_res.executed_tools == []
+    coord_res.restore({"other_key": 123})
+    assert coord_res.executed_tools == []
+
+    coord_res.restore({"executed_tools": [{"tool_name": "t1", "status": "ok"}]})
+    assert len(coord_res.executed_tools) == 1
+    assert coord_res.executed_tools[0]["tool_name"] == "t1"
+
+    coord_res.restore({"tool_names": ["legacy_tool_1", "legacy_tool_2"]})
+    assert len(coord_res.executed_tools) == 2
+    assert coord_res.executed_tools[0] == {"tool_name": "legacy_tool_1", "status": "restored"}
+
 
 @pytest.mark.asyncio
 async def test_checkpoint_and_turn_state_managers(tmp_path):
@@ -420,3 +438,128 @@ async def test_checkpoint_and_turn_state_managers(tmp_path):
     assert tsm2.current_turn == 5
     assert len(tsm2.message_history) == 1
     assert tsm2.message_history[0]["content"] == "Restored"
+
+
+@pytest.mark.asyncio
+async def test_session_approval_manager_extended_branches(tmp_path, monkeypatch):
+    import json
+
+    from eval_runner.events import EvidenceDeliveryError
+
+    store = LocalFileRunStore(tmp_path / "app-ext-store")
+    store.create_run("run-ext-001", "checkpoint-test")
+
+    # 1. Unencodable action payload raises ActionPayloadCanonicalizationFailed
+    app_mgr_enc = SessionApprovalManager(run_id="run-ext-001", run_store=store)
+    with pytest.raises(ValueError, match="ActionPayloadCanonicalizationFailed"):
+        app_mgr_enc.create_durable_request(
+            turn_index=1, action_payload={"unserializable": object()}
+        )
+
+    # 2. Missing run_store raises RunStorageProviderBindingRequired
+    app_mgr_none = SessionApprovalManager(run_id="run-ext-none", run_store=None)
+    with pytest.raises(RuntimeError, match="RunStorageProviderBindingRequired"):
+        app_mgr_none.create_durable_request(turn_index=1, action_payload={})
+
+    # 3. Store exception raised during scope validation
+    mock_store = MagicMock()
+    mock_store.get_run.side_effect = OSError("storage error")
+    app_mgr_err = SessionApprovalManager(run_id="run-ext-err", run_store=mock_store)
+    with pytest.raises(
+        RuntimeError,
+        match="RunStorageProviderBindingRequired: approval scope could not be validated",
+    ):
+        app_mgr_err.create_durable_request(turn_index=1, action_payload={})
+
+    # 4. Evidence capture in run record triggers resume & finalize
+    mock_capture_bus = MagicMock()
+    monkeypatch.setattr("eval_runner.events.EventEmitter.get_global", lambda: mock_capture_bus)
+    store.create_run("run-ext-002", "checkpoint-test")
+    rec = store.get_run("run-ext-002")
+    rec["status_details"] = {"evidence_capture": {"complete": False}}
+    (tmp_path / "app-ext-store" / "run-ext-002" / "run_record.json").write_text(json.dumps(rec))
+
+    app_mgr_cap = SessionApprovalManager(run_id="run-ext-002", run_store=store)
+    app = app_mgr_cap.create_durable_request(turn_index=1, action_payload={"cmd": "test"})
+
+    # Ownership mismatch check
+    store.create_run("run-ext-wrong", "checkpoint-test")
+    rec_wrong = store.get_run("run-ext-wrong")
+    rec_wrong["status_details"] = {"evidence_capture": {"complete": False}}
+    (tmp_path / "app-ext-store" / "run-ext-wrong" / "run_record.json").write_text(
+        json.dumps(rec_wrong)
+    )
+    app_mgr_wrong = SessionApprovalManager(run_id="run-ext-wrong", run_store=store)
+    with pytest.raises(ApprovalBoundaryRejected, match="Approval capture ownership mismatch"):
+        app_mgr_wrong.resolve_durable_request(app.approval_token, "APPROVED")
+
+    # Resume capture and finalize resolution
+    res_app = app_mgr_cap.resolve_durable_request(
+        app.approval_token, "APPROVED", decided_by="auditor"
+    )
+    assert res_app.status == "APPROVED"
+    assert mock_capture_bus.resume_capture.called
+    assert mock_capture_bus.finalize_capture.called
+
+    # Already resolved branch (line 458) where store returns resolved request
+    monkeypatch.setattr(app_mgr_cap.approval_store, "resolve_request", lambda **kwargs: res_app)
+    res_again = app_mgr_cap.resolve_durable_request(app.approval_token, "APPROVED")
+    assert res_again.status == "APPROVED"
+
+    # Pre-computed outbound_payload_hash branch (line 163->176)
+    app_prehash = app_mgr_cap.create_durable_request(
+        turn_index=1, action_payload={"cmd": "test"}, outbound_payload_hash="sha3_256:precomputed"
+    )
+    assert app_prehash is not None
+
+    # Effective store is None branch (line 465->480)
+    store.create_run("run-ext-003", "checkpoint-test")
+    app_mgr_nostore = SessionApprovalManager(run_id="run-ext-003", run_store=store)
+    app_nostore = app_mgr_nostore.create_durable_request(turn_index=1, action_payload={})
+    app_mgr_nostore.run_store = None
+    monkeypatch.setattr("eval_runner.runtime_services.resolve_run_store", lambda: None)
+    res_nostore = app_mgr_nostore.resolve_durable_request(app_nostore.approval_token, "REJECTED")
+    assert res_nostore.status == "REJECTED"
+
+    # EvidenceDeliveryError propagation (line 499)
+    mock_bus = MagicMock()
+    mock_bus.emit.side_effect = EvidenceDeliveryError("Bus delivery failure")
+    store.create_run("run-ext-004", "checkpoint-test")
+    app_mgr_bus = SessionApprovalManager(run_id="run-ext-004", run_store=store, event_bus=mock_bus)
+    app_bus = app_mgr_bus.create_durable_request(turn_index=1, action_payload={})
+    with pytest.raises(EvidenceDeliveryError):
+        app_mgr_bus.resolve_durable_request(app_bus.approval_token, "REJECTED")
+
+    # wait_for_durable_resolution branches (lines 531-545)
+    # Token unavailable -> LookupError
+    with pytest.raises(LookupError, match="is unavailable"):
+        await app_mgr_cap.wait_for_durable_resolution("nonexistent-token", timeout_seconds=0.05)
+
+    # Already resolved -> immediate return
+    resolved_wait = await app_mgr_cap.wait_for_durable_resolution(
+        app.approval_token, timeout_seconds=0.05
+    )
+    assert resolved_wait.status == "APPROVED"
+
+    # Timeout reached -> resolves as REJECTED by system_timeout
+    store.create_run("run-ext-005", "checkpoint-test")
+    app_mgr_timeout = SessionApprovalManager(run_id="run-ext-005", run_store=store)
+    app_timeout = app_mgr_timeout.create_durable_request(turn_index=1, action_payload={})
+    timeout_resolved = await app_mgr_timeout.wait_for_durable_resolution(
+        app_timeout.approval_token, timeout_seconds=0.02, poll_seconds=0.005
+    )
+    assert timeout_resolved.status == "REJECTED"
+    assert timeout_resolved.decided_by == "system_timeout"
+
+    # Test _deliver_approval_fault when status != REJECTED (line 396)
+    mock_store_fault = MagicMock()
+    mock_store_fault.get_request.return_value = MagicMock(status="PENDING")
+    app_mgr_fault = SessionApprovalManager(run_id="run-fault", approval_store=mock_store_fault)
+    mock_req = MagicMock(approval_token="tok-fault")
+    with patch("eval_runner.runtime_faults.FaultDeliveryController.approval_fault"):
+        with pytest.raises(RuntimeError, match="did not withdraw its permission"):
+            app_mgr_fault._deliver_approval_fault(
+                {"fault": "approval_race", "node_id": "n1"},
+                mock_req,
+                None,
+            )

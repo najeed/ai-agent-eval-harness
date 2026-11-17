@@ -117,21 +117,6 @@ async def test_commit_interceptor_decision_controls_the_observed_state(
     ]
     assert len(delivery_calls) == 0
 
-    # With a valid mutation_receipt mapping and event_bus, receipt must be delivered
-    if allowed:
-        p_receipt = SimpleNamespace(
-            trigger_interceptor=lambda *args: {
-                "allowed": True,
-                "mutation_receipt": {"receipt_id": "rcpt_1"},
-            }
-        )
-        sb_receipt = sandbox_for(tmp_path, allowed=True, plugin=p_receipt)
-        await sb_receipt.execute("transfer", {})
-        sb_receipt.event_bus.emit.assert_any_call(
-            "mutation_delivery",
-            {"category": "MUTATION_DELIVERY", "mutation_receipt": {"receipt_id": "rcpt_1"}},
-        )
-
 
 @pytest.mark.asyncio
 async def test_malformed_intercepted_diff_is_rejected_before_any_state_write(tmp_path):
@@ -145,18 +130,14 @@ async def test_malformed_intercepted_diff_is_rejected_before_any_state_write(tmp
 
 @pytest.mark.asyncio
 async def test_mutation_delivery_never_emitted_when_precheck_fails(tmp_path):
-    p_receipt = SimpleNamespace(
-        trigger_interceptor=lambda *args: {
-            "allowed": True,
-            "mutation_receipt": {"receipt_id": "rcpt_denied"},
-        }
-    )
+    p_receipt = SimpleNamespace(trigger_interceptor=lambda *args: {"allowed": True})
     sandbox = sandbox_for(tmp_path, allowed=True, plugin=p_receipt)
     # Configure shared write path where agent has no permission
     res = await sandbox.execute(
         "transfer", {"shared_write": {"path": "forbidden/secret", "value": 42}}
     )
     assert res["status"] == "error"
+    assert sandbox.state == {"balance": 100}
     delivery_calls = [
         c
         for c in sandbox.event_bus.emit.call_args_list
@@ -166,13 +147,8 @@ async def test_mutation_delivery_never_emitted_when_precheck_fails(tmp_path):
 
 
 @pytest.mark.asyncio
-async def test_mutation_delivery_rollback_emitted_on_commit_failure(tmp_path):
-    p_receipt = SimpleNamespace(
-        trigger_interceptor=lambda *args: {
-            "allowed": True,
-            "mutation_receipt": {"receipt_id": "rcpt_rollback"},
-        }
-    )
+async def test_failed_commit_restores_state_without_claiming_fault_delivery(tmp_path):
+    p_receipt = SimpleNamespace(trigger_interceptor=lambda *args: {"allowed": True})
     sandbox = sandbox_for(tmp_path, allowed=True, plugin=p_receipt)
     # Mock write permission check to succeed, but write() itself to fail
     sandbox.shared_state.can_write = lambda agent, path: True
@@ -191,20 +167,21 @@ async def test_mutation_delivery_rollback_emitted_on_commit_failure(tmp_path):
     ]
     assert len(delivered_calls) == 0
 
-    # Verify mutation_delivery_rollback WAS emitted
+    # A failed commit cannot promote an interceptor claim into delivery evidence.
     rollback_calls = [
         c
         for c in sandbox.event_bus.emit.call_args_list
         if c[0] and c[0][0] == "mutation_delivery_rollback"
     ]
-    assert len(rollback_calls) == 1
-    assert rollback_calls[0][0][1]["status"] == "rolled_back"
-    assert rollback_calls[0][0][1]["mutation_receipt"] == {"receipt_id": "rcpt_rollback"}
+    assert len(rollback_calls) == 0
+    assert sandbox.commit_boundary.revision == 0
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("interceptor_receipt", [None, "non_dict_receipt", 12345])
-async def test_mutation_delivery_rollback_not_emitted_when_no_valid_receipt(
+@pytest.mark.parametrize(
+    "interceptor_receipt", [{"receipt_id": "unbound"}, "non_dict_receipt", 12345]
+)
+async def test_unbound_commit_receipts_rejected_before_any_state_write(
     tmp_path, interceptor_receipt
 ):
     plugin = None
@@ -219,11 +196,10 @@ async def test_mutation_delivery_rollback_not_emitted_when_no_valid_receipt(
     sandbox.shared_state.can_write = lambda agent, path: True
     sandbox.shared_state.write = lambda agent, path, val: False
 
-    res = await sandbox.execute(
-        "transfer", {"shared_write": {"path": "shared/balance", "value": 999}}
-    )
-    assert res["status"] == "error"
-    assert res["error_code"] == "ATOMIC_COMMIT_FAILURE"
+    with pytest.raises(ValueError, match="execution directives, not receipts"):
+        await sandbox.execute(
+            "transfer", {"shared_write": {"path": "shared/balance", "value": 999}}
+        )
     assert sandbox.state == {"balance": 100}
 
     # With no valid dict receipt, neither delivery nor rollback should be emitted

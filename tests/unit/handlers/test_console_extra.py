@@ -80,7 +80,10 @@ def test_save_scenario_exception(client, tmp_path):
     (tmp_path / "industries" / "fin" / "scenarios").mkdir(parents=True)
     with (
         patch("eval_runner.console.routes.config.PROJECT_ROOT", tmp_path),
-        patch("builtins.open", side_effect=Exception("Disk full")),
+        patch(
+            "eval_runner.console.routes.scenarios.write_scenario",
+            side_effect=OSError("Disk full"),
+        ),
     ):
         res = client.post("/api/scenarios", json={"id": "test", "industry": "fin"})
         assert res.status_code == 500

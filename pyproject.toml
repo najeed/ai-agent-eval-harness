@@ -78,7 +78,7 @@ langchain-ollama = [
     "langchain-ollama>=1.1.0",
 ]
 langsmith = [
-    "langsmith==0.14.17",
+    "langsmith==0.15.0",
 ]
 
 # 4. Domain & Task Extras
@@ -117,7 +117,7 @@ langchain-all = [
     "langchain-anthropic>=1.7.10",
     "langchain-google-genai>=4.5.0",
     "langchain-ollama>=1.1.0",
-    "langsmith==0.14.17",
+    "langsmith==0.15.0",
 ]
 
 all = [
@@ -135,7 +135,7 @@ all = [
     "langchain-anthropic>=1.7.10",
     "langchain-google-genai>=4.5.0",
     "langchain-ollama>=1.1.0",
-    "langsmith==0.14.17",
+    "langsmith==0.15.0",
     "pypdf==7.1.0",
     "python-docx==1.2.0",
     "lxml==6.1.3",

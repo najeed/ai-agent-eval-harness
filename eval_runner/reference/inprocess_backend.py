@@ -608,7 +608,8 @@ class InProcessExecutionBackend(ExecutionBackend):
                 )
             from eval_runner.runtime_services import resolve_approval_store
 
-            approval = resolve_approval_store().get_request(resumption_token)
+            approval_store = resolve_approval_store()
+            approval = approval_store.get_request(resumption_token)
             if not approval or approval.run_id != run_id or approval.status != "APPROVED":
                 raise PermissionError(
                     f"Cannot resume run '{run_id}': approval has not been authoritatively approved."
@@ -689,6 +690,11 @@ class InProcessExecutionBackend(ExecutionBackend):
                     f"scope_digest '{cp_scope_digest}' "
                     f"missing from approval record (approval scope binding mismatch)."
                 )
+
+            consume = getattr(approval_store, "consume_request", None)
+            if not callable(consume):
+                raise PermissionError("Approval provider cannot atomically consume authorization")
+            consume(resumption_token, run_id=run_id, payload_hash=f"sha3_256:{c_hash}")
 
         # Re-open the durable lifecycle before the background runner emits its
         # first event.  The approval gate deliberately closes trace writes;

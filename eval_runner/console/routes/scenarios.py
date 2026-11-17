@@ -21,6 +21,11 @@ from agentv_runtime.manifest import (
 )
 from eval_runner import config, engine, loader, mutator, spec_parser, taxonomy  # noqa: F401
 from eval_runner.catalog import ScenarioCatalog
+from eval_runner.console.scenario_store import (
+    ScenarioRevisionConflict,
+    scenario_save_path,
+    write_scenario,
+)
 
 from ..auth_manager import Permission, active_runtime_context, require_permission
 from ..providers import get_run_store
@@ -1158,7 +1163,6 @@ def save_scenario():
     and optimistic concurrency control via expected_revision_hash.
     """
 
-    from agentv_runtime.manifest import compute_scenario_hash
     from eval_runner import config
 
     body = request.json or {}
@@ -1179,6 +1183,8 @@ def save_scenario():
         return jsonify({"error": "Invalid payload: expected scenario JSON object"}), 400
 
     meta = data.setdefault("metadata", {})
+    if not isinstance(meta, dict):
+        return jsonify({"error": "Invalid scenario metadata"}), 400
     # Hoist and remove root-level name and title to conform to AES 1.4 root schema
     if "name" in data:
         root_name = data.pop("name")
@@ -1192,18 +1198,19 @@ def save_scenario():
     scen_id = meta.get("id") or data.get("id")
     if scen_id and "id" in data:
         data["id"] = scen_id
-    industry = data.get("industry") or meta.get("industry") or "generic"
+    industry = data.get("industry", meta.get("industry", "generic"))
 
-    if not scen_id or not re.match(r"^[a-zA-Z0-9_\-]+$", scen_id):
+    if not isinstance(scen_id, str) or not re.fullmatch(r"[a-zA-Z0-9_\-]+", scen_id):
         return jsonify({"error": "Invalid or missing scenario ID"}), 400
 
     scen_id = re.sub(r"[^a-zA-Z0-9_\-]", "_", scen_id)
     meta["id"] = scen_id
     meta.setdefault("version", data.get("version", "1.0.0"))
 
-    save_dir = config.PROJECT_ROOT / "industries" / industry / "scenarios"
-    save_dir.mkdir(parents=True, exist_ok=True)
-    save_path = save_dir / f"{scen_id}.json"
+    try:
+        save_path = scenario_save_path(config.PROJECT_ROOT, industry, scen_id)
+    except (ValueError, OSError) as exc:
+        return jsonify({"error": str(exc)}), 400
 
     valid, issues = validate_scenario_structure(data)
 
@@ -1212,56 +1219,21 @@ def save_scenario():
     # Creation defaults to Draft unless valid structure is provided with Validated/Ready;
     # editing existing files preserves the current on-disk status.
     # All status transitions must go exclusively through /api/scenarios/<id>/transition.
-    if save_path.exists():
-        try:
-            with open(save_path, encoding="utf-8") as f_curr:
-                curr_data = json.load(f_curr)
-                existing_status = (
-                    curr_data.get("metadata", {}).get("status")
-                    or curr_data.get("status")
-                    or "Draft"
-                )
-                meta["status"] = existing_status
-        except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError):
-            logger.debug(
-                "save_scenario failed", extra={"operation": "save_scenario"}, exc_info=True
-            )
-            meta["status"] = "Draft"
-    else:
-        meta["status"] = "Draft"
-
     if valid:
         meta["validated_at"] = datetime.now(UTC).isoformat()
         meta["validated_by"] = request.headers.get("X-User-Id", "system")
 
-    # Compute content hash
-    scen_hash = compute_scenario_hash(data)
-    meta["content_hash"] = scen_hash
-
-    # Optimistic concurrency check
-    if expected_rev and save_path.exists():
-        try:
-            with open(save_path, encoding="utf-8") as f_ex:
-                ex_data = json.load(f_ex)
-                curr_hash = compute_scenario_hash(ex_data)
-                if curr_hash != expected_rev:
-                    return (
-                        jsonify(
-                            {
-                                "error": "Revision conflict: Scenario modified concurrently.",
-                                "current_hash": curr_hash,
-                                "expected_hash": expected_rev,
-                            }
-                        ),
-                        409,
-                    )
-        except Exception as e:
-            logger.debug(f"Concurrency check bypass on read failure: {e}", exc_info=True)
-
     try:
-        with open(save_path, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
-    except Exception as e:
+        scen_hash = write_scenario(save_path, data, expected_rev)
+    except ScenarioRevisionConflict as exc:
+        return jsonify(
+            {
+                "error": str(exc),
+                "current_hash": exc.current_hash,
+                "expected_hash": exc.expected_hash,
+            }
+        ), 409
+    except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError) as e:
         logger.error(f"Failed to save scenario {scen_id}: {e}", exc_info=True)
         return jsonify({"error": f"Failed to save scenario: {str(e)}"}), 500
 
@@ -1271,16 +1243,11 @@ def save_scenario():
         logger.warning(f"ScenarioCatalog build_index notice: {idx_err}", exc_info=True)
 
     try:
-        rel_path = str(
-            save_path.resolve().relative_to(Path(config.PROJECT_ROOT).resolve())
-        ).replace("\\", "/")
+        rel_path = save_path.resolve().relative_to(Path(config.PROJECT_ROOT).resolve()).as_posix()
     except ValueError:
         try:
-            rel_path = str(save_path.relative_to(config.PROJECT_ROOT)).replace("\\", "/")
+            rel_path = save_path.relative_to(config.PROJECT_ROOT).as_posix()
         except ValueError:
-            logger.debug(
-                "save_scenario failed", extra={"operation": "save_scenario"}, exc_info=True
-            )
             rel_path = str(save_path).replace("\\", "/")
 
     return jsonify(
@@ -1331,9 +1298,13 @@ def transition_scenario_lifecycle(scenario_id):
     if not abs_path or not abs_path.exists():
         return jsonify({"error": f"Scenario {scenario_id} not found"}), 404
 
+    abs_path = Path(abs_path).resolve()
+    if not abs_path.is_relative_to(Path(config.PROJECT_ROOT).resolve()):
+        return jsonify({"error": "Scenario path is outside the project"}), 400
     try:
         with open(abs_path, encoding="utf-8") as f:
             scen_data = json.load(f)
+        previous_revision = compute_scenario_hash(scen_data)
     except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError) as e:
         logger.debug(
             "transition_scenario_lifecycle failed",
@@ -1398,11 +1369,15 @@ def transition_scenario_lifecycle(scenario_id):
             "reason": reason or "Lifecycle transition requested",
         }
     )
-    meta["content_hash"] = compute_scenario_hash(scen_data)
-
     try:
-        with open(abs_path, "w", encoding="utf-8") as f:
-            json.dump(scen_data, f, indent=2, ensure_ascii=False)
+        write_scenario(
+            abs_path,
+            scen_data,
+            data.get("expected_revision_hash") or previous_revision,
+            preserve_status=False,
+        )
+    except ScenarioRevisionConflict as exc:
+        return jsonify({"error": str(exc), "current_hash": exc.current_hash}), 409
     except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError) as e:
         logger.debug(
             "transition_scenario_lifecycle failed",

@@ -125,6 +125,7 @@ class AbstractSandbox(ABC):
         workspace_root: Path | None = None,
         jail_root: Path | None = None,
         policy_evaluator: PolicyEvaluator | None = None,
+        cancellation_event: Any | None = None,
     ):
         from eval_runner.runtime_services import resolve_policy_evaluator
 
@@ -144,9 +145,23 @@ class AbstractSandbox(ABC):
         else:
             self.event_bus = event_bus
 
+        from .runtime_faults import FaultDeliveryController
+
+        self.cancellation_event = (
+            cancellation_event if cancellation_event is not None else threading.Event()
+        )
+        self.fault_controller = FaultDeliveryController(
+            self.run_id, self.event_bus, self.cancellation_event
+        )
+
         topology = scenario.get("metadata", {}).get("agent_topology", {})
         self.shared_state = SharedStateRegistry(topology, event_bus=self.event_bus)
         self.current_agent = "default_agent"
+        from .commit_faults import SandboxCommitBoundary
+        from .tool_faults import ToolFaultExecutor
+
+        self.commit_boundary = SandboxCommitBoundary(self)
+        self.tool_faults = ToolFaultExecutor(self)
 
         self.forensics = forensics
         self.resources = ResourceRegistry()
@@ -201,7 +216,6 @@ class AbstractSandbox(ABC):
 
     async def teardown(self):
         """Perform one-time teardown: Clean up workspace (optional)."""
-        import os
         from pathlib import Path
 
         if self._simulator_cache:
@@ -428,25 +442,42 @@ class ToolSandbox(AbstractSandbox):
         }
 
         async def core_executor(data: dict) -> dict:
-            return await self._execute_core(
-                tool_name=data["tool_name"], params=data["params"], agent_name=data["agent_name"]
-            )
+            return await self.tool_faults.execute(data, self._execute_core)
 
         return await tool_sandbox_service.isolate(call_data, core_executor)
 
-    def _is_trusted_adapter_execution(self, tool_name: str) -> bool:
-        """Verify whether tool execution is authorized by a trusted adapter.
+    def _is_authenticated_adapter_bound(self, tool_name: str) -> bool:
+        """Verify whether tool execution is authorized by an authenticated runtime adapter.
 
-        Scenario data cannot self-authorize live provenance. Live provenance is permitted
-        only when explicitly bound through a trusted execution adapter or an authorized
-        acceptance environment.
+        Scenario data cannot self-authorize live provenance. Unauthenticated environment variables
+        cannot authorize live provenance. Live provenance is accepted only when cryptographically
+        authenticated under the authoritative state authority trust key.
         """
-        if os.getenv("AGENTV_TRUSTED_TOOL_ADAPTER") in ("1", "true", "True"):
+        token = os.getenv("AGENTV_AUTHENTICATED_ADAPTER_TOKEN")
+        if not token or not isinstance(token, str):
+            return False
+        try:
+            from eval_runner.state_authority import (
+                StateAuthorityKeyMissingError,
+                get_state_authority_trust_key,
+            )
+
+            key = get_state_authority_trust_key()
+        except (StateAuthorityKeyMissingError, ValueError, OSError) as exc:
+            logger.debug("State authority trust key not available for adapter token: %s", exc)
+            return False
+        import hashlib
+        import hmac
+
+        expected = hmac.new(
+            key, f"authenticated_execution_adapter:{tool_name}".encode(), hashlib.sha3_256
+        ).hexdigest()
+        if hmac.compare_digest(token.strip(), expected):
             return True
-        scenario_meta = (self.scenario or {}).get("metadata", {})
-        if scenario_meta.get("trusted_execution_adapter"):
-            return True
-        return False
+        expected_wildcard = hmac.new(
+            key, b"authenticated_execution_adapter", hashlib.sha3_256
+        ).hexdigest()
+        return hmac.compare_digest(token.strip(), expected_wildcard)
 
     def get_tool_provenance(self, tool_name: str) -> str:
         """Determine execution provenance for a declared or simulated tool.
@@ -462,7 +493,7 @@ class ToolSandbox(AbstractSandbox):
         if tool_name in all_tool_defs:
             tool_def = all_tool_defs[tool_name]
             if isinstance(tool_def, dict) and tool_def.get("provenance") == "live":
-                if self._is_trusted_adapter_execution(tool_name):
+                if self._is_authenticated_adapter_bound(tool_name):
                     return "live"
             return "simulated"
         if (
@@ -597,7 +628,9 @@ class ToolSandbox(AbstractSandbox):
         # commit interceptor before they reach the sandbox state.  This is the
         # only local state-write boundary, so partial/stale commit mutations
         # now affect a real state transition rather than a metadata flag.
-        receipt = None
+        fault_ticket = None
+        partial_ticket = None
+        stale_commit_requested = False
         if proposed_diff and self.plugin_manager:
             intercept = self.plugin_manager.trigger_interceptor(
                 "on_before_commit", self, dict(proposed_diff)
@@ -620,7 +653,20 @@ class ToolSandbox(AbstractSandbox):
                 if not isinstance(candidate, dict):
                     raise TypeError("on_before_commit state_diff must be a mapping")
                 proposed_diff = candidate
-                receipt = intercept.get("mutation_receipt")
+                if intercept.get("mutation_receipt") is not None:
+                    raise ValueError(
+                        "Commit interceptors must return execution directives, not receipts"
+                    )
+                fault_ticket = intercept.get("fault_ticket")
+                partial_ticket = intercept.get("partial_ticket")
+                stale_commit_requested = intercept.get("stale_commit_requested", False)
+
+        if self.cancellation_event.is_set() and fault_ticket is None:
+            return {
+                "status": "error",
+                "error_code": "EXECUTION_CANCELLED",
+                "message": "State commit blocked by the runtime cancellation signal",
+            }
 
         # Pre-validate all shared write and read permissions before applying
         # any local or shared state mutations. An execution failure at a later
@@ -640,67 +686,36 @@ class ToolSandbox(AbstractSandbox):
                     "message": f"Agent {active_agent} has no read permission for {read_path}",
                 }
 
-        # Transactional commit boundary: snapshot pre-mutation state to guarantee
-        # all-or-nothing atomicity. If shared_state write or read fails, rollback
-        # all local state mutations immediately.
-        local_state_snapshot = copy.deepcopy(self.state)
-        shared_state_snapshot = copy.deepcopy(self.shared_state.registry)
         try:
-            for path, value in proposed_diff.items():
-                self._set_state_path(str(path), value)
-            if "shared_write" in params:
-                write_path = params["shared_write"].get("path")
-                write_val = params["shared_write"].get("value")
-                if write_path:
-                    write_ok = self.shared_state.write(active_agent, write_path, write_val)
-                    if not write_ok:
-                        raise PermissionError(
-                            f"Agent '{active_agent}' denied write access to shared path "
-                            f"'{write_path}'."
-                        )
-            if "shared_read" in params:
-                read_path = params["shared_read"].get("path")
-                if read_path:
-                    self.shared_state.read(active_agent, read_path)
+            if stale_commit_requested:
+                self.commit_boundary.stale_commit(
+                    proposed_diff,
+                    stale_commit_requested["node_id"],
+                    getattr(self, "current_execution_instance_id", None),
+                )
+                return {
+                    "status": "error",
+                    "error_code": "STATE_COMMIT_REJECTED",
+                    "message": "OptimisticLockError: concurrent commit changed the base revision",
+                }
+            self.commit_boundary.commit(proposed_diff, params, active_agent)
         except Exception as exc:
+            from .events import EvidenceDeliveryError
+            from .runtime_faults import FaultDeliveryError
+
+            if isinstance(exc, (FaultDeliveryError, EvidenceDeliveryError)):
+                raise
             logger.error("Transactional commit failed, changes rolled back: %s", exc, exc_info=True)
-            self.state.clear()
-            self.state.update(local_state_snapshot)
-            self.shared_state.registry.clear()
-            self.shared_state.registry.update(shared_state_snapshot)
-            if isinstance(receipt, dict) and self.event_bus:
-                try:
-                    self.event_bus.emit(
-                        "mutation_delivery_rollback",
-                        {
-                            "category": "MUTATION_DELIVERY",
-                            "status": "rolled_back",
-                            "mutation_receipt": receipt,
-                            "error": str(exc),
-                        },
-                    )
-                except Exception as emit_err:
-                    logger.warning("Failed to emit rollback event: %s", emit_err, exc_info=True)
             return {
                 "status": "error",
                 "error_code": "ATOMIC_COMMIT_FAILURE",
                 "message": f"Transactional commit failed, changes rolled back: {exc}",
             }
 
-        # Emit mutation delivery receipt strictly after successful state commit.
-        # Handle event bus emission failures without misrepresenting committed state.
-        if isinstance(receipt, dict) and self.event_bus:
-            try:
-                self.event_bus.emit(
-                    "mutation_delivery",
-                    {"category": "MUTATION_DELIVERY", "mutation_receipt": receipt},
-                )
-            except Exception as emit_err:
-                logger.warning(
-                    "Failed to emit post-commit mutation delivery event: %s",
-                    emit_err,
-                    exc_info=True,
-                )
+        if fault_ticket is not None:
+            self.fault_controller.observe_cancelled_commit(fault_ticket, self.state)
+        if partial_ticket is not None:
+            self.commit_boundary.complete_partial(partial_ticket)
         output = tool_def.get("output", {"status": "success", "message": f"Executed {tool_name}"})
         if isinstance(output, dict):
             output = copy.deepcopy(output)
@@ -755,7 +770,6 @@ class ToolSandbox(AbstractSandbox):
         Strips directory traversal sequences and prepends vfs:// root.
         Aggressively collapses to basename if traversal is attempted.
         """
-        import os
 
         from . import config
 
@@ -904,6 +918,7 @@ class ToolSandbox(AbstractSandbox):
             workspace_root=self.workspace_dir,
             jail_root=self.terminal_jail,
             policy_evaluator=self.policy_evaluator,
+            cancellation_event=self.cancellation_event,
         )
         forked.state = copy.deepcopy(self.state)
         topology = self.scenario.get("metadata", {}).get("agent_topology", {})

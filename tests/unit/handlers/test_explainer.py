@@ -93,3 +93,41 @@ def test_explain_events_low_confidence_fallback(monkeypatch):
     monkeypatch.setattr("eval_runner.explainer.triage.TriageEngine", mock_engine)
     result = explain_events([])
     assert "Visual Debugger" in result["suggestion"]
+
+
+def test_explain_events_medium_confidence_fallback(monkeypatch):
+    mock_engine = MagicMock()
+    mock_engine.identify_root_cause.return_value = {
+        "index": 1,
+        "confidence": 0.6,
+        "reason": "unresolved loop",
+        "suggestion": "No specific suggestion found.",
+    }
+    monkeypatch.setattr("eval_runner.explainer.triage.TriageEngine", mock_engine)
+    result = explain_events([])
+    assert "EVAL_MAX_TURNS" in result["suggestion"]
+
+
+def test_explain_events_high_confidence_unmatched_reason(monkeypatch):
+    mock_engine = MagicMock()
+    mock_engine.identify_root_cause.return_value = {
+        "index": 1,
+        "confidence": 0.95,
+        "reason": "unmatched high confidence reason",
+        "suggestion": "No specific suggestion found.",
+    }
+    monkeypatch.setattr("eval_runner.explainer.triage.TriageEngine", mock_engine)
+    result = explain_events([])
+    assert result["suggestion"] == "No specific suggestion found."
+
+
+def test_explain_run_invalid_provider_or_empty_events():
+    import pytest
+
+    with pytest.raises(TypeError, match="explain_run requires a RunStorageProvider"):
+        explain_run("run-1", run_store=object())
+
+    empty_provider = MagicMock()
+    empty_provider.get_events.return_value = []
+    with pytest.raises(LookupError, match="has no provider-owned events"):
+        explain_run("run-1", run_store=empty_provider)

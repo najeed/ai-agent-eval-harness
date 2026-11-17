@@ -168,6 +168,7 @@ def test_save_scenario_lifecycle_bypass_closed(auth_client, tmp_path):
 
     # Subsequent save without transition -> MUST preserve Validated status, not overwrite to Ready
     payload["metadata"]["status"] = "Ready"
+    payload["expected_revision_hash"] = res_trans.get_json()["content_hash"]
     res_save2 = auth_client.post("/api/scenarios", json=payload)
     assert res_save2.status_code == 200
     assert res_save2.get_json()["lifecycle_status"] == "Validated"

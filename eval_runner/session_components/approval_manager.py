@@ -181,6 +181,7 @@ class SessionApprovalManager:
 
         # Durable approvals are the authoritative HITL boundary.
         # Pass through the interceptor before checkpoint or token creation.
+        runtime_fault = None
         if self.plugin_manager:
             approval_data = {
                 "task_id": task_id,
@@ -196,6 +197,8 @@ class SessionApprovalManager:
             intercept = self.plugin_manager.trigger_interceptor(
                 "on_approval_request", self, approval_data
             )
+            if isinstance(intercept, dict):
+                runtime_fault = intercept.get("runtime_fault")
             if intercept is False or (
                 isinstance(intercept, dict) and intercept.get("allowed") is False
             ):
@@ -339,7 +342,16 @@ class SessionApprovalManager:
             idempotency_key=idempotency_key,
             created_at=created_at,
         )
+        if runtime_fault is not None and runtime_fault["fault"] == "approval_stale":
+            import time
+
+            req.metadata = {**req.metadata, "expires_at": time.time() - 1}
         persisted = self.approval_store.create_request(req)
+
+        if runtime_fault is not None:
+            self._deliver_approval_fault(
+                runtime_fault, persisted, verified_token if scope_digest else None
+            )
 
         # Emit the approval evidence while the run remains writable.  The
         # session emits HITL_PAUSE immediately afterwards and only then
@@ -369,6 +381,32 @@ class SessionApprovalManager:
             )
 
         return persisted
+
+    def _deliver_approval_fault(self, specification, request, scope):
+        """Execute a selected fault only after its real durable request exists."""
+        from eval_runner.runtime_faults import FaultDeliveryController
+
+        controller = FaultDeliveryController(self.run_id, self.event_bus)
+        receipt = controller.approval_fault(
+            specification["fault"],
+            self.approval_store,
+            request,
+            scope=scope,
+            node_id=specification["node_id"],
+            execution_id=specification.get("execution_instance_id"),
+        )
+        current = self.approval_store.get_request(request.approval_token, scope=scope)
+        if current is None or current.status != "REJECTED":
+            raise RuntimeError("Injected approval test did not withdraw its permission")
+        raise ApprovalBoundaryRejected(
+            f"ApprovalRejected: observed {specification['fault']} at the durable decision boundary",
+            phase="observed_fault",
+            details={
+                "mutation_fault": specification["fault"],
+                "failure_category": "MUTATION_OBSERVED",
+                "mutation_receipt": receipt,
+            },
+        )
 
     def resolve_durable_request(
         self,
@@ -418,6 +456,14 @@ class SessionApprovalManager:
                     phase="resolution",
                     details=getattr(self.plugin_manager, "last_rejection_details", None),
                 )
+
+        runtime_fault = (
+            intercept.get("runtime_fault")
+            if self.plugin_manager and isinstance(intercept, dict)
+            else None
+        )
+        if runtime_fault is not None and pending is not None:
+            self._deliver_approval_fault(runtime_fault, pending, active_scope)
 
         capture_bus = None
         already_resolved = False

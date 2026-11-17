@@ -94,7 +94,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **langchain-openai** | 1.8.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langgraph** | 1.2.22 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langserve** | 0.3.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langsmith** | 0.14.17 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langsmith** | 0.15.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **lxml** | 6.1.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **pypdf** | 7.1.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **python-docx** | 1.2.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |

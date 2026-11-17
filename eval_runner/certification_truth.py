@@ -76,7 +76,9 @@ def authority_is_independent(url, scenario, execution_manifest=None):
             parsed.port or (443 if parsed.scheme == "https" else 80),
         )
 
-    raw_agents = [(scenario.get("metadata") or {}).get("agent"), scenario.get("agent")]
+    meta = scenario.get("metadata")
+    meta_dict = meta if isinstance(meta, Mapping) else {}
+    raw_agents = [meta_dict.get("agent"), scenario.get("agent")]
     raw_agents.extend(node.get("agent") for node in _extract_scenario_nodes(scenario))
     exec_manifest = execution_manifest or scenario.get("execution_manifest") or {}
     if hasattr(exec_manifest, "to_dict"):
@@ -139,6 +141,62 @@ def state_claim_failures(
     if isinstance(authorities, Mapping) and "url" in authorities:
         authorities = {"default": authorities}
     failures = unsupported_mutation_failures(scenario)
+    from eval_runner.mutation_evidence import fault_receipt_failures
+
+    requested_faults = {
+        (fault, node.get("id") or node.get("node_id"))
+        for node in _extract_scenario_nodes(scenario)
+        for flag, fault in (
+            ("cancel_at_boundary", "cancel_race"),
+            ("commit_after_cancel", "commit_after_cancel"),
+            ("approval_race", "approval_race"),
+            ("approval_revocation", "approval_revocation"),
+            ("partial_commit_simulated", "partial_commit"),
+            ("stale_commit", "stale_commit"),
+            ("tool_response_corrupted", "tool_response_corruption"),
+            ("approval_stale", "approval_stale"),
+            ("approval_mismatch", "approval_mismatch"),
+            ("approval_replay", "approval_replay"),
+            ("timeout_boundary_ms", "timeout_boundary"),
+            ("raw_payload_corrupted", "malformed_payload"),
+            ("duplicate_execution", "tool_duplicate"),
+            ("replay_previous_event", "tool_replay"),
+            ("injected_latency_ms", "latency_jitter"),
+        )
+        if node.get(flag)
+        and not (flag == "injected_latency_ms" and node.get("timeout_boundary_ms"))
+    }
+    for row in (scenario.get("metadata") or {}).get("applied_mutations", []):
+        if isinstance(row, Mapping) and row.get("type"):
+            mtype = row["type"]
+            mapped_fault = {
+                "cancel_race": "cancel_race",
+                "cancellation_race": "cancel_race",
+                "commit_after_cancel": "commit_after_cancel",
+                "approval_race": "approval_race",
+                "approval_revocation": "approval_revocation",
+                "partial_commit": "partial_commit",
+                "stale_commit": "stale_commit",
+                "tool_response_corruption": "tool_response_corruption",
+                "approval_stale": "approval_stale",
+                "approval_mismatch": "approval_mismatch",
+                "malformed_payload": "malformed_payload",
+                "timeout_boundary": "timeout_boundary",
+                "approval_replay": "approval_replay",
+                "auth_replay": "approval_replay",
+                "duplicate": "tool_duplicate",
+                "duplicate_action": "tool_duplicate",
+                "replay": "tool_replay",
+                "latency_jitter": "latency_jitter",
+                "latency jitter": "latency_jitter",
+                "latency": "latency_jitter",
+                "jitter": "latency_jitter",
+            }.get(mtype)
+            if mapped_fault is None:
+                continue
+            candidate_node = row.get("node_id") or row.get("target_node")
+            requested_faults.add((mapped_fault, candidate_node))
+    failures.extend(fault_receipt_failures(events, requested_faults, run_id=expected_run_id))
     for node in _extract_scenario_nodes(scenario):
         node_id = node.get("id") or node.get("node_id")
         assertions = node.get("expected_outcome") or []
@@ -216,6 +274,7 @@ def state_claim_failures(
                     failures.append(f"IndependentStateObservationMissing:{execution_id}:{source}")
                 for row in matching:
                     try:
+                        observation_dts: dict[str, datetime] = {}
                         for phase in ("pre", "post"):
                             identity = row.get(f"{phase}_observation_identity") or {}
                             if (
@@ -314,6 +373,7 @@ def state_claim_failures(
                                     "UTC-normalizable ISO format required"
                                 )
                             dt_utc = dt.astimezone(UTC)
+                            observation_dts[phase] = dt_utc
 
                             # Authenticated run interval bounded check:
                             # If authenticated execution window is required or provided,
@@ -418,33 +478,10 @@ def state_claim_failures(
                                 )
 
                         # Pre/Post temporal causal ordering check
-                        pre_receipt = (
-                            (row.get("pre_observation_identity") or {}).get("connector_receipt")
-                            or row.get("pre_connector_receipt")
-                            or {}
-                        )
-                        post_receipt = (
-                            (row.get("post_observation_identity") or {}).get("connector_receipt")
-                            or row.get("post_connector_receipt")
-                            or {}
-                        )
-                        pre_ts_str = str(pre_receipt.get("timestamp") or "")
-                        post_ts_str = str(post_receipt.get("timestamp") or "")
-                        if pre_ts_str and post_ts_str:
-                            pre_dt = datetime.fromisoformat(pre_ts_str)
-                            post_dt = datetime.fromisoformat(post_ts_str)
-                            if pre_dt.tzinfo is None or pre_dt.tzinfo.utcoffset(pre_dt) is None:
-                                raise ValueError(
-                                    "Pre-observation timestamp missing timezone offset"
-                                )
-                            if post_dt.tzinfo is None or post_dt.tzinfo.utcoffset(post_dt) is None:
-                                raise ValueError(
-                                    "Post-observation timestamp missing timezone offset"
-                                )
-                            if pre_dt.astimezone(UTC) > post_dt.astimezone(UTC):
-                                raise ValueError(
-                                    "Pre-observation timestamp after post-observation timestamp"
-                                )
+                        if observation_dts["pre"] > observation_dts["post"]:
+                            raise ValueError(
+                                "Pre-observation timestamp after post-observation timestamp"
+                            )
                         pre_ident = row.get("pre_observation_identity") or {}
                         post_ident = row.get("post_observation_identity") or {}
                         if (
@@ -538,22 +575,28 @@ def certification_claim_scope(scenario):
 
 def unsupported_mutation_failures(scenario):
     """Reject persisted fault claims for which Core has no delivery implementation."""
+    from eval_runner.mutator import UNSUPPORTED_RUNTIME_MUTATIONS
+
     metadata = scenario.get("metadata") or {}
-    unsupported = {"concurrency", "duplicate_commit", "duplicate commit", "concurrent"}
-    declarations = {"concurrency_conflict", "duplicate_commit", "simulated_race"}
+    unsupported = UNSUPPORTED_RUNTIME_MUTATIONS
+    declarations = {
+        "concurrency_conflict",
+        "duplicate_commit",
+        "simulated_race",
+    }
     if (
-        any(metadata.get(key) for key in declarations)
+        any(source.get(key) for source in (metadata, scenario) for key in declarations)
         or any(
             isinstance(row, Mapping) and row.get("type") in unsupported
             for row in metadata.get("applied_mutations", [])
         )
         or any(
-            node.get("concurrent_writers") or node.get("duplicate_commit")
+            node.get("concurrent_writers") or any(node.get(key) for key in declarations)
             for node in _extract_scenario_nodes(scenario)
         )
     ):
         return [
-            "UnsupportedMutationDelivery: concurrency/duplicate-commit fault is not implemented"
+            "UnsupportedMutationDelivery: requested fault has no observable delivery implementation"
         ]
     return []
 

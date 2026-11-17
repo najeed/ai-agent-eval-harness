@@ -24,12 +24,28 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
     across tool dispatch, state commits, compensating rollbacks, and approvals.
     """
 
+    is_mandatory = True
+    required_interceptor_hooks = frozenset(
+        {
+            "on_tool_request",
+            "on_tool_execution",
+            "on_tool_result",
+            "on_before_commit",
+            "on_approval_request",
+            "on_approval_resolution",
+            "on_approval_preflight",
+            "on_rollback",
+        }
+    )
+
     def __init__(self, scenario: dict[str, Any] | None = None):
         self.scenario: dict[str, Any] = scenario or {}
         self._node_context: ContextVar[tuple[str | None, dict[str, Any], int]] = ContextVar(
             f"runtime_mutation_node_context_{id(self)}", default=(None, {}, 0)
         )
         self.applied_mutations: list[dict[str, Any]] = []
+        self._runtime_owner = ContextVar(f"mutation_owner_{id(self)}", default=None)
+        self._execution_id = ContextVar(f"mutation_execution_{id(self)}", default=None)
 
     @property
     def active_node_id(self) -> str | None:
@@ -65,6 +81,8 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
                 self.scenario = getattr(context, "scenario_data", {}) or {}
         if node_id is not None:
             next_step = self.step_index + 1
+            self._runtime_owner.set(context)
+            self._execution_id.set(getattr(context, "current_execution_instance_id", None))
             self._node_context.set((node_id, dict(node_data or {}), next_step))
             logger.debug(f"[RuntimeMutationPlugin] Step {next_step} start: node={node_id}")
 
@@ -78,6 +96,8 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
         """Cleans up active step-scoped state."""
         if node_id is not None:
             self._node_context.set((None, {}, self.step_index))
+            self._runtime_owner.set(None)
+            self._execution_id.set(None)
 
     def on_tool_request(
         self, context: Any, tool_name: str, arguments: dict[str, Any] | None = None
@@ -89,50 +109,28 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
         args = arguments or {}
         node = self.active_node_data
 
-        # 1. Timeout Boundary Fault
-        if node.get("timeout_boundary_ms"):
-            timeout_ms = node["timeout_boundary_ms"]
-            record = {
-                "fault": "timeout_boundary",
-                "tool": tool_name,
-                "step": self.step_index,
-                "timeout_ms": timeout_ms,
-            }
-            self.applied_mutations.append(record)
-            logger.info(f"[RuntimeMutationPlugin] Injecting timeout boundary fault on {tool_name}")
-            return {
-                "short_circuit_result": {
-                    "status": "error",
-                    "error": f"DeadlineExceeded: tool execution timed out after {timeout_ms}ms",
-                    "fault": "timeout_boundary",
-                }
-            }
-
         # 2. Cancel Race Fault
         if node.get("cancel_at_boundary"):
-            record = {"fault": "cancel_race", "tool": tool_name, "step": self.step_index}
-            self.applied_mutations.append(record)
-            logger.info(f"[RuntimeMutationPlugin] Injecting cancel race condition on {tool_name}")
+            from .runtime_faults import FaultDeliveryController, FaultDeliveryError
+
+            owner = self._runtime_owner.get()
+            sandbox = getattr(owner, "sandbox", None) or owner
+            controller = getattr(sandbox, "fault_controller", None)
+            if not isinstance(controller, FaultDeliveryController):
+                raise FaultDeliveryError("Cancellation fault requires a bound runtime controller")
+            receipt = controller.cancel_at_tool_boundary(
+                self.active_node_id,
+                tool_name,
+                self._execution_id.get(),
+            )
+            self.applied_mutations.append(receipt)
             return {
                 "short_circuit_result": {
                     "status": "error",
                     "error": "TaskCancelled: cancellation arrived at tool execution boundary",
                     "fault": "cancel_race",
-                }
-            }
-
-        # 3. Raw Payload Corruption Fault
-        if node.get("raw_payload_corrupted"):
-            record = {"fault": "malformed_payload", "tool": tool_name, "step": self.step_index}
-            self.applied_mutations.append(record)
-            logger.info(f"[RuntimeMutationPlugin] Injecting malformed payload fault on {tool_name}")
-            return {
-                "short_circuit_result": {
-                    "status": "error",
-                    "error": "InvalidJSON: raw response payload corrupted / unclosed JSON syntax",
-                    "raw_corrupted": node["raw_payload_corrupted"],
-                    "fault": "malformed_payload",
-                }
+                },
+                "mutation_receipt": receipt,
             }
 
         # 4. Tool Contract Violation
@@ -147,6 +145,17 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
 
         return True
 
+    def on_tool_execution(self, context: Any, call_data: dict[str, Any]):
+        """Select faults; the sandbox owns their execution and observations."""
+        return {
+            "fault_plan": {
+                **self.active_node_data,
+                "node_id": self.active_node_id,
+                "execution_instance_id": self._execution_id.get(),
+                "seed": self.scenario.get("metadata", {}).get("mutation_seed", 0),
+            }
+        }
+
     def on_before_commit(
         self, context: Any, state_diff: dict[str, Any] | None = None
     ) -> dict[str, Any] | bool:
@@ -156,48 +165,38 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
         """
         diff = dict(state_diff or {})
         node = self.active_node_data
+        if node.get("commit_after_cancel"):
+            from .runtime_faults import FaultDeliveryController, FaultDeliveryError
+
+            controller = getattr(context, "fault_controller", None)
+            if not isinstance(controller, FaultDeliveryController):
+                raise FaultDeliveryError("Cancelled commit requires the actual sandbox boundary")
+            return {
+                "state_diff": diff,
+                "fault_ticket": controller.prepare_cancelled_commit(
+                    self.active_node_id,
+                    context.state,
+                    diff,
+                    self._execution_id.get(),
+                ),
+            }
 
         # 1. Partial Commit Fault
         if node.get("partial_commit_simulated"):
-            record = {"fault": "partial_commit", "step": self.step_index}
-            self.applied_mutations.append(record)
-            logger.warning("[RuntimeMutationPlugin] Injecting partial transaction commit")
-            if len(diff) > 1:
-                first_key = next(iter(diff))
-                partial_diff = {first_key: diff[first_key]}
-            else:
-                partial_diff = diff
-            return {
-                "state_diff": partial_diff,
-                "partial_commit_applied": True,
-                "simulated_error": "TransactionAbortedMidway: remaining keys dropped after step 1",
-                "mutation_receipt": {**record, "delivery": "DELIVERED"},
-            }
+            from .commit_faults import SandboxCommitBoundary
+            from .runtime_faults import FaultDeliveryError
+
+            boundary = getattr(context, "commit_boundary", None)
+            if not isinstance(boundary, SandboxCommitBoundary):
+                raise FaultDeliveryError("Partial commit requires the actual sandbox boundary")
+            selected, ticket = boundary.prepare_partial(
+                diff, self.active_node_id, self._execution_id.get()
+            )
+            return {"state_diff": selected, "partial_ticket": ticket}
 
         # 2. Stale Commit (Optimistic Lock Violation)
         if node.get("stale_commit"):
-            expected = node.get("expected_base_revision", "rev_deprecated_1970")
-            record = {"fault": "stale_commit", "step": self.step_index, "expected": expected}
-            self.applied_mutations.append(record)
-            logger.warning("[RuntimeMutationPlugin] Rejecting stale state commit")
-            return {
-                "allowed": False,
-                "error": f"OptimisticLockError: base revision mismatch (expected {expected})",
-                "mutation_receipt": {**record, "delivery": "BLOCKED"},
-            }
-
-        # 3. Commit After Cancel Fault
-        if node.get("commit_after_cancel"):
-            record = {"fault": "commit_after_cancel", "step": self.step_index}
-            self.applied_mutations.append(record)
-            logger.warning("[RuntimeMutationPlugin] Tracking commit after cancellation signal")
-            receipt_delivery = (
-                "DELIVERED" if node.get("allow_post_cancellation_write", True) else "BLOCKED"
-            )
-            return {
-                "commit_after_cancel_tracked": True,
-                "mutation_receipt": {**record, "delivery": receipt_delivery},
-            }
+            return {"stale_commit_requested": {"node_id": self.active_node_id}}
 
         return True
 
@@ -217,13 +216,6 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
         if not node.get("tool_response_corrupted"):
             return True
 
-        record = {
-            "fault": "tool_response_corruption",
-            "tool": tool_name,
-            "step": self.step_index,
-            "delivery": "DELIVERED",
-        }
-        self.applied_mutations.append(record)
         if isinstance(result, dict):
             corrupted = dict(result)
             corrupted["status"] = "error"
@@ -236,7 +228,12 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
                 "original_type": type(result).__name__,
                 "mutation_fault": "tool_response_corruption",
             }
-        return {"result": corrupted, "mutation_receipt": record}
+        owner = self._runtime_owner.get()
+        sandbox = getattr(owner, "sandbox", None) or owner
+        sandbox.tool_faults.prepare_corruption(
+            result, corrupted, self.active_node_id, self._execution_id.get()
+        )
+        return {"result": corrupted}
 
     def on_rollback(self, context: Any, compensation_action: dict[str, Any] | None = None) -> bool:
         """
@@ -279,14 +276,34 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
     def on_approval_preflight(
         self, context: Any, node_data: dict[str, Any] | None = None
     ) -> dict[str, Any] | bool:
-        """Reject approval mutations before invoking an approval-capable agent.
-
-        A scenario-declared HITL gate can otherwise call the external agent
-        before ``on_approval_request`` runs.  That leaves the remote workflow
-        visibly paused even though AgentV correctly rejects the mutated
-        boundary.  Preflight makes the mutation a local, terminal finding.
-        """
-        return self._intercept_approval(context, node_data)
+        """Select approval faults; reject invalid approval configuration at node start."""
+        res = self._intercept_approval(context, node_data)
+        if isinstance(res, dict) and "runtime_fault" in res:
+            fault_spec = res["runtime_fault"]
+            fault_name = fault_spec.get("fault", "approval_boundary")
+            if fault_name == "approval_race":
+                return {"runtime_fault": fault_spec}
+            error_map = {
+                "approval_stale": (
+                    "InvalidSignature: approval token expired in 1970 (stale token blocked)"
+                ),
+                "approval_mismatch": (
+                    "ApprovalMismatch: approval token belongs to different transaction object"
+                ),
+                "approval_revocation": (
+                    "ApprovalRevoked: approval token was revoked midway through execution"
+                ),
+                "approval_replay": "ApprovalReplayBlocked: approval token has already been spent",
+            }
+            error_msg = error_map.get(fault_name, f"ApprovalFaultBoundary: {fault_name} blocked")
+            return {
+                "allowed": False,
+                "error": error_msg,
+                "mutation_fault": fault_name,
+                "failure_category": "APPROVAL_SECURITY_REJECTED",
+                "runtime_fault": fault_spec,
+            }
+        return res
 
     def _intercept_approval(
         self, context: Any, approval_data: dict[str, Any] | None = None
@@ -326,28 +343,33 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
             return False
 
         # 1. Stale Approval Token
-        if _has_fault("approval_token", "EXPIRED_SIG_1970") or _is_fault_named("approval_stale"):
-            record = {"fault": "approval_stale", "step": self.step_index}
-            self.applied_mutations.append(record)
-            return {
-                "allowed": False,
-                "error": "InvalidSignature: approval token expired in 1970 (stale token blocked)",
-                "mutation_fault": "approval_stale",
-                "failure_category": "APPROVAL_SECURITY_REJECTED",
-            }
+        if (
+            _has_fault("approval_token", "EXPIRED_SIG_1970")
+            or _has_fault("approval_stale", True)
+            or bool(
+                node.get("approval_stale")
+                or data.get("approval_stale")
+                or scen.get("approval_stale")
+            )
+            or _is_fault_named("approval_stale")
+        ):
+            return {"runtime_fault": self._approval_fault_spec("approval_stale", data)}
 
         # 2. Approval Transaction Mismatch
-        if _has_fault(
-            "approval_transaction_id", "TX_MISMATCH_DIFFERENT_PAYMENT"
-        ) or _is_fault_named("approval_mismatch"):
-            record = {"fault": "approval_mismatch", "step": self.step_index}
-            self.applied_mutations.append(record)
-            return {
-                "allowed": False,
-                "error": "ApprovalMismatch: approval token belongs to different transaction object",
-                "mutation_fault": "approval_mismatch",
-                "failure_category": "APPROVAL_SECURITY_REJECTED",
-            }
+        if (
+            _has_fault("approval_transaction_id", "TX_MISMATCH_DIFFERENT_PAYMENT")
+            or _has_fault("approval_mismatch", True)
+            or bool(
+                node.get("approval_mismatch")
+                or data.get("approval_mismatch")
+                or scen.get("approval_mismatch")
+            )
+            or _is_fault_named("approval_mismatch")
+        ):
+            return {"runtime_fault": self._approval_fault_spec("approval_mismatch", data)}
+
+        if _has_fault("approval_replay", True) or _is_fault_named("approval_replay"):
+            return {"runtime_fault": self._approval_fault_spec("approval_replay", data)}
 
         # 3. Mid-Flight Revocation
         if (
@@ -359,13 +381,8 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
             )
             or _is_fault_named("approval_revocation")
         ):
-            record = {"fault": "approval_revocation", "step": self.step_index}
-            self.applied_mutations.append(record)
             return {
-                "allowed": False,
-                "error": "ApprovalRevoked: approval token was revoked midway through execution",
-                "mutation_fault": "approval_revocation",
-                "failure_category": "APPROVAL_SECURITY_REJECTED",
+                "runtime_fault": self._approval_fault_spec("approval_revocation", data),
             }
 
         # 4. Approval Race Condition
@@ -376,16 +393,18 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
             )
             or _is_fault_named("approval_race")
         ):
-            record = {"fault": "approval_race", "step": self.step_index}
-            self.applied_mutations.append(record)
             return {
-                "allowed": False,
-                "error": "ApprovalRaceCondition: approval collided with boundary timeout",
-                "mutation_fault": "approval_race",
-                "failure_category": "APPROVAL_SECURITY_REJECTED",
+                "runtime_fault": self._approval_fault_spec("approval_race", data),
             }
 
         return True
+
+    def _approval_fault_spec(self, fault, data):
+        return {
+            "fault": fault,
+            "node_id": self.active_node_id or data.get("task_id"),
+            "execution_instance_id": self._execution_id.get(),
+        }
 
     def on_approval_resolution(
         self, context: Any, approval_data: dict[str, Any] | None = None

@@ -59,3 +59,28 @@ def test_import_empty_history(tmp_path):
     # This should trigger the "No conversation history found in trace" error
     with pytest.raises(ValueError, match="No conversation history found in trace"):
         import_trace_as_scenario(empty_file, "generic", output_dir)
+
+
+def test_import_nonexistent_trace_file(tmp_path):
+    missing_file = tmp_path / "nonexistent.json"
+    output_dir = tmp_path / "scenarios"
+    with pytest.raises(FileNotFoundError, match="Trace file not found"):
+        import_trace_as_scenario(missing_file, "generic", output_dir)
+
+
+def test_import_trace_dict_with_history(tmp_path, monkeypatch):
+    trace_dict = {
+        "history": [
+            {"role": "user", "content": "Question"},
+            {"role": "agent", "content": "Answer"},
+        ]
+    }
+    trace_file = tmp_path / "trace_dict.json"
+    trace_file.write_text("{}")
+    monkeypatch.setattr("eval_runner.drift_importer.load_events", lambda _: trace_dict)
+
+    output_dir = tmp_path / "scenarios"
+    scenario_path = import_trace_as_scenario(trace_file, "finance", output_dir)
+    assert scenario_path.exists()
+    data = json.loads(scenario_path.read_text())
+    assert data["ground_truth_history"] == trace_dict["history"]

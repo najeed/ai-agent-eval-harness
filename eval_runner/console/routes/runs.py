@@ -9,7 +9,7 @@ from io import BytesIO
 from pathlib import Path
 from typing import Any
 
-from flask import Blueprint, Response, jsonify, request, send_file
+from flask import Blueprint, Response, g, jsonify, request, send_file
 
 from agentv_runtime.discovery import get_registered_extension, set_extension
 from agentv_runtime.manifest import resolve_artifact_scope
@@ -88,13 +88,19 @@ def list_metrics():
     return jsonify({"metrics": MetricRegistry.list_metrics()})
 
 
-def _run_is_in_active_context(run_id: str, context: dict[str, str] | None = None) -> bool:
+def _run_is_in_active_context(
+    run_id: str,
+    context: dict[str, str] | None = None,
+    run_store: Any = None,
+) -> bool:
     """Hide a run when the authoritative provider denies the active scope."""
+    if run_store is None:
+        run_store = _active_run_store()
     if context is None:
         context = active_runtime_context()
     if context is not None:
-        return _active_run_store().get_run(run_id, context=context) is not None
-    run = _active_run_store().get_run(run_id)
+        return run_store.get_run(run_id, context=context) is not None
+    run = run_store.get_run(run_id)
     if run is None:
         return False
     run_context = run.get("context") or (run.get("metadata") or {}).get("runtime_context")
@@ -278,7 +284,7 @@ def list_runs():
 
     for run in runs[:200]:
         rid = run.get("run_id") or ""
-        if not _run_is_in_active_context(rid):
+        if not _run_is_in_active_context(rid, context=context, run_store=store):
             continue
         try:
             manifest = store.get_manifest(rid, context=context) or run.get("manifest") or {}
@@ -314,7 +320,7 @@ def stream_runs_list():
             for run in chunk:
                 run_id = run["run_id"]
                 if request_context is not None and not _run_is_in_active_context(
-                    run_id, request_context
+                    run_id, request_context, run_store=store
                 ):
                     continue
                 manifest = (
@@ -355,11 +361,11 @@ def stream_runs_list():
 @run_bp.route("/v1/runs/<path:run_id>/report.pdf", methods=["GET"])
 @require_permission(Permission.RUNS_READ)
 def download_run_report_pdf(run_id: str):
-    if not _run_is_in_active_context(run_id):
-        return jsonify({"error": "Not found"}), 404
-    """Generate a human-readable PDF report from provider-owned run data."""
     store = _active_run_store()
     context = active_runtime_context()
+    if not _run_is_in_active_context(run_id, context=context, run_store=store):
+        return jsonify({"error": "Not found"}), 404
+    """Generate a human-readable PDF report from provider-owned run data."""
     run = store.get_run(run_id, context=context)
     if run is None:
         return jsonify({"error": "Run not found"}), 404
@@ -439,7 +445,7 @@ def get_run_report_actions(run_id: str):
     if (
         context is not None
         and store.get_run(run_id, context=None) is not None
-        and not _run_is_in_active_context(run_id, context=context)
+        and not _run_is_in_active_context(run_id, context=context, run_store=store)
     ):
         return jsonify({"error": "Not found"}), 404
     return jsonify(resolve_run_report_actions(run_id, context=context))
@@ -582,9 +588,11 @@ def _assess_run_certification_readiness(
 def get_run_status(run_id):
     """Industrial Polling Primitive."""
     context = active_runtime_context()
-    if context is not None and not _run_is_in_active_context(run_id, context=context):
-        return jsonify({"error": "Not found"}), 404
     store = _active_run_store()
+    if context is not None and not _run_is_in_active_context(
+        run_id, context=context, run_store=store
+    ):
+        return jsonify({"error": "Not found"}), 404
     run = store.get_run(run_id, context=context)
     if run is not None:
         events = store.get_events(run_id, offset=0, limit=10_000_000, context=context)
@@ -708,7 +716,9 @@ def get_run_status(run_id):
 @run_bp.route("/v1/runs/<path:run_id>/cancel", methods=["POST"])
 @require_permission(Permission.RUNS_WRITE)
 def cancel_run(run_id):
-    if not _run_is_in_active_context(run_id):
+    store = _active_run_store()
+    context = active_runtime_context()
+    if not _run_is_in_active_context(run_id, context=context, run_store=store):
         return jsonify({"error": "Not found"}), 404
     """Cancels an active execution run via ExecutionBackend."""
     from eval_runner.runtime_services import resolve_execution_backend
@@ -734,10 +744,10 @@ def cancel_run(run_id):
 @require_permission(Permission.HITL_RESOLVE)
 def resume_run(run_id):
     """Resumes a paused or checkpointed evaluation run via ExecutionBackend."""
-    if not _run_is_in_active_context(run_id):
+    store = _active_run_store()
+    context = active_runtime_context()
+    if not _run_is_in_active_context(run_id, context=context, run_store=store):
         return jsonify({"error": "Not found"}), 404
-
-    from flask import g
 
     from eval_runner.runtime_services import resolve_approval_store, resolve_execution_backend
     from eval_runner.session_components.approval_manager import SessionApprovalManager
@@ -903,12 +913,7 @@ PUBLIC_CERTIFICATE_FIELDS = frozenset(
 def project_public_certificate(manifest: dict[str, Any]) -> dict[str, Any]:
     """Extract public certificate projection without exposing private scenario data or evidence."""
     sanitized = _sanitize_certificate_manifest(manifest)
-    public_proj = {k: v for k, v in sanitized.items() if k in PUBLIC_CERTIFICATE_FIELDS}
-    if "run_id" not in public_proj and "run_id" in sanitized:
-        public_proj["run_id"] = sanitized["run_id"]
-    if "vc_version" not in public_proj and "vc_version" in sanitized:
-        public_proj["vc_version"] = sanitized["vc_version"]
-    return public_proj
+    return {k: v for k, v in sanitized.items() if k in PUBLIC_CERTIFICATE_FIELDS}
 
 
 def _verified_certificate_payload(
@@ -1011,11 +1016,10 @@ def _verified_certificate_payload(
 @run_bp.route("/v1/certificates/<run_id>", methods=["GET"])
 @require_permission(Permission.RUNS_READ)
 def get_verification_certificate(run_id):
-    if not _run_is_in_active_context(run_id):
-        return jsonify({"error": "Not found"}), 404
-
     store = _active_run_store()
     context = active_runtime_context()
+    if not _run_is_in_active_context(run_id, context=context, run_store=store):
+        return jsonify({"error": "Not found"}), 404
     run = store.get_run(run_id, context=context)
     if run is None:
         return jsonify({"error": "Certificate not found"}), 404
@@ -1094,49 +1098,16 @@ TERMINAL_TRACE_EVENTS = {
 }
 
 
-def _extract_canonical_event_info(line: str, fallback_seq: int) -> tuple[int, bool]:
-    """
-    Extracts authoritative event _seq and checks if terminal from raw JSONL line.
-    Never regenerates forensic identity at read time.
-    """
-    try:
-        ev = json.loads(line)
-    except (ValueError, TypeError):
-        logger.debug(
-            "_extract_canonical_event_info failed",
-            extra={"operation": "_extract_canonical_event_info"},
-            exc_info=True,
-        )
-        ev = None
-
-    if isinstance(ev, dict):
-        raw_seq = ev.get("_seq")
-        if raw_seq is None:
-            raw_seq = ev.get("seq_id") or ev.get("id")
-        if raw_seq is not None:
-            try:
-                seq = int(raw_seq)
-            except (ValueError, TypeError):
-                seq = fallback_seq
-        else:
-            seq = fallback_seq
-
-        ev_name = str(ev.get("event") or "")
-        is_term = ev_name in TERMINAL_TRACE_EVENTS
-        return seq, is_term
-
-    is_term = any(f'"event": "{name}"' in line for name in TERMINAL_TRACE_EVENTS)
-    return fallback_seq, is_term
-
-
 @run_bp.route("/v1/runs/<path:run_id>/stream", methods=["GET"])
 @require_sse_permission(Permission.RUNS_READ)
 def stream_run_logs(run_id):
     """SSE streaming endpoint for live run traces with Last-Event-ID replay support."""
     req_context = active_runtime_context()
-    if req_context is not None and not _run_is_in_active_context(run_id, req_context):
-        return jsonify({"error": "Not found"}), 404
     provider = _active_run_store()
+    if req_context is not None and not _run_is_in_active_context(
+        run_id, req_context, run_store=provider
+    ):
+        return jsonify({"error": "Not found"}), 404
     run_record = provider.get_run(run_id, context=req_context)
     last_id_str = (
         request.headers.get("Last-Event-ID")
@@ -1204,26 +1175,12 @@ def stream_run_logs(run_id):
         )
 
     def stream_not_found():
-        import json as _json
-
-        if run_record is None or is_run_alive(run_id):
-            payload = _json.dumps(
-                {
-                    "event": "not_found",
-                    "message": "Execution log file not found. Waiting for trace data.",
-                }
-            )
-        else:
-            # A registered run with no provider trace and no live writer
-            # cannot make progress by reconnecting.
-            # This is a persistence failure, not a transient SSE condition.
-            payload = _json.dumps(
-                {
-                    "event": "trace_unavailable",
-                    "status": "STALLED",
-                    "message": "Run has no durable trace and no active execution writer.",
-                }
-            )
+        payload = json.dumps(
+            {
+                "event": "not_found",
+                "message": "Execution log file not found. Waiting for trace data.",
+            }
+        )
         yield f"data: {payload}\n\n"
 
     return Response(stream_not_found(), mimetype="text/event-stream")
@@ -1233,12 +1190,12 @@ def stream_run_logs(run_id):
 @require_permission(Permission.RUNS_READ)
 def verify_run(run_id):
     """Server-Authoritative Cryptographic Verification Endpoint."""
-    if not _run_is_in_active_context(run_id):
+    store = _active_run_store()
+    context = active_runtime_context()
+    if not _run_is_in_active_context(run_id, context=context, run_store=store):
         return jsonify({"error": "Not found"}), 404
     from eval_runner.verifier import TraceVerifier
 
-    store = _active_run_store()
-    context = active_runtime_context()
     manifest = store.get_manifest(run_id, context=context)
     trace_bytes = store.get_trace_bytes(run_id, context=context)
     if not manifest or trace_bytes is None:

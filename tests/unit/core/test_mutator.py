@@ -11,7 +11,7 @@ import pytest
 from eval_runner import mutator
 
 
-@pytest.mark.parametrize("name", ["concurrency", "duplicate_commit", "duplicate commit"])
+@pytest.mark.parametrize("name", sorted(mutator.UNSUPPORTED_RUNTIME_MUTATIONS))
 def test_undelivered_faults_are_not_advertised_or_applied(name):
     from copy import deepcopy
 
@@ -599,8 +599,8 @@ def test_all_vector_sub_engines():
     node_tm = scen_tm["workflow"]["nodes"][0]
     assert node_tm.get("unsupported_enum_value") is not None
     assert node_tm.get("raw_payload_corrupted") is not None
-    assert node_tm.get("duplicate_execution") is True
-    assert node_tm.get("replay_previous_event") is True
+    assert node_tm["duplicate_execution"] is True
+    assert node_tm["replay_previous_event"] is True
 
     sm = StateMutators()
     for t in sm.SUPPORTED_TYPES:
@@ -624,7 +624,7 @@ def test_all_vector_sub_engines():
     assert scen_sm_no_fp.get("failure_policy") is None
     assert scen_sm_no_fp["metadata"]["rollback_handler_corrupted"] is True
     assert "duplicate_commit" not in scen_sm_no_fp["metadata"]
-    assert scen_sm_no_fp["metadata"]["commit_after_cancel"] is True
+    assert "commit_after_cancel" not in scen_sm_no_fp["metadata"]
 
     am = AuthorizationMutators()
     for t in am.SUPPORTED_TYPES:
@@ -851,7 +851,7 @@ def test_mutator_edge_cases_and_branch_completions(tmp_path):
     scen_none_fp_2 = {"failure_policy": None, "workflow": {"nodes": [{}]}}
     StateMutators().apply_mutation(scen_none_fp_2, "commit_after_cancel")
     assert scen_none_fp_2["failure_policy"] is None
-    assert scen_none_fp_2["metadata"]["commit_after_cancel"] is True
+    assert scen_none_fp_2["workflow"]["nodes"][0]["commit_after_cancel"] is True
 
     fresh_service = MutationService()
     fresh_service.reset()
@@ -913,7 +913,8 @@ def test_mutation_descriptor_contract_and_catalog():
 
     for m in MUTATION_CATALOG:
         assert m.id and m.label and m.description and m.target_field
-        assert m.deterministic is True
+        assert type(m.deterministic) is bool
+    assert next(m for m in MUTATION_CATALOG if m.id == "approval_race").deterministic is False
 
 
 def test_mutation_service_list_mutation_catalog_and_tenant_scoping():
@@ -1190,7 +1191,6 @@ def test_mutator_aes_root_schema_conformance_and_zero_deviations():
     # Verify state mutators and semantic mutators against Draft-07 AES schema
     test_types = [
         "rollback_failure",
-        "commit_after_cancel",
         "stale_state",
         "partial_commit",
         "typo",

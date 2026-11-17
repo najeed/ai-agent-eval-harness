@@ -201,6 +201,9 @@ def test_statistics_use_executed_attempts_not_requested_k():
 
 
 def test_wilson_interval_bounds():
+    zero_ci = wilson_interval(0, 0)
+    assert zero_ci == {"lower": 0.0, "upper": 0.0, "confidence_level": 0.95}
+
     ci = wilson_interval(0, 10)
     assert ci["lower"] == 0.0
     assert 0 < ci["upper"] < 0.35
@@ -208,3 +211,10 @@ def test_wilson_interval_bounds():
     ci_all = wilson_interval(10, 10)
     assert ci_all["upper"] == 1.0
     assert ci_all["lower"] > 0.65
+
+
+def test_pass_at_k_estimator_invalid_inputs():
+    assert pass_at_k_estimator(0, 0, 1) == 0.0
+    assert pass_at_k_estimator(5, -1, 1) == 0.0
+    assert pass_at_k_estimator(5, 2, 0) == 0.0
+    assert pass_at_k_estimator(5, 0, 2) == 0.0

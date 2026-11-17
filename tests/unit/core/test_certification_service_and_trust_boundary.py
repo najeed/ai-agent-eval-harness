@@ -2699,7 +2699,11 @@ def test_public_and_console_share_authoritative_verdict(provider, monkeypatch, d
         cert["verification_package"]["signature"] = "00" * 64
     monkeypatch.setattr(provider, "get_manifest", lambda *a, **k: cert)
     monkeypatch.setattr(runs, "_active_run_store", lambda: provider)
-    monkeypatch.setattr(runs, "_run_is_in_active_context", lambda _: True)
+    monkeypatch.setattr(
+        runs,
+        "_run_is_in_active_context",
+        lambda _, context=None, run_store=None: context is None and run_store is provider,
+    )
     monkeypatch.setattr(trust, "get_run_store", lambda: provider)
     monkeypatch.setattr(runs, "active_runtime_context", lambda: None)
     monkeypatch.setattr(trust, "active_runtime_context", lambda: None)
