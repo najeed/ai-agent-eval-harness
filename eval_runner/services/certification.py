@@ -790,26 +790,9 @@ class CertificationService:
             or []
         )
         fin_reqs = set(finalization.required_oracle_ids)
-        explicit_scen_reqs = (
-            effective_scenario.get("required_oracle_ids")
-            or effective_scenario.get("required_oracles")
-            or (
-                effective_scenario.get("metadata", {}).get("required_oracle_ids")
-                if isinstance(effective_scenario.get("metadata"), Mapping)
-                else None
-            )
-            or (
-                effective_scenario.get("metadata", {}).get("required_oracles")
-                if isinstance(effective_scenario.get("metadata"), Mapping)
-                else None
-            )
-        )
-        if explicit_scen_reqs is not None:
-            scen_reqs = set(explicit_scen_reqs)
-        else:
-            from eval_runner.runner import compile_required_oracle_ids
+        from eval_runner.runner import compile_required_oracle_ids
 
-            scen_reqs = set(compile_required_oracle_ids(effective_scenario))
+        scen_reqs = set(compile_required_oracle_ids(effective_scenario))
 
         if manifest_reqs != fin_reqs:
             raise ValueError(

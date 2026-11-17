@@ -332,7 +332,7 @@ class ConditionalMutator(ScenarioMutator):
 
 
 class ConcurrentMutator(ScenarioMutator):
-    """Simulates concurrent conflicting mutations: concurrent(A, B)."""
+    """Reserved combinator; Core has no concurrent fault-delivery implementation."""
 
     def __init__(self, mutators: list[ScenarioMutator], name: str = "concurrent"):
         self.mutators = list(mutators)
@@ -344,34 +344,15 @@ class ConcurrentMutator(ScenarioMutator):
         )
 
     def can_mutate(self, mutation_type: str) -> bool:
-        return mutation_type == self.name or any(m.can_mutate(mutation_type) for m in self.mutators)
+        return False
 
     def mutate(
         self, scenario: dict, mutation_type: str, next_mutator: Callable[[dict, str], dict]
     ) -> dict:
-        res = copy.deepcopy(scenario)
-        for m in self.mutators:
-            res = m.mutate(res, mutation_type, lambda s, t: s)
-        # Mark race condition metadata
-        res.setdefault("metadata", {})["simulated_race"] = True
-        return next_mutator(res, mutation_type)
+        raise UnsupportedMutationError("Concurrent fault delivery is not implemented")
 
     def apply(self, context: MutationContext, rng: random.Random | None = None) -> MutationHandle:
-        active_rng = rng or context.rng
-        applied = []
-        for m in self.mutators:
-            h = m.apply(context, active_rng)
-            if h.applied:
-                applied.append(m.name)
-        context.metadata["concurrent_race_simulated"] = True
-        return MutationHandle(
-            mutation_id=f"conc_{uuid.uuid4().hex[:8]}",
-            name=self.name,
-            applied=bool(applied),
-            coordinate=self.coordinate,
-            target="concurrent",
-            details={"concurrent_mutators": applied},
-        )
+        raise UnsupportedMutationError("Concurrent fault delivery is not implemented")
 
 
 # Combinator Factory Helpers
@@ -871,9 +852,6 @@ class StateMutators(ScenarioMutator):
         "rollback_failure",
         "rollback failure",
         "rollback",
-        "concurrency",
-        "duplicate_commit",
-        "duplicate commit",
         "commit_after_cancel",
         "after-cancel commit",
         "after_cancel_commit",
@@ -890,12 +868,6 @@ class StateMutators(ScenarioMutator):
     _ROLLBACK_COORD = MutationCoordinate(
         MutationVector.STATE, MutationOperation.CORRUPT, MutationTier.T3_WORKFLOW
     )
-    _CONCURRENCY_COORD = MutationCoordinate(
-        MutationVector.CONCURRENCY, MutationOperation.CONFLICT, MutationTier.T3_WORKFLOW
-    )
-    _DUP_COMMIT_COORD = MutationCoordinate(
-        MutationVector.STATE, MutationOperation.DUPLICATE, MutationTier.T3_WORKFLOW
-    )
     _CANCEL_COMMIT_COORD = MutationCoordinate(
         MutationVector.STATE, MutationOperation.CONFLICT, MutationTier.T3_WORKFLOW
     )
@@ -911,9 +883,6 @@ class StateMutators(ScenarioMutator):
         "rollback_failure": _ROLLBACK_COORD,
         "rollback failure": _ROLLBACK_COORD,
         "rollback": _ROLLBACK_COORD,
-        "concurrency": _CONCURRENCY_COORD,
-        "duplicate_commit": _DUP_COMMIT_COORD,
-        "duplicate commit": _DUP_COMMIT_COORD,
         "commit_after_cancel": _CANCEL_COMMIT_COORD,
         "after-cancel commit": _CANCEL_COMMIT_COORD,
         "after_cancel_commit": _CANCEL_COMMIT_COORD,
@@ -926,6 +895,10 @@ class StateMutators(ScenarioMutator):
         return mutation_type in self.SUPPORTED_TYPES
 
     def apply_mutation(self, scenario: dict, mutation_type: str) -> None:
+        if mutation_type in {"concurrency", "duplicate_commit", "duplicate commit"}:
+            raise UnsupportedMutationError(
+                f"Fault delivery for '{mutation_type}' is not implemented"
+            )
         nodes = scenario.get("workflow", {}).get("nodes", [])
         if mutation_type in ["stale_state", "stale state"]:
             init_state = scenario.setdefault("initial_state", {})
@@ -941,15 +914,6 @@ class StateMutators(ScenarioMutator):
             scenario.setdefault("metadata", {})["rollback_handler_corrupted"] = True
             for node in nodes:
                 node["rollback_handler_corrupted"] = True
-        elif mutation_type == "concurrency":
-            scenario.setdefault("metadata", {})["concurrency_conflict"] = True
-            for node in nodes:
-                node["concurrent_writers"] = 2
-        elif mutation_type in ["duplicate_commit", "duplicate commit"]:
-            scenario.setdefault("metadata", {})["duplicate_commit"] = True
-            for node in nodes:
-                node["duplicate_commit"] = True
-                node["commit_multiplicity"] = 2
         elif mutation_type in [
             "commit_after_cancel",
             "after-cancel commit",
@@ -1223,8 +1187,8 @@ class CoreMutator(ScenarioMutator):
       retrieval_chunk, retrieval_source_swap
     - ToolMutators: schema_type, missing_field, enum_drift, malformed_payload,
       tool_contract, duplicate, replay
-    - StateMutators: stale_state, partial_commit, rollback_failure, concurrency,
-      duplicate_commit, commit_after_cancel, stale_commit
+    - StateMutators: stale_state, partial_commit, rollback_failure,
+      commit_after_cancel, stale_commit
     - AuthorizationMutators: approval_stale, approval_mismatch, approval_replay,
       approval_race, approval_revocation
     - TemporalMutators: timeout_boundary, latency_jitter, cancel_race
@@ -1260,6 +1224,10 @@ class CoreMutator(ScenarioMutator):
         next_mutator: Callable[[dict, str], dict],
         options: dict[str, Any] | None = None,
     ) -> dict:
+        if mutation_type in {"concurrency", "duplicate_commit", "duplicate commit"}:
+            raise UnsupportedMutationError(
+                f"Fault delivery for '{mutation_type}' is not implemented"
+            )
         new_scenario = json.loads(json.dumps(scenario))  # Safe deep copy
         mutation_details: dict[str, Any] = {}
 
@@ -1606,30 +1574,6 @@ MUTATION_CATALOG: list[MutationDescriptor] = [
         description="Corrupts compensation handlers to evaluate recovery from failed sagas.",
         target_field="failure_policy",
         regulatory_frameworks=["COMPENSATION_INTEGRITY", "RECOVERY_ORCHESTRATION"],
-        deterministic=True,
-    ),
-    MutationDescriptor(
-        id="concurrency",
-        label="Concurrent Writer Contention",
-        vector=MutationVector.CONCURRENCY,
-        operation=MutationOperation.CONFLICT,
-        tier=MutationTier.T3_WORKFLOW,
-        source="core",
-        description="Simulates race conditions with simultaneous external state modifications.",
-        target_field="metadata",
-        regulatory_frameworks=["OPTIMISTIC_CONCURRENCY", "ISOLATION_LEVELS"],
-        deterministic=True,
-    ),
-    MutationDescriptor(
-        id="duplicate_commit",
-        label="Duplicate Transaction Commit",
-        vector=MutationVector.STATE,
-        operation=MutationOperation.DUPLICATE,
-        tier=MutationTier.T3_WORKFLOW,
-        source="core",
-        description="Simulates double-execution of state commit transactions.",
-        target_field="failure_policy",
-        regulatory_frameworks=["TRANSACTION_ISOLATION", "FINRA_4370"],
         deterministic=True,
     ),
     MutationDescriptor(

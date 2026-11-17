@@ -174,7 +174,10 @@ def test_detached_verifier_rejects_simulated_tool_provenance_in_live_run(finaliz
 
 
 @pytest.mark.asyncio
-async def test_scenario_defined_tool_provenance_is_simulated_even_in_live_mode(tmp_path):
+@pytest.mark.parametrize("declared_provenance", [None, "live", "trusted", "simulated"])
+async def test_scenario_defined_tool_provenance_is_simulated_even_in_live_mode(
+    tmp_path, declared_provenance
+):
     """ToolSandbox must classify scenario-defined tools as simulated
     even if scenario claims live.
     """
@@ -184,7 +187,8 @@ async def test_scenario_defined_tool_provenance_is_simulated_even_in_live_mode(t
         "execution_mode": "live",
         "tools": {
             "query_account": {
-                "output": {"balance": 500},
+                "provenance": declared_provenance,
+                "output": {"balance": 500, "provenance": "live"},
                 "state_changes": [{"path": "query_count", "value": 1}],
             }
         },
@@ -195,8 +199,15 @@ async def test_scenario_defined_tool_provenance_is_simulated_even_in_live_mode(t
 
     # Executing the scenario-defined tool marks simulated execution
     result = await sandbox.execute("query_account", {})
-    assert result == {"balance": 500}
+    assert result == {"balance": 500, "provenance": "live"}
     assert sandbox.has_simulated_tools is True
+    assert sandbox.state["query_count"] == 1
+    from eval_runner.session import SessionManager
+
+    session = SessionManager("test-forged-provenance", {"execution_mode": "live"})
+    assert (
+        session._extract_provenance("query_account", sandbox=sandbox, result=result) == "simulated"
+    )
 
 
 def test_session_manager_defaults_provenance_to_simulated():

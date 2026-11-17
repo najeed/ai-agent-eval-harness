@@ -11,6 +11,29 @@ import pytest
 from eval_runner import mutator
 
 
+@pytest.mark.parametrize("name", ["concurrency", "duplicate_commit", "duplicate commit"])
+def test_undelivered_faults_are_not_advertised_or_applied(name):
+    from copy import deepcopy
+
+    from agentv_runtime.contracts import MutationContext
+
+    service = mutator.MutationService()
+    scenario = {"id": "no-fake-delivery", "workflow": {"nodes": [{"id": "n"}]}}
+    original = deepcopy(scenario)
+    assert service.supports_mutation(name) is False
+    assert name not in {descriptor.id for descriptor in service.list_mutation_catalog()}
+    for spec in (name, {"type": name}):
+        with pytest.raises(mutator.UnsupportedMutationError):
+            service.mutate_scenario(scenario, spec)
+    context = MutationContext(scenario=scenario)
+    with pytest.raises(mutator.UnsupportedMutationError):
+        service.apply_in_run(context, name)
+    with pytest.raises(mutator.UnsupportedMutationError):
+        mutator.CoreMutator().mutate(scenario, name, lambda s, _: s)
+    assert scenario == original
+    assert context.metadata == {}
+
+
 def test_mutator_rejects_unknown_operator():
     with pytest.raises(mutator.UnsupportedMutationError, match="not available"):
         mutator.mutate_scenario({"id": "unknown_mutation"}, "not_a_runtime_mutation")
@@ -493,17 +516,19 @@ def test_concurrent_mutator_exhaustive():
             return MutationHandle(mutation_id="1", name="m1", applied=True, target="m1")
 
     conc = concurrent(M1())
-    assert conc.can_mutate("concurrent") is True
-    assert conc.can_mutate("anything") is True
+    assert conc.can_mutate("concurrent") is False
+    assert conc.can_mutate("anything") is False
 
-    res = conc.mutate({}, "any", lambda s, m: s)
-    assert res["m1"] is True
-    assert res["metadata"]["simulated_race"] is True
+    scenario = {}
+    with pytest.raises(mutator.UnsupportedMutationError):
+        conc.mutate(scenario, "any", lambda s, m: s)
+    assert scenario == {}
 
     ctx = MutationContext(scenario={})
-    h = conc.apply(ctx)
-    assert h.applied is True
-    assert ctx.metadata["concurrent_race_simulated"] is True
+    with pytest.raises(mutator.UnsupportedMutationError):
+        conc.apply(ctx)
+    assert ctx.scenario == {}
+    assert ctx.metadata == {}
 
 
 def test_all_vector_sub_engines():
@@ -584,19 +609,21 @@ def test_all_vector_sub_engines():
     sm.apply_mutation(scen_sm, "stale_state")
     sm.apply_mutation(scen_sm, "partial_commit")
     sm.apply_mutation(scen_sm, "rollback_failure")
-    sm.apply_mutation(scen_sm, "concurrency")
-    sm.apply_mutation(scen_sm, "duplicate_commit")
+    for unsupported in ("concurrency", "duplicate_commit"):
+        with pytest.raises(mutator.UnsupportedMutationError):
+            sm.apply_mutation(scen_sm, unsupported)
     sm.apply_mutation(scen_sm, "commit_after_cancel")
     sm.apply_mutation(scen_sm, "stale_commit")
-    assert scen_sm["metadata"]["concurrency_conflict"] is True
+    assert "concurrency_conflict" not in scen_sm["metadata"]
 
     scen_sm_no_fp = {"workflow": {"nodes": [{"id": "n1"}]}}
     sm.apply_mutation(scen_sm_no_fp, "rollback_failure")
-    sm.apply_mutation(scen_sm_no_fp, "duplicate_commit")
+    with pytest.raises(mutator.UnsupportedMutationError):
+        sm.apply_mutation(scen_sm_no_fp, "duplicate_commit")
     sm.apply_mutation(scen_sm_no_fp, "commit_after_cancel")
     assert scen_sm_no_fp.get("failure_policy") is None
     assert scen_sm_no_fp["metadata"]["rollback_handler_corrupted"] is True
-    assert scen_sm_no_fp["metadata"]["duplicate_commit"] is True
+    assert "duplicate_commit" not in scen_sm_no_fp["metadata"]
     assert scen_sm_no_fp["metadata"]["commit_after_cancel"] is True
 
     am = AuthorizationMutators()
@@ -792,8 +819,8 @@ def test_mutator_edge_cases_and_branch_completions(tmp_path):
     assert rep_handle.applied is False
 
     conc = ConcurrentMutator([InactiveMutator()])
-    conc_handle = conc.apply(ctx)
-    assert conc_handle.applied is False
+    with pytest.raises(mutator.UnsupportedMutationError):
+        conc.apply(ctx)
 
     empty_scen = {"workflow": {"nodes": []}}
     InputMutators().apply_mutation(empty_scen, "unrecognized_mutation")
@@ -811,13 +838,15 @@ def test_mutator_edge_cases_and_branch_completions(tmp_path):
 
     scen_string_fp = {"failure_policy": "not_a_dict", "workflow": {"nodes": [{}]}}
     StateMutators().apply_mutation(scen_string_fp, "rollback_failure")
-    StateMutators().apply_mutation(scen_string_fp, "duplicate_commit")
+    with pytest.raises(mutator.UnsupportedMutationError):
+        StateMutators().apply_mutation(scen_string_fp, "duplicate_commit")
     StateMutators().apply_mutation(scen_string_fp, "commit_after_cancel")
 
     scen_none_fp_1 = {"failure_policy": None, "workflow": {"nodes": [{}]}}
-    StateMutators().apply_mutation(scen_none_fp_1, "duplicate_commit")
+    with pytest.raises(mutator.UnsupportedMutationError):
+        StateMutators().apply_mutation(scen_none_fp_1, "duplicate_commit")
     assert scen_none_fp_1["failure_policy"] is None
-    assert scen_none_fp_1["metadata"]["duplicate_commit"] is True
+    assert "metadata" not in scen_none_fp_1
 
     scen_none_fp_2 = {"failure_policy": None, "workflow": {"nodes": [{}]}}
     StateMutators().apply_mutation(scen_none_fp_2, "commit_after_cancel")
@@ -1160,10 +1189,8 @@ def test_mutator_aes_root_schema_conformance_and_zero_deviations():
 
     # Verify state mutators and semantic mutators against Draft-07 AES schema
     test_types = [
-        "duplicate_commit",
         "rollback_failure",
         "commit_after_cancel",
-        "concurrency",
         "stale_state",
         "partial_commit",
         "typo",

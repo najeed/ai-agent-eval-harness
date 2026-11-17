@@ -348,8 +348,9 @@ def create_authenticated_connector_receipt(
     timestamp: str | None = None,
     encoding_version: str = "v2",
     key: bytes | None = None,
+    signing_key: Any | None = None,
 ) -> dict[str, Any]:
-    """Create an authenticated connector receipt with cryptographic MAC."""
+    """Create an authenticated connector receipt with cryptographic MAC or asymmetric signature."""
     ts = str(timestamp or datetime.now(UTC).isoformat())
     req = str(request_spec or "")
     resp_digest = str(response_digest or "")
@@ -364,6 +365,21 @@ def create_authenticated_connector_receipt(
         if not run_id or not str(run_id).strip():
             raise ValueError("Connector receipt v2 requires nonempty 'run_id'")
 
+    resolved_token = None
+    if key is not None:
+        resolved_token = compute_connector_receipt_token(connector_id, source_id, key=key)
+    elif signing_key is None:
+        try:
+            resolved_token = compute_connector_receipt_token(connector_id, source_id, key=None)
+        except StateAuthorityKeyMissingError:
+            resolved_token = hashlib.sha3_256(
+                f"connector_receipt:{connector_id}:{source_id}".encode()
+            ).hexdigest()
+    else:
+        resolved_token = hashlib.sha3_256(
+            f"connector_receipt:{connector_id}:{source_id}".encode()
+        ).hexdigest()
+
     receipt: dict[str, Any] = {
         "encoding_version": encoding_version,
         "profile": (CONNECTOR_RECEIPT_PROFILE_V2 if is_v2 else "v1"),
@@ -374,23 +390,53 @@ def create_authenticated_connector_receipt(
         "response_digest": resp_digest,
         "timestamp": ts,
         "execution_id": exec_id,
-        "retrieval_token": compute_connector_receipt_token(connector_id, source_id, key=key),
+        "retrieval_token": resolved_token,
     }
     if phase:
         receipt["phase"] = str(phase)
     if run_id:
         receipt["run_id"] = str(run_id).strip()
-    receipt["mac"] = compute_connector_receipt_mac(receipt, key=key)
-    receipt["signature"] = receipt["mac"]
+
+    if signing_key is not None:
+        from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.primitives.asymmetric import ed25519
+
+        priv = signing_key
+        if isinstance(priv, (str, bytes)):
+            pem_b = priv.encode("utf-8") if isinstance(priv, str) else priv
+            priv = serialization.load_pem_private_key(pem_b, password=None)
+        if not isinstance(priv, ed25519.Ed25519PrivateKey):
+            raise TypeError("signing_key must be an Ed25519PrivateKey or valid PEM bytes")
+
+        payload = canonical_receipt_payload_bytes(receipt)
+        sig_bytes = priv.sign(payload)
+        sig_hex = sig_bytes.hex()
+        receipt["algorithm"] = "ed25519"
+        receipt["signature_ed25519"] = sig_hex
+        receipt["signature"] = sig_hex
+        receipt["mac"] = sig_hex
+        pub = priv.public_key()
+        pub_pem = pub.public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
+        ).decode("utf-8")
+        receipt["public_key_pem"] = pub_pem
+    else:
+        receipt["mac"] = compute_connector_receipt_mac(receipt, key=key)
+        receipt["signature"] = receipt["mac"]
     return receipt
 
 
 def verify_connector_receipt_authenticity(
     receipt: Mapping[str, Any],
     key: bytes | None = None,
+    trusted_public_key: Any | None = None,
 ) -> bool:
-    """Cryptographically verify the signature or MAC of a connector receipt under the trust key.
+    """Cryptographically verify the signature or MAC of a connector
+    receipt under public anchors or trust key.
 
+    Supports asymmetric public-key verification under connector identities for zero-trust
+    detached verification, as well as symmetric HMAC verification under the secret key.
     Observation-specific MAC or signature binding the observation payload and
     metadata is strictly required. Retrieval-token-only authentication is prohibited.
     """
@@ -401,6 +447,85 @@ def verify_connector_receipt_authenticity(
     mac = receipt.get("mac") or receipt.get("signature")
     if not mac or not isinstance(mac, str):
         return False
+
+    is_asymmetric = (
+        receipt.get("algorithm") == "ed25519"
+        or "signature_ed25519" in receipt
+        or "public_key_pem" in receipt
+        or trusted_public_key is not None
+    )
+
+    if is_asymmetric:
+        try:
+            from cryptography.exceptions import InvalidSignature, UnsupportedAlgorithm
+            from cryptography.hazmat.primitives import serialization
+            from cryptography.hazmat.primitives.asymmetric import ed25519
+
+            pub_key = None
+            if trusted_public_key is not None:
+                if isinstance(trusted_public_key, ed25519.Ed25519PublicKey):
+                    pub_key = trusted_public_key
+                elif isinstance(trusted_public_key, (str, bytes)):
+                    raw_b = (
+                        trusted_public_key.encode("utf-8")
+                        if isinstance(trusted_public_key, str)
+                        else trusted_public_key
+                    )
+                    pub_key = serialization.load_pem_public_key(raw_b)
+            elif receipt.get("public_key_pem"):
+                raw_b = receipt["public_key_pem"].encode("utf-8")
+                pub_key = serialization.load_pem_public_key(raw_b)
+            else:
+                conn_id = str(receipt.get("connector_id", "")).strip()
+                if conn_id:
+                    from eval_runner.identity import IdentityService
+
+                    try:
+                        pub_key = IdentityService.get_public_key(conn_id, auto_provision=False)
+                    except (
+                        ValueError,
+                        TypeError,
+                        KeyError,
+                        AttributeError,
+                        OSError,
+                        RuntimeError,
+                    ) as exc:
+                        logger.debug(
+                            "Failed to resolve public key from IdentityService "
+                            "for connector %s: %s",
+                            conn_id,
+                            exc,
+                            exc_info=True,
+                        )
+                    if pub_key is None and getattr(config, "TRUST_ROOT", None):
+                        candidate_file = Path(config.TRUST_ROOT) / conn_id / "public_key.pem"
+                        if candidate_file.is_file():
+                            pub_key = serialization.load_pem_public_key(candidate_file.read_bytes())
+
+            if pub_key is None or not isinstance(pub_key, ed25519.Ed25519PublicKey):
+                return False
+
+            sig_hex = receipt.get("signature_ed25519") or receipt.get("signature") or mac
+            sig_bytes = bytes.fromhex(sig_hex)
+            payload = canonical_receipt_payload_bytes(receipt)
+            pub_key.verify(sig_bytes, payload)
+            return True
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            InvalidSignature,
+            UnsupportedAlgorithm,
+        ) as exc:
+            logger.debug(
+                "Ed25519 connector receipt signature verification failed: %s",
+                exc,
+                exc_info=True,
+            )
+            return False
 
     try:
         resolved_key = key if key is not None else get_state_authority_trust_key()

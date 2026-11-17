@@ -138,7 +138,7 @@ def state_claim_failures(
     )
     if isinstance(authorities, Mapping) and "url" in authorities:
         authorities = {"default": authorities}
-    failures = []
+    failures = unsupported_mutation_failures(scenario)
     for node in _extract_scenario_nodes(scenario):
         node_id = node.get("id") or node.get("node_id")
         assertions = node.get("expected_outcome") or []
@@ -534,3 +534,67 @@ def certification_claim_scope(scenario):
         ):
             return "external_business_state"
     return "message_only" if message_assertions else "execution_evidence"
+
+
+def unsupported_mutation_failures(scenario):
+    """Reject persisted fault claims for which Core has no delivery implementation."""
+    metadata = scenario.get("metadata") or {}
+    unsupported = {"concurrency", "duplicate_commit", "duplicate commit", "concurrent"}
+    declarations = {"concurrency_conflict", "duplicate_commit", "simulated_race"}
+    if (
+        any(metadata.get(key) for key in declarations)
+        or any(
+            isinstance(row, Mapping) and row.get("type") in unsupported
+            for row in metadata.get("applied_mutations", [])
+        )
+        or any(
+            node.get("concurrent_writers") or node.get("duplicate_commit")
+            for node in _extract_scenario_nodes(scenario)
+        )
+    ):
+        return [
+            "UnsupportedMutationDelivery: concurrency/duplicate-commit fault is not implemented"
+        ]
+    return []
+
+
+def certificate_projection_failures(package):
+    """Verify the complete certificate projection committed by a signed package."""
+    projection = (package.metadata or {}).get("certificate_projection")
+    fields = {
+        "compliance",
+        "evidence_root_hash",
+        "execution_mode",
+        "run_id",
+        "timestamp",
+        "trace_hash",
+        "vc_version",
+    }
+    if not package.certificate_hash:
+        return ["CertificateHashMissing: authoritative verification requires a certificate hash"]
+    if not isinstance(projection, Mapping) or set(projection) != fields:
+        return ["CertificateArtifactMissing: complete signed certificate projection is required"]
+    try:
+        actual = _digest(projection)
+    except (ValueError, TypeError):
+        return ["CertificateHashError: certificate projection is not canonical JSON"]
+    if actual != package.certificate_hash:
+        return [f"CertificateHashMismatch: package={package.certificate_hash} actual={actual}"]
+    bindings = {
+        "run_id": package.execution_identity.get("run_id"),
+        "execution_mode": package.execution_identity.get("execution_mode"),
+        "evidence_root_hash": package.evidence_root_hash,
+        "trace_hash": package.trace_hash,
+        "timestamp": package.trace_seal.get("sealed_at"),
+    }
+    failures = [
+        f"CertificateProjectionMismatch:{key}"
+        for key, value in bindings.items()
+        if not value or projection[key] != value
+    ]
+    compliance = projection["compliance"]
+    if not isinstance(compliance, Mapping) or any(
+        compliance.get(key) != package.decision.get(key) for key in ("status", "score")
+    ):
+        failures.append("CertificateProjectionMismatch:compliance")
+    return failures

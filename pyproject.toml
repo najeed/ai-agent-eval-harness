@@ -32,7 +32,7 @@ dependencies = [
     "opentelemetry-sdk==1.45.2",
     "psutil==7.2.2",
     "httpx==0.28.1",
-    "sqlalchemy==2.1.8",
+    "sqlalchemy==2.1.9",
     "python-dotenv==1.2.4",
     "Authlib==1.9.8",
     "Pillow==13.0.0",
@@ -43,7 +43,7 @@ dependencies = [
 # 1. Direct Native Provider SDKs
 # (OpenAI, Anthropic, Grok, Ollama connect directly via aiohttp; no external Python SDKs required)
 provider-gemini = [
-    "google-genai==3.3.0",
+    "google-genai==3.4.0",
 ]
 
 # 2. Framework Environments (Evaluated and verified agent architectures)
@@ -124,7 +124,7 @@ all = [
     "sentence-transformers==6.3.0",
     "transformers==5.23.0",
     "datasets==5.2.0",
-    "google-genai==3.3.0",
+    "google-genai==3.4.0",
     "langchain==1.5.0",
     "langchain-core>=1.8.1",
     "langserve>=0.3.3",

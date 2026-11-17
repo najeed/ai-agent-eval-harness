@@ -1378,6 +1378,92 @@ def test_certification_oracle_inventory_and_reconciliation(provider, monkeypatch
         execute_industrial_certification(run_id_block, run_store=provider, scenario_data=scen_block)
 
 
+def test_mixed_oracle_declarations_share_execution_and_certification_inventory(provider):
+    from eval_runner.runner import compile_required_oracle_ids
+    from eval_runner.verifier import VerificationAuthority
+
+    scenario = {
+        "id": "mixed-oracles",
+        "version": "1.0.0",
+        "required_oracles": ["oracle-1"],
+        "required_oracle_ids": ["oracle-2"],
+        "metadata": {"required_oracles": ["oracle-3"], "required_oracle_ids": ["oracle-4"]},
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "n",
+                    "success_criteria": [{"oracle_id": "oracle-5", "metric": "generic_accuracy"}],
+                }
+            ]
+        },
+    }
+    inventory = [f"oracle-{number}" for number in range(1, 6)]
+    assert compile_required_oracle_ids(scenario) == inventory
+    _seed_run(
+        provider,
+        "mixed-run",
+        scenario_override=scenario,
+        required_oracles=inventory,
+        extra_events=[
+            {
+                "event": "oracle_result",
+                "resolver": "fixture",
+                "oracle_id": oracle,
+                "assertion_id": oracle,
+                "passed": True,
+                "outcome": "PASS",
+            }
+            for oracle in inventory[1:]
+        ],
+    )
+    issued = execute_industrial_certification(
+        "mixed-run", run_store=provider, scenario_data=scenario
+    )
+    assert issued["certified"] is True
+    certificate = issued["manifest"]
+    for manifest in (
+        certificate["execution_manifest"],
+        ExecutionManifest.from_dict(certificate["execution_manifest"]),
+    ):
+        result = VerificationAuthority.verify_certification_artifact(
+            certificate["verification_package"],
+            raw_trace_bytes=provider.get_trace_bytes("mixed-run"),
+            canonical_manifest=manifest,
+            scenario_data=scenario,
+        )
+        assert result["certified"], result["failures"]
+
+
+@pytest.mark.parametrize("carrier", ["metadata", "node", "history"])
+def test_unsupported_persisted_mutation_cannot_certify(provider, carrier):
+    from eval_runner.verifier import VerificationAuthority
+
+    scenario = {"id": "unsupported-fault", "version": "1.0.0", "required_oracles": ["oracle-1"]}
+    if carrier == "metadata":
+        scenario["metadata"] = {"simulated_race": True}
+    elif carrier == "history":
+        scenario["metadata"] = {"applied_mutations": [{"type": "duplicate_commit"}]}
+    else:
+        scenario["workflow"] = {"nodes": [{"id": "n", "concurrent_writers": 2}]}
+    _seed_run(provider, "unsupported-run", scenario_override=scenario)
+    with pytest.raises(ValueError, match="UnsupportedMutationDelivery"):
+        execute_industrial_certification(
+            "unsupported-run", run_store=provider, scenario_data=scenario
+        )
+    raw = provider.get_trace_bytes("unsupported-run")
+    certificate = TraceVerifier.sign_trace_bytes(
+        raw, run_id="unsupported-run", run_store=provider, execution_mode="live"
+    )
+    result = VerificationAuthority.verify_certification_artifact(
+        certificate["verification_package"],
+        raw_trace_bytes=raw,
+        canonical_manifest=certificate["execution_manifest"],
+        scenario_data=scenario,
+    )
+    assert result["certified"] is False
+    assert any("UnsupportedMutationDelivery" in failure for failure in result["failures"])
+
+
 def test_certification_commit_failure_and_sealed_state(provider, monkeypatch):
     run_id = "run-commit-fail"
     scenario = _seed_run(provider, run_id)

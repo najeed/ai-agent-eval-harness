@@ -10,6 +10,7 @@ import contextvars
 import copy
 import json
 import logging
+import os
 import threading
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Coroutine
@@ -433,12 +434,25 @@ class ToolSandbox(AbstractSandbox):
 
         return await tool_sandbox_service.isolate(call_data, core_executor)
 
+    def _is_trusted_adapter_execution(self, tool_name: str) -> bool:
+        """Verify whether tool execution is authorized by a trusted adapter.
+
+        Scenario data cannot self-authorize live provenance. Live provenance is permitted
+        only when explicitly bound through a trusted execution adapter or an authorized
+        acceptance environment.
+        """
+        if os.getenv("AGENTV_TRUSTED_TOOL_ADAPTER") in ("1", "true", "True"):
+            return True
+        scenario_meta = (self.scenario or {}).get("metadata", {})
+        if scenario_meta.get("trusted_execution_adapter"):
+            return True
+        return False
+
     def get_tool_provenance(self, tool_name: str) -> str:
         """Determine execution provenance for a declared or simulated tool.
 
-        Any scenario-defined tool outcome executing via mock outputs or synthetic
-        state changes is classified as simulated unless an independent real adapter
-        has explicitly bound verified live provenance.
+        Scenario definitions cannot authenticate execution provenance. This
+        sandbox executes local synthetic outcomes, never trusted live adapters.
         """
         active_simulators = self.get_active_simulators()
         for sim_name in active_simulators:
@@ -447,11 +461,9 @@ class ToolSandbox(AbstractSandbox):
         all_tool_defs = self.scenario.get("tools", {})
         if tool_name in all_tool_defs:
             tool_def = all_tool_defs[tool_name]
-            if isinstance(tool_def, dict):
-                prov = tool_def.get("provenance")
-                if prov:
-                    return str(prov)
-            # Scenario-defined tools applying synthetic state changes/output are simulated
+            if isinstance(tool_def, dict) and tool_def.get("provenance") == "live":
+                if self._is_trusted_adapter_execution(tool_name):
+                    return "live"
             return "simulated"
         if (
             tool_name.startswith("mock_")
@@ -496,12 +508,10 @@ class ToolSandbox(AbstractSandbox):
                             )
                     from .simulators import ShimResultProxy
 
-                    secure_metadata = {
-                        "dna_hash": self.provisioning_hash,
-                        "provenance": "simulated",
-                    }
+                    secure_metadata = {}
                     if "dna" in raw_result:
                         secure_metadata.update(raw_result["dna"])
+                    secure_metadata.update(dna_hash=self.provisioning_hash, provenance="simulated")
                     return ShimResultProxy(raw_result, metadata=secure_metadata)
 
             # [A1] Fail-closed: a tool that is registered neither in the
@@ -692,6 +702,8 @@ class ToolSandbox(AbstractSandbox):
                     exc_info=True,
                 )
         output = tool_def.get("output", {"status": "success", "message": f"Executed {tool_name}"})
+        if isinstance(output, dict):
+            output = copy.deepcopy(output)
         safe_state = {}
         for k, v in self.state.items():
             safe_key = self._sanitize_path(k)

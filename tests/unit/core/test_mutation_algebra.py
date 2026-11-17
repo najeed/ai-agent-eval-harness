@@ -25,6 +25,7 @@ from eval_runner.mutator import (
     ConditionalMutator,
     CoreMutator,
     ScenarioMutator,
+    UnsupportedMutationError,
     after_event,
     before_commit,
     between_steps,
@@ -278,11 +279,13 @@ def test_combinator_conditional_after_event_and_steps(sample_scenario):
 
 
 def test_combinator_concurrent(sample_scenario):
-    """Verifies concurrent(A, B) marks metadata and applies both."""
+    """Sequential scenario edits must not masquerade as concurrent fault delivery."""
     core = CoreMutator()
     conc = concurrent(core)
-    mutated = conc.mutate(sample_scenario, "concurrency", lambda s, t: s)
-    assert mutated["metadata"]["simulated_race"] is True
+    original = copy.deepcopy(sample_scenario)
+    with pytest.raises(UnsupportedMutationError):
+        conc.mutate(sample_scenario, "concurrency", lambda s, t: s)
+    assert sample_scenario == original
 
 
 # ==============================================================================
@@ -296,7 +299,6 @@ def test_combinator_concurrent(sample_scenario):
         # State & Transaction
         ("stale_state", "_version", "stale_v0"),
         ("partial_commit", "partial_commit_simulated", True),
-        ("concurrency", "concurrent_writers", 2),
         # Async & Timing
         ("duplicate", "duplicate_execution", True),
         ("replay", "replay_previous_event", True),
@@ -483,13 +485,12 @@ def test_combinator_apply_and_mutate_branches(sample_scenario):
     assert cond_true.can_mutate("conditional") is True
     assert cond_true.can_mutate("dummy") is True
     conc = concurrent(DummyMut())
-    assert conc.can_mutate("concurrent") is True
-    assert conc.can_mutate("dummy") is True
+    assert conc.can_mutate("concurrent") is False
+    assert conc.can_mutate("dummy") is False
 
     # 6. ConcurrentMutator.apply
-    h_conc = conc.apply(ctx)
-    assert h_conc.applied is True
-    assert "dummy" in h_conc.details["concurrent_mutators"]
+    with pytest.raises(UnsupportedMutationError):
+        conc.apply(ctx)
 
     # 7. before_commit with event None
     bc_none = before_commit(DummyMut())
@@ -645,10 +646,8 @@ def test_new_tier_a_mutators(sample_scenario):
     assert "_unexpected_forbidden_property" in node["parameters"]
 
     # 4. duplicate_commit
-    m_dup = mutate_scenario(sample_scenario, "duplicate_commit")
-    assert m_dup["metadata"]["duplicate_commit"] is True
-    assert m_dup["workflow"]["nodes"][0]["duplicate_commit"] is True
-    assert m_dup["workflow"]["nodes"][0]["commit_multiplicity"] == 2
+    with pytest.raises(UnsupportedMutationError):
+        mutate_scenario(sample_scenario, "duplicate_commit")
 
     # 5. commit_after_cancel
     m_cancel = mutate_scenario(sample_scenario, "commit_after_cancel")

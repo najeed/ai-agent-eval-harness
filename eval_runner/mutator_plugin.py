@@ -191,7 +191,13 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
             record = {"fault": "commit_after_cancel", "step": self.step_index}
             self.applied_mutations.append(record)
             logger.warning("[RuntimeMutationPlugin] Tracking commit after cancellation signal")
-            return {"commit_after_cancel_tracked": True}
+            receipt_delivery = (
+                "DELIVERED" if node.get("allow_post_cancellation_write", True) else "BLOCKED"
+            )
+            return {
+                "commit_after_cancel_tracked": True,
+                "mutation_receipt": {**record, "delivery": receipt_delivery},
+            }
 
         return True
 

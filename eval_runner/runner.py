@@ -55,17 +55,14 @@ def compile_required_oracle_ids(scenario: dict[str, Any], resolved_policy: Any =
     req_oracles: list[str] = []
 
     # 1. Explicit declaration in scenario or metadata
-    explicit = (
-        scenario.get("required_oracles")
-        or scenario.get("required_oracle_ids")
-        or (scenario.get("metadata") or {}).get("required_oracles")
-        or (scenario.get("metadata") or {}).get("required_oracle_ids")
-    )
-    if isinstance(explicit, (list, set, tuple)):
-        for item in explicit:
-            s_item = str(item).strip()
-            if s_item and s_item not in req_oracles:
-                req_oracles.append(s_item)
+    for declaration in (scenario, scenario.get("metadata") or {}):
+        for key in ("required_oracles", "required_oracle_ids"):
+            explicit = declaration.get(key)
+            if isinstance(explicit, (list, set, tuple)):
+                for item in explicit:
+                    s_item = str(item).strip()
+                    if s_item and s_item not in req_oracles:
+                        req_oracles.append(s_item)
 
     # 1b. Required policy controls are ordinary required oracles.  A policy
     # declaration is certifiable only when it names the exact assertion that

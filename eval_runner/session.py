@@ -2507,7 +2507,38 @@ class SessionManager:
         result: Any = None,
         fallback_prov: str | None = None,
     ) -> str:
-        """Safely extract tool provenance without raising on mock/coroutine objects."""
+        """Safely extract tool provenance without raising on mock/coroutine objects.
+
+        Scenario definitions and local sandbox executors cannot authenticate live
+        execution provenance. Any scenario-authored tool execution is unconditionally
+        classified as simulated. Live provenance is permitted only through a trusted
+        execution adapter.
+        """
+        sb = sandbox or getattr(self, "sandbox", None)
+
+        # Unconditional classification for scenario-authored tools
+        scen = getattr(self, "scenario", None) or getattr(sb, "scenario", None)
+        if isinstance(scen, dict):
+            scen_tools = scen.get("tools")
+            if (isinstance(scen_tools, dict) and tool_name in scen_tools) or (
+                isinstance(scen_tools, list)
+                and any(
+                    (isinstance(t, dict) and t.get("name") == tool_name) or t == tool_name
+                    for t in scen_tools
+                )
+            ):
+                if isinstance(sb, ToolSandbox) and sb.get_tool_provenance(tool_name) == "live":
+                    return "live"
+                return "simulated"
+
+        if isinstance(sb, ToolSandbox) and sb.get_tool_provenance(tool_name) == "simulated":
+            return "simulated"
+        if (
+            tool_name.startswith("mock_")
+            or tool_name.startswith("sim_")
+            or tool_name.startswith("synthetic_")
+        ):
+            return "simulated"
         if result is not None:
             if hasattr(result, "get_secure_metadata") and callable(result.get_secure_metadata):
                 if not type(result).__name__.endswith("Mock"):
@@ -2526,7 +2557,6 @@ class SessionManager:
                 if isinstance(prov, str):
                     return prov
 
-        sb = sandbox or getattr(self, "sandbox", None)
         if (
             sb is not None
             and hasattr(sb, "get_tool_provenance")
@@ -3264,7 +3294,8 @@ class SessionManager:
     ):
         """Unified helper to record tool results across single and short-circuited paths."""
         if provenance is None:
-            provenance = self._extract_provenance(tool_name, result=result)
+            sb = getattr(self, "sandbox", None)
+            provenance = self._extract_provenance(tool_name, sandbox=sb, result=result)
 
         if provenance in {"simulated", "mock", "synthetic"}:
             self.has_simulated_tools = True

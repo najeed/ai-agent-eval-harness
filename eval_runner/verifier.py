@@ -880,7 +880,7 @@ class TraceVerifier:
             signature=None,
             signer_identity=identity_id,
             algorithm="ed25519",
-            metadata=manifest.get("metadata", {}),
+            metadata={**manifest.get("metadata", {}), "certificate_projection": cert_payload},
         )
 
         from eval_runner.identity import IdentityService
@@ -2726,37 +2726,59 @@ class VerificationAuthority:
                 )
                 failures.append(f"VerificationHashError: {vh_err}")
 
-        if pkg.certificate_hash and canonical_manifest is not None:
+        if pkg.certificate_hash:
             try:
                 from agentv_runtime.canonical import canonical_json_encode
 
-                m_dict = None
-                if isinstance(canonical_manifest, dict) and "compliance" in canonical_manifest:
-                    m_dict = canonical_manifest
-                elif hasattr(canonical_manifest, "to_dict"):
-                    candidate = canonical_manifest.to_dict()
-                    if isinstance(candidate, dict) and "compliance" in candidate:
-                        m_dict = candidate
+                proj = None
+                if canonical_manifest is not None:
+                    m_meta = (
+                        canonical_manifest.get("metadata")
+                        if isinstance(canonical_manifest, dict)
+                        else getattr(canonical_manifest, "metadata", None)
+                    )
+                    if isinstance(m_meta, Mapping) and "certificate_projection" in m_meta:
+                        proj = m_meta["certificate_projection"]
+                    else:
+                        m_dict = (
+                            canonical_manifest
+                            if isinstance(canonical_manifest, dict)
+                            else (
+                                canonical_manifest.to_dict()
+                                if hasattr(canonical_manifest, "to_dict")
+                                else {}
+                            )
+                        )
+                        if isinstance(m_dict, dict) and "compliance" in m_dict:
+                            proj = {
+                                "compliance": m_dict.get("compliance", {}),
+                                "evidence_root_hash": m_dict.get(
+                                    "evidence_root_hash", pkg.evidence_root_hash
+                                ),
+                                "execution_mode": m_dict.get("execution_mode", "unknown"),
+                                "run_id": m_dict.get("run_id", ""),
+                                "timestamp": m_dict.get("timestamp", ""),
+                                "trace_hash": m_dict.get("trace_hash", pkg.trace_hash),
+                                "vc_version": m_dict.get("vc_version", "3.0.0"),
+                            }
+                if proj is None:
+                    pkg_meta = getattr(pkg, "metadata", None)
+                    if isinstance(pkg_meta, Mapping):
+                        proj = pkg_meta.get("certificate_projection")
 
-                if m_dict:
-                    exp_cert_payload = {
-                        "compliance": m_dict.get("compliance", {}),
-                        "evidence_root_hash": m_dict.get(
-                            "evidence_root_hash", pkg.evidence_root_hash
-                        ),
-                        "execution_mode": m_dict.get("execution_mode", "unknown"),
-                        "run_id": m_dict.get("run_id", ""),
-                        "timestamp": m_dict.get("timestamp", ""),
-                        "trace_hash": m_dict.get("trace_hash", pkg.trace_hash),
-                        "vc_version": m_dict.get("vc_version", "3.0.0"),
-                    }
-                    cert_bytes = canonical_json_encode(exp_cert_payload)
+                if isinstance(proj, Mapping):
+                    cert_bytes = canonical_json_encode(proj)
                     actual_cert_hash = f"sha3_256:{hashlib.sha3_256(cert_bytes).hexdigest()}"
                     if actual_cert_hash != pkg.certificate_hash:
                         failures.append(
                             f"CertificateHashMismatch: package={pkg.certificate_hash} "
                             f"actual={actual_cert_hash}"
                         )
+                else:
+                    failures.append(
+                        "CertificateProjectionMissing: package carries certificate_hash "
+                        "but lacks certificate compliance projection"
+                    )
             except (ValueError, TypeError, KeyError, AttributeError) as ch_err:
                 logger.debug(
                     "verify_package_artifacts failed",
@@ -3447,38 +3469,59 @@ class VerificationAuthority:
                 )
                 failures.append(f"VerificationHashError: {vh_err}")
 
-        if pkg.certificate_hash and canonical_manifest is not None:
+        if pkg.certificate_hash:
             try:
                 from agentv_runtime.canonical import canonical_json_encode
 
-                m_dict = (
-                    canonical_manifest
-                    if isinstance(canonical_manifest, dict)
-                    else (
-                        canonical_manifest.to_dict()
-                        if hasattr(canonical_manifest, "to_dict")
-                        else {}
+                proj = None
+                if canonical_manifest is not None:
+                    m_meta = (
+                        canonical_manifest.get("metadata")
+                        if isinstance(canonical_manifest, dict)
+                        else getattr(canonical_manifest, "metadata", None)
                     )
-                )
-                if isinstance(m_dict, dict) and "compliance" in m_dict:
-                    exp_cert_payload = {
-                        "compliance": m_dict.get("compliance", {}),
-                        "evidence_root_hash": m_dict.get(
-                            "evidence_root_hash", pkg.evidence_root_hash
-                        ),
-                        "execution_mode": m_dict.get("execution_mode", "unknown"),
-                        "run_id": m_dict.get("run_id", ""),
-                        "timestamp": m_dict.get("timestamp", ""),
-                        "trace_hash": m_dict.get("trace_hash", pkg.trace_hash),
-                        "vc_version": m_dict.get("vc_version", "3.0.0"),
-                    }
-                    cert_bytes = canonical_json_encode(exp_cert_payload)
+                    if isinstance(m_meta, Mapping) and "certificate_projection" in m_meta:
+                        proj = m_meta["certificate_projection"]
+                    else:
+                        m_dict = (
+                            canonical_manifest
+                            if isinstance(canonical_manifest, dict)
+                            else (
+                                canonical_manifest.to_dict()
+                                if hasattr(canonical_manifest, "to_dict")
+                                else {}
+                            )
+                        )
+                        if isinstance(m_dict, dict) and "compliance" in m_dict:
+                            proj = {
+                                "compliance": m_dict.get("compliance", {}),
+                                "evidence_root_hash": m_dict.get(
+                                    "evidence_root_hash", pkg.evidence_root_hash
+                                ),
+                                "execution_mode": m_dict.get("execution_mode", "unknown"),
+                                "run_id": m_dict.get("run_id", ""),
+                                "timestamp": m_dict.get("timestamp", ""),
+                                "trace_hash": m_dict.get("trace_hash", pkg.trace_hash),
+                                "vc_version": m_dict.get("vc_version", "3.0.0"),
+                            }
+                if proj is None:
+                    pkg_meta = getattr(pkg, "metadata", None)
+                    if isinstance(pkg_meta, Mapping):
+                        proj = pkg_meta.get("certificate_projection")
+
+                if isinstance(proj, Mapping):
+                    cert_bytes = canonical_json_encode(proj)
                     actual_cert_hash = f"sha3_256:{hashlib.sha3_256(cert_bytes).hexdigest()}"
                     if actual_cert_hash != pkg.certificate_hash:
                         failures.append(
                             f"CertificateHashMismatch: package={pkg.certificate_hash} "
                             f"actual={actual_cert_hash}"
                         )
+                else:
+                    failures.append(
+                        "CertificateProjectionMissing: package carries certificate_hash "
+                        "but lacks certificate compliance projection"
+                    )
             except (ValueError, TypeError, KeyError, AttributeError) as ch_err:
                 logger.debug(
                     "verify_package failed", extra={"operation": "verify_package"}, exc_info=True
@@ -3544,6 +3587,10 @@ class VerificationAuthority:
         profile_supported = (pkg.metadata or {}).get("certificate_profile") == (
             f"agentv.certification.v{VC_V3_SCHEMA_VERSION}"
         )
+        if require_signature:
+            from .certification_truth import certificate_projection_failures
+
+            failures.extend(certificate_projection_failures(pkg))
         if require_signature and not profile_supported:
             failures.append(
                 "UnsupportedCertificateProfile: legacy packages require diagnostic verification"
@@ -3781,18 +3828,9 @@ class VerificationAuthority:
                     "RequiredOracleInventoryMismatch: manifest, finalization and package differ"
                 )
             if isinstance(scenario_data, Mapping):
-                scenario_metadata = scenario_data.get("metadata") or {}
-                explicit_reqs = (
-                    scenario_data.get("required_oracle_ids")
-                    or scenario_data.get("required_oracles")
-                    or scenario_metadata.get("required_oracle_ids")
-                    or scenario_metadata.get("required_oracles")
-                )
-                if explicit_reqs is None:
-                    from eval_runner.runner import compile_required_oracle_ids
+                from eval_runner.runner import compile_required_oracle_ids
 
-                    explicit_reqs = compile_required_oracle_ids(scenario_data)
-                if set(explicit_reqs) != fin_reqs:
+                if set(compile_required_oracle_ids(scenario_data)) != fin_reqs:
                     failures.append(
                         "RequiredOracleInventoryMismatch: scenario and finalization differ"
                     )

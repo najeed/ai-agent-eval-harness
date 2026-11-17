@@ -3184,6 +3184,17 @@ def test_verify_certification_artifact_successful_authoritative_certification():
     raw_trace_bytes = f"{raw_ev1_str}\n{oracle_line}\n{raw_ev_end_str}\n".encode()
     trace_hash = _sha3_256_digest(raw_trace_bytes)
 
+    proj = {
+        "compliance": {"status": "PASS", "score": 1.0},
+        "evidence_root_hash": ev_root,
+        "execution_mode": "live",
+        "run_id": run_id,
+        "timestamp": "2026-11-17T00:00:00Z",
+        "trace_hash": trace_hash,
+        "vc_version": "3.0.0",
+    }
+    cert_hash = f"sha3_256:{hashlib.sha3_256(canonical_json_encode(proj)).hexdigest()}"
+
     pkg = _make_canonical_package(
         package_id=f"pkg_{run_id}",
         scenario_id="scen_100",
@@ -3192,8 +3203,13 @@ def test_verify_certification_artifact_successful_authoritative_certification():
         manifest_id="man_001",
         manifest_hash=man_hash,
         trace_hash=trace_hash,
-        trace_seal={"trace_digest": trace_hash, "signer_identity": "eval_agent"},
+        trace_seal={
+            "trace_digest": trace_hash,
+            "signer_identity": "eval_agent",
+            "sealed_at": "2026-11-17T00:00:00Z",
+        },
         evidence_root_hash=ev_root,
+        certificate_hash=cert_hash,
         finalization_hash=signed_fin.finalization_hash,
         evaluation_hash=signed_fin.finalization_hash,
         required_oracle_ids=["oracle_auth"],
@@ -3204,11 +3220,12 @@ def test_verify_certification_artifact_successful_authoritative_certification():
                 "resolver": "deterministic_rule",
             }
         ],
-        decision={"decision": "PASS", "score": 1.0, "verdict": "VERIFIED"},
+        decision={"decision": "PASS", "status": "PASS", "score": 1.0, "verdict": "VERIFIED"},
         execution_identity={"run_id": run_id, "execution_mode": "live"},
         metadata={
             "provisional": False,
             "certificate_profile": "agentv.certification.v3.0.0",
+            "certificate_projection": proj,
             "evidence_capture": {
                 "complete": True,
                 "event_count": 3,
