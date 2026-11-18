@@ -215,7 +215,7 @@ async def test_scenarios_coverage_pure(mock_config):
     input_file = tmp_path / "i.json"
     input_file.write_text("{}")
     with (
-        patch("eval_runner.mutator.mutate_scenario", return_value={}),
+        patch("eval_runner.mutations.mutator.mutate_scenario", return_value={}),
         patch("eval_runner.spec_parser.parse_markdown_to_scenario", return_value={}),
         patch("eval_runner.drift_importer.import_trace_as_scenario"),
     ):

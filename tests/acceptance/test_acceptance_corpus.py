@@ -147,7 +147,7 @@ def test_agentv_acceptance_case(case, isolated_acceptance_env, acceptance_aggreg
         cert_res = runner.certify(run_id=run_id)
     if expect_cfg.get("evidence", {}).get("certificate_forbidden", False):
         assert cert_res is not None and cert_res.exit_code != 0, (
-            "Certification must reject a pending, unfinalized execution"
+            "Certification must reject provisional or unfinalized execution"
         )
 
     # 4. Gate verification check
@@ -161,6 +161,13 @@ def test_agentv_acceptance_case(case, isolated_acceptance_env, acceptance_aggreg
         custom_run_dir=env["runs_dir"],
         custom_reports_dir=env["reports_dir"],
     )
+    if expect_cfg.get("evidence", {}).get("certificate_forbidden") and any(
+        event.get("provenance") in {"simulated", "mock", "synthetic"}
+        for event in artifacts.trace_reader.events
+        if event.get("event") in {"tool_call", "tool_result"}
+    ):
+        assert cert_res is not None
+        assert "ProviderTruthLevelNotLive" in cert_res.stdout + cert_res.stderr
 
     # 6. Normalize Actual Results
     actual = normalize_actual_result(

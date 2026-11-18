@@ -117,7 +117,7 @@ AgentV implements an extensible, zero-trust **Interceptor Pipeline Pattern** all
 - **35+ Registered Mutators**: Typed `MutationDescriptor` specifications with parameters, operational risk tiers, and deterministic seeding (`seed`).
 - **Draft-07 Schema Compliance**: Preserves `failure_policy` string enum and safely updates `metadata.name` without root schema pollution.
 - **In-Memory ScenarioLinter Chaining**: Mutated scenarios are evaluated in-memory before disk persistence or UI diff preview, reporting compliance tier and validation scores.
-- **`MutationService` (`eval_runner.mutator.mutation_service`)**: Concurrency-safe, tenant-filtered (`org_id`) engine executing pre-run scenario mutations and dynamic perturbations.
+- **`MutationService` (`eval_runner.mutations.mutator.mutation_service`)**: Concurrency-safe, tenant-filtered (`org_id`) engine executing pre-run scenario mutations and dynamic perturbations.
 
 ---
 

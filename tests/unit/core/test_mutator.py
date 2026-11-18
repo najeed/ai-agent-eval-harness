@@ -8,7 +8,7 @@ import json
 
 import pytest
 
-from eval_runner import mutator
+from eval_runner.mutations import mutator
 
 
 @pytest.mark.parametrize("name", sorted(mutator.UNSUPPORTED_RUNTIME_MUTATIONS))
@@ -169,7 +169,7 @@ def test_mutate_text_with_typos_edge_cases():
     """Verify edge cases and specific branches in mutate_text_with_typos."""
     from unittest.mock import patch
 
-    from eval_runner.mutator import mutate_text_with_typos
+    from eval_runner.mutations.mutator import mutate_text_with_typos
 
     # empty text
     assert mutate_text_with_typos("") == ""
@@ -212,7 +212,7 @@ def test_mutate_text_with_typos_edge_cases():
 
 def test_core_mutator_can_mutate():
     """Verify CoreMutator.can_mutate branch coverage."""
-    from eval_runner.mutator import CoreMutator
+    from eval_runner.mutations.mutator import CoreMutator
 
     mutator_obj = CoreMutator()
     assert mutator_obj.can_mutate("typos") is True
@@ -234,7 +234,7 @@ def test_mutation_service_recursion_protection():
     """Verify that MutationService raises RecursionError on cycle (>50 depth)."""
     import pytest
 
-    from eval_runner.mutator import MutationService, ScenarioMutator
+    from eval_runner.mutations.mutator import MutationService, ScenarioMutator
 
     service = MutationService()
 
@@ -259,7 +259,7 @@ def test_mutation_service_recursion_protection():
 
 def test_mutation_service_negative_intercept():
     """Verify that MutationService bypasses provider if can_mutate returns False."""
-    from eval_runner.mutator import MutationService, ScenarioMutator
+    from eval_runner.mutations.mutator import MutationService, ScenarioMutator
 
     service = MutationService()
 
@@ -283,7 +283,7 @@ def test_mutation_service_negative_intercept():
 def test_scenario_mutator_base_methods():
     """Verify base ScenarioMutator defaults, apply, and composition."""
     from agentv_runtime.contracts import MutationContext
-    from eval_runner.mutator import ScenarioMutator, SequenceMutator
+    from eval_runner.mutations.mutator import ScenarioMutator, SequenceMutator
 
     mut = ScenarioMutator()
     assert mut.can_mutate("anything") is False
@@ -304,7 +304,7 @@ def test_scenario_mutator_base_methods():
 def test_sequence_mutator_exhaustive():
     """Verify SequenceMutator execution, filtering, and apply."""
     from agentv_runtime.contracts import MutationContext, MutationHandle
-    from eval_runner.mutator import ScenarioMutator, sequence
+    from eval_runner.mutations.mutator import ScenarioMutator, sequence
 
     class DummyAddA(ScenarioMutator):
         name = "add_a"
@@ -353,7 +353,7 @@ def test_sequence_mutator_exhaustive():
 def test_repeat_mutator_exhaustive():
     """Verify RepeatMutator repetition, min count, and apply."""
     from agentv_runtime.contracts import MutationContext, MutationHandle
-    from eval_runner.mutator import ScenarioMutator, repeat
+    from eval_runner.mutations.mutator import ScenarioMutator, repeat
 
     class CounterMutator(ScenarioMutator):
         name = "counter"
@@ -392,7 +392,7 @@ def test_probability_mutator_exhaustive():
     from unittest.mock import patch
 
     from agentv_runtime.contracts import MutationContext, MutationHandle
-    from eval_runner.mutator import ScenarioMutator, probability
+    from eval_runner.mutations.mutator import ScenarioMutator, probability
 
     class MarkMutator(ScenarioMutator):
         name = "marker"
@@ -435,7 +435,7 @@ def test_probability_mutator_exhaustive():
 def test_conditional_mutators_and_helpers():
     """Verify ConditionalMutator and after_event/before_commit/between_steps helpers."""
     from agentv_runtime.contracts import MutationContext, MutationHandle
-    from eval_runner.mutator import (
+    from eval_runner.mutations.mutator import (
         ConditionalMutator,
         ScenarioMutator,
         after_event,
@@ -499,7 +499,7 @@ def test_conditional_mutators_and_helpers():
 def test_concurrent_mutator_exhaustive():
     """Verify ConcurrentMutator execution, metadata, and apply."""
     from agentv_runtime.contracts import MutationContext, MutationHandle
-    from eval_runner.mutator import ScenarioMutator, concurrent
+    from eval_runner.mutations.mutator import ScenarioMutator, concurrent
 
     class M1(ScenarioMutator):
         name = "m1"
@@ -533,7 +533,7 @@ def test_concurrent_mutator_exhaustive():
 
 def test_all_vector_sub_engines():
     """Verify all 9 vector sub-engines and their supported mutation types."""
-    from eval_runner.mutator import (
+    from eval_runner.mutations.mutator import (
         AuthorizationMutators,
         ContextMutators,
         InputMutators,
@@ -651,7 +651,7 @@ def test_all_vector_sub_engines():
 def test_core_mutator_apply_and_metadata():
     """Verify CoreMutator orchestration, lineage tracking, and apply."""
     from agentv_runtime.contracts import MutationContext
-    from eval_runner.mutator import CoreMutator
+    from eval_runner.mutations.mutator import CoreMutator
 
     cm = CoreMutator()
     scen = {
@@ -683,8 +683,8 @@ def test_mutation_service_comprehensive(tmp_path):
     import pytest
 
     from agentv_runtime.contracts import MutationContext
-    from eval_runner import mutator
-    from eval_runner.mutator import MutationService, ScenarioMutator
+    from eval_runner.mutations import mutator
+    from eval_runner.mutations.mutator import MutationService, ScenarioMutator
 
     service = MutationService()
 
@@ -781,7 +781,7 @@ def test_mutator_edge_cases_and_branch_completions(tmp_path):
         MutationTier,
         MutationVector,
     )
-    from eval_runner.mutator import (
+    from eval_runner.mutations.mutator import (
         AuthorizationMutators,
         ConcurrentMutator,
         ContextMutators,
@@ -876,7 +876,7 @@ def test_mutation_descriptor_contract_and_catalog():
         MutationTier,
         MutationVector,
     )
-    from eval_runner.mutator import MUTATION_CATALOG
+    from eval_runner.mutations.mutator import MUTATION_CATALOG
 
     desc = MutationDescriptor(
         id="test.custom",
@@ -926,7 +926,7 @@ def test_mutation_service_list_mutation_catalog_and_tenant_scoping():
         MutationTier,
         MutationVector,
     )
-    from eval_runner.mutator import MutationService, ScenarioMutator
+    from eval_runner.mutations.mutator import MutationService, ScenarioMutator
 
     svc = MutationService()
 
@@ -1015,7 +1015,7 @@ def test_mutation_service_plugin_discovery_and_reset(monkeypatch):
     """Verify dynamic in-process plugin discovery via entry_points and reset."""
     from unittest.mock import MagicMock
 
-    from eval_runner.mutator import MutationService, ScenarioMutator
+    from eval_runner.mutations.mutator import MutationService, ScenarioMutator
 
     svc = MutationService()
 
@@ -1062,7 +1062,7 @@ def test_mutation_service_plugin_discovery_and_reset(monkeypatch):
 
 def test_mutation_service_id_differentiation_and_seed_branches():
     """Verify edge case branches in ID differentiation and seed injection."""
-    from eval_runner.mutator import MutationService, ScenarioMutator
+    from eval_runner.mutations.mutator import MutationService, ScenarioMutator
 
     class CustomMutatorIdSame(ScenarioMutator):
         name = "same_id_mutator"
@@ -1117,7 +1117,7 @@ def test_mutation_service_id_differentiation_and_seed_branches():
 
 def test_mutation_service_non_dict_mutated_and_meta_branches():
     """Verify branches where mutated scenario or its metadata is not a dict."""
-    from eval_runner.mutator import MutationService, ScenarioMutator
+    from eval_runner.mutations.mutator import MutationService, ScenarioMutator
 
     class NonDictMutator(ScenarioMutator):
         name = "non_dict"
@@ -1155,7 +1155,7 @@ def test_mutation_service_non_dict_mutated_and_meta_branches():
 def test_mutator_aes_root_schema_conformance_and_zero_deviations():
     """Verifies all state and semantic mutators produce 100% AES 1.4 compliant scenarios."""
     from eval_runner.loader import validate_scenario_schema
-    from eval_runner.mutator import ScenarioMutator, mutate_scenario, mutation_service
+    from eval_runner.mutations.mutator import ScenarioMutator, mutate_scenario, mutation_service
 
     base_scenario = {
         "aes_version": 1.4,

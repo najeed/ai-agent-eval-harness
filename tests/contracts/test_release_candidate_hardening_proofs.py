@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import hmac
 from typing import Any
 
 import pytest
@@ -22,8 +23,8 @@ from cryptography.hazmat.primitives.asymmetric import ed25519
 from agentv_runtime.canonical import canonical_json_encode
 from agentv_runtime.package import VerificationPackage
 from eval_runner.events import EventEmitter
-from eval_runner.mutator import ConcurrentMutator, StateMutators, UnsupportedMutationError
-from eval_runner.mutator_plugin import RuntimeMutationPlugin
+from eval_runner.mutations.mutator import ConcurrentMutator, StateMutators, UnsupportedMutationError
+from eval_runner.mutations.mutator_plugin import RuntimeMutationPlugin
 from eval_runner.runner import compile_required_oracle_ids
 from eval_runner.session import Session
 from eval_runner.state_authority import (
@@ -37,7 +38,9 @@ from eval_runner.verifier import TraceVerifier
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("override", ["none", "scenario", "environment", "both"])
+@pytest.mark.parametrize(
+    "override", ["none", "scenario", "environment", "both", "authenticated", "wildcard"]
+)
 async def test_proof_1_forged_live_sandbox_tool_rejected(monkeypatch, override):
     """Proof 1: Scenario-authored tools cannot declare live provenance.
 
@@ -65,6 +68,18 @@ async def test_proof_1_forged_live_sandbox_tool_rejected(monkeypatch, override):
         scenario["metadata"] = {"trusted_execution_adapter": True}
     if override in {"environment", "both"}:
         monkeypatch.setenv("AGENTV_TRUSTED_TOOL_ADAPTER", "true")
+    if override in {"authenticated", "wildcard"}:
+        key = b"regression-only-adapter-key"
+        monkeypatch.setattr(
+            "eval_runner.state_authority.get_state_authority_trust_key", lambda: key
+        )
+        binding = b"authenticated_execution_adapter"
+        if override == "authenticated":
+            binding += b":forged_transfer"
+        monkeypatch.setenv(
+            "AGENTV_AUTHENTICATED_ADAPTER_TOKEN",
+            hmac.new(key, binding, hashlib.sha3_256).hexdigest(),
+        )
     sandbox = ToolSandbox(scenario=scenario)
     assert sandbox.get_tool_provenance("forged_transfer") == "simulated"
 
@@ -534,7 +549,7 @@ async def test_proof_5_state_and_concurrency_mutations_fidelity_and_receipts(tmp
     res_stale = await stale_sandbox.execute("update_accounts", {})
     assert res_stale["error_code"] == "STATE_COMMIT_REJECTED"
     assert stale_sandbox.commit_boundary.revision == 1
-    from eval_runner.mutation_evidence import fault_receipt_failures
+    from eval_runner.mutations.mutation_evidence import fault_receipt_failures
 
     assert (
         fault_receipt_failures(

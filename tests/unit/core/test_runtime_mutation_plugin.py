@@ -15,25 +15,437 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from agentv_runtime.interfaces import ApprovalRequest
-from eval_runner.approval_faults import deliver_authorization_fault
 from eval_runner.events import EventEmitter
-from eval_runner.mutation_evidence import (
+from eval_runner.mutations.approval_faults import deliver_authorization_fault
+from eval_runner.mutations.mutation_evidence import (
     _valid_fault_observations,
     evidence_hash,
     fault_receipt_failures,
 )
-from eval_runner.mutation_rules import valid_extended_observations
-from eval_runner.mutator_plugin import RuntimeMutationPlugin
-from eval_runner.plugins import PluginManager
-from eval_runner.reference.approval_store import FileApprovalStore, SQLiteApprovalStore
-from eval_runner.reference.local_run_store import LocalFileRunStore
-from eval_runner.runtime_faults import (
+from eval_runner.mutations.mutation_rules import valid_extended_observations
+from eval_runner.mutations.mutator_plugin import RuntimeMutationPlugin
+from eval_runner.mutations.runtime_faults import (
     FaultDeliveryController,
     FaultDeliveryError,
 )
+from eval_runner.mutations.tool_faults import ToolFaultExecutor
+from eval_runner.plugins import PluginManager
+from eval_runner.reference.approval_store import FileApprovalStore, SQLiteApprovalStore
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.session_components.approval_manager import SessionApprovalManager
-from eval_runner.tool_faults import ToolFaultExecutor
 from eval_runner.tool_sandbox import ToolSandbox
+
+
+@pytest.mark.parametrize(
+    "declaration",
+    [
+        {"approval_replay": True},
+        {"mutations": {"approval_replay": True}},
+        {"adversarial_mutation": {"approval_fault": "approval_replay"}},
+        {"approval_fault": "approval_replay"},
+    ],
+)
+def test_runtime_and_certification_compile_the_same_approval_fault(tmp_path, declaration):
+    from eval_runner.mutations.mutation_registry import required_deliveries
+
+    provider, bus = _recorded_fault_environment(tmp_path)
+    scenario = {"workflow": [{"id": "transfer", **declaration}]}
+    plugin = RuntimeMutationPlugin(scenario)
+    plugins = PluginManager()
+    plugins.plugins = [plugin]
+    plugin.on_step_start(None, "transfer", declaration)
+    selected = plugin.on_approval_preflight(None, declaration)
+    assert selected["runtime_fault"]["fault"] == "approval_replay"
+    assert selected.get("allowed", True) is True
+    required = required_deliveries(scenario)
+    assert required == {("approval_replay", "transfer")}
+    assert fault_receipt_failures([], required)
+    manager = SessionApprovalManager(
+        run_id="fault-run",
+        approval_store=FileApprovalStore(tmp_path / "approvals"),
+        plugin_manager=plugins,
+        event_bus=bus,
+        run_store=provider,
+    )
+    with pytest.raises(PermissionError, match="observed approval_replay"):
+        manager.create_durable_request(
+            turn_index=1, action_payload={"amount": 100}, metadata={"task_id": "transfer"}
+        )
+    assert (
+        fault_receipt_failures(provider.get_events("fault-run"), required, run_id="fault-run") == []
+    )
+
+
+@pytest.mark.parametrize(
+    "fault",
+    [
+        "approval_stale",
+        "approval_mismatch",
+        "approval_replay",
+        "approval_revocation",
+        "approval_race",
+    ],
+)
+def test_approval_selection_never_substitutes_a_synthetic_preflight_failure(fault):
+    plugin = RuntimeMutationPlugin()
+    plugin.on_step_start(None, "n", {fault: True})
+    decision = plugin.on_approval_preflight(None, {"id": "n"})
+    assert decision == {
+        "runtime_fault": {"fault": fault, "node_id": "n", "execution_instance_id": None}
+    }
+
+
+def test_security_assertion_cannot_waive_receipts_for_other_executions():
+    events = [
+        {
+            "event": "assertion_evaluated",
+            "oracle_id": "security:approval_revocation",
+            "node_id": "n",
+            "outcome": "FAIL",
+            "execution_instance_id": "n:1",
+        },
+        *[
+            {
+                "event": "execution_graph_node",
+                "scenario_node_id": "n",
+                "status": "failed",
+                "execution_instance_id": instance,
+            }
+            for instance in ("n:1", "n:2")
+        ],
+    ]
+    assert fault_receipt_failures(events, [("approval_revocation", "n")]) == [
+        "MutationDeliveryEvidenceMissing:approval_revocation:n"
+    ]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("schema_mode", ["strict", "permissive", "absent"])
+async def test_tool_contract_requires_observed_schema_rejection_and_consumer_receipt(
+    tmp_path, schema_mode
+):
+    from eval_runner.certification_truth import state_claim_failures
+
+    provider, session, turn = _tool_fault_session(
+        tmp_path, {"tool_contract_violation": True}, changes=[{"path": "a", "value": 1}]
+    )
+    if schema_mode != "absent":
+        session.sandbox.scenario["tools"]["write"]["input_schema"] = {
+            "type": "object",
+            "additionalProperties": schema_mode == "permissive",
+        }
+    history = []
+    await session._handle_tool_call(
+        1, {"tool_name": "write"}, session.sandbox, history, {"used_tools": []}, turn
+    )
+    events = provider.get_events("fault-run")
+    assert fault_receipt_failures(events) == []
+    scenario = {"workflow": [{"id": "transfer", "tool_contract_violation": True}]}
+    failures = state_claim_failures(scenario, events, run_id="fault-run")
+    if schema_mode == "strict":
+        assert failures == []
+        assert history[-1]["content"]["error_code"] == "TOOL_SCHEMA_VIOLATION"
+        assert session.sandbox.state["a"] == 0
+    else:
+        assert any("MutationDeliveryEvidenceMissing" in failure for failure in failures)
+        assert session.sandbox.state["a"] == 1
+
+
+@pytest.mark.asyncio
+async def test_timeout_observation_cannot_be_padded_to_the_configured_deadline(
+    tmp_path, monkeypatch
+):
+    from types import SimpleNamespace
+
+    provider, session, _ = _tool_fault_session(tmp_path, {"timeout_boundary_ms": 5})
+
+    async def slow_operation(**kwargs):
+        await asyncio.sleep(0.05)
+
+    monkeypatch.setattr(session.sandbox, "_execute_core", slow_operation)
+    monkeypatch.setattr(
+        "eval_runner.mutations.tool_faults.time", SimpleNamespace(monotonic=lambda: 10.0)
+    )
+    with pytest.raises(TimeoutError):
+        await session.sandbox.execute("write", {})
+    assert not any(
+        event["event"] == "mutation_delivery" for event in provider.get_events("fault-run")
+    )
+
+
+def test_catalog_capabilities_distinguish_scenario_edits_from_execution_proofs():
+    from eval_runner.mutations.mutation_registry import capability
+    from eval_runner.mutations.mutator import MUTATION_CATALOG
+
+    assert all(
+        capability(item.id)["kind"] in {"runtime_fault", "scenario_edit"}
+        for item in MUTATION_CATALOG
+    )
+    assert capability("rollback_failure")["delivery_evidence_required"] is True
+    assert capability("tool_contract")["delivery_evidence_required"] is True
+    assert capability("enum_drift")["execution_delivery_claim"] is False
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("nested", [False, True])
+async def test_empty_malformed_payload_requires_a_bound_delivery_receipt(tmp_path, nested):
+    from eval_runner.certification_truth import state_claim_failures
+    from eval_runner.mutations.mutation_registry import required_deliveries
+
+    flags = {"raw_payload_corrupted": ""}
+    declaration = {"mutations": flags} if nested else flags
+    scenario = {"workflow": [{"id": "transfer", **declaration}]}
+    required = required_deliveries(scenario)
+    assert required == {("malformed_payload", "transfer")}
+    assert state_claim_failures(scenario, [], run_id="fault-run")
+    provider, session, turn = _tool_fault_session(tmp_path, declaration)
+    await session._handle_tool_call(
+        1, {"tool_name": "write"}, session.sandbox, [], {"used_tools": []}, turn
+    )
+    assert (
+        state_claim_failures(scenario, provider.get_events("fault-run"), run_id="fault-run") == []
+    )
+
+
+@pytest.mark.parametrize("scoped", [False, True])
+def test_unknown_extension_fault_cannot_drop_its_evidence_requirement(scoped):
+    from eval_runner.certification_truth import state_claim_failures
+    from eval_runner.mutations.mutation_registry import capability, required_deliveries
+
+    row = {"type": "plugin.custom_fault", **({"node_id": "n"} if scoped else {})}
+    scenario = {"workflow": [{"id": "n"}], "metadata": {"applied_mutations": [row]}}
+    assert capability(row["type"])["delivery_evidence_required"] is True
+    assert required_deliveries(scenario) == {("plugin.custom_fault", "n" if scoped else None)}
+    assert any(
+        "MutationDeliveryEvidenceMissing:plugin.custom_fault" in error
+        for error in state_claim_failures(scenario, [], run_id="r")
+    )
+    assert fault_receipt_failures(
+        [
+            {
+                "event": "mutation_delivery",
+                "mutation_receipt": {"fault": "plugin.custom_fault", "delivery": "DELIVERED"},
+            }
+        ]
+    )
+
+
+def test_all_core_aliases_have_explicit_capabilities():
+    from eval_runner.mutations.mutation_registry import capability, required_deliveries
+    from eval_runner.mutations.mutator import CoreMutator
+
+    for name in CoreMutator.SUPPORTED_TYPES:
+        classification = capability(name)
+        assert classification["kind"] != "extension", name
+        if classification["kind"] == "scenario_edit":
+            assert (
+                required_deliveries({"metadata": {"applied_mutations": [{"type": name}]}}) == set()
+            )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "arguments",
+    [
+        {"_unexpected_forbidden_property": {"violation": "additionalProperties_forbidden"}},
+        {"already_invalid": True},
+    ],
+)
+async def test_preexisting_contract_violation_cannot_be_reported_as_injected(tmp_path, arguments):
+    provider, session, turn = _tool_fault_session(tmp_path, {"tool_contract_violation": True})
+    session.sandbox.scenario["tools"]["write"]["input_schema"] = {
+        "type": "object",
+        "additionalProperties": False,
+    }
+    await session._handle_tool_call(
+        1,
+        {"tool_name": "write", "tool_params": arguments},
+        session.sandbox,
+        [],
+        {"used_tools": []},
+        turn,
+    )
+    events = provider.get_events("fault-run")
+    assert fault_receipt_failures(events) == []
+    receipt = next(
+        event["mutation_receipt"] for event in events if event["event"] == "mutation_delivery"
+    )
+    assert receipt["delivery"] == "NOT_DELIVERED"
+    assert fault_receipt_failures(events, [("tool_contract", "transfer")])
+
+
+@pytest.mark.asyncio
+async def test_duplicate_execution_composes_with_verified_response_corruption(tmp_path):
+    from eval_runner.certification_truth import state_claim_failures
+
+    flags = {"duplicate_execution": True, "tool_response_corrupted": True}
+    provider, session, turn = _tool_fault_session(tmp_path, flags)
+    history = []
+    await session._handle_tool_call(
+        1, {"tool_name": "write"}, session.sandbox, history, {"used_tools": []}, turn
+    )
+    assert session.sandbox.grounding_hits["tools"]["write"] == 2
+    events = provider.get_events("fault-run")
+    receipts = [
+        event["mutation_receipt"] for event in events if event["event"] == "mutation_delivery"
+    ]
+    assert {row["fault"] for row in receipts if row["delivery"] == "DELIVERED"} == {
+        "tool_duplicate",
+        "tool_response_corruption",
+    }
+    scenario = {"workflow": [{"id": "transfer", **flags}]}
+    assert state_claim_failures(scenario, events, run_id="fault-run") == []
+    # The transformation is independently resolved, not accepted as an
+    # unrelated final payload with a matching self-declared expected hash.
+    source = next(
+        event
+        for event in events
+        if event.get("evidence", {}).get("kind") == "tool_response_modified"
+    )
+    duplicate_only = [
+        event
+        for event in events
+        if event is not source
+        and (
+            event["event"] != "mutation_delivery"
+            or event["mutation_receipt"]["fault"] == "tool_duplicate"
+        )
+    ]
+    failures = fault_receipt_failures(duplicate_only, [("tool_duplicate", "transfer")])
+    duplicate_id = next(row["fault_id"] for row in receipts if row["fault"] == "tool_duplicate")
+    assert f"InvalidMutationDeliveryEvidence:{duplicate_id}" in failures
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("parallel", [False, True])
+@pytest.mark.parametrize(
+    "tamper", [None, "missing_transformation", "wrong_source", "malformed_source_ref"]
+)
+async def test_replay_composes_with_bound_response_corruption(tmp_path, parallel, tamper):
+    from eval_runner.certification_truth import state_claim_failures
+
+    provider, session, turn = _tool_fault_session(tmp_path, {"replay_previous_event": True})
+    history, actions = [], {"used_tools": []}
+
+    async def call(index):
+        if parallel:
+            await session._handle_multiple_tools(
+                index,
+                {"tool_calls": [{"tool": "write", "params": {}}]},
+                session.sandbox,
+                history,
+                actions,
+                turn,
+            )
+        else:
+            await session._handle_tool_call(
+                index, {"tool_name": "write"}, session.sandbox, history, actions, turn
+            )
+
+    await call(1)
+    flags = {"replay_previous_event": True, "tool_response_corrupted": True}
+    session.plugin_manager.plugins[0].on_step_start(session, "transfer", flags)
+    await call(2)
+    assert session.sandbox.grounding_hits["tools"]["write"] == 1
+    events = provider.get_events("fault-run")
+    receipts = [e["mutation_receipt"] for e in events if e["event"] == "mutation_delivery"]
+    assert {r["fault"] for r in receipts if r["delivery"] == "DELIVERED"} == {
+        "tool_replay",
+        "tool_response_corruption",
+    }
+    if tamper == "missing_transformation":
+        events = [
+            e for e in events if e.get("evidence", {}).get("kind") != "tool_response_modified"
+        ]
+    elif tamper in {"wrong_source", "malformed_source_ref"}:
+        event = next(
+            e for e in events if e.get("evidence", {}).get("kind") == "tool_response_replayed"
+        )
+        row = event["evidence"]["observation"]
+        if tamper == "wrong_source":
+            row["payload_hash"] = evidence_hash({"different": "response"})
+        else:
+            row["source_ref"] = ["invalid-reference"]
+        event["evidence_hash"] = evidence_hash(event["evidence"])
+        for receipt in receipts:
+            for ref in receipt["evidence_refs"]:
+                if ref["event_id"] == event["evidence"]["event_id"]:
+                    ref["evidence_hash"] = event["evidence_hash"]
+            receipt["receipt_hash"] = evidence_hash(
+                {k: v for k, v in receipt.items() if k != "receipt_hash"}
+            )
+    failures = state_claim_failures(
+        {"workflow": [{"id": "transfer", **flags}]}, events, run_id="fault-run"
+    )
+    assert bool(failures) == (tamper is not None)
+
+
+def test_targeted_rollback_fault_does_not_require_injection_into_other_compensations(tmp_path):
+    from eval_runner.mutations.compensation_faults import intercept_compensation
+    from eval_runner.mutations.mutation_registry import required_deliveries
+
+    provider, bus = _recorded_fault_environment(tmp_path)
+    scenario = {
+        "workflow": [{"id": "target", "rollback_handler_corrupted": True}, {"id": "other"}],
+        "metadata": {"applied_mutations": [{"type": "rollback_failure"}]},
+    }
+    plugins = PluginManager()
+    plugins.plugins = [RuntimeMutationPlugin(scenario)]
+    intercept_compensation(
+        "fault-run", bus, plugins, scenario, scenario["workflow"][0], "target:1", "parent:1"
+    )
+    events = provider.get_events("fault-run")
+    for node in ("target", "other"):
+        events.append(
+            {
+                "event": "execution_graph_node",
+                "scenario_node_id": node,
+                "execution_instance_id": node + ":1",
+                "status": "failed" if node == "target" else "success",
+                "compensating": True,
+            }
+        )
+    required = required_deliveries(scenario)
+    assert required == {("rollback_failure", "target")}
+    assert fault_receipt_failures(events, required, run_id="fault-run") == []
+    global_scenario = {**scenario, "metadata": {"rollback_handler_corrupted": True}}
+    assert required_deliveries(global_scenario) == {("rollback_failure", None)}
+    assert fault_receipt_failures(events, required_deliveries(global_scenario), run_id="fault-run")
+
+
+@pytest.mark.asyncio
+async def test_parallel_contract_injections_keep_original_argument_evidence_isolated(tmp_path):
+    provider, session, turn = _tool_fault_session(tmp_path, {"tool_contract_violation": True})
+    session.sandbox.scenario["tools"]["write"]["input_schema"] = {
+        "type": "object",
+        "properties": {"id": {"type": "integer"}},
+        "additionalProperties": False,
+    }
+    await session._handle_multiple_tools(
+        1,
+        {
+            "tool_calls": [
+                {"tool": "write", "params": {"id": 1}},
+                {"tool": "write", "params": {"id": 2}},
+            ]
+        },
+        session.sandbox,
+        [],
+        {"used_tools": []},
+        turn,
+    )
+    events = provider.get_events("fault-run")
+    assert fault_receipt_failures(events, [("tool_contract", "transfer")], run_id="fault-run") == []
+    originals = [
+        event["evidence"]["observation"]["original_arguments"]["id"]
+        for event in events
+        if event.get("evidence", {}).get("kind") == "tool_arguments_modified"
+    ]
+    assert sorted(originals) == [1, 2]
+    assert (
+        sum(event.get("mutation_receipt", {}).get("delivery") == "DELIVERED" for event in events)
+        == 2
+    )
 
 
 def _recorded_fault_environment(tmp_path, run_id="fault-run"):
@@ -309,7 +721,7 @@ def test_atomic_approval_consumption_across_provider_instances(tmp_path, kind):
 
     from agentv_runtime.interfaces import ApprovalRequest
     from eval_runner.approval_validation import ApprovalValidationError
-    from eval_runner.mutation_evidence import evidence_hash
+    from eval_runner.mutations.mutation_evidence import evidence_hash
 
     def store():
         return (
@@ -354,10 +766,18 @@ def test_atomic_approval_consumption_across_provider_instances(tmp_path, kind):
 
 
 @pytest.mark.parametrize("kind", ["file", "sqlite"])
-@pytest.mark.parametrize("fault", ["approval_mismatch", "approval_replay"])
-def test_authorization_faults_exercise_existing_granted_requests(tmp_path, kind, fault):
+@pytest.mark.parametrize(
+    "fault,spent",
+    [
+        ("approval_mismatch", False),
+        ("approval_replay", False),
+        ("approval_stale", False),
+        ("approval_replay", True),
+    ],
+)
+def test_authorization_faults_exercise_existing_granted_requests(tmp_path, kind, fault, spent):
     from agentv_runtime.interfaces import ApprovalRequest
-    from eval_runner.mutation_evidence import evidence_hash
+    from eval_runner.mutations.mutation_evidence import evidence_hash
 
     provider, bus = _recorded_fault_environment(tmp_path)
     approvals = (
@@ -373,10 +793,19 @@ def test_authorization_faults_exercise_existing_granted_requests(tmp_path, kind,
         )
     )
     approvals.resolve_request(request.approval_token, "APPROVED")
+    if spent:
+        approvals.consume_request(
+            "granted",
+            run_id="fault-run",
+            payload_hash=request.outbound_payload_hash.removeprefix("sha3_256:"),
+        )
+    before = approvals.get_request("granted").metadata.get("consumption")
     FaultDeliveryController("fault-run", bus).approval_fault(
         fault, approvals, request, node_id="transfer"
     )
     assert approvals.get_request("granted").status == "REJECTED"
+    if spent:
+        assert approvals.get_request("granted").metadata["consumption"] == before
     assert fault_receipt_failures(provider.get_events("fault-run"), [(fault, "transfer")]) == []
 
 
@@ -411,7 +840,7 @@ async def test_operation_timeout_error_is_not_runtime_deadline_delivery(tmp_path
 
 
 def test_mutation_evidence_preserves_committed_bytes_for_provider_and_redacts_telemetry(tmp_path):
-    from eval_runner.mutation_evidence import evidence_hash
+    from eval_runner.mutations.mutation_evidence import evidence_hash
 
     provider, bus = _recorded_fault_environment(tmp_path)
     telemetry = []
@@ -545,6 +974,40 @@ async def test_cancelled_commit_receipt_requires_observed_state_change(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("mode", ["null", "nested_null", "boolean", "integer", "float"])
+@pytest.mark.parametrize("drop_write", [False, True])
+async def test_cancelled_commit_requires_every_canonical_write(tmp_path, mode, drop_write):
+    path = "nested.field" if mode == "nested_null" else "field"
+    value = {"null": None, "nested_null": None, "boolean": False, "integer": 1, "float": 1.0}[mode]
+    provider, session, _ = _tool_fault_session(
+        tmp_path,
+        {"commit_after_cancel": True},
+        changes=[{"path": "a", "value": 1}, {"path": path, "value": value}],
+    )
+    if mode not in {"null", "nested_null"}:
+        session.sandbox.state["field"] = {"boolean": 0, "integer": True, "float": 1}[mode]
+
+    class DropWrite:
+        def on_before_commit(self, context, diff):
+            return {"state_diff": {key: val for key, val in diff.items() if key != path}}
+
+    # Canonical JSON normalizes 1 and 1.0 to the same number; booleans remain distinct.
+    should_fail = drop_write and mode != "float"
+    if drop_write:
+        session.plugin_manager.plugins.append(DropWrite())
+    if should_fail:
+        with pytest.raises(FaultDeliveryError, match="state change was not observed"):
+            await session.sandbox.execute("write", {})
+    else:
+        await session.sandbox.execute("write", {})
+    events = provider.get_events("fault-run")
+    assert (
+        bool(fault_receipt_failures(events, [("commit_after_cancel", "transfer")])) == should_fail
+    )
+    assert any(e["event"] == "mutation_delivery" for e in events) != should_fail
+
+
+@pytest.mark.asyncio
 async def test_runtime_cancellation_blocks_unmutated_commits(tmp_path):
     _, bus = _recorded_fault_environment(tmp_path)
     sandbox = ToolSandbox(
@@ -565,7 +1028,7 @@ async def test_runtime_cancellation_blocks_unmutated_commits(tmp_path):
     "tamper", ["missing", "hash", "cross_run", "cross_node", "order", "semantics"]
 )
 def test_fault_delivery_validation_rejects_unbound_or_forged_evidence(tmp_path, tamper):
-    from eval_runner.mutation_evidence import evidence_hash
+    from eval_runner.mutations.mutation_evidence import evidence_hash
 
     provider, bus = _recorded_fault_environment(tmp_path)
     controller = FaultDeliveryController("fault-run", bus)
@@ -595,6 +1058,74 @@ def test_fault_delivery_validation_rejects_unbound_or_forged_evidence(tmp_path, 
             {key: value for key, value in receipt.items() if key != "receipt_hash"}
         )
     assert fault_receipt_failures(events, [("cancel_race", "transfer")], run_id="fault-run")
+
+
+@pytest.mark.parametrize(
+    "field",
+    [
+        "delivery",
+        "observed",
+        "evidence_refs",
+        "fault",
+        "fault_id",
+        "run_id",
+        "node_id",
+        "execution_instance_id",
+    ],
+)
+@pytest.mark.parametrize("value", [["DELIVERED"], {"invalid": True}, True, 1, None])
+def test_malformed_receipt_fields_return_verification_failures(tmp_path, field, value):
+    from eval_runner.certification_truth import state_claim_failures
+
+    provider, bus = _recorded_fault_environment(tmp_path)
+    FaultDeliveryController("fault-run", bus).cancel_at_tool_boundary("transfer", "write")
+    events = provider.get_events("fault-run")
+    receipt = next(e["mutation_receipt"] for e in events if e["event"] == "mutation_delivery")
+    receipt[field] = value
+    receipt["receipt_hash"] = evidence_hash(
+        {k: v for k, v in receipt.items() if k != "receipt_hash"}
+    )
+    failures = state_claim_failures(
+        {"workflow": [{"id": "transfer", "cancel_at_boundary": True}]}, events, run_id="fault-run"
+    )
+    assert failures
+    assert "MutationDeliveryEvidenceMissing:cancel_race:transfer" in failures
+
+
+@pytest.mark.parametrize("fault", ["approval_replay", "approval_race"])
+@pytest.mark.parametrize("value", [["invalid"], {"invalid": True}, True, 1])
+def test_malformed_nested_authorization_evidence_returns_failures(tmp_path, fault, value):
+    provider, bus = _recorded_fault_environment(tmp_path)
+    approvals = FileApprovalStore(tmp_path / "approvals")
+    request = approvals.create_request(
+        ApprovalRequest(
+            approval_token="malformed-proof",
+            run_id="fault-run",
+            outbound_payload_hash=evidence_hash({"amount": 1}),
+        )
+    )
+    FaultDeliveryController("fault-run", bus).approval_fault(
+        fault, approvals, request, node_id="transfer"
+    )
+    events = provider.get_events("fault-run")
+    kind = "authorization_consumed" if fault == "approval_replay" else "approval_race_observed"
+    event = next(e for e in events if e.get("evidence", {}).get("kind") == kind)
+    observed = event["evidence"]["observation"]
+    if fault == "approval_replay":
+        observed["consumption"] = value
+    else:
+        observed["contenders"][0]["decision"] = value
+    event["evidence_hash"] = evidence_hash(event["evidence"])
+    receipt = next(e["mutation_receipt"] for e in events if e["event"] == "mutation_delivery")
+    for ref in receipt["evidence_refs"]:
+        if ref["event_id"] == event["evidence"]["event_id"]:
+            ref["evidence_hash"] = event["evidence_hash"]
+    receipt["receipt_hash"] = evidence_hash(
+        {k: v for k, v in receipt.items() if k != "receipt_hash"}
+    )
+    failures = fault_receipt_failures(events, [(fault, "transfer")])
+    assert f"InvalidMutationDeliveryEvidence:{receipt['fault_id']}" in failures
+    assert f"MutationDeliveryEvidenceMissing:{fault}:transfer" in failures
 
 
 @pytest.mark.parametrize("missing_sink", [True, False])
@@ -640,7 +1171,7 @@ def test_revoked_approval_cannot_resume_execution(tmp_path, monkeypatch, kind):
     FaultDeliveryController("fault-run", bus).approval_fault(
         "approval_revocation", approvals, pending, node_id="transfer"
     )
-    with pytest.raises(ValueError, match="revoked approval token cannot be republished"):
+    with pytest.raises(ValueError, match="cannot be republished"):
         approvals.create_request(pending)
     checkpoints = SQLiteCheckpointStore(tmp_path / "checkpoints.db")
     checkpoints.save(
@@ -746,7 +1277,7 @@ def test_injected_cancellation_reaches_backend_terminal_status(tmp_path):
 @pytest.mark.parametrize("workflow_list", [False, True])
 @pytest.mark.parametrize("fault", ["commit_after_cancel", "approval_race", "approval_revocation"])
 def test_boundary_mutations_compile_requests_without_fabricating_results(workflow_list, fault):
-    from eval_runner.mutator import MutationService
+    from eval_runner.mutations.mutator import MutationService
 
     nodes = [{"id": "transfer"}]
     scenario = {"id": "scenario", "workflow": nodes if workflow_list else {"nodes": nodes}}
@@ -882,11 +1413,13 @@ async def test_tool_response_corruption_is_applied_after_execution(sample_node, 
     )
 
 
-def test_tool_contract_violation_interception(sample_node):
+def test_tool_contract_violation_interception(sample_node, tmp_path):
     """Verifies tool contract violation mutates arguments with forbidden properties."""
     node = dict(sample_node, tool_contract_violation=True)
     plugin = RuntimeMutationPlugin()
-    plugin.on_step_start(None, "node_1", node)
+    _, bus = _recorded_fault_environment(tmp_path)
+    sandbox = ToolSandbox({"run_id": "fault-run"}, event_bus=bus)
+    plugin.on_step_start(sandbox, "node_1", node)
 
     res = plugin.on_tool_request(None, "execute_wire", {"amount": 500.0})
     assert isinstance(res, dict)
@@ -964,7 +1497,7 @@ def test_rollback_failure_interception(sample_node):
     plugin.on_step_start(None, "node_1", node)
 
     allowed = plugin.on_rollback(None, {"action": "undo_wire"})
-    assert allowed is False
+    assert allowed["runtime_fault"]["fault"] == "rollback_failure"
 
 
 def test_approval_interceptions_and_manager_integration(sample_node, tmp_path):
@@ -1073,11 +1606,14 @@ def test_runtime_mutation_before_evaluation_and_clean_fallbacks(tmp_path):
     # 7. on_rollback clean pass-through and scenario policy corruption
     p7 = RuntimeMutationPlugin(scenario={"failure_policy": {"rollback_handler_corrupted": True}})
     p7.on_step_start(None, "n5", {})
-    assert p7.on_rollback(None, {"action": "undo"}) is False
+    assert p7.on_rollback(None, {"action": "undo"})["runtime_fault"]["fault"] == "rollback_failure"
 
     p7_meta = RuntimeMutationPlugin(scenario={"metadata": {"rollback_handler_corrupted": True}})
     p7_meta.on_step_start(None, "n6", {})
-    assert p7_meta.on_rollback(None, {"action": "undo"}) is False
+    assert (
+        p7_meta.on_rollback(None, {"action": "undo"})["runtime_fault"]["fault"]
+        == "rollback_failure"
+    )
 
     p7_clean = RuntimeMutationPlugin()
     p7_clean.on_step_start(None, "n7", {})
@@ -1621,6 +2157,7 @@ def test_fault_receipt_failures_graph_node_parsing():
             "execution_instance_id": "",
         },
     }
+    ev_bad_status = {"event": "execution_graph_node", "data": {"status": ["completed"]}}
     # Also valid delivered receipt for cancel_race on node_x
     obs_cancel = {"cancelled": True, "tool_dispatched": False, "tool": "test_tool"}
     ev_obs = {
@@ -1668,7 +2205,7 @@ def test_fault_receipt_failures_graph_node_parsing():
     # On original code: ev_other is ignored, so executions['node_x'] has no extra instances.
     # On mutant [2]: ev_other adds 'exec_x' to executions['node_x'], causing subset check to fail!
     failures = fault_receipt_failures(
-        [ev_other, ev_bad_node, ev_empty_exec, ev_obs, ev_delivery],
+        [ev_other, ev_bad_node, ev_empty_exec, ev_bad_status, ev_obs, ev_delivery],
         [("cancel_race", "node_x")],
     )
     assert failures == []
@@ -1759,10 +2296,14 @@ def test_fault_receipt_failures_preflight_rejection_matrix():
         "node_id": "node_1",
         "outcome": "FAIL",
     }
-    assert fault_receipt_failures([ev_preflight], [("cancel_race", "node_1")]) == []
+    assert "MutationDeliveryEvidenceMissing:cancel_race:node_1" in fault_receipt_failures(
+        [ev_preflight], [("cancel_race", "node_1")]
+    )
 
     # Mutant [52], [55], [57]: node=None matching and cross-node isolation
-    assert fault_receipt_failures([ev_preflight], ["cancel_race"]) == []
+    assert "MutationDeliveryEvidenceMissing:cancel_race:*" in fault_receipt_failures(
+        [ev_preflight], ["cancel_race"]
+    )
 
     ev_preflight_n2 = {
         "event": "assertion_evaluated",
@@ -1825,6 +2366,87 @@ def test_fault_receipt_failures_preflight_rejection_matrix():
     assert "MutationDeliveryEvidenceMissing:cancel_race:node_1" in f_node_mismatch
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "mode", ["missing_null", "nested_null", "existing_null", "canonical_scalar"]
+)
+async def test_partial_commit_presence_and_canonical_value_evidence(tmp_path, mode):
+    paths = ["new_a", "new_b"] if mode != "nested_null" else ["nested.a", "nested.b"]
+    value = None
+    if mode == "existing_null":
+        paths = ["a", "b"]
+    elif mode == "canonical_scalar":
+        paths, value = ["a", "b"], False
+    provider, session, _ = _tool_fault_session(
+        tmp_path,
+        {"partial_commit_simulated": True},
+        changes=[{"path": path, "value": value} for path in paths],
+    )
+    if mode == "existing_null":
+        session.sandbox.state.update(a=None, b=None)
+    await session.sandbox.execute("write", {})
+    events = provider.get_events("fault-run")
+    failures = fault_receipt_failures(events, [("partial_commit", "transfer")])
+    assert bool(failures) == (mode == "existing_null")
+    if mode != "existing_null":
+        receipt = next(e["mutation_receipt"] for e in events if e["event"] == "mutation_delivery")
+        observed = receipt["observed"]
+        assert observed["applied_paths"] == [paths[0]]
+        assert observed["omitted_paths"] == [paths[1]]
+        assert observed["after_exists"][paths[0]] is True
+        assert observed["after_exists"][paths[1]] == (mode == "canonical_scalar")
+        bound = [e["evidence"] for e in events if e["event"] == "runtime_fault_observation"]
+        from eval_runner.mutations.mutation_evidence import evidence_hash
+
+        assert valid_extended_observations(receipt, bound, {}, 1, evidence_hash)
+        # Alter both the receipt and its observation, bypassing the outer digest check:
+        # semantic verification must still reject a missing applied path.
+        observed["after_exists"][paths[0]] = False
+        next(row for row in bound if row["kind"] == "partial_commit_observed")["observation"][
+            "after_exists"
+        ][paths[0]] = False
+        assert not valid_extended_observations(receipt, bound, {}, 1, evidence_hash)
+
+
+@pytest.mark.parametrize("kind", ["file", "sqlite"])
+def test_stale_fault_expires_existing_pending_request_at_resolution(tmp_path, kind):
+    import time
+
+    provider, bus = _recorded_fault_environment(tmp_path)
+    approvals = (
+        FileApprovalStore(tmp_path / "approvals")
+        if kind == "file"
+        else SQLiteApprovalStore(tmp_path / "approvals.db")
+    )
+    plugin, plugins = RuntimeMutationPlugin(), PluginManager()
+    plugins.plugins.append(plugin)
+    manager = SessionApprovalManager(
+        run_id="fault-run",
+        approval_store=approvals,
+        plugin_manager=plugins,
+        event_bus=bus,
+        run_store=provider,
+    )
+    request = manager.create_durable_request(
+        turn_index=1,
+        action_payload={"amount": 100},
+        metadata={"task_id": "transfer", "expires_at": time.time() + 3600},
+    )
+    plugin.on_step_start(None, "transfer", {"approval_stale": True})
+    with pytest.raises(PermissionError, match="observed approval_stale"):
+        manager.resolve_durable_request(request.approval_token, "APPROVED")
+    expired = approvals.get_request(request.approval_token)
+    assert expired.metadata["expires_at"] <= time.time()
+    assert expired.outbound_payload_hash == request.outbound_payload_hash
+    assert (
+        expired.metadata["expiry_change"]["previous_expires_at"] == request.metadata["expires_at"]
+    )
+    assert (
+        fault_receipt_failures(provider.get_events("fault-run"), [("approval_stale", "transfer")])
+        == []
+    )
+
+
 def test_valid_extended_observations_rejects_mixed_non_mapping():
     before = {"k": 1, "o": 10}
     proposed = {"k": 2, "o": 20}
@@ -1853,7 +2475,13 @@ def test_valid_extended_observations_rejects_mixed_non_mapping():
 
 def test_valid_extended_observations_approval_and_tool_rules():
     # 1. Mutants [23] & [25]: approval_ token checks
-    valid_req = {"approval_token": "tok1", "expires_at": 100.0}
+    valid_req = {"approval_token": "tok1", "expires_at": 100.0, "payload_hash": "digest"}
+    valid_expiry = {
+        "approval_token": "tok1",
+        "expires_at": 100.0,
+        "observed_at": 102.0,
+        "payload_hash": "digest",
+    }
     valid_att = {"approval_token": "tok1", "attempted_at": 105.0}
     valid_rej = {
         "approval_token": "tok1",
@@ -1864,6 +2492,7 @@ def test_valid_extended_observations_approval_and_tool_rules():
     receipt_stale = {"fault": "approval_stale", "observed": valid_rej}
     bound_stale = [
         {"kind": "authorization_request", "observation": valid_req},
+        {"kind": "authorization_expiry_observed", "observation": valid_expiry},
         {"kind": "authorization_attempt", "observation": valid_att},
         {"kind": "authorization_rejected", "observation": valid_rej},
         {"kind": "authorization_cleanup", "observation": valid_clean},
@@ -1873,6 +2502,10 @@ def test_valid_extended_observations_approval_and_tool_rules():
     # Mutant [23]: empty token everywhere
     bound_no_token = [
         {"kind": "authorization_request", "observation": {**valid_req, "approval_token": ""}},
+        {
+            "kind": "authorization_expiry_observed",
+            "observation": {**valid_expiry, "approval_token": ""},
+        },
         {"kind": "authorization_attempt", "observation": {**valid_att, "approval_token": ""}},
         {"kind": "authorization_rejected", "observation": {**valid_rej, "approval_token": ""}},
         {"kind": "authorization_cleanup", "observation": {**valid_clean, "approval_token": ""}},
@@ -1885,6 +2518,7 @@ def test_valid_extended_observations_approval_and_tool_rules():
     # Mutant [25]: one token mismatch
     bound_one_mismatch = [
         {"kind": "authorization_request", "observation": valid_req},
+        {"kind": "authorization_expiry_observed", "observation": valid_expiry},
         {
             "kind": "authorization_attempt",
             "observation": {**valid_att, "approval_token": "tok_OTHER"},
@@ -1966,6 +2600,11 @@ def test_valid_extended_observations_approval_and_tool_rules():
         "expected_hash": "h1",
     }
     bound_malformed = [
+        {
+            "event_id": "available",
+            "kind": "tool_response_available",
+            "observation": {"payload_hash": "h1"},
+        },
         {"kind": "tool_consumer_received", "observation": consumer_obs},
         {"kind": "tool_wire_received", "observation": wire_valid},
         {"kind": "tool_parse_rejected", "observation": rejected_mismatch_hash},

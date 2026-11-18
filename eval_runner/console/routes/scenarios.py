@@ -19,13 +19,14 @@ from agentv_runtime.manifest import (
     compute_preflight_fingerprint,
     compute_scenario_hash,
 )
-from eval_runner import config, engine, loader, mutator, spec_parser, taxonomy  # noqa: F401
+from eval_runner import config, engine, loader, spec_parser, taxonomy  # noqa: F401
 from eval_runner.catalog import ScenarioCatalog
 from eval_runner.console.scenario_store import (
     ScenarioRevisionConflict,
     scenario_save_path,
     write_scenario,
 )
+from eval_runner.mutations.mutation_registry import capability as mutation_capability
 
 from ..auth_manager import Permission, active_runtime_context, require_permission
 from ..providers import get_run_store
@@ -1666,11 +1667,13 @@ def list_available_mutations():
     context = active_runtime_context()
     # Query parameters are presentation inputs, never mutation catalog scope.
     org_id = context.get("org_id") if context is not None else None
-    catalog = eval_runner.mutator.mutation_service.list_mutation_catalog(org_id=org_id)
+    catalog = eval_runner.mutations.mutator.mutation_service.list_mutation_catalog(org_id=org_id)
     return jsonify(
         {
             "status": "success",
-            "mutations": [m.to_dict() for m in catalog],
+            "mutations": [
+                {**m.to_dict(), "capability": mutation_capability(m.id)} for m in catalog
+            ],
             "total": len(catalog),
         }
     )
@@ -1725,7 +1728,7 @@ def mutate_scenario():
             scenario = json.load(f)
 
     try:
-        mutated = eval_runner.mutator.mutate_scenario(scenario, mutation_spec, seed=seed)
+        mutated = eval_runner.mutations.mutator.mutate_scenario(scenario, mutation_spec, seed=seed)
 
         # Automated Scenario Linting on Mutant
         from eval_runner.linter import ScenarioLinter
@@ -1741,7 +1744,7 @@ def mutate_scenario():
             # Path Traversal Guard
             if not utils.is_path_safe(output_path, config.PROJECT_ROOT):
                 return jsonify({"error": "Access denied: output_path outside project root"}), 403
-            eval_runner.mutator.save_mutated_scenario(mutated, Path(output_path))
+            eval_runner.mutations.mutator.save_mutated_scenario(mutated, Path(output_path))
 
         # This endpoint generates a mutated scenario definition; it does not
         # execute or verify fault delivery.  Keep the legacy success status for
@@ -1756,8 +1759,8 @@ def mutate_scenario():
             }
         )
     except (
-        eval_runner.mutator.UnsupportedMutationError,
-        eval_runner.mutator.InvalidPromptInjectionSpecError,
+        eval_runner.mutations.mutator.UnsupportedMutationError,
+        eval_runner.mutations.mutator.InvalidPromptInjectionSpecError,
     ) as e:
         return jsonify({"status": "error", "error": "unsupported_mutation", "message": str(e)}), 400
     except (OSError, RuntimeError, ValueError, TypeError, KeyError, AttributeError) as e:

@@ -46,7 +46,7 @@ def test_approval_consumption_validates_every_authorization_binding(
     tmp_path, kind, violation, code
 ):
     from eval_runner.approval_validation import ApprovalValidationError
-    from eval_runner.mutation_evidence import evidence_hash
+    from eval_runner.mutations.mutation_evidence import evidence_hash
 
     store = (
         FileApprovalStore(tmp_path / "approvals")
@@ -88,7 +88,7 @@ def test_approval_consumption_validates_every_authorization_binding(
 @pytest.mark.parametrize("kind", ["file", "sqlite"])
 def test_approval_consumption_success_and_replay(tmp_path, kind):
     from eval_runner.approval_validation import ApprovalValidationError
-    from eval_runner.mutation_evidence import evidence_hash
+    from eval_runner.mutations.mutation_evidence import evidence_hash
 
     store = (
         FileApprovalStore(tmp_path / "approvals")
@@ -123,7 +123,7 @@ def test_approval_consumption_success_and_replay(tmp_path, kind):
 def test_approval_consumption_missing_and_scope_mismatch(tmp_path, kind):
     from agentv_runtime.interfaces import ScopeMismatchError
     from agentv_runtime.scope import ScopeToken
-    from eval_runner.mutation_evidence import evidence_hash
+    from eval_runner.mutations.mutation_evidence import evidence_hash
 
     store = (
         FileApprovalStore(tmp_path / "approvals")
@@ -144,13 +144,18 @@ def test_approval_consumption_missing_and_scope_mismatch(tmp_path, kind):
         scope_digest="sha3_256:scope_a",
     )
     store.create_request(req)
-    with pytest.raises(ScopeMismatchError, match="Scope mismatch consuming authorization"):
+    with pytest.raises(ScopeMismatchError, match="Scope mismatch updating authorization"):
         store.consume_request(
             "tok_scoped",
             run_id="run_scoped",
             payload_hash=payload_hash,
             scope=ScopeToken.from_tags({"tenant": "tenant_b"}),
         )
+    with pytest.raises(ScopeMismatchError, match="Scope mismatch updating authorization"):
+        store.expire_request(
+            "tok_scoped", run_id="run_scoped", scope=ScopeToken.from_tags({"tenant": "tenant_b"})
+        )
+    assert store.get_request("tok_scoped").metadata == req.metadata
 
 
 def test_file_approval_store_consume_degraded_record(tmp_path):
@@ -1598,7 +1603,7 @@ def test_sqlite_approval_store_degraded_and_stream_branches(tmp_path: Path, monk
     rev_sq = store.revoke_request("tok_rev_sq", decided_by="admin", decision_reason="compromised")
     assert rev_sq.status == "REJECTED"
     assert "revocation" in rev_sq.metadata
-    with pytest.raises(ValueError, match="A revoked approval token cannot be republished"):
+    with pytest.raises(ValueError, match="cannot be republished"):
         store.create_request(
             ApprovalRequest(
                 approval_token="tok_rev_sq", run_id="r_rev", turn_index=2, status="PENDING"
@@ -1678,7 +1683,7 @@ def test_file_approval_store_extra_branches(tmp_path: Path, monkeypatch):
     rev = store.revoke_request("tok_f_rev", decided_by="admin", decision_reason="withdrawn")
     assert rev.status == "REJECTED"
     assert "revocation" in rev.metadata
-    with pytest.raises(ValueError, match="A revoked approval token cannot be republished"):
+    with pytest.raises(ValueError, match="cannot be republished"):
         store.create_request(
             ApprovalRequest(
                 approval_token="tok_f_rev", run_id="r_f_rev", turn_index=2, status="PENDING"
@@ -1867,6 +1872,117 @@ def test_migrate_unscoped_approval_branches(tmp_path: Path, monkeypatch):
         migrate_unscoped_approval(
             "tok_mig_mismatch", run_id="run_mismatch_digest", store=store, run_store=mock_run_store
         )
+
+
+@pytest.mark.parametrize("kind", ["file", "sqlite"])
+@pytest.mark.parametrize("status", ["PENDING", "APPROVED"])
+def test_durable_expiry_preserves_bindings_and_cannot_be_republished(tmp_path, kind, status):
+    import time
+
+    from eval_runner.approval_validation import ApprovalValidationError
+
+    store = (
+        FileApprovalStore(tmp_path / "expiry")
+        if kind == "file"
+        else SQLiteApprovalStore(tmp_path / "expiry.db")
+    )
+    request = ApprovalRequest(
+        approval_token="expiring",
+        run_id="expiry-run",
+        outbound_payload_hash="digest",
+        action_payload={"amount": 100},
+        metadata={"expires_at": time.time() + 3600},
+    )
+    store.create_request(request)
+    if status == "APPROVED":
+        store.resolve_request("expiring", "APPROVED")
+    with pytest.raises(ApprovalValidationError, match="ApprovalRunMismatch"):
+        store.expire_request("expiring", run_id="other-run")
+    expired = store.expire_request("expiring", run_id="expiry-run")
+    assert expired.status == status
+    assert expired.action_payload == request.action_payload
+    assert expired.outbound_payload_hash == request.outbound_payload_hash
+    assert expired.metadata["expires_at"] <= time.time()
+    with pytest.raises(ValueError, match="cannot be republished"):
+        store.create_request(request)
+    with pytest.raises(ApprovalValidationError, match="ApprovalExpired"):
+        if status == "PENDING":
+            store.resolve_request("expiring", "APPROVED")
+        else:
+            store.consume_request("expiring", run_id="expiry-run", payload_hash="digest")
+
+
+@pytest.mark.parametrize("kind", ["file", "sqlite"])
+def test_expiry_and_decision_serialize_across_provider_instances(tmp_path, kind):
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+
+    from eval_runner.approval_validation import ApprovalValidationError
+
+    path = tmp_path / ("approvals" if kind == "file" else "approvals.db")
+    cls = FileApprovalStore if kind == "file" else SQLiteApprovalStore
+    first, second = cls(path), cls(path)
+    first.create_request(
+        ApprovalRequest(
+            approval_token="race-expiry", run_id="expiry-run", outbound_payload_hash="digest"
+        )
+    )
+    barrier = Barrier(2)
+
+    def expire():
+        barrier.wait(timeout=10)
+        first.expire_request("race-expiry", run_id="expiry-run")
+
+    def approve():
+        barrier.wait(timeout=10)
+        try:
+            second.resolve_request("race-expiry", "APPROVED")
+        except ApprovalValidationError as exc:
+            assert exc.code == "ApprovalExpired"
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        futures = [pool.submit(expire), pool.submit(approve)]
+        for future in futures:
+            future.result(timeout=15)
+    latest = second.get_request("race-expiry")
+    assert "expiry_change" in latest.metadata
+    if latest.status == "APPROVED":
+        with pytest.raises(ApprovalValidationError, match="ApprovalExpired"):
+            second.consume_request("race-expiry", run_id="expiry-run", payload_hash="digest")
+
+
+@pytest.mark.parametrize("kind", ["file", "sqlite"])
+@pytest.mark.parametrize(
+    "violation,code",
+    [
+        ("spent", "ApprovalNotExpirable"),
+        ("rejected", "ApprovalNotExpirable"),
+        ("invalid", "ApprovalExpiryInvalid"),
+    ],
+)
+def test_durable_expiry_rejects_invalid_authorization_without_writes(
+    tmp_path, kind, violation, code
+):
+    from eval_runner.approval_validation import ApprovalValidationError
+
+    store = (
+        FileApprovalStore(tmp_path / "expiry")
+        if kind == "file"
+        else SQLiteApprovalStore(tmp_path / "expiry.db")
+    )
+    metadata = {"consumption": {"authorization_id": "spent"}} if violation == "spent" else {}
+    if violation == "invalid":
+        metadata["expires_at"] = True
+    request = ApprovalRequest(
+        approval_token="expiry-guard",
+        run_id="expiry-run",
+        status="REJECTED" if violation == "rejected" else "APPROVED",
+        metadata=metadata,
+    )
+    store.create_request(request)
+    with pytest.raises(ApprovalValidationError, match=code):
+        store.expire_request("expiry-guard", run_id="expiry-run")
+    assert store.get_request("expiry-guard").to_dict() == request.to_dict()
 
 
 def test_get_default_approval_store_extension_branch(monkeypatch):

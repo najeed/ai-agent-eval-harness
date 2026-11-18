@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
 
-from . import mutator
 from .linter import ScenarioLinter
+from .mutations import mutator
 
 
 class ContributeWizard:

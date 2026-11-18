@@ -216,7 +216,7 @@ def test_async_evaluation_registration_does_not_reserve_evidence_vault(client, c
 
 
 def test_mutate_scenario_raw(client):
-    with patch("eval_runner.mutator.mutate_scenario", return_value={"mutated": True}):
+    with patch("eval_runner.mutations.mutator.mutate_scenario", return_value={"mutated": True}):
         res = client.post("/api/v1/mutate", json={"raw_json": {"id": "s1"}, "type": "typo"})
         assert res.status_code == 200
         assert res.get_json()["mutated"]["mutated"] is True
@@ -260,7 +260,9 @@ def test_evaluate_scenario_load_fail(client, console_jail):
 
 
 def test_mutate_scenario_exception(client):
-    with patch("eval_runner.mutator.mutate_scenario", side_effect=ValueError("Invalid Type")):
+    with patch(
+        "eval_runner.mutations.mutator.mutate_scenario", side_effect=ValueError("Invalid Type")
+    ):
         res = client.post("/api/v1/mutate", json={"raw_json": {"id": "s1"}, "type": "ghost"})
         assert res.status_code == 500
         assert "Invalid Type" in res.get_json()["message"]
@@ -320,7 +322,7 @@ def test_mutate_scenario_save_output(client, console_jail):
     scen_path.write_text('{"id": "orig"}')
     out_path = console_jail["root"] / "mutated.json"
 
-    with patch("eval_runner.mutator.mutate_scenario", return_value={"id": "mutated"}):
+    with patch("eval_runner.mutations.mutator.mutate_scenario", return_value={"id": "mutated"}):
         res = client.post(
             "/api/v1/mutate",
             json={"input_path": str(scen_path), "output_path": str(out_path), "type": "typo"},

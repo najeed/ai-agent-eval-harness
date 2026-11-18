@@ -11,7 +11,7 @@ from collections.abc import Callable, Coroutine
 
 import pytest
 
-from eval_runner.mutator import (
+from eval_runner.mutations.mutator import (
     ScenarioMutator,
     mutate_scenario,
     mutation_service,

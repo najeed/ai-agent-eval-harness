@@ -21,7 +21,7 @@ from agentv_runtime.contracts import (
     MutationTier,
     MutationVector,
 )
-from eval_runner.mutator import (
+from eval_runner.mutations.mutator import (
     ConditionalMutator,
     CoreMutator,
     ScenarioMutator,
@@ -591,7 +591,7 @@ def test_mutation_service_branches(sample_scenario):
 
 def test_sub_engine_hierarchy():
     """Verifies that all 9 modular vector sub-engines exist and declare correct coordinates."""
-    from eval_runner.mutator import (
+    from eval_runner.mutations.mutator import (
         AuthorizationMutators,
         ContextMutators,
         InputMutators,

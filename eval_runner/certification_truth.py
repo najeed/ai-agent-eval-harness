@@ -141,61 +141,10 @@ def state_claim_failures(
     if isinstance(authorities, Mapping) and "url" in authorities:
         authorities = {"default": authorities}
     failures = unsupported_mutation_failures(scenario)
-    from eval_runner.mutation_evidence import fault_receipt_failures
+    from eval_runner.mutations.mutation_evidence import fault_receipt_failures
+    from eval_runner.mutations.mutation_registry import required_deliveries
 
-    requested_faults = {
-        (fault, node.get("id") or node.get("node_id"))
-        for node in _extract_scenario_nodes(scenario)
-        for flag, fault in (
-            ("cancel_at_boundary", "cancel_race"),
-            ("commit_after_cancel", "commit_after_cancel"),
-            ("approval_race", "approval_race"),
-            ("approval_revocation", "approval_revocation"),
-            ("partial_commit_simulated", "partial_commit"),
-            ("stale_commit", "stale_commit"),
-            ("tool_response_corrupted", "tool_response_corruption"),
-            ("approval_stale", "approval_stale"),
-            ("approval_mismatch", "approval_mismatch"),
-            ("approval_replay", "approval_replay"),
-            ("timeout_boundary_ms", "timeout_boundary"),
-            ("raw_payload_corrupted", "malformed_payload"),
-            ("duplicate_execution", "tool_duplicate"),
-            ("replay_previous_event", "tool_replay"),
-            ("injected_latency_ms", "latency_jitter"),
-        )
-        if node.get(flag)
-        and not (flag == "injected_latency_ms" and node.get("timeout_boundary_ms"))
-    }
-    for row in (scenario.get("metadata") or {}).get("applied_mutations", []):
-        if isinstance(row, Mapping) and row.get("type"):
-            mtype = row["type"]
-            mapped_fault = {
-                "cancel_race": "cancel_race",
-                "cancellation_race": "cancel_race",
-                "commit_after_cancel": "commit_after_cancel",
-                "approval_race": "approval_race",
-                "approval_revocation": "approval_revocation",
-                "partial_commit": "partial_commit",
-                "stale_commit": "stale_commit",
-                "tool_response_corruption": "tool_response_corruption",
-                "approval_stale": "approval_stale",
-                "approval_mismatch": "approval_mismatch",
-                "malformed_payload": "malformed_payload",
-                "timeout_boundary": "timeout_boundary",
-                "approval_replay": "approval_replay",
-                "auth_replay": "approval_replay",
-                "duplicate": "tool_duplicate",
-                "duplicate_action": "tool_duplicate",
-                "replay": "tool_replay",
-                "latency_jitter": "latency_jitter",
-                "latency jitter": "latency_jitter",
-                "latency": "latency_jitter",
-                "jitter": "latency_jitter",
-            }.get(mtype)
-            if mapped_fault is None:
-                continue
-            candidate_node = row.get("node_id") or row.get("target_node")
-            requested_faults.add((mapped_fault, candidate_node))
+    requested_faults = required_deliveries(scenario)
     failures.extend(fault_receipt_failures(events, requested_faults, run_id=expected_run_id))
     for node in _extract_scenario_nodes(scenario):
         node_id = node.get("id") or node.get("node_id")
@@ -575,7 +524,7 @@ def certification_claim_scope(scenario):
 
 def unsupported_mutation_failures(scenario):
     """Reject persisted fault claims for which Core has no delivery implementation."""
-    from eval_runner.mutator import UNSUPPORTED_RUNTIME_MUTATIONS
+    from eval_runner.mutations.mutator import UNSUPPORTED_RUNTIME_MUTATIONS
 
     metadata = scenario.get("metadata") or {}
     unsupported = UNSUPPORTED_RUNTIME_MUTATIONS

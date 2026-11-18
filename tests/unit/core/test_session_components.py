@@ -556,7 +556,7 @@ async def test_session_approval_manager_extended_branches(tmp_path, monkeypatch)
     mock_store_fault.get_request.return_value = MagicMock(status="PENDING")
     app_mgr_fault = SessionApprovalManager(run_id="run-fault", approval_store=mock_store_fault)
     mock_req = MagicMock(approval_token="tok-fault")
-    with patch("eval_runner.runtime_faults.FaultDeliveryController.approval_fault"):
+    with patch("eval_runner.mutations.runtime_faults.FaultDeliveryController.approval_fault"):
         with pytest.raises(RuntimeError, match="did not withdraw its permission"):
             app_mgr_fault._deliver_approval_fault(
                 {"fault": "approval_race", "node_id": "n1"},

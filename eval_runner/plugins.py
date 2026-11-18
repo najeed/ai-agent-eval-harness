@@ -499,7 +499,7 @@ class PluginManager:
             pass
 
         try:
-            from .mutator_plugin import RuntimeMutationPlugin
+            from .mutations.mutator_plugin import RuntimeMutationPlugin
 
             internal_manifest.append(RuntimeMutationPlugin)
         except ImportError:

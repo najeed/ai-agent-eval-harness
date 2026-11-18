@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+import copy
 import threading
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime
 
-from eval_runner.mutation_evidence import evidence_hash
+from eval_runner.mutations.mutation_evidence import evidence_hash
 from eval_runner.utils.path_resolver import PathResolver
 
 
@@ -116,15 +117,17 @@ class FaultDeliveryController:
             "identity": identity,
             "evidence_refs": [ref],
             "before_hash": evidence_hash(state),
-            "diff": dict(diff),
+            "diff": copy.deepcopy(diff),
         }
 
     def observe_cancelled_commit(self, ticket, after):
+        def write_observed(path, value):
+            exists, actual = PathResolver.resolve_with_existence(after, path)
+            return exists and evidence_hash(actual) == evidence_hash(value)
+
         if (
             not self.cancellation_event.is_set()
-            or any(
-                PathResolver.resolve(after, path) != value for path, value in ticket["diff"].items()
-            )
+            or any(not write_observed(path, value) for path, value in ticket["diff"].items())
             or evidence_hash(after) == ticket["before_hash"]
         ):
             raise FaultDeliveryError("Post-cancellation state change was not observed")
@@ -167,7 +170,7 @@ class FaultDeliveryController:
         self, fault, store, request, scope=None, *, node_id, execution_id=None
     ):
         if fault in {"approval_stale", "approval_mismatch", "approval_replay"}:
-            from eval_runner.approval_faults import deliver_authorization_fault
+            from eval_runner.mutations.approval_faults import deliver_authorization_fault
 
             return deliver_authorization_fault(
                 self, fault, store, request, scope, node_id, execution_id

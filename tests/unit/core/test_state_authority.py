@@ -5,6 +5,7 @@ Unit tests for External State Authority (P0-05) and Bounded State Capture Contra
 
 from __future__ import annotations
 
+import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -19,6 +20,244 @@ from eval_runner.state_authority import (
     bound_state_snapshot,
     state_authority_registry,
 )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("gate", [False, True])
+@pytest.mark.parametrize("failure", ["missing_key", "unreachable"])
+async def test_required_authority_prestate_stops_before_agent_and_hitl(
+    tmp_path, monkeypatch, gate, failure
+):
+    from agentv_runtime.evidence_graph import build_evidence_graph_from_events
+    from eval_runner import config
+    from eval_runner.reference.approval_store import FileApprovalStore
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+    from eval_runner.runner import DefaultRunner
+    from eval_runner.session import SessionManager
+
+    monkeypatch.setattr(config, "TRUST_ROOT", tmp_path / "empty-trust")
+    from eval_runner.identity import IdentityService
+
+    IdentityService._provision_local_identity("system_id")
+    monkeypatch.delenv("AGENTV_STATE_AUTHORITY_KEY", raising=False)
+    monkeypatch.delenv("STATE_AUTHORITY_KEY", raising=False)
+    if failure == "unreachable":
+        monkeypatch.setenv("AGENTV_STATE_AUTHORITY_KEY", "regression-authority-key")
+    monkeypatch.setenv("AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST", "https://authority.example")
+    with patch(
+        "eval_runner.state_authority.socket.getaddrinfo",
+        return_value=[(2, 1, 6, "", ("93.184.216.34", 443))],
+    ):
+        connector = HttpStateAuthorityConnector(
+            "https://authority.example/state", default_headers={"Authorization": "Bearer fixture"}
+        )
+    fetch = AsyncMock(side_effect=TimeoutError("authority observation timed out"))
+    monkeypatch.setattr(connector, "fetch_state", fetch)
+    scenario = {
+        "id": "required-authority-prestate",
+        "execution_mode": "live",
+        "metadata": {
+            "agent": "https://agent.example/eval",
+            "state_authorities": {"orders": {"url": connector.base_url}},
+        },
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "settle",
+                    "task_description": "Settle transaction",
+                    "hitl_gate": gate,
+                    "expected_outcome": [
+                        {
+                            "oracle_id": "authority:settlement",
+                            "target": "authority:orders",
+                            "property": "status",
+                            "expected": "settled",
+                        }
+                    ],
+                }
+            ],
+            "edges": [],
+        },
+    }
+    store = LocalFileRunStore(tmp_path / "runs")
+    with (
+        patch.object(state_authority_registry, "get_connector", return_value=connector),
+        patch.object(SessionManager, "_handle_hitl", new_callable=AsyncMock) as hitl,
+        patch(
+            "eval_runner.session.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+        ) as agent,
+        patch.object(FileApprovalStore, "create_request") as approval,
+    ):
+        await DefaultRunner(run_store=store).run(
+            scenario, run_id="prestate-stop", metadata={"agent": "https://agent.example/eval"}
+        )
+    hitl.assert_not_awaited()
+    agent.assert_not_awaited()
+    approval.assert_not_called()
+    if failure == "missing_key":
+        fetch.assert_not_awaited()
+    else:
+        fetch.assert_awaited_once()
+    events = store.get_events("prestate-stop")
+    invalid = [
+        e
+        for e in events
+        if e.get("event") == "assertion_evaluated" and e.get("oracle_id") == "authority:settlement"
+    ]
+    assert invalid and all(e["outcome"] == "INVALID" and e["passed"] is False for e in invalid)
+    diagnostic = (
+        "trust key is required" if failure == "missing_key" else "authority observation timed out"
+    )
+    assert diagnostic in invalid[0]["error"]
+    terminal = [
+        e
+        for e in events
+        if e.get("event") == "execution_graph_node" and e.get("status") == "failed"
+    ]
+    assert terminal and terminal[-1]["failure_class"] == "EVALUATION_INVALID"
+    assert terminal[-1]["oracle_results"][0]["outcome"] == "INVALID"
+    assert all(e.get("event") != "approval_created" for e in events)
+    end = next(e for e in reversed(events) if e.get("event") == "run_end")
+    assert end["passed"] is False
+    assert end["finalization"]["outcome"] not in {"pass", "success"}
+    assert not (config.TRUST_ROOT / "state_authority.key").exists()
+    from eval_runner.services.certification import CertificationService
+
+    with pytest.raises(
+        ValueError,
+        match="IndependentState",
+    ):
+        CertificationService.execute_industrial_certification(
+            run_id="prestate-stop",
+            run_store=store,
+            scenario_data=scenario,
+        )
+    assert build_evidence_graph_from_events([(e, json.dumps(e)) for e in events])["total_nodes"] > 0
+
+
+@pytest.mark.parametrize("requiredness", ["OPTIONAL", "INFORMATIONAL", None])
+def test_optional_unobservable_prestate_does_not_block_dispatch(requiredness):
+    from types import SimpleNamespace
+
+    bus = MagicMock()
+    verifier = SessionStateParityVerifier(SimpleNamespace(event_bus=bus))
+    node = {
+        "id": "optional",
+        "expected_outcome": [
+            {"target": "authority:orders", "requiredness": requiredness, "expected": True}
+        ],
+    }
+    if requiredness is None:
+        node["expected_outcome"][0].pop("requiredness")
+        node["expected_outcome"][0]["required"] = False
+    assert (
+        verifier.preexecution_failure(
+            node, {"authority:orders": {"invalid": True, "error": "unavailable"}}
+        )
+        is None
+    )
+    bus.emit.assert_not_called()
+
+
+def test_required_prestate_is_not_waived_by_optional_peer():
+    from types import SimpleNamespace
+
+    verifier = SessionStateParityVerifier(
+        SimpleNamespace(
+            event_bus=MagicMock(), run_id="mixed-prestate", current_execution_instance_id="review:1"
+        )
+    )
+    node = {
+        "id": "review",
+        "expected_outcome": [
+            {"oracle_id": "optional", "target": "authority:orders", "required": False},
+            {"oracle_id": "required", "target": "authority:orders", "required": True},
+        ],
+    }
+    failure = verifier.preexecution_failure(
+        node, {"authority:orders": {"invalid": True, "error": "missing key"}}
+    )
+    assert failure["triage_tag"] == "EVALUATION_INVALID"
+    assert {
+        (row["oracle_id"], row["requiredness"], row["outcome"]) for row in failure["oracle_results"]
+    } == {("optional", "OPTIONAL", "INVALID"), ("required", "REQUIRED", "INVALID")}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("key_source", ["environment", "trust_root", "optional_missing"])
+async def test_authority_prestate_permits_valid_or_optional_before_gate(
+    tmp_path, monkeypatch, key_source
+):
+    from eval_runner import config
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+    from eval_runner.runner import DefaultRunner
+    from eval_runner.session import SessionManager
+
+    trust_root = tmp_path / "trust"
+    trust_root.mkdir()
+    monkeypatch.setattr(config, "TRUST_ROOT", trust_root)
+    from eval_runner.identity import IdentityService
+
+    IdentityService._provision_local_identity("system_id")
+    monkeypatch.delenv("AGENTV_STATE_AUTHORITY_KEY", raising=False)
+    monkeypatch.delenv("STATE_AUTHORITY_KEY", raising=False)
+    if key_source == "environment":
+        monkeypatch.setenv("AGENTV_STATE_AUTHORITY_KEY", "explicit-regression-key")
+    elif key_source == "trust_root":
+        (trust_root / "state_authority.key").write_bytes(b"explicit-regression-key")
+    monkeypatch.setenv("AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST", "https://authority.example")
+    with patch(
+        "eval_runner.state_authority.socket.getaddrinfo",
+        return_value=[(2, 1, 6, "", ("93.184.216.34", 443))],
+    ):
+        connector = HttpStateAuthorityConnector(
+            "https://authority.example/state", default_headers={"Authorization": "Bearer fixture"}
+        )
+    fetch = AsyncMock(return_value={"status": "pending"})
+    monkeypatch.setattr(connector, "fetch_state", fetch)
+    node = {
+        "id": "review",
+        "task_description": "Review transaction",
+        "hitl_gate": True,
+        "expected_outcome": [
+            {
+                "target": "authority:orders",
+                "expected": "settled",
+                "required": key_source != "optional_missing",
+            }
+        ],
+    }
+    scenario = {
+        "id": "configured-prestate",
+        "execution_mode": "live",
+        "metadata": {
+            "agent": "https://agent.example/eval",
+            "state_authorities": {"orders": {"url": connector.base_url}},
+        },
+        "workflow": {"nodes": [node], "edges": []},
+    }
+    with (
+        patch.object(state_authority_registry, "get_connector", return_value=connector),
+        patch.object(
+            SessionManager,
+            "_handle_hitl",
+            new_callable=AsyncMock,
+            side_effect=RuntimeError("gate dispatch probe"),
+        ) as gate,
+        patch(
+            "eval_runner.session.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+        ) as agent,
+    ):
+        await DefaultRunner(run_store=LocalFileRunStore(tmp_path / "runs")).run(
+            scenario, run_id="before-gate"
+        )
+    gate.assert_awaited_once()
+    assert gate.await_args.args[0] == 0
+    agent.assert_not_awaited()
+    if key_source == "optional_missing":
+        fetch.assert_not_awaited()
+    else:
+        fetch.assert_awaited_once()
 
 
 @pytest.mark.asyncio

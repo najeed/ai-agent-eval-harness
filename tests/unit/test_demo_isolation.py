@@ -109,12 +109,61 @@ def test_no_implicit_localhost_admin_in_any_mode(isolated_app, monkeypatch):
             assert "error" in body
 
 
-def test_require_permission_has_no_localhost_shortcut(monkeypatch):
-    """Source-level guard: the implicit Local Trust block stays deleted."""
-    import inspect
+@pytest.mark.parametrize("demo_enabled", [False, True])
+@pytest.mark.parametrize(
+    "address,forwarded",
+    [
+        ("127.0.0.1", None),
+        ("::1", None),
+        ("203.0.113.10", None),
+        ("203.0.113.10", "127.0.0.1"),
+        ("203.0.113.10", "::1"),
+    ],
+)
+@pytest.mark.parametrize(
+    "credential,status", [(None, 401), ("invalid", 401), ("limited", 403), ("authorized", 200)]
+)
+def test_permission_decisions_ignore_client_and_forwarded_addresses(
+    monkeypatch, demo_enabled, address, forwarded, credential, status
+):
+    """Preserve the removed localhost bypass guard through actual access decisions.
+
+    IP addresses may appear in diagnostics; neither the peer address nor an
+    attacker-supplied forwarding header may substitute for credentials and permission.
+    """
+    from flask import Flask
 
     from eval_runner.console import auth_manager
+    from eval_runner.reference.auth import SimpleAPIKeyAuthBackend
 
-    src = inspect.getsource(auth_manager.require_permission)
-    assert "Local Trust" not in src, "implicit localhost admin trust must not return"
-    assert "remote_addr" not in src, "no IP-based authorization decisions"
+    monkeypatch.delenv("AGENTV_TEST_AUTH_BYPASS", raising=False)
+    monkeypatch.setattr(harness_config, "ENABLE_DEMO", demo_enabled)
+    backend = SimpleAPIKeyAuthBackend(master_key="unused-regression-root")
+    backend.register_key(
+        key="limited", principal_id="limited-user", permissions=["core.other.read"]
+    )
+    backend.register_key(
+        key="authorized", principal_id="authorized-user", permissions=["core.protected.read"]
+    )
+    provider = auth_manager.StaticKeyProvider("unused-regression-root", backend=backend)
+    monkeypatch.setattr(auth_manager, "get_auth_provider", lambda: provider)
+    app = Flask(__name__)
+    app.config.update(TESTING=True, SECRET_KEY="regression-session-secret")
+    dispatched = []
+
+    @app.get("/protected")
+    @auth_manager.require_permission("core.protected.read")
+    def protected():
+        dispatched.append(True)
+        return {"authorized": True}
+
+    headers = {}
+    if credential:
+        headers["Authorization"] = f"Bearer {credential}"
+    if forwarded:
+        headers["X-Forwarded-For"] = forwarded
+    response = app.test_client().get(
+        "/protected", headers=headers, environ_base={"REMOTE_ADDR": address}
+    )
+    assert response.status_code == status
+    assert bool(dispatched) == (status == 200)

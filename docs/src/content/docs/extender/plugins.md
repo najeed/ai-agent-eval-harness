@@ -296,7 +296,7 @@ Custom plugins can register a `ScenarioMutator` using `mutation_service.register
 
 ```python
 from eval_runner.plugins import BaseEvalPlugin
-from eval_runner.mutator import ScenarioMutator, mutation_service
+from eval_runner.mutations.mutator import ScenarioMutator, mutation_service
 
 
 class IndustrialScenarioAugmentor(ScenarioMutator):

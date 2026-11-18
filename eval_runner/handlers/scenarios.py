@@ -25,7 +25,6 @@ def __getattr__(name: str):
         "drift_importer",
         "linter",
         "loader",
-        "mutator",
         "scaffold",
         "spec_parser",
     }:
@@ -238,7 +237,7 @@ async def handle_mutate(args):
     """Handler for 'mutate' command."""
     try:
         # Lazy Import: Defer 'mutator' to prevent loading transformation heuristics at startup
-        from .. import mutator
+        from ..mutations import mutator
 
         if not os.path.exists(args.input):
             print(f"❌ Error: Mutation input file not found: {args.input}")

@@ -40,6 +40,9 @@ class SessionStateParityVerifier:
             "authority_observation_identities", default=None
         )
         self._policy_raw_observations: dict[str, Any] = {}
+        self._observation_errors = contextvars.ContextVar(
+            "authority_observation_errors", default=None
+        )
 
     def _external_evidence_target(self, assertion: dict[str, Any]) -> str | None:
         """Return the declared authority target that must be observed for this assertion."""
@@ -64,6 +67,7 @@ class SessionStateParityVerifier:
     ) -> dict[str, dict[str, Any]]:
         """Capture required authority state before execution; never substitute sandbox state."""
         observations: dict[str, dict[str, Any]] = {}
+        self._observation_errors.set({})
         for assertion in node.get("expected_outcome", []) or []:
             if not isinstance(assertion, dict):
                 continue
@@ -97,7 +101,16 @@ class SessionStateParityVerifier:
                 phase="pre",
             )
             if property_path in ("__unobserved_source__", "__unsupported__"):
-                observations[source] = {"invalid": True}
+                observations[source] = {
+                    "invalid": True,
+                    **(self._observation_errors.get() or {}).get(
+                        source,
+                        {
+                            "error": f"Unobservable pre-execution authority target '{source}'",
+                            "error_type": "UnobservableAuthority",
+                        },
+                    ),
+                }
                 continue
             _, snapshot_hash = bound_state_snapshot(observed)
             raw_ident = (self._observation_identities.get() or {}).get(source, {})
@@ -141,6 +154,86 @@ class SessionStateParityVerifier:
                 "observation_identity": ident,
             }
         return observations
+
+    def preexecution_failure(self, node, observations, evaluation_plan=None):
+        """Reject unavailable required evidence before any gated or agent activity."""
+        from eval_runner.execution_ir import NodeVerdict, OracleResult, compile_evaluation_plan
+
+        if evaluation_plan is None:
+            evaluation_plan = compile_evaluation_plan({"workflow": {"nodes": [node], "edges": []}})
+        rows = []
+        oracles = []
+        for oracle in evaluation_plan.node_oracles.get(node["id"], []):
+            if oracle.source_type != "expected_outcome":
+                continue
+            source = self._external_evidence_target(oracle.definition)
+            observation = observations.get(source) if source else None
+            if not source or (observation and not observation.get("invalid")):
+                continue
+            error = (observation or {}).get(
+                "error"
+            ) or f"Unobservable pre-execution authority target '{source}'"
+            oracles.append(
+                OracleResult(
+                    oracle_id=oracle.oracle_id,
+                    scenario_node_id=node["id"],
+                    resolver="state_parity.preexecution",
+                    requiredness=oracle.requiredness,
+                    outcome="INVALID",
+                    expected=oracle.definition.get("expected"),
+                    error=error,
+                ).to_dict()
+            )
+            rows.append(
+                {
+                    "assertion": copy.deepcopy(oracle.definition),
+                    "oracle_id": oracle.oracle_id,
+                    "requiredness": oracle.requiredness,
+                    "source": source,
+                    "passed": False,
+                    "invalid": True,
+                    "outcome": "INVALID",
+                    "expected": oracle.definition.get("expected"),
+                    "actual_before": None,
+                    "actual_after": None,
+                    "error": error,
+                    "error_type": (observation or {}).get("error_type", "UnobservableAuthority"),
+                }
+            )
+        if not any(oracle["requiredness"] == "REQUIRED" for oracle in oracles):
+            return None
+        sm = self.session_manager
+        for oracle in oracles:
+            sm.event_bus.emit(
+                CoreEvents.ASSERTION_EVALUATED,
+                {
+                    **oracle,
+                    "run_id": sm.run_id,
+                    "node_id": node["id"],
+                    "execution_instance_id": sm.current_execution_instance_id,
+                    "passed": False,
+                },
+            )
+        return {
+            "task_id": node["id"],
+            "status": "failure",
+            "triage_tag": "EVALUATION_INVALID",
+            "message": "; ".join(
+                oracle["error"] for oracle in oracles if oracle["requiredness"] == "REQUIRED"
+            ),
+            "turns_taken": 0,
+            "used_tools": [],
+            "conversation_history": [],
+            "is_root_cause": True,
+            "oracle_results": oracles,
+            "transition_evidence": rows,
+            "node_verdict": NodeVerdict(
+                execution="failed",
+                verification="invalid",
+                policy="not_applicable",
+                parity="not_applicable",
+            ).to_dict(),
+        }
 
     async def get_shim_snapshots(self, sandbox: Any, shim_ids: list[str]) -> dict[str, Any]:
         """Queries active simulators for point-in-time state snapshots."""
@@ -338,6 +431,9 @@ class SessionStateParityVerifier:
                 self._observation_identities.set(identities)
                 return bounded_state, property_path
             except Exception as auth_err:
+                errors = dict(self._observation_errors.get() or {})
+                errors[target_str] = {"error": str(auth_err), "error_type": type(auth_err).__name__}
+                self._observation_errors.set(errors)
                 logger.warning(
                     f"[StateParity] External state authority '{auth_name}' observation failed: "
                     f"{auth_err}"
@@ -554,6 +650,8 @@ class SessionStateParityVerifier:
                     failed_reason = (
                         f"Unobservable pre-execution authority target '{authority_source}'"
                     )
+                    if pre_observation and pre_observation.get("error"):
+                        failed_reason += f": {pre_observation['error']}"
                     evidence_rows.append(
                         {
                             "assertion": assertion,

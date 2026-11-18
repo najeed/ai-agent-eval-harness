@@ -9,13 +9,14 @@ import time
 import uuid
 from contextvars import ContextVar
 
-from eval_runner.mutation_evidence import evidence_hash
+from eval_runner.mutations.mutation_evidence import evidence_hash
 
 
 class ToolFaultExecutor:
     def __init__(self, sandbox):
         self.sandbox = sandbox
         self.pending = ContextVar(f"tool_delivery_{id(self)}", default=None)
+        self.argument_context = ContextVar(f"tool_arguments_{id(self)}", default=None)
         self.cache = {}
         self.sequences = {}
 
@@ -33,6 +34,8 @@ class ToolFaultExecutor:
         return ticket
 
     async def execute(self, data, operation):
+        prepared_arguments = self.argument_context.get()
+        self.argument_context.set(None)
         plan = {}
         if self.sandbox.plugin_manager:
             result = self.sandbox.plugin_manager.trigger_interceptor(
@@ -47,6 +50,7 @@ class ToolFaultExecutor:
             "duplicate_execution",
             "raw_payload_corrupted",
             "tool_response_corrupted",
+            "tool_contract_violation",
         }
         if not selected_flags.intersection(plan):
             self.pending.set(None)
@@ -95,6 +99,44 @@ class ToolFaultExecutor:
                 ticket["refs"].append(self.controller._observe(kind, ticket["identity"], row))
 
         completed_invocations = []
+        contract_ticket = None
+        contract_expected = False
+        if plan.get("tool_contract_violation"):
+            from .tool_contracts import argument_schema, contract_violation
+
+            schema = argument_schema(
+                self.sandbox.scenario.get("tools", {}).get(data["tool_name"], {})
+            )
+            received_arguments = {
+                "schema": schema,
+                "arguments": copy.deepcopy(data["params"]),
+                "arguments_hash": evidence_hash(data["params"]),
+            }
+            if prepared_arguments is not None:
+                identity = prepared_arguments["identity"]
+                if (
+                    identity["node_id"] != plan.get("node_id")
+                    or identity["execution_instance_id"]
+                    != (plan.get("execution_instance_id") or plan.get("node_id"))
+                    or prepared_arguments["observed"]["tool"] != data["tool_name"]
+                ):
+                    raise RuntimeError("Tool argument mutation does not own this invocation")
+                contract_ticket = prepared_arguments
+                context["tickets"].append(contract_ticket)
+                contract_ticket["refs"].append(
+                    self.controller._observe(
+                        "tool_arguments_received", identity, received_arguments
+                    )
+                )
+                mutation = contract_ticket["observed"]
+                contract_expected = mutation["modified_hash"] == received_arguments[
+                    "arguments_hash"
+                ] and contract_violation(schema, data["params"], mutation["original_arguments"])
+            else:
+                contract_ticket = self.ticket(
+                    "tool_contract", plan, "tool_arguments_received", received_arguments
+                )
+            contract_ticket["applicable"] = False
 
         async def invoke():
             invocation = uuid.uuid4().hex
@@ -107,6 +149,25 @@ class ToolFaultExecutor:
                 {"invocation_id": invocation, "result_hash": evidence_hash(value)},
             )
             completed_invocations.append(invocation)
+            if (
+                contract_ticket is not None
+                and contract_expected
+                and isinstance(value, dict)
+                and value.get("error_code") == "TOOL_SCHEMA_VIOLATION"
+                and value.get("arguments_hash") == evidence_hash(data["params"])
+            ):
+                contract_ticket["refs"].append(
+                    self.controller._observe(
+                        "tool_contract_rejected",
+                        contract_ticket["identity"],
+                        {
+                            "arguments_hash": value["arguments_hash"],
+                            "validator": value["validator"],
+                            "blocked": True,
+                        },
+                    )
+                )
+                contract_ticket["applicable"] = True
             return value
 
         if replay and key in self.cache:
@@ -162,8 +223,8 @@ class ToolFaultExecutor:
                 try:
                     value = await asyncio.wait_for(task, timeout_ms / 1000)
                 except TimeoutError:
-                    elapsed = max(time.monotonic() - started, timeout_ms / 1000)
-                    if not task.cancelled():
+                    elapsed = time.monotonic() - started
+                    if not task.cancelled() or elapsed < timeout_ms / 1000:
                         # An operation's own TimeoutError is not evidence that
                         # the runtime deadline expired or cancelled its task.
                         raise
@@ -225,7 +286,29 @@ class ToolFaultExecutor:
                 {"payload_hash": context["returned_hash"]},
             )
             ticket["applicable"] = False
+        for ticket in context["tickets"]:
+            if ticket["identity"]["fault"] != "tool_response_corruption":
+                ticket["refs"].append(
+                    self.controller._observe(
+                        "tool_response_available",
+                        ticket["identity"],
+                        {"payload_hash": context["returned_hash"]},
+                    )
+                )
         return value
+
+    def prepare_arguments(self, original, modified, node, execution, tool):
+        identity = self.controller._identity("tool_contract", node, execution)
+        observed = {
+            "tool": tool,
+            "original_arguments": copy.deepcopy(original),
+            "original_hash": evidence_hash(original),
+            "modified_hash": evidence_hash(modified),
+        }
+        ref = self.controller._observe("tool_arguments_modified", identity, observed)
+        self.argument_context.set(
+            {"identity": identity, "refs": [ref], "observed": observed, "applicable": False}
+        )
 
     def prepare_corruption(self, original, modified, node, execution):
         context = self.pending.get()
@@ -241,20 +324,35 @@ class ToolFaultExecutor:
         )
         if ticket is None or ticket["identity"]["node_id"] != node:
             raise RuntimeError("Response mutation does not own the completed invocation")
-        ticket["refs"].append(
-            self.controller._observe(
-                "tool_response_modified",
-                ticket["identity"],
-                {
-                    "original_hash": evidence_hash(original),
-                    "modified_hash": evidence_hash(modified),
-                },
-            )
+        transformation = self.controller._observe(
+            "tool_response_modified",
+            ticket["identity"],
+            {
+                "original_hash": evidence_hash(original),
+                "modified_hash": evidence_hash(modified),
+            },
         )
+        ticket["refs"].append(transformation)
         ticket["expected_hash"] = evidence_hash(modified)
         ticket["applicable"] = context["returned_hash"] == evidence_hash(
             original
         ) and evidence_hash(original) != evidence_hash(modified)
+        if ticket["applicable"]:
+            for prior in context["tickets"]:
+                if prior is ticket:
+                    continue
+                prior["refs"].append(
+                    self.controller._observe(
+                        "tool_response_transformed",
+                        prior["identity"],
+                        {
+                            "original_hash": evidence_hash(original),
+                            "modified_hash": evidence_hash(modified),
+                            "transformation_ref": transformation,
+                        },
+                    )
+                )
+                prior["expected_hash"] = evidence_hash(modified)
 
     def take_delivery_context(self):
         context = self.pending.get()

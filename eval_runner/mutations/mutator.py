@@ -1,5 +1,5 @@
 """
-eval_runner.mutator
+eval_runner.mutations.mutator
 ===================
 Adversarial scenario mutation and in-run perturbation engine.
 Supports 3D mutation algebra, composable combinators, thread-isolated
@@ -1320,12 +1320,15 @@ class CoreMutator(ScenarioMutator):
         meta = new_scenario.setdefault("metadata", {})
         applied_list = meta.setdefault("applied_mutations", [])
         coord = self.COORDINATE_MAP.get(mutation_type)
+        from .mutation_registry import capability
+
         applied_list.append(
             {
                 "mutation_id": f"mut_{uuid.uuid4().hex[:8]}",
                 "type": mutation_type,
                 "stage": "SCENARIO_EDITED",
                 "execution_delivered": False,
+                "capability": capability(mutation_type),
                 "coordinate": coord.to_dict() if coord else None,
                 "timestamp": datetime.now(UTC).isoformat(),
                 "details": mutation_details,

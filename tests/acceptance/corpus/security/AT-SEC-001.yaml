@@ -30,6 +30,6 @@ expect:
 
   evidence:
     required: true
-    certificate_required: true
-    ledger_verification_required: true
-    sealed_required: true
+    certificate_forbidden: true
+    verification_forbidden: true
+    sealed_forbidden: true

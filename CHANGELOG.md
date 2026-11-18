@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+* Unobservable required authority pre-state blocks agent execution and scenario HITL gates immediately. Typed INVALID results preserve the observation cause; optional assertions retain their declared treatment, and trust keys must be explicitly provisioned.
+* The mutate CLI imports the canonical mutation package after the module move.
+* Approval rejections at scenario gates preserve required oracle results and complete typed failure evidence through shared rejection recording.
+* Acceptance lifecycle tests use real agent responses for message-only certificates; synthetic tool cases require certification rejection. Acceptance subprocess workspaces and generated reports use isolated temporary directories.
+* Post-cancellation commit delivery requires every proposed path to exist with its canonical value, including explicit nulls and distinct boolean/numeric values.
+* Replay receipts support response corruption through the bound transformation chain, while rejecting missing transformations and mismatched replay sources.
+* Malformed receipt fields and nested references return verification failures instead of raising type errors.
+* Local sandbox tools always retain simulated provenance, including when an authenticated adapter token is present.
+* Approval replay observes existing consumption without consuming the token again. Stale approval injection durably expires existing requests through serialized provider updates, and verification requires the recorded expiry observation.
+* Partial-commit delivery distinguishes absent fields from explicit null values and compares values using canonical evidence hashes.
+
 ## [2.0.0] - 2026-11-09
 
 ### Added
@@ -64,7 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * `CatalogStore`: `LocalFileCatalogStore` for scenario discovery.
   * `RunStore`: `LocalFileRunStore` for manifest persistence.
   * `LeaderboardStore`: `LocalLeaderboardStore` for metric aggregation.
-  * `MutationEngine`: `eval_runner.mutator.MutationService`.
+  * `MutationEngine`: `eval_runner.mutations.mutator.MutationService`.
   * `BoundedStateProvider`: Evidence boundedness contract with `query_bounded_reference`.
   * `ApprovalStore`: `ApprovalRequest` with `FileApprovalStore` and `SQLiteApprovalStore`.
 * **Two-Tier Plugin Architecture**: Supported 17 native abstract `BaseEvalPlugin` lifecycle and interceptor hooks alongside dynamic event bus bridge dispatch (`on_<event_name.lower()>(context, **data)`).
@@ -105,7 +120,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * **Assurance Score Population in DatabaseRunStore**: Updated `DatabaseRunStore` to extract scores from `manifest.get("score")`, `compliance.score`, `decision.score`, or `attempt_statistics.attempt_success_rate`, preventing default 0.0% scores on completed runs.
 * **Required-Oracle Fail-Closed Compilation Semantics**: Removed exception suppression in `compile_required_oracle_ids()` in `eval_runner/runner.py`. Scenario compilation and oracle discovery fail fast and closed if assertions or criteria are malformed, preventing unmonitored execution runs.
 * **Provider-Native Certification Availability**: Uncertified runs are rejected from the provider-owned manifest with `UNVERIFIED` and `failure_reason: "Certification not issued"`; verification no longer performs filesystem manifest discovery.
-* **Mutation Failure Policy Schema Preservation**: Eliminated dictionary assignments to `scenario["failure_policy"]` across `rollback_failure`, `duplicate_commit`, and `commit_after_cancel` in `eval_runner/mutator.py`, strictly setting node/metadata flags and preserving string enum contracts.
+* **Mutation Failure Policy Schema Preservation**: Eliminated dictionary assignments to `scenario["failure_policy"]` across `rollback_failure`, `duplicate_commit`, and `commit_after_cancel` in `eval_runner/mutations/mutator.py`, strictly setting node/metadata flags and preserving string enum contracts.
 * **Elimination of Caller Status/Score Overrides in Certification**: Removed caller parameter overrides in `TraceVerifier.sign_trace()` and `eval_runner/handlers/evaluation.py`, ensuring verdicts are derived exclusively from immutable execution events.
 * **Direct Provenance Enforcement & Carrier Fallback Elimination**: Mandated complete direct provenance in `TraceVerifier.verify_trace()` (`is_complete_provenance = True`), rejecting carrier fallback assertion sequences with `DirectProvenanceViolation`.
 * **Intrinsically Fail-Closed Trace Persistence in Certification Mode**: Fixed `FlightRecorder` so that any persistence failure during certification or attestation mode immediately aborts the run to `CERTIFICATION_FAILED`, tracks failed runs, and strictly prohibits seal or package generation.

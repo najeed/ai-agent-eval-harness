@@ -469,7 +469,7 @@ class MutationEngine(ABC):
 ```
 
 ### OSS Reference Implementation: `MutationService`
-Ships in `eval_runner.mutator.MutationService`, chaining in-memory `ScenarioLinter.lint_dict` validation and enforcing Draft-07 root schema invariants (`additionalProperties: false`).
+Ships in `eval_runner.mutations.mutator.MutationService`, chaining in-memory `ScenarioLinter.lint_dict` validation and enforcing Draft-07 root schema invariants (`additionalProperties: false`).
 
 ---
 

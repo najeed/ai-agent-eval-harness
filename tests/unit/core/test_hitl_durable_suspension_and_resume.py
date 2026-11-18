@@ -627,6 +627,248 @@ def test_cold_approval_resume_rejects_unbound_payload_before_execution(
     assert approvals.get_request(token).status == "APPROVED"
 
 
+@pytest.mark.asyncio
+async def test_session_hitl_pause_and_resume_canonical_payload_parity(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """Regression test for Defect 12: HITL pause and resume must hash the same RFC 8785 payload.
+
+    Validates that:
+    1. During session._handle_hitl pause, approval_manager derives outbound_payload_hash
+       strictly from RFC 8785 canonical JSON, not Python str(sorted(agent_response.items())).
+    2. Nested dictionaries and Unicode characters (e.g. French accents, Japanese text, emojis)
+       demonstrate a definitive cryptographic divergence between canonical JSON and str(sorted()).
+    3. The durable approval request in ApprovalStore records this canonical hash.
+    4. Upon approval and cold resumption via InProcessExecutionBackend.resume, the payload
+       binding is cryptographically verified and resumes cleanly to COMPLETED.
+    5. Retaining rejection coverage: an approval bearing the legacy str(sorted(...)) hash
+       is strictly rejected upon resume with 'approval payload binding is invalid'.
+    """
+    run_id = "run-canonical-hitl-parity"
+    runs_dir = Path(config.RUN_LOG_DIR)
+    vault_dir = runs_dir / run_id
+    vault_dir.mkdir(parents=True, exist_ok=True)
+    chk_db = str(tmp_path / "checkpoints.db")
+    chk_store = SQLiteCheckpointStore(db_path=chk_db)
+    approvals_dir = tmp_path / ".agentv" / "approvals"
+    approval_store = FileApprovalStore(base_dir=approvals_dir)
+    monkeypatch.setattr(
+        "eval_runner.runtime_services.resolve_approval_store", lambda: approval_store
+    )
+    monkeypatch.setattr(
+        "eval_runner.reference.approval_store.get_default_approval_store",
+        lambda: approval_store,
+    )
+
+    scenario = {
+        "id": "scen_um_clinical_review",
+        "metadata": {"org_id": "org_healthcare_payer", "environment": "production"},
+        "workflow": [
+            {
+                "id": "physician_review",
+                "name": "Physician Adverse Determination Review",
+                "interaction_mode": "Manual_Approval",
+                "tool": "noop",
+                "success_criteria": [
+                    {
+                        "metric": "generic_accuracy",
+                        "threshold": 1.0,
+                    }
+                ],
+            }
+        ],
+    }
+
+    # Write execution manifest and scenario_resolved.json
+    manifest = ExecutionManifest(
+        manifest_id=f"man_{run_id}",
+        scenario_id="scen_um_clinical_review",
+        scenario_version="1.0.0",
+        scenario_hash=compute_scenario_hash(scenario),
+        metadata={"required_oracle_ids": compile_required_oracle_ids(scenario)},
+    )
+    (vault_dir / "execution_manifest.json").write_text(
+        json.dumps(manifest.to_dict()), encoding="utf-8"
+    )
+    (vault_dir / "scenario_resolved.json").write_text(json.dumps(scenario), encoding="utf-8")
+
+    run_store = LocalFileRunStore(runs_dir)
+    run_store.create_run(run_id, scenario["id"])
+
+    # Rich nested and Unicode action payload reflecting clinical triage
+    action_payload = {
+        "action": "adverse_determination",
+        "member": {
+            "name": "Renée Hélène Dupont 👩‍⚕️",
+            "aliases": ["Dr. René", "レネ・デュポン"],
+            "identifiers": {"mrn": "MRN-102938", "national_id": "FR-987-654-321"},
+        },
+        "clinical_evidence": {
+            "icd10": "M25.511",
+            "condition": "Pain in right shoulder / 右肩の疼痛",
+            "severity_score": 4,
+            "prescriptions": [
+                {"drug": "Adalimumab", "dosage": "40mg / 0.8mL", "route": "subcutaneous"},
+                {"drug": "Methotrexate", "dosage": "15mg/week", "route": "oral"},
+            ],
+        },
+        "gate_type": "scenario_declared",
+        "prompt": "Board-certified physician review required for adverse determination.",
+    }
+
+    # Cryptographic proof: Python str(sorted(...)) strictly diverges from RFC 8785 canonical hash
+    legacy_python_hash = hashlib.sha3_256(
+        str(sorted(action_payload.items())).encode("utf-8")
+    ).hexdigest()
+    canonical_bytes = canonical_json_encode(action_payload)
+    authoritative_canonical_hash = f"sha3_256:{hashlib.sha3_256(canonical_bytes).hexdigest()}"
+    bare_canonical_hash = hashlib.sha3_256(canonical_bytes).hexdigest()
+
+    assert legacy_python_hash != bare_canonical_hash, (
+        "Nested/Unicode payload must produce differing legacy and canonical hashes"
+    )
+
+    artifact_store = LocalFileArtifactStore(tmp_path / "artifacts")
+    session = SessionManager(
+        run_id=run_id,
+        scenario=scenario,
+        scenario_contract=scenario,
+        workspace_root=runs_dir,
+        run_store=run_store,
+        checkpoint_store=chk_store,
+        artifact_store=artifact_store,
+    )
+
+    # 1. Trigger session HITL pause with the rich nested and Unicode payload
+    with pytest.raises(RunSuspendedForApproval) as exc_info:
+        await session._handle_hitl(
+            turn=1,
+            agent_response=action_payload,
+            history=[],
+            actions={},
+            turn_ctx=TurnContext(
+                task_id="physician_review", turn_number=1, current_message="review", history=()
+            ),
+        )
+
+    pause_exc = exc_info.value
+    token = pause_exc.approval_token
+    assert token is not None
+
+    # 2. Inspect the created ApprovalRequest in ApprovalStore
+    stored_request = approval_store.get_request(token)
+    assert stored_request is not None
+    assert stored_request.status == "PENDING"
+    # Verify outbound_payload_hash matches RFC 8785 canonical hash bit-for-bit
+    assert stored_request.outbound_payload_hash == authoritative_canonical_hash
+    assert stored_request.outbound_payload_hash != legacy_python_hash
+
+    # Verify checkpoint stored the payload
+    checkpoint_id = stored_request.checkpoint_id
+    assert checkpoint_id is not None
+    raw_ckpt = chk_store.load(run_id, checkpoint_id.rsplit("/", 1)[-1])
+    assert raw_ckpt is not None
+    ckpt_state = raw_ckpt.get("session_state") or raw_ckpt
+    assert ckpt_state.get("action_payload") == action_payload
+
+    # 3. Complete pre-pause evidence recording so provider accepts resumption
+    raw_prefix = run_store.get_trace_bytes(run_id)
+    events = run_store.get_events(run_id)
+    run_store.update_run_status(
+        run_id,
+        "PAUSED_FOR_APPROVAL",
+        details={
+            "evidence_capture": {
+                "complete": False,
+                "resumable": True,
+                "event_count": len(events),
+                "terminal_seq": len(events),
+                "trace_hash": "sha3_256:" + hashlib.sha3_256(raw_prefix).hexdigest(),
+            }
+        },
+    )
+
+    # 4. Human physician approves the request
+    approval_store.resolve_request(token, decision="APPROVED")
+    approved_req = approval_store.get_request(token)
+    assert approved_req.status == "APPROVED"
+    assert approved_req.outbound_payload_hash == authoritative_canonical_hash
+
+    # 5. Cold resume via InProcessExecutionBackend succeeds
+    backend = InProcessExecutionBackend(checkpoint_store=chk_store, run_store=run_store)
+    patch_agent = patch(
+        "eval_runner.session.AgentAdapterRegistry.call_agent",
+        AsyncMock(return_value={"action": "final_answer", "content": "Approved"}),
+    )
+
+    with patch_agent:
+        resume_res = backend.resume(run_id=run_id, resumption_token=token, background=False)
+
+    assert resume_res is not None
+    assert backend.status(run_id)["status"] == "COMPLETED"
+
+    # 6. Rejection test: verify that a legacy noncanonical hash fails resume validation
+    legacy_run_id = "run-legacy-noncanonical-reject"
+    run_store.create_run(legacy_run_id, scenario["id"])
+    run_store.update_run_status(legacy_run_id, "PAUSED_FOR_APPROVAL")
+    legacy_token = "tok-legacy-noncanonical"
+    chk_store.save(
+        legacy_run_id,
+        "chk_legacy",
+        {
+            "status": "PAUSED_FOR_APPROVAL",
+            "scenario_data": scenario,
+            "session_state": {
+                "approval_token": legacy_token,
+                "action_payload": action_payload,
+            },
+        },
+    )
+    approval_store.create_request(
+        ApprovalRequest(
+            approval_token=legacy_token,
+            run_id=legacy_run_id,
+            status="APPROVED",
+            checkpoint_id="chk_legacy",
+            action_payload=action_payload,
+            outbound_payload_hash=legacy_python_hash,
+        )
+    )
+    with pytest.raises(PermissionError, match="approval payload binding is invalid"):
+        backend.resume(legacy_run_id, resumption_token=legacy_token, background=False)
+
+    # 7. Rejection test: verify that a tampered action payload in checkpoint fails resume validation
+    tampered_run_id = "run-tampered-payload-reject"
+    run_store.create_run(tampered_run_id, scenario["id"])
+    run_store.update_run_status(tampered_run_id, "PAUSED_FOR_APPROVAL")
+    tampered_token = "tok-tampered-payload"
+    tampered_payload = {**action_payload, "member": {"name": "Malicious Attacker"}}
+    chk_store.save(
+        tampered_run_id,
+        "chk_tampered",
+        {
+            "status": "PAUSED_FOR_APPROVAL",
+            "scenario_data": scenario,
+            "session_state": {
+                "approval_token": tampered_token,
+                "action_payload": tampered_payload,
+            },
+        },
+    )
+    approval_store.create_request(
+        ApprovalRequest(
+            approval_token=tampered_token,
+            run_id=tampered_run_id,
+            status="APPROVED",
+            checkpoint_id="chk_tampered",
+            action_payload=action_payload,
+            outbound_payload_hash=authoritative_canonical_hash,
+        )
+    )
+    with pytest.raises(PermissionError, match="approval payload binding is invalid"):
+        backend.resume(tampered_run_id, resumption_token=tampered_token, background=False)
+
+
 # ---------------------------------------------------------------------------
 # P0-5: Scenario-Declared HITL Governance Gate
 # ---------------------------------------------------------------------------
@@ -1114,7 +1356,9 @@ def test_save_and_restore_from_checkpoint_contract(tmp_path: Path):
 
     from eval_runner.execution_ir import ExecutionIdentity
 
-    valid_scenario_hash = ExecutionIdentity.scenario_version_hash(session_restore.scenario)
+    valid_scenario_hash = ExecutionIdentity.scenario_version_hash(
+        session_restore._scenario_contract
+    )
 
     # Scope mismatch: mismatched scenario_version_id with matching evaluation_run_id
     with pytest.raises(ValueError, match="CheckpointExecutionScopeMismatch"):

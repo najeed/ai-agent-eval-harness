@@ -247,6 +247,7 @@ class WorkflowInterpreter:
         context_provider: ContextProvider | None = None,
         should_abort: Callable[[], bool] | None = None,
         on_batch_complete: Callable[[list[str]], None] | None = None,
+        before_compensation: Callable[..., Any] | None = None,
     ):
         self.plan = plan
         self.identity = identity
@@ -254,6 +255,7 @@ class WorkflowInterpreter:
         self.context_provider = context_provider or self._default_context
         self.should_abort = should_abort or (lambda: False)
         self.on_batch_complete = on_batch_complete
+        self.before_compensation = before_compensation
         self.transitions: list[TransitionRecord] = []
         self.node_records: list[NodeExecutionRecord] = []
         self._wave_counter = 0
@@ -580,7 +582,16 @@ class WorkflowInterpreter:
         start = time.time()
         deadline = node_ir.timeout_seconds
         try:
-            if deadline is not None:
+            intercepted = (
+                self.before_compensation(node_ir, exec_id, item.parent_exec_id)
+                if item.compensating and self.before_compensation is not None
+                else None
+            )
+            if intercepted is not None:
+                if not isinstance(intercepted, dict) or intercepted.get("status") != "failure":
+                    raise TypeError("Compensation interception must return an observed failure")
+                result = intercepted
+            elif deadline is not None:
                 result = await asyncio.wait_for(
                     executor(node_ir, exec_id, item.parent_exec_id), timeout=deadline
                 )

@@ -602,7 +602,7 @@ def test_taxonomy_mutate_and_spec_endpoints(client, tmp_path):
         "metadata": {"id": "sc_mut"},
         "workflow": {"nodes": [{"id": "n1", "task_description": "task"}]},
     }
-    with patch("eval_runner.mutator.mutate_scenario", return_value={"mutated": True}):
+    with patch("eval_runner.mutations.mutator.mutate_scenario", return_value={"mutated": True}):
         res_mut = client.post("/v1/mutate", json={"raw_json": raw_sc, "type": "typo"})
         assert res_mut.status_code == 200
         assert res_mut.get_json()["mutated"] == {"mutated": True}
@@ -1731,7 +1731,7 @@ def test_scenario_transition_and_evaluate_extended(client, tmp_path):
 
 
 def test_mutate_scenario_extended_matrix(client):
-    import eval_runner.mutator
+    import eval_runner.mutations.mutator
 
     raw_sc = {
         "metadata": {"id": "sc_mut_ext"},
@@ -1739,7 +1739,9 @@ def test_mutate_scenario_extended_matrix(client):
     }
 
     # 1. Injection mutation with all options
-    with patch("eval_runner.mutator.mutate_scenario", return_value={"mutated": True}) as mock_mut:
+    with patch(
+        "eval_runner.mutations.mutator.mutate_scenario", return_value={"mutated": True}
+    ) as mock_mut:
         res_inj = client.post(
             "/v1/mutate",
             json={
@@ -1760,7 +1762,7 @@ def test_mutate_scenario_extended_matrix(client):
 
     # 2. Injection mutation with options omitted (exercises option in data False branch)
     with patch(
-        "eval_runner.mutator.mutate_scenario", return_value={"mutated": True}
+        "eval_runner.mutations.mutator.mutate_scenario", return_value={"mutated": True}
     ) as mock_mut_sparse:
         res_inj_sparse = client.post(
             "/v1/mutate",
@@ -1774,8 +1776,8 @@ def test_mutate_scenario_extended_matrix(client):
 
     # 3. UnsupportedMutationError handling -> 400
     with patch(
-        "eval_runner.mutator.mutate_scenario",
-        side_effect=eval_runner.mutator.UnsupportedMutationError("Unknown mutation type"),
+        "eval_runner.mutations.mutator.mutate_scenario",
+        side_effect=eval_runner.mutations.mutator.UnsupportedMutationError("Unknown mutation type"),
     ):
         res_unsup = client.post("/v1/mutate", json={"raw_json": raw_sc, "type": "unsupported"})
         assert res_unsup.status_code == 400

@@ -3,7 +3,7 @@
 import copy
 import threading
 
-from eval_runner.mutation_evidence import evidence_hash
+from eval_runner.mutations.mutation_evidence import evidence_hash
 from eval_runner.utils.path_resolver import PathResolver
 
 
@@ -63,7 +63,14 @@ class SandboxCommitBoundary:
         before = {
             path: copy.deepcopy(PathResolver.resolve(self.sandbox.state, path)) for path in diff
         }
-        changed = [path for path, value in diff.items() if before[path] != value]
+        before_exists = {
+            path: PathResolver.resolve_with_existence(self.sandbox.state, path)[0] for path in diff
+        }
+        changed = [
+            path
+            for path, value in diff.items()
+            if not before_exists[path] or evidence_hash(before[path]) != evidence_hash(value)
+        ]
         applicable = len(changed) >= 2
         selected = {changed[0]: diff[changed[0]]} if applicable else dict(diff)
         ref = controller._observe(
@@ -71,6 +78,7 @@ class SandboxCommitBoundary:
             identity,
             {
                 "before": before,
+                "before_exists": before_exists,
                 "proposed": copy.deepcopy(diff),
                 "selected_paths": list(selected),
                 "applicable": applicable,
@@ -80,6 +88,7 @@ class SandboxCommitBoundary:
             "identity": identity,
             "refs": [ref],
             "before": before,
+            "before_exists": before_exists,
             "proposed": copy.deepcopy(diff),
             "selected": selected,
             "applicable": applicable,
@@ -90,21 +99,37 @@ class SandboxCommitBoundary:
             path: copy.deepcopy(PathResolver.resolve(self.sandbox.state, path))
             for path in ticket["proposed"]
         }
+        after_exists = {
+            path: PathResolver.resolve_with_existence(self.sandbox.state, path)[0]
+            for path in ticket["proposed"]
+        }
         applied = [
             path
             for path in ticket["selected"]
-            if after[path] == ticket["proposed"][path] and after[path] != ticket["before"][path]
+            if after_exists[path]
+            and evidence_hash(after[path]) == evidence_hash(ticket["proposed"][path])
+            and (
+                not ticket["before_exists"][path]
+                or evidence_hash(after[path]) != evidence_hash(ticket["before"][path])
+            )
         ]
         omitted = [
             path
             for path in ticket["proposed"]
             if path not in ticket["selected"]
-            and after[path] == ticket["before"][path] != ticket["proposed"][path]
+            and after_exists[path] == ticket["before_exists"][path]
+            and evidence_hash(after[path]) == evidence_hash(ticket["before"][path])
+            and (
+                not ticket["before_exists"][path]
+                or evidence_hash(after[path]) != evidence_hash(ticket["proposed"][path])
+            )
         ]
         delivered = ticket["applicable"] and bool(applied) and bool(omitted)
         observation = {
             "before": ticket["before"],
+            "before_exists": ticket["before_exists"],
             "after": after,
+            "after_exists": after_exists,
             "proposed": ticket["proposed"],
             "applied_paths": applied,
             "omitted_paths": omitted,

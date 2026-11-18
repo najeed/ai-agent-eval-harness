@@ -6,13 +6,10 @@ Product-Level CLI Contract Tests Certifying Public Commands and Error Boundaries
 from __future__ import annotations
 
 import uuid
-from pathlib import Path
 
 import pytest
 
 from tests.acceptance.support.assertions import assert_gate_failed, assert_gate_passed
-
-REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
 
 @pytest.mark.acceptance
@@ -57,12 +54,7 @@ def test_acceptance_cli_full_chain(isolated_acceptance_env):
     runner = env["runner"]
     run_id = f"at-cli-chain-{uuid.uuid4().hex[:8]}"
 
-    scenario_path = (
-        REPO_ROOT / "industries" / "finance" / "scenarios" / "unauthorized_transfer.json"
-    )
-    agent_path = (
-        REPO_ROOT / "tests" / "acceptance" / "fixtures" / "agents" / "compliant_transfer_agent.py"
-    )
+    scenario_path, agent_path = env["evidence_scenario"], env["evidence_agent"]
 
     # 1. run
     run_res = runner.run(

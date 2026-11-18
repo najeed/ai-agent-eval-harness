@@ -92,8 +92,12 @@ class FileApprovalStore(ApprovalStore):
             token_file = self.base_dir / f"token_{request.approval_token}.json"
             if token_file.exists():
                 existing = json.loads(token_file.read_text(encoding="utf-8"))
-                if {"revocation", "consumption"}.intersection(existing.get("metadata") or {}):
-                    raise ValueError("A revoked approval token cannot be republished")
+                if {"revocation", "consumption", "expiry_change"}.intersection(
+                    existing.get("metadata") or {}
+                ):
+                    raise ValueError(
+                        "Token with protected authorization state cannot be republished"
+                    )
             data = request.to_dict()
             # 1. Primary persistence: <run_id>.json
             run_file = self.base_dir / f"{request.run_id}.json"
@@ -280,6 +284,20 @@ class FileApprovalStore(ApprovalStore):
         """Atomically spend an approval once at the actual action boundary."""
         from eval_runner.approval_validation import consume_approval
 
+        return self._update_authorization(
+            approval_token,
+            scope,
+            lambda req: consume_approval(req, {"run_id": run_id, "payload_hash": payload_hash}),
+        )
+
+    def expire_request(self, approval_token, *, run_id, scope=None):
+        from eval_runner.approval_validation import expire_approval
+
+        return self._update_authorization(
+            approval_token, scope, lambda req: expire_approval(req, run_id)
+        )
+
+    def _update_authorization(self, approval_token, scope, update):
         with self._lock, directory_write_lock(self.base_dir):
             token_path = self.base_dir / f"token_{approval_token}.json"
             if not token_path.exists():
@@ -289,8 +307,8 @@ class FileApprovalStore(ApprovalStore):
             except (OSError, ValueError, TypeError) as exc:
                 raise ApprovalStorageDegradedError("Cannot verify authorization record") from exc
             if not _matches_scope(req, scope):
-                raise ScopeMismatchError("Scope mismatch consuming authorization")
-            consume_approval(req, {"run_id": run_id, "payload_hash": payload_hash})
+                raise ScopeMismatchError("Scope mismatch updating authorization")
+            update(req)
             data = req.to_dict()
             self._atomic_write(self.base_dir / f"{req.run_id}.json", data)
             self._atomic_write(self.base_dir / f"token_{approval_token}.json", data)
@@ -488,10 +506,12 @@ class SQLiteApprovalStore(ApprovalStore):
                         (request.approval_token,),
                     )
                     existing = cursor.fetchone()
-                    if existing and {"revocation", "consumption"}.intersection(
+                    if existing and {"revocation", "consumption", "expiry_change"}.intersection(
                         json.loads(existing[0] or "{}")
                     ):
-                        raise ValueError("A revoked approval token cannot be republished")
+                        raise ValueError(
+                            "Token with protected authorization state cannot be republished"
+                        )
                     cursor.execute(
                         """
                         INSERT INTO approval_requests (
@@ -663,6 +683,7 @@ class SQLiteApprovalStore(ApprovalStore):
             try:
                 with closing(self._get_connection()) as conn:
                     cursor = conn.cursor()
+                    cursor.execute("BEGIN IMMEDIATE")
                     cursor.execute(
                         "SELECT approval_token, run_id, turn_index, outbound_payload_hash, "
                         "required_role, reviewer_credentials, status, rule_id, "
@@ -737,6 +758,20 @@ class SQLiteApprovalStore(ApprovalStore):
     def consume_request(self, approval_token, *, run_id, payload_hash, scope=None):
         from eval_runner.approval_validation import consume_approval
 
+        return self._update_authorization(
+            approval_token,
+            scope,
+            lambda req: consume_approval(req, {"run_id": run_id, "payload_hash": payload_hash}),
+        )
+
+    def expire_request(self, approval_token, *, run_id, scope=None):
+        from eval_runner.approval_validation import expire_approval
+
+        return self._update_authorization(
+            approval_token, scope, lambda req: expire_approval(req, run_id)
+        )
+
+    def _update_authorization(self, approval_token, scope, update):
         with self._lock, closing(self._get_connection()) as conn:
             conn.execute("BEGIN IMMEDIATE")
             try:
@@ -754,8 +789,8 @@ class SQLiteApprovalStore(ApprovalStore):
                     raise KeyError(approval_token)
                 req = self._row_to_request(row)
                 if not _matches_scope(req, scope):
-                    raise ScopeMismatchError("Scope mismatch consuming authorization")
-                consume_approval(req, {"run_id": run_id, "payload_hash": payload_hash})
+                    raise ScopeMismatchError("Scope mismatch updating authorization")
+                update(req)
                 conn.execute(
                     "UPDATE approval_requests SET metadata = ? WHERE approval_token = ?",
                     (json.dumps(req.metadata), approval_token),

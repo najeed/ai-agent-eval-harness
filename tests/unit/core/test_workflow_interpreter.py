@@ -36,6 +36,64 @@ from eval_runner.workflow_interpreter import (
 )
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize("inject", [False, True])
+async def test_compensation_dispatch_fault_has_bound_runtime_evidence(tmp_path, inject):
+    from eval_runner.events import EventEmitter
+    from eval_runner.mutations.compensation_faults import intercept_compensation
+    from eval_runner.mutations.mutation_evidence import fault_receipt_failures
+    from eval_runner.mutations.mutator_plugin import RuntimeMutationPlugin
+    from eval_runner.plugins import PluginManager
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    scenario = {
+        "failure_policy": "compensate_then_fail",
+        "workflow": {
+            "nodes": [{"id": "charge"}, {"id": "refund", "rollback_handler_corrupted": inject}],
+            "edges": [{"from": "charge", "to": "refund", "type": "compensation"}],
+        },
+    }
+    provider = LocalFileRunStore(tmp_path / "runs")
+    provider.create_run("run-test", "compensation-proof")
+    bus = EventEmitter(run_id="run-test", async_mode=False)
+    bus.subscribe(
+        lambda event: provider.append_events("run-test", [event.to_dict()]), required=True
+    )
+    plugins = PluginManager()
+    plugins.plugins = [RuntimeMutationPlugin(scenario)]
+    executed = []
+
+    async def execute(node, execution_id, parent_id):
+        executed.append(node.node_id)
+        return {
+            "task_id": node.node_id,
+            "status": "failure" if node.node_id == "charge" else "success",
+        }
+
+    interpreter = WorkflowInterpreter(
+        _plan(scenario),
+        _identity(),
+        event_bus=bus,
+        before_compensation=lambda node, execution, parent: intercept_compensation(
+            "run-test", bus, plugins, scenario, node.definition, execution, parent
+        ),
+    )
+    results, outcome = await interpreter.run(execute)
+    assert not outcome.success
+    events = provider.get_events("run-test")
+    if inject:
+        assert executed == ["charge"]
+        assert results[-1]["mutation_fault"] == "rollback_failure"
+        assert fault_receipt_failures(events, [("rollback_failure", None)], run_id="run-test") == []
+        assert fault_receipt_failures(
+            [event for event in events if event["event"] != "runtime_fault_observation"],
+            [("rollback_failure", None)],
+        )
+    else:
+        assert executed == ["charge", "refund"]
+        assert not any(event["event"] == "mutation_delivery" for event in events)
+
+
 def _identity(attempt_number: int = 1) -> ExecutionIdentity:
 
     return ExecutionIdentity(

@@ -132,8 +132,8 @@ async def test_handle_mutate_exceptions(tmp_path, monkeypatch):
 
     args = parse_args(["mutate", "--input", str(input_file), "--type", "typo"])
     with (
-        patch("eval_runner.mutator.mutate_scenario", return_value={}),
-        patch("eval_runner.mutator.save_mutated_scenario"),
+        patch("eval_runner.mutations.mutator.mutate_scenario", return_value={}),
+        patch("eval_runner.mutations.mutator.save_mutated_scenario"),
     ):
         await handle_mutate(args)
 

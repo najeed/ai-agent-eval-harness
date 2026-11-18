@@ -592,7 +592,7 @@ def test_scenarios_mutate_by_scenario_id(client, console_jail):
     cat.scenarios = [{"id": "scen_mutate_id", "path": "scenarios/scen_mutate_id.json"}]
     try:
         with patch(
-            "eval_runner.mutator.mutate_scenario",
+            "eval_runner.mutations.mutator.mutate_scenario",
             return_value={"id": "scen_mutate_id", "title": "Mutated"},
         ):
             res = client.post(

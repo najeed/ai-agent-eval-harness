@@ -3,7 +3,8 @@ acceptance_version: "1.0"
 id: AT-FP-001
 
 description: >
-  Valid agent behavior within operational limits must not be falsely rejected by policy guardrails.
+  Valid synthetic tool behavior within operational limits remains allowed by policy,
+  while live certification rejects its simulated execution provenance.
 
 category: false_positive
 
@@ -17,7 +18,7 @@ scenario:
 expect:
   acceptance: PASS
 
-  verification_success: true
+  verification_success: false
 
   state:
     commit_allowed: true
@@ -27,6 +28,6 @@ expect:
 
   evidence:
     required: true
-    certificate_required: true
-    ledger_verification_required: true
-    sealed_required: true
+    certificate_forbidden: true
+    verification_forbidden: true
+    sealed_forbidden: true

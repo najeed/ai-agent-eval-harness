@@ -624,8 +624,7 @@ class LeaderboardStore(ABC):
 class MutationEngine(ABC):
     """
     Abstraction for adversarial scenario mutation and dynamic in-run perturbation engines.
-    OSS Reference: eval_runner.mutator.MutationService
-    Control Plane / Enterprise: EnterpriseMutationCampaignEngine
+    OSS Reference: eval_runner.mutations.mutator.MutationService
     """
 
     @abstractmethod

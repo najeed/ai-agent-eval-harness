@@ -338,7 +338,7 @@ class SessionManager:
 
         # [Southbound Mutation Interception] Auto-activate RuntimeMutationPlugin
         # if scenario has mutations
-        from .mutator_plugin import RuntimeMutationPlugin
+        from .mutations.mutator_plugin import RuntimeMutationPlugin
 
         wf = self.scenario.get("workflow")
         if isinstance(wf, dict):
@@ -384,6 +384,9 @@ class SessionManager:
                 for n in wf_nodes
             )
         )
+        from .mutations.mutation_registry import required_deliveries
+
+        has_mutations = has_mutations or bool(required_deliveries(self.scenario))
         existing_mut = next(
             (p for p in self.plugin_manager.plugins if isinstance(p, RuntimeMutationPlugin)),
             None,
@@ -605,7 +608,7 @@ class SessionManager:
         return {
             "evaluation_run_id": self.run_id,
             "attempt_id": self.attempt_id,
-            "scenario_version_id": ExecutionIdentity.scenario_version_hash(self.scenario),
+            "scenario_version_id": ExecutionIdentity.scenario_version_hash(self._scenario_contract),
             "scenario_data": copy.deepcopy(self.scenario),
             "turn": self.turn_number,
             "turn_state": self.turn_state_manager.snapshot(),
@@ -639,7 +642,7 @@ class SessionManager:
         if data.get("attempt_id"):
             if data.get("evaluation_run_id") != self.run_id or data.get(
                 "scenario_version_id"
-            ) != ExecutionIdentity.scenario_version_hash(self.scenario):
+            ) != ExecutionIdentity.scenario_version_hash(self._scenario_contract):
                 raise ValueError("CheckpointExecutionScopeMismatch")
             self.attempt_id = str(data["attempt_id"])
         elif data.get("completed_execution_results"):
@@ -717,7 +720,9 @@ class SessionManager:
 
             identity = ExecutionIdentity(
                 evaluation_run_id=self.run_id,
-                scenario_version_id=ExecutionIdentity.scenario_version_hash(self.scenario),
+                scenario_version_id=ExecutionIdentity.scenario_version_hash(
+                    self._scenario_contract
+                ),
                 case_id=str(self.identifier),
                 attempt_id=self.attempt_id,
                 attempt_number=attempt_number,
@@ -951,6 +956,19 @@ class SessionManager:
                         },
                     )
 
+            def _before_compensation(node_ir, exec_id, parent_exec_id):
+                from .mutations.compensation_faults import intercept_compensation
+
+                return intercept_compensation(
+                    self.run_id,
+                    self.event_bus,
+                    self.plugin_manager,
+                    self.scenario,
+                    node_ir.definition,
+                    exec_id,
+                    parent_exec_id,
+                )
+
             interpreter = WorkflowInterpreter(
                 plan,
                 identity,
@@ -961,6 +979,7 @@ class SessionManager:
                     and getattr(self.cancellation_event, "is_set", lambda: False)()
                 ),
                 on_batch_complete=_on_batch_complete,
+                before_compensation=_before_compensation,
             )
 
             all_task_results, outcome = await interpreter.run(_executor)
@@ -1457,7 +1476,9 @@ class SessionManager:
         )
 
         # Trigger on_step_start interceptor hook
-        self.plugin_manager.trigger_interceptor("on_step_start", self, node_id, node)
+        self.plugin_manager.trigger_interceptor(
+            "on_step_start", self, node_id, node, sandbox=sandbox
+        )
         # Policy may reject a gate before execution. Mutation selection itself
         # does not establish a fault: durable approval operations do that.
         approval_preflight = self.plugin_manager.trigger_interceptor(
@@ -1479,62 +1500,23 @@ class SessionManager:
             failure_category = details.get("failure_category") or "APPROVAL_SECURITY_REJECTED"
             error_text = details.get("error") or reason
 
-            # 2. Synthesize Authoritative Security Oracle Failure
-            failed_oracle = {
-                "oracle_id": f"security:{fault}",
-                "scenario_node_id": node_id,
-                "resolver": "security_preflight",
-                "requiredness": "REQUIRED",
-                "outcome": "FAIL",
-                "error": error_text,
-                "expected": "ALLOWED",
-                "observed": "REJECTED",
-            }
-            oracles = [failed_oracle]
+            from .session_components.security_evidence import record_security_rejection
 
-            # If plan declared required oracles for this node, also record them as FAIL
-            eval_plan = execution_context.get("evaluation_plan")
-            if eval_plan is not None:
-                for req_o in eval_plan.required_oracles_for_node(node_id):
-                    if req_o.oracle_id != failed_oracle["oracle_id"]:
-                        oracles.append(
-                            {
-                                "oracle_id": req_o.oracle_id,
-                                "scenario_node_id": node_id,
-                                "resolver": req_o.resolver or "security_preflight",
-                                "requiredness": "REQUIRED",
-                                "outcome": "FAIL",
-                                "error": (
-                                    f"Security preflight boundary rejected request: {error_text}"
-                                ),
-                                "expected": "ALLOWED",
-                                "observed": "REJECTED",
-                            }
-                        )
+            oracles = record_security_rejection(
+                self.event_bus,
+                self.run_id,
+                node_id,
+                fault,
+                error_text,
+                "security_preflight",
+                execution_context.get("evaluation_plan"),
+                self.session_metadata.get("span_context"),
+            )
 
             details["oracle_results"] = oracles
             details["mutation_fault"] = fault
             details["failure_category"] = failure_category
             details["error"] = error_text
-
-            # Emit typed assertion evaluated event for each oracle
-            for o in oracles:
-                self.event_bus.emit(
-                    CoreEvents.ASSERTION_EVALUATED,
-                    {
-                        "run_id": self.run_id,
-                        "node_id": node_id,
-                        "oracle_id": o["oracle_id"],
-                        "resolver": o.get("resolver") or "security_preflight",
-                        "outcome": "FAIL",
-                        "passed": False,
-                        "requiredness": o.get("requiredness", "REQUIRED"),
-                        "error": o.get("error", error_text),
-                        "expected": "ALLOWED",
-                        "observed": "REJECTED",
-                    },
-                    span_context=self.session_metadata.get("span_context"),
-                )
 
             # 3. Emit Terminal Execution Graph Node
             self.event_bus.emit(
@@ -1568,6 +1550,28 @@ class SessionManager:
         external_state_before = await self.state_parity_verifier.capture_external_prestate(
             node, sandbox, conversation_history
         )
+        prestate_failure = self.state_parity_verifier.preexecution_failure(
+            node, external_state_before, execution_context.get("evaluation_plan")
+        )
+        if prestate_failure is not None:
+            self.event_bus.emit(
+                CoreEvents.EXECUTION_GRAPH_NODE,
+                {
+                    "run_id": self.run_id,
+                    "scenario_node_id": node_id,
+                    "execution_instance_id": exec_inst_id,
+                    "parent_execution_id": parent_exec_id,
+                    "status": "failed",
+                    "attempt": attempt_number,
+                    "attempt_id": attempt_id,
+                    "failure_class": "EVALUATION_INVALID",
+                    "failure_reason": prestate_failure["message"],
+                    "oracle_results": prestate_failure["oracle_results"],
+                    "transition_evidence": prestate_failure["transition_evidence"],
+                    "is_root_cause": True,
+                },
+            )
+            return prestate_failure
 
         # 1. Forensic Maneuver Start
         print(f"      [Node Execution] ID: {node_id} | Task: {task_description[:50]}...")
@@ -1617,9 +1621,26 @@ class SessionManager:
                     "protocol": self.metadata.get("protocol"),
                 },
             )
-            gate_response = await self._handle_hitl(
-                0, agent_resp, conversation_history, agent_actions, gate_turn_ctx
-            )
+            try:
+                gate_response = await self._handle_hitl(
+                    0, agent_resp, conversation_history, agent_actions, gate_turn_ctx
+                )
+            except ApprovalBoundaryRejected as exc:
+                from .session_components.security_evidence import record_security_rejection
+
+                details = dict(exc.details or {})
+                details["oracle_results"] = record_security_rejection(
+                    self.event_bus,
+                    self.run_id,
+                    node_id,
+                    details.get("mutation_fault") or "approval_boundary",
+                    details.get("error") or str(exc),
+                    "security_boundary",
+                    execution_context.get("evaluation_plan"),
+                    self.session_metadata.get("span_context"),
+                )
+                exc.details = details
+                raise
             self._mark_gate_approved(node_id)
             if getattr(self, "_hitl_unresolved", False):
                 self._hitl_unresolved = False
@@ -1768,16 +1789,18 @@ class SessionManager:
                 failure_category = rejection.get("failure_category", "APPROVAL_SECURITY_REJECTED")
                 error_text = rejection.get("error") or err_msg
 
-                failed_oracle = {
-                    "oracle_id": f"security:{fault}",
-                    "scenario_node_id": node.get("id", "unknown"),
-                    "resolver": "security_boundary",
-                    "requiredness": "REQUIRED",
-                    "outcome": "FAIL",
-                    "error": error_text,
-                    "expected": "ALLOWED",
-                    "observed": "REJECTED",
-                }
+                from .session_components.security_evidence import record_security_rejection
+
+                failed_oracles = record_security_rejection(
+                    self.event_bus,
+                    self.run_id,
+                    node_id,
+                    fault,
+                    error_text,
+                    "security_boundary",
+                    execution_context.get("evaluation_plan"),
+                    self.session_metadata.get("span_context"),
+                )
 
                 self.event_bus.emit(
                     CoreEvents.ERROR,
@@ -1794,22 +1817,6 @@ class SessionManager:
                         "is_root_cause": True,
                     },
                 )
-                self.event_bus.emit(
-                    CoreEvents.ASSERTION_EVALUATED,
-                    {
-                        "run_id": self.run_id,
-                        "node_id": node.get("id", "unknown"),
-                        "oracle_id": failed_oracle["oracle_id"],
-                        "resolver": failed_oracle.get("resolver") or "security_boundary",
-                        "outcome": "FAIL",
-                        "passed": False,
-                        "requiredness": "REQUIRED",
-                        "error": error_text,
-                        "expected": "ALLOWED",
-                        "observed": "REJECTED",
-                    },
-                    span_context=self.session_metadata.get("span_context"),
-                )
                 task_results = await self._calculate_metrics(
                     node, attempt_number, turn, conversation_history, sandbox, agent_actions
                 )
@@ -1820,7 +1827,15 @@ class SessionManager:
                 task_results["approval_phase"] = exc.phase
                 task_results["mutation_fault"] = fault
                 existing_oracles = task_results.get("oracle_results") or []
-                task_results["oracle_results"] = [*existing_oracles, failed_oracle]
+                failed_ids = {oracle["oracle_id"] for oracle in failed_oracles}
+                task_results["oracle_results"] = [
+                    *(
+                        oracle
+                        for oracle in existing_oracles
+                        if oracle.get("oracle_id") not in failed_ids
+                    ),
+                    *failed_oracles,
+                ]
                 node_success = False
                 break
             except Exception as e:
@@ -2665,7 +2680,7 @@ class SessionManager:
             raise RuntimeError(f"Tool result for '{tool_name}' rejected by required interceptor")
         if isinstance(result_intercept, dict):
             result = result_intercept.get("result", result)
-        from eval_runner.tool_faults import delivery_executor
+        from eval_runner.mutations.tool_faults import delivery_executor
 
         executor = delivery_executor(sandbox)
         delivery_context = executor.take_delivery_context() if executor else None
@@ -2711,7 +2726,7 @@ class SessionManager:
             # Legacy fallback
             tool_calls = [{"tool": tn, "params": {}} for tn in agent_response["tool_names"]]
 
-        from eval_runner.tool_faults import delivery_executor
+        from eval_runner.mutations.tool_faults import delivery_executor
 
         executor = delivery_executor(sandbox)
         delivery_contexts = {}
@@ -3064,14 +3079,6 @@ class SessionManager:
             or os.environ.get("FORCE_HITL_SUSPEND") == "1"
             or not sys.stdin.isatty()
         ):
-            # Compute outbound hash
-            outbound_hash = ""
-            if agent_response:
-                import hashlib
-
-                payload_str = str(sorted(agent_response.items()))
-                outbound_hash = hashlib.sha3_256(payload_str.encode("utf-8")).hexdigest()
-
             # Create durable approval request in ApprovalStore
             req_metadata: dict[str, Any] = {
                 "task_id": task_id,
@@ -3098,7 +3105,6 @@ class SessionManager:
 
             durable_req = self.approval_manager.create_durable_request(
                 turn_index=turn,
-                outbound_payload_hash=outbound_hash,
                 required_role=agent_response.get("required_role"),
                 action_payload=agent_response,
                 prompt=prompt,
@@ -3173,6 +3179,7 @@ class SessionManager:
                 "scenario_data": self.scenario,
                 "status": "PAUSED_FOR_APPROVAL",
                 "approval_token": durable_req.approval_token,
+                "action_payload": agent_response or {},
                 "sandbox_state": getattr(getattr(self, "sandbox", None), "state", {}),
             }
 

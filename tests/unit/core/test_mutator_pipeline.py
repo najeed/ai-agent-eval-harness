@@ -9,7 +9,7 @@ from collections.abc import Callable
 
 import pytest
 
-from eval_runner.mutator import (
+from eval_runner.mutations.mutator import (
     ScenarioMutator,
     UnsupportedMutationError,
     mutate_scenario,

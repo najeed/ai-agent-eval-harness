@@ -1,0 +1,33 @@
+{
+  "aes_version": 1.4,
+  "metadata": {
+    "id": "acceptance-message-evidence",
+    "name": "Message-only evidence lifecycle",
+    "compliance_level": "Standard",
+    "execution_mode": "live"
+  },
+  "description": "Certify a response from a real agent process without simulated tools or business-state claims.",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "confirm-evidence",
+        "task_description": "Confirm evidence acceptance",
+        "expected_outcome": [
+          {
+            "target": "message",
+            "mode": "regex",
+            "expected": "Evidence acceptance completed"
+          }
+        ]
+      }
+    ],
+    "edges": []
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": ["Luna-1"]
+    }
+  }
+}

@@ -72,17 +72,7 @@ def isolated_acceptance_env(tmp_path, monkeypatch, signing_identity):
     env["AES_PUBLIC_KEY_SYSTEM_ID"] = pub_bytes.decode("utf-8")
     env["AGENTV_CLI_HITL_SUSPEND"] = "1"
     env["AGENTV_STATE_AUTHORITY_KEY"] = "acceptance_state_authority_key_1234"
-    import hashlib
-    import hmac
-
-    auth_token = hmac.new(
-        b"acceptance_state_authority_key_1234",
-        b"authenticated_execution_adapter",
-        hashlib.sha3_256,
-    ).hexdigest()
-    env["AGENTV_AUTHENTICATED_ADAPTER_TOKEN"] = auth_token
-
-    runner = AgentVAcceptanceRunner(repo_root=REPO_ROOT, env=env)
+    runner = AgentVAcceptanceRunner(repo_root=REPO_ROOT, env=env, working_dir=tmp_path)
     return {
         "runner": runner,
         "runs_dir": runs_dir,
@@ -90,12 +80,15 @@ def isolated_acceptance_env(tmp_path, monkeypatch, signing_identity):
         "trust_dir": trust_dir,
         "env": env,
         "tmp_path": tmp_path,
+        "evidence_scenario": REPO_ROOT
+        / "tests/acceptance/fixtures/scenarios/message_evidence.json",
+        "evidence_agent": REPO_ROOT / "tests/acceptance/fixtures/agents/message_evidence_agent.py",
     }
 
 
 @pytest.fixture(scope="session")
-def acceptance_aggregator(repo_root) -> AcceptanceReportAggregator:
+def acceptance_aggregator(repo_root, tmp_path_factory) -> AcceptanceReportAggregator:
     agg = AcceptanceReportAggregator(repo_root=repo_root)
     yield agg
     if agg.results:
-        agg.generate_report_files()
+        agg.generate_report_files(tmp_path_factory.mktemp("acceptance-reports"))

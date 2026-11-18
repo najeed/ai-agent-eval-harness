@@ -6,7 +6,7 @@ import hashlib
 from collections.abc import Mapping
 
 from agentv_runtime.canonical import canonical_json_encode
-from eval_runner.mutation_rules import PHASES, valid_extended_observations
+from eval_runner.mutations.mutation_rules import PHASES, valid_extended_observations
 
 BOUNDARY_FAULTS = frozenset(
     {"cancel_race", "commit_after_cancel", "approval_race", "approval_revocation", *PHASES}
@@ -22,22 +22,25 @@ def fault_receipt_failures(events, required_faults=(), *, run_id=None):
     index = {}
     delivered = set()
     executions = {}
+    compensations = set()
     failures = []
     for position, event in enumerate(events or []):
         if not isinstance(event, Mapping):
             failures.append("InvalidMutationDeliveryEvent")
             continue
         data = event.get("data") if isinstance(event.get("data"), dict) else event
-        if event.get("event") == "execution_graph_node" and data.get("status") in {
+        if event.get("event") == "execution_graph_node" and data.get("status") in (
             "completed",
             "failed",
             "success",
             "failure",
-        }:
+        ):
             node = data.get("scenario_node_id") or data.get("node_id")
             execution = data.get("execution_instance_id")
             if isinstance(node, str) and isinstance(execution, str) and execution:
                 executions.setdefault(node, set()).add(execution)
+                if data.get("compensating") is True:
+                    compensations.add(execution)
         if event.get("event") == "runtime_fault_observation":
             evidence = data.get("evidence") or {}
             if (
@@ -85,6 +88,7 @@ def fault_receipt_failures(events, required_faults=(), *, run_id=None):
             isinstance(refs, list)
             and bool(refs)
             and receipt.get("receipt_hash") == actual_receipt_hash
+            and isinstance(receipt.get("delivery"), str)
             and receipt.get("delivery") in {"DELIVERED", "NOT_DELIVERED"}
         )
         valid = (
@@ -163,35 +167,17 @@ def fault_receipt_failures(events, required_faults=(), *, run_id=None):
             failures.append(f"InvalidMutationDeliveryEvidence:{receipt.get('fault_id')}")
         elif receipt.get("delivery") == "DELIVERED":
             delivered.add((receipt["fault"], receipt["node_id"], receipt["execution_instance_id"]))
-    preflight_rejected = {
-        (
-            (
-                ev.get("oracle_id", "")[9:]
-                if str(ev.get("oracle_id", "")).startswith("security:")
-                else str(ev.get("oracle_id", ""))
-            ),
-            ev.get("scenario_node_id") or ev.get("node_id"),
-        )
-        for ev in events
-        if ev.get("event") == "assertion_evaluated"
-        and (
-            str(ev.get("oracle_id", "")).startswith("security:")
-            or ev.get("resolver") == "security_preflight"
-        )
-        and ev.get("outcome") == "FAIL"
-    }
     for requirement in required_faults:
         fault, node = requirement if isinstance(requirement, tuple) else (requirement, None)
-        if (fault, node) in preflight_rejected or any(
-            f == fault and (node is None or n == node) for f, n in preflight_rejected
-        ):
-            continue
         found = {
             execution
             for found_fault, found_node, execution in delivered
             if found_fault == fault and (node is None or found_node == node)
         }
-        if not found or not executions.get(node, set()).issubset(found):
+        expected = executions.get(node, set())
+        if fault == "rollback_failure":
+            expected = compensations if node is None else expected.intersection(compensations)
+        if not found or not expected.issubset(found):
             failures.append(f"MutationDeliveryEvidenceMissing:{fault}:{node or '*'}")
     return failures
 
@@ -242,7 +228,10 @@ def _valid_fault_observations(receipt, observations):
         or any(not isinstance(row, Mapping) for row in contenders)
     ):
         return False
-    if any(type(row.get("accepted")) is not bool for row in contenders):
+    if any(
+        type(row.get("accepted")) is not bool or not isinstance(row.get("decision"), str)
+        for row in contenders
+    ):
         return False
     winners = [row for row in contenders if row.get("accepted") is True]
     return (

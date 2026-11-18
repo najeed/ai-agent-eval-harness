@@ -5,8 +5,9 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from eval_runner import config, doctor, identity, mutator
+from eval_runner import config, doctor, identity
 from eval_runner.handlers import analysis, environment, evaluation, scenarios
+from eval_runner.mutations import mutator
 
 
 @pytest.fixture

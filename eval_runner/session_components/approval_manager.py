@@ -384,7 +384,7 @@ class SessionApprovalManager:
 
     def _deliver_approval_fault(self, specification, request, scope):
         """Execute a selected fault only after its real durable request exists."""
-        from eval_runner.runtime_faults import FaultDeliveryController
+        from eval_runner.mutations.runtime_faults import FaultDeliveryController
 
         controller = FaultDeliveryController(self.run_id, self.event_bus)
         receipt = controller.approval_fault(
@@ -398,6 +398,25 @@ class SessionApprovalManager:
         current = self.approval_store.get_request(request.approval_token, scope=scope)
         if current is None or current.status != "REJECTED":
             raise RuntimeError("Injected approval test did not withdraw its permission")
+        self.event_bus.emit_evidence(
+            "assertion_evaluated",
+            {
+                "run_id": self.run_id,
+                "node_id": specification["node_id"],
+                "execution_instance_id": specification.get("execution_instance_id"),
+                "oracle_id": f"security:{specification['fault']}",
+                "outcome": "FAIL",
+                "passed": False,
+                "resolver": "approval_boundary",
+                "requiredness": "REQUIRED",
+                "expected": "ALLOWED",
+                "observed": "REJECTED",
+                "error": (
+                    f"ApprovalRejected: observed {specification['fault']} "
+                    "at the durable decision boundary"
+                ),
+            },
+        )
         raise ApprovalBoundaryRejected(
             f"ApprovalRejected: observed {specification['fault']} at the durable decision boundary",
             phase="observed_fault",

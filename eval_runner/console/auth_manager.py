@@ -514,10 +514,33 @@ def require_permission(
 
             primary_node = required_nodes[0] if required_nodes else ""
 
-            # [INDUSTRIAL DIAGNOSTIC]: Log all permission checks for forensic auditing
-            print(
-                f"   [Auth] Checking permission '{primary_node}' for path: {request.path}",
-                flush=True,
+            def _req_identity(principal: dict | None) -> str:
+                parts = []
+                if principal:
+                    p_id = (
+                        principal.get("id")
+                        or principal.get("name")
+                        or principal.get("username")
+                        or principal.get("principal_id")
+                    )
+                    if p_id:
+                        parts.append(f"principal={p_id}")
+                client_ip = (
+                    request.headers.get("X-Forwarded-For") or request.remote_addr or "unknown"
+                )
+                parts.append(f"ip={client_ip}")
+                req_id = request.headers.get("X-Request-ID")
+                if req_id:
+                    parts.append(f"req_id={req_id}")
+                return ", ".join(parts)
+
+            # Debug-level diagnostic: respects log level and prevents stdout flooding
+            logger.debug(
+                "[Auth] Checking permission '%s' for %s %s (%s)",
+                primary_node,
+                request.method,
+                request.path,
+                _req_identity(session.get("user")),
             )
             provider = get_auth_provider()
             user = session.get("user")
@@ -578,9 +601,34 @@ def require_permission(
             # 1. Check Session (Browser UI)
             if user:
                 if not bind_verified_scope(user):
+                    logger.warning(
+                        "[Auth] 403 Forbidden - Missing active authorized context for %s %s (%s)",
+                        request.method,
+                        request.path,
+                        _req_identity(user),
+                    )
                     return jsonify({"error": "An active authorized context is required."}), 403
                 if check_user_permission(user):
+                    logger.debug(
+                        "[Auth] Permission '%s' authorized for %s %s (%s)",
+                        primary_node,
+                        request.method,
+                        request.path,
+                        _req_identity(user),
+                    )
                     return f(*args, **kwargs)
+                print(
+                    f"   [Auth] 403 Forbidden - Permission '{primary_node}' required for "
+                    f"{request.method} {request.path} ({_req_identity(user)})",
+                    flush=True,
+                )
+                logger.warning(
+                    "[Auth] 403 Forbidden - Permission '%s' required for %s %s (%s)",
+                    primary_node,
+                    request.method,
+                    request.path,
+                    _req_identity(user),
+                )
                 return jsonify({"error": f"Forbidden: Permission '{primary_node}' required"}), 403
 
             # 2. Check Header or Query (CLI / Debug Support)
@@ -592,9 +640,35 @@ def require_permission(
                 user = provider.verify_token(bearer_token)
                 if user:
                     if not bind_verified_scope(user):
+                        logger.warning(
+                            "[Auth] 403 Forbidden - Missing active authorized context "
+                            "for %s %s (%s)",
+                            request.method,
+                            request.path,
+                            _req_identity(user),
+                        )
                         return jsonify({"error": "An active authorized context is required."}), 403
                     if check_user_permission(user):
+                        logger.debug(
+                            "[Auth] Permission '%s' authorized for %s %s (%s)",
+                            primary_node,
+                            request.method,
+                            request.path,
+                            _req_identity(user),
+                        )
                         return f(*args, **kwargs)
+                    print(
+                        f"   [Auth] 403 Forbidden - Permission '{primary_node}' required for "
+                        f"{request.method} {request.path} ({_req_identity(user)})",
+                        flush=True,
+                    )
+                    logger.warning(
+                        "[Auth] 403 Forbidden - Permission '%s' required for %s %s (%s)",
+                        primary_node,
+                        request.method,
+                        request.path,
+                        _req_identity(user),
+                    )
                     return jsonify(
                         {"error": f"Forbidden: Permission '{primary_node}' required"}
                     ), 403
@@ -603,17 +677,45 @@ def require_permission(
                 user = provider.authenticate(api_key)
                 if user:
                     if not bind_verified_scope(user):
+                        logger.warning(
+                            "[Auth] 403 Forbidden - Missing active authorized "
+                            "context for %s %s (%s)",
+                            request.method,
+                            request.path,
+                            _req_identity(user),
+                        )
                         return jsonify({"error": "An active authorized context is required."}), 403
                     if check_user_permission(user):
+                        logger.debug(
+                            "[Auth] Permission '%s' authorized for %s %s (%s)",
+                            primary_node,
+                            request.method,
+                            request.path,
+                            _req_identity(user),
+                        )
                         return f(*args, **kwargs)
+                    print(
+                        f"   [Auth] 403 Forbidden - Permission '{primary_node}' required for "
+                        f"{request.method} {request.path} ({_req_identity(user)})",
+                        flush=True,
+                    )
+                    logger.warning(
+                        "[Auth] 403 Forbidden - Permission '%s' required for %s %s (%s)",
+                        primary_node,
+                        request.method,
+                        request.path,
+                        _req_identity(user),
+                    )
                     return jsonify(
                         {"error": f"Forbidden: Permission '{primary_node}' required"}
                     ), 403
 
+            req_id_str = _req_identity(None)
             if not bearer_token and not api_key and not user:
                 print(
                     f"   [Auth] 401 Unauthorized - No session and no key "
-                    f"(Node: {primary_node}, Path: {request.path})",
+                    f"(Node: {primary_node}, Method: {request.method}, Path: {request.path}, "
+                    f"{req_id_str})",
                     flush=True,
                 )
             elif api_key and not user:
@@ -621,12 +723,14 @@ def require_permission(
                 key_hint = f"{api_key[:4]}...{api_key[-4:]}" if len(api_key) > 8 else "***"
                 print(
                     f"   [Auth] 401 Unauthorized - Invalid key: {key_hint} "
-                    f"(Len: {len(api_key)}) for {request.path}",
+                    f"(Len: {len(api_key)}, Node: {primary_node}, Method: {request.method}, "
+                    f"Path: {request.path}, {req_id_str})",
                     flush=True,
                 )
             else:
                 print(
-                    f"   [Auth] 401 Unauthorized - Invalid Bearer Token for {request.path}",
+                    f"   [Auth] 401 Unauthorized - Invalid Bearer Token for "
+                    f"{request.method} {request.path} ({req_id_str})",
                     flush=True,
                 )
 

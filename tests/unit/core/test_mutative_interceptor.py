@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from eval_runner.context import TurnContext
-from eval_runner.mutator_plugin import RuntimeMutationPlugin
+from eval_runner.mutations.mutator_plugin import RuntimeMutationPlugin
 from eval_runner.plugins import BaseEvalPlugin, PluginManager
 from eval_runner.reference.local_artifact import LocalFileArtifactStore
 from eval_runner.reference.local_run_store import LocalFileRunStore

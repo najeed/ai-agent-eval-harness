@@ -705,6 +705,8 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "_transition_request",
                 "revoke_request",
                 "consume_request",
+                "expire_request",
+                "_update_authorization",
                 "list_pending",
                 "delete_request",
             }
@@ -728,6 +730,7 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_system_scope_can_resolve_legacy_unscoped_request",
             ),
             "_transition_request": (
+                "test_expiry_and_decision_serialize_across_provider_instances",
                 "test_real_approval_faults_persist_transitions_and_bound_receipts",
                 "test_revoked_approval_cannot_resume_execution",
                 "test_approval_decision_race_serializes_independent_provider_instances",
@@ -741,6 +744,13 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
             ),
             "consume_request": (
                 "test_real_approval_faults_persist_transitions_and_bound_receipts",
+                "test_atomic_approval_consumption_across_provider_instances",
+            ),
+            "expire_request": ("test_durable_expiry_preserves_bindings_and_cannot_be_republished",),
+            "_update_authorization": (
+                "test_durable_expiry_preserves_bindings_and_cannot_be_republished",
+                "test_durable_expiry_rejects_invalid_authorization_without_writes",
+                "test_expiry_and_decision_serialize_across_provider_instances",
                 "test_atomic_approval_consumption_across_provider_instances",
             ),
             "list_pending": ("test_lifecycle",),
@@ -827,12 +837,18 @@ CRITICAL_MUTATION_TARGETS += (
 # guards move out of the sandbox or approval provider modules.
 CRITICAL_MUTATION_TARGETS += tuple(
     CriticalMutationTarget(
-        BASE_DIR / "eval_runner" / filename,
+        (
+            BASE_DIR / "eval_runner" / filename
+            if filename == "approval_validation.py"
+            else BASE_DIR / "eval_runner" / "mutations" / filename
+        ),
         (
             (
                 "tests/unit/core/test_approval_store.py::test_approval_consumption_validates_every_authorization_binding",
                 "tests/unit/core/test_approval_store.py::test_expiry_guard_is_shared_by_decision_and_action_consumption",
                 "tests/unit/core/test_approval_store.py::test_approval_expiry_rejects_exact_deadline",
+                "tests/unit/core/test_approval_store.py::test_durable_expiry_preserves_bindings_and_cannot_be_republished",
+                "tests/unit/core/test_approval_store.py::test_durable_expiry_rejects_invalid_authorization_without_writes",
                 "tests/unit/core/test_runtime_mutation_plugin.py::test_atomic_approval_consumption_across_provider_instances",
             )
             if filename == "approval_validation.py"
@@ -847,8 +863,15 @@ CRITICAL_MUTATION_TARGETS += tuple(
     for filename, scopes, scope_tests in (
         (
             "approval_validation.py",
-            ("validate_expiry", "consume_approval"),
+            ("validate_expiry", "consume_approval", "expire_approval", "payload_hash_matches"),
             {
+                "expire_approval": (
+                    "test_durable_expiry_preserves_bindings_and_cannot_be_republished",
+                    "test_durable_expiry_rejects_invalid_authorization_without_writes",
+                ),
+                "payload_hash_matches": (
+                    "test_approval_consumption_validates_every_authorization_binding",
+                ),
                 "validate_expiry": (
                     "test_approval_expiry_rejects_exact_deadline",
                     "test_expiry_guard_is_shared_by_decision_and_action_consumption",
@@ -880,8 +903,12 @@ CRITICAL_MUTATION_TARGETS += tuple(
         ),
         (
             "tool_faults.py",
-            ("execute", "prepare_corruption", "acknowledge"),
+            ("execute", "prepare_arguments", "prepare_corruption", "acknowledge"),
             {
+                "prepare_arguments": (
+                    "test_tool_contract_requires_observed_schema_rejection_and_consumer_receipt",
+                    "test_preexisting_contract_violation_cannot_be_reported_as_injected",
+                ),
                 "execute": (
                     "test_tool_execute_deadline_validation_and_premature_cancellation",
                     "test_tool_execute_latency_unjittered_when_timeout_set",
@@ -926,6 +953,7 @@ CRITICAL_MUTATION_TARGETS += tuple(
                     "test_boundary_mutations_compile_requests_without_fabricating_results",
                 ),
                 "observe_cancelled_commit": (
+                    "test_cancelled_commit_requires_every_canonical_write",
                     "test_runtime_fault_observe_cancelled_commit_diff_mismatch_raises",
                     "test_boundary_mutations_compile_requests_without_fabricating_results",
                 ),
@@ -959,6 +987,7 @@ CRITICAL_MUTATION_TARGETS += tuple(
             ("fault_receipt_failures", "_valid_fault_observations"),
             {
                 "fault_receipt_failures": (
+                    "test_malformed_receipt_fields_return_verification_failures",
                     "test_fault_receipt_failures_graph_node_parsing",
                     "test_fault_receipt_failures_observation_schema_mutations",
                     "test_fault_receipt_failures_ref_not_mapping",
@@ -967,6 +996,7 @@ CRITICAL_MUTATION_TARGETS += tuple(
                     "test_fault_delivery_requires_successful_mandatory_evidence_acknowledgement",
                 ),
                 "_valid_fault_observations": (
+                    "test_malformed_nested_authorization_evidence_returns_failures",
                     "test_valid_fault_observations_approval_and_race_matrix",
                     "test_valid_fault_observations_rejects_mixed_non_mapping",
                     "test_fault_delivery_validation_rejects_unbound_or_forged_evidence",
@@ -975,17 +1005,57 @@ CRITICAL_MUTATION_TARGETS += tuple(
         ),
         (
             "mutation_rules.py",
-            ("valid_extended_observations",),
+            ("valid_extended_observations", "_valid_response_chain"),
             {
+                "_valid_response_chain": (
+                    "test_replay_composes_with_bound_response_corruption",
+                    "test_duplicate_execution_composes_with_verified_response_corruption",
+                    "test_faults_reach_real_session_consumer_with_bound_proofs",
+                ),
                 "valid_extended_observations": (
+                    "test_malformed_nested_authorization_evidence_returns_failures",
+                    "test_replay_composes_with_bound_response_corruption",
                     "test_valid_extended_observations_approval_and_tool_rules",
                     "test_valid_extended_observations_rejects_mixed_non_mapping",
                     "test_unknown_or_unbound_delivery_is_rejected_for_every_mutation",
                     "test_each_execution_instance_requires_its_own_fault_observation",
-                )
+                ),
             },
         ),
+        (
+            "mutation_registry.py",
+            (
+                "selected_faults",
+                "required_deliveries",
+                "runtime_plan",
+                "capability",
+                "canonical_fault",
+                "canonical_edit",
+            ),
+            {},
+        ),
+        (
+            "tool_contracts.py",
+            ("argument_schema", "argument_error", "contract_violation"),
+            {},
+        ),
     )
+)
+
+CRITICAL_MUTATION_TARGETS += (
+    CriticalMutationTarget(
+        BASE_DIR / "eval_runner" / "session_components" / "security_evidence.py",
+        (
+            "tests/unit/core/test_security_preflight_evidence.py",
+            "tests/unit/core/test_security_preflight_failure_evidence.py",
+        ),
+        frozenset({"record_security_rejection", "security_rejection_oracles"}),
+    ),
+    CriticalMutationTarget(
+        BASE_DIR / "eval_runner" / "session_components" / "state_parity.py",
+        ("tests/unit/core/test_state_authority.py", "tests/unit/core/test_parity_hardened.py"),
+        frozenset({"capture_external_prestate", "preexecution_failure", "_resolve_target"}),
+    ),
 )
 
 TARGET_MODULES = [target.path for target in CRITICAL_MUTATION_TARGETS]

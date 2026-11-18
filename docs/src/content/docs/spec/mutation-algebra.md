@@ -127,7 +127,7 @@ class MutationContext:
 Mutators are first-class mathematical entities. They support algebraic composition via operator overloading (`+`) and higher-order combinator factories:
 
 ```python
-from eval_runner.mutator import (
+from eval_runner.mutations.mutator import (
     after_event,
     between_steps,
     concurrent,
@@ -195,7 +195,7 @@ from agentv_runtime.contracts import (
     MutationTier,
     MutationVector,
 )
-from eval_runner.mutator import ScenarioMutator
+from eval_runner.mutations.mutator import ScenarioMutator
 
 
 class StaleTokenMutator(ScenarioMutator):

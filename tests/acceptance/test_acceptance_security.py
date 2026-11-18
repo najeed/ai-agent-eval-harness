@@ -111,14 +111,8 @@ def test_acceptance_security_tampered_trace_fails_gate(isolated_acceptance_env):
     runner = env["runner"]
     run_id = f"at-sec-tamper-{uuid.uuid4().hex[:8]}"
 
-    scenario_path = (
-        REPO_ROOT / "industries" / "finance" / "scenarios" / "unauthorized_transfer.json"
-    )
-    agent_path = (
-        REPO_ROOT / "tests" / "acceptance" / "fixtures" / "agents" / "compliant_transfer_agent.py"
-    )
-
-    # 1. Run legitimate scenario
+    # 1. Run a real agent response without simulated tool execution.
+    scenario_path, agent_path = env["evidence_scenario"], env["evidence_agent"]
     runner.run(
         scenario_path=scenario_path,
         agent=str(agent_path),

@@ -22,7 +22,7 @@ import pytest
 from agentv_runtime.interfaces import ApprovalRequest
 from eval_runner.events import CoreEvents, EventEmitter
 from eval_runner.handlers.evaluation import handle_hitl_resume
-from eval_runner.mutator_plugin import RuntimeMutationPlugin
+from eval_runner.mutations.mutator_plugin import RuntimeMutationPlugin
 from eval_runner.plugins import BaseEvalPlugin, PluginManager
 from eval_runner.reference.approval_store import (
     FileApprovalStore,

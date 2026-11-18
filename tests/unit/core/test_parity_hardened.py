@@ -211,7 +211,8 @@ async def test_state_parity_verifier_external_evidence_target_and_prestate():
     ):
         prestate = await verifier.capture_external_prestate(node, mock_sandbox, [])
         assert "state_authority" in prestate
-        assert prestate["state_authority"] == {"invalid": True}
+        assert prestate["state_authority"]["invalid"] is True
+        assert "Unobservable pre-execution authority target" in prestate["state_authority"]["error"]
 
 
 @pytest.mark.asyncio

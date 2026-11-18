@@ -2,7 +2,7 @@ import pytest
 
 from agentv_runtime.evidence_graph import build_evidence_graph_from_events
 from eval_runner.events import CoreEvents
-from eval_runner.mutator_plugin import RuntimeMutationPlugin
+from eval_runner.mutations.mutator_plugin import RuntimeMutationPlugin
 from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.runner import DefaultRunner
 from eval_runner.services.certification import CertificationService
@@ -33,7 +33,8 @@ async def test_security_preflight_rejection_emits_running_and_failed_evidence(
                 {
                     "id": "review_task_1",
                     "task_description": "Physician HITL Review Task",
-                    "approval_token": "EXPIRED_SIG_1970",
+                    "approval_stale": True,
+                    "hitl_gate": True,
                     "expected_outcome": [{"type": "typed_value", "value": "approved"}],
                 }
             ]
@@ -87,7 +88,7 @@ async def test_security_preflight_rejection_emits_running_and_failed_evidence(
     assert len(failed_nodes) >= 1
     failed_node = failed_nodes[0]
     assert failed_node["scenario_node_id"] == "review_task_1"
-    assert failed_node["failure_class"] == "APPROVAL_SECURITY_REJECTED"
+    assert failed_node["failure_class"] == "MUTATION_OBSERVED"
     assert "oracle_results" in failed_node
     assert any(
         o.get("oracle_id") == "security:approval_stale" and o.get("outcome") == "FAIL"
@@ -126,7 +127,8 @@ async def test_security_preflight_rejection_trace_attestation_in_trust_center(
                 {
                     "id": "critical_payment_approval",
                     "task_description": "High Value Transfer Review",
-                    "approval_token": "EXPIRED_SIG_1970",
+                    "approval_stale": True,
+                    "hitl_gate": True,
                     "expected_outcome": [{"type": "typed_value", "value": "approved"}],
                 }
             ]
@@ -205,7 +207,8 @@ async def test_fail_fast_multi_node_dag_missing_downstream_oracles_attests_failu
                 {
                     "id": "node_1_preflight",
                     "task_description": "Initial Security Boundary",
-                    "approval_token": "EXPIRED_SIG_1970",
+                    "approval_stale": True,
+                    "hitl_gate": True,
                     "expected_outcome": [{"type": "typed_value", "value": "approved"}],
                 },
                 {

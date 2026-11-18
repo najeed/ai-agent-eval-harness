@@ -255,8 +255,8 @@ async def test_mutate_success(tmp_path):
     args = MagicMock(input=str(input_file), type="typos", output=str(output_file))
 
     with (
-        patch("eval_runner.mutator.mutate_scenario", return_value={"id": "mut"}),
-        patch("eval_runner.mutator.save_mutated_scenario") as mock_save,
+        patch("eval_runner.mutations.mutator.mutate_scenario", return_value={"id": "mut"}),
+        patch("eval_runner.mutations.mutator.save_mutated_scenario") as mock_save,
     ):
         assert await scenarios.handle_mutate(args) == 0
         mock_save.assert_called_once()

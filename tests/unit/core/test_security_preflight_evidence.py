@@ -18,6 +18,7 @@ import pytest
 from agentv_runtime.evidence_graph import build_evidence_graph_from_events
 from eval_runner import config
 from eval_runner.identity import IdentityService
+from eval_runner.mutations.mutation_evidence import fault_receipt_failures
 from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.runner import DefaultRunner, run_scenario
 from eval_runner.services.certification import execute_industrial_certification
@@ -57,7 +58,8 @@ def test_security_preflight_approval_stale_emits_typed_failure_evidence(test_env
                 {
                     "id": "step_transfer_funds",
                     "task_description": "Transfer 500 USD with pre-authorized token",
-                    "approval_token": "EXPIRED_SIG_1970",
+                    "approval_stale": True,
+                    "hitl_gate": True,
                     "expected_outcome": [{"target": "message", "property": "ok", "expected": True}],
                 }
             ],
@@ -81,6 +83,12 @@ def test_security_preflight_approval_stale_emits_typed_failure_evidence(test_env
 
     # 2. Inspect physical trace persisted to store
     trace_events = store.get_events(run_id, offset=0, limit=10_000)
+    assert (
+        fault_receipt_failures(
+            trace_events, [("approval_stale", "step_transfer_funds")], run_id=run_id
+        )
+        == []
+    )
     assert len(trace_events) > 0
 
     event_names = [e.get("event") for e in trace_events if isinstance(e, dict)]
@@ -102,7 +110,7 @@ def test_security_preflight_approval_stale_emits_typed_failure_evidence(test_env
     assert stale_assertion.get("passed") is False
     assert stale_assertion.get("expected") == "ALLOWED"
     assert stale_assertion.get("observed") == "REJECTED"
-    assert "expired in 1970" in stale_assertion.get("error", "")
+    assert "approval_stale" in stale_assertion.get("error", "")
 
     # Check execution_graph_node events
     node_events = [
@@ -115,7 +123,7 @@ def test_security_preflight_approval_stale_emits_typed_failure_evidence(test_env
 
     failed_node = next((n for n in node_events if n.get("status") == "failed"), None)
     assert failed_node is not None
-    assert failed_node.get("failure_class") == "APPROVAL_SECURITY_REJECTED"
+    assert failed_node.get("failure_class") == "MUTATION_OBSERVED"
     assert any(
         isinstance(o, dict) and o.get("oracle_id") == "security:approval_stale"
         for o in failed_node.get("oracle_results", [])
@@ -155,7 +163,8 @@ def test_security_preflight_approval_mismatch_typed_evidence(test_env):
                 {
                     "id": "step_payout",
                     "task_description": "Execute payout with wrong transaction binding",
-                    "approval_transaction_id": "TX_MISMATCH_DIFFERENT_PAYMENT",
+                    "approval_mismatch": True,
+                    "hitl_gate": True,
                     "expected_outcome": [{"target": "message", "property": "ok", "expected": True}],
                 }
             ],
@@ -174,6 +183,10 @@ def test_security_preflight_approval_mismatch_typed_evidence(test_env):
     assert result.pass_at_k == 0.0
 
     trace_events = store.get_events(run_id, offset=0, limit=10_000)
+    assert (
+        fault_receipt_failures(trace_events, [("approval_mismatch", "step_payout")], run_id=run_id)
+        == []
+    )
     assertion_events = [
         e for e in trace_events if isinstance(e, dict) and e.get("event") == "assertion_evaluated"
     ]
@@ -206,6 +219,7 @@ def test_security_preflight_approval_revocation_typed_evidence(test_env):
                     "id": "step_settle",
                     "task_description": "Execute settlement with revoked approval token",
                     "approval_revocation": True,
+                    "hitl_gate": True,
                     "expected_outcome": [{"target": "message", "property": "ok", "expected": True}],
                 }
             ],
@@ -224,6 +238,12 @@ def test_security_preflight_approval_revocation_typed_evidence(test_env):
     assert result.pass_at_k == 0.0
 
     trace_events = store.get_events(run_id, offset=0, limit=10_000)
+    assert (
+        fault_receipt_failures(
+            trace_events, [("approval_revocation", "step_settle")], run_id=run_id
+        )
+        == []
+    )
     assertion_events = [
         e for e in trace_events if isinstance(e, dict) and e.get("event") == "assertion_evaluated"
     ]
@@ -254,7 +274,8 @@ def test_security_preflight_preserves_required_scenario_oracles(test_env):
                 {
                     "id": "step_escrow",
                     "task_description": "Release escrow funds",
-                    "approval_token": "EXPIRED_SIG_1970",
+                    "approval_stale": True,
+                    "hitl_gate": True,
                     "expected_outcome": [
                         {
                             "oracle_id": "oracle:escrow_verified",
@@ -281,6 +302,10 @@ def test_security_preflight_preserves_required_scenario_oracles(test_env):
     assert result.pass_at_k == 0.0
 
     trace_events = store.get_events(run_id, offset=0, limit=10_000)
+    assert (
+        fault_receipt_failures(trace_events, [("approval_stale", "step_escrow")], run_id=run_id)
+        == []
+    )
     assertion_events = [
         e for e in trace_events if isinstance(e, dict) and e.get("event") == "assertion_evaluated"
     ]

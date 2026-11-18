@@ -30,8 +30,15 @@ class AgentVAcceptanceRunner:
     between the test harness and the system under test.
     """
 
-    def __init__(self, repo_root: Path | str | None = None, env: dict[str, str] | None = None):
+    def __init__(
+        self,
+        repo_root: Path | str | None = None,
+        env: dict[str, str] | None = None,
+        *,
+        working_dir: Path | str | None = None,
+    ):
         self.repo_root = Path(repo_root).resolve() if repo_root else Path.cwd().resolve()
+        self.working_dir = Path(working_dir).resolve() if working_dir else self.repo_root
         self.base_env = dict(os.environ)
         if env:
             self.base_env.update(env)
@@ -56,7 +63,7 @@ class AgentVAcceptanceRunner:
         try:
             proc = subprocess.run(
                 cmd,
-                cwd=str(self.repo_root),
+                cwd=str(self.working_dir),
                 capture_output=True,
                 text=True,
                 encoding="utf-8",

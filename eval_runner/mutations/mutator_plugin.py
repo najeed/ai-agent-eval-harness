@@ -1,5 +1,5 @@
 """
-eval_runner.mutator_plugin
+eval_runner.mutations.mutator_plugin
 ==========================
 RuntimeMutationPlugin provides authoritative southbound execution interception
 for workflow, environmental state, timing, and human-in-the-loop mutations.
@@ -12,7 +12,7 @@ import logging
 from contextvars import ContextVar
 from typing import Any
 
-from .plugins import BaseEvalPlugin
+from ..plugins import BaseEvalPlugin
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +53,14 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
 
     @property
     def active_node_data(self) -> dict[str, Any]:
-        return self._node_context.get()[1]
+        from .mutation_registry import runtime_plan
+
+        return runtime_plan(
+            self._node_context.get()[1],
+            self.scenario,
+            self.scenario.get("metadata"),
+            self.scenario.get("failure_policy"),
+        )
 
     @property
     def step_index(self) -> int:
@@ -81,7 +88,7 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
                 self.scenario = getattr(context, "scenario_data", {}) or {}
         if node_id is not None:
             next_step = self.step_index + 1
-            self._runtime_owner.set(context)
+            self._runtime_owner.set(kwargs.get("sandbox") or context)
             self._execution_id.set(getattr(context, "current_execution_instance_id", None))
             self._node_context.set((node_id, dict(node_data or {}), next_step))
             logger.debug(f"[RuntimeMutationPlugin] Step {next_step} start: node={node_id}")
@@ -141,6 +148,11 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
             mutated_args["_unexpected_forbidden_property"] = {
                 "violation": "additionalProperties_forbidden"
             }
+            owner = self._runtime_owner.get()
+            sandbox = getattr(owner, "sandbox", None) or owner
+            sandbox.tool_faults.prepare_arguments(
+                args, mutated_args, self.active_node_id, self._execution_id.get(), tool_name
+            )
             return {"arguments": mutated_args}
 
         return True
@@ -235,7 +247,9 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
         )
         return {"result": corrupted}
 
-    def on_rollback(self, context: Any, compensation_action: dict[str, Any] | None = None) -> bool:
+    def on_rollback(
+        self, context: Any, compensation_action: dict[str, Any] | None = None
+    ) -> dict[str, Any] | bool:
         """
         Intercepts compensating rollback execution to simulate catastrophic rollback failures.
         """
@@ -260,7 +274,7 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
             logger.error(
                 "[RuntimeMutationPlugin] Compensating rollback handler corrupted! Aborting."
             )
-            return False
+            return {"runtime_fault": self._approval_fault_spec("rollback_failure", {})}
 
         return True
 
@@ -276,127 +290,23 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
     def on_approval_preflight(
         self, context: Any, node_data: dict[str, Any] | None = None
     ) -> dict[str, Any] | bool:
-        """Select approval faults; reject invalid approval configuration at node start."""
-        res = self._intercept_approval(context, node_data)
-        if isinstance(res, dict) and "runtime_fault" in res:
-            fault_spec = res["runtime_fault"]
-            fault_name = fault_spec.get("fault", "approval_boundary")
-            if fault_name == "approval_race":
-                return {"runtime_fault": fault_spec}
-            error_map = {
-                "approval_stale": (
-                    "InvalidSignature: approval token expired in 1970 (stale token blocked)"
-                ),
-                "approval_mismatch": (
-                    "ApprovalMismatch: approval token belongs to different transaction object"
-                ),
-                "approval_revocation": (
-                    "ApprovalRevoked: approval token was revoked midway through execution"
-                ),
-                "approval_replay": "ApprovalReplayBlocked: approval token has already been spent",
-            }
-            error_msg = error_map.get(fault_name, f"ApprovalFaultBoundary: {fault_name} blocked")
-            return {
-                "allowed": False,
-                "error": error_msg,
-                "mutation_fault": fault_name,
-                "failure_category": "APPROVAL_SECURITY_REJECTED",
-                "runtime_fault": fault_spec,
-            }
-        return res
+        """Select faults without substituting preflight messages for execution."""
+        return self._intercept_approval(context, node_data)
 
     def _intercept_approval(
         self, context: Any, approval_data: dict[str, Any] | None = None
     ) -> dict[str, Any] | bool:
-        node = self.active_node_data or {}
+        from .mutation_registry import selected_faults
+
         data = approval_data or {}
-        scen = self.scenario or (getattr(context, "scenario", {}) if context else {}) or {}
-
-        def _has_fault(key: str, val: Any) -> bool:
-            for source in (node, data, scen):
-                if not isinstance(source, dict):
-                    continue
-                if source.get(key) == val:
-                    return True
-                muts = source.get("mutations") or source.get("adversarial_mutation")
-                if isinstance(muts, dict) and muts.get(key) == val:
-                    return True
-            return False
-
-        def _is_fault_named(fault_name: str) -> bool:
-            for source in (node, data, scen):
-                if not isinstance(source, dict):
-                    continue
-                if (
-                    source.get("mutation_fault") == fault_name
-                    or source.get("approval_fault") == fault_name
-                    or source.get("fault") == fault_name
-                ):
-                    return True
-                muts = source.get("mutations") or source.get("adversarial_mutation")
-                if isinstance(muts, dict) and (
-                    muts.get("mutation_fault") == fault_name
-                    or muts.get("approval_fault") == fault_name
-                    or muts.get("fault") == fault_name
-                ):
-                    return True
-            return False
-
-        # 1. Stale Approval Token
-        if (
-            _has_fault("approval_token", "EXPIRED_SIG_1970")
-            or _has_fault("approval_stale", True)
-            or bool(
-                node.get("approval_stale")
-                or data.get("approval_stale")
-                or scen.get("approval_stale")
-            )
-            or _is_fault_named("approval_stale")
-        ):
-            return {"runtime_fault": self._approval_fault_spec("approval_stale", data)}
-
-        # 2. Approval Transaction Mismatch
-        if (
-            _has_fault("approval_transaction_id", "TX_MISMATCH_DIFFERENT_PAYMENT")
-            or _has_fault("approval_mismatch", True)
-            or bool(
-                node.get("approval_mismatch")
-                or data.get("approval_mismatch")
-                or scen.get("approval_mismatch")
-            )
-            or _is_fault_named("approval_mismatch")
-        ):
-            return {"runtime_fault": self._approval_fault_spec("approval_mismatch", data)}
-
-        if _has_fault("approval_replay", True) or _is_fault_named("approval_replay"):
-            return {"runtime_fault": self._approval_fault_spec("approval_replay", data)}
-
-        # 3. Mid-Flight Revocation
-        if (
-            _has_fault("approval_revocation", True)
-            or bool(
-                node.get("approval_revocation")
-                or data.get("approval_revocation")
-                or scen.get("approval_revocation")
-            )
-            or _is_fault_named("approval_revocation")
-        ):
-            return {
-                "runtime_fault": self._approval_fault_spec("approval_revocation", data),
-            }
-
-        # 4. Approval Race Condition
-        if (
-            _has_fault("approval_race", True)
-            or bool(
-                node.get("approval_race") or data.get("approval_race") or scen.get("approval_race")
-            )
-            or _is_fault_named("approval_race")
-        ):
-            return {
-                "runtime_fault": self._approval_fault_spec("approval_race", data),
-            }
-
+        faults = selected_faults(
+            self.active_node_data, data, self.scenario, self.scenario.get("metadata")
+        )
+        approvals = sorted(fault for fault in faults if fault.startswith("approval_"))
+        if len(approvals) > 1:
+            raise ValueError("An approval boundary requires one independently observable fault")
+        if approvals:
+            return {"runtime_fault": self._approval_fault_spec(approvals[0], data)}
         return True
 
     def _approval_fault_spec(self, fault, data):

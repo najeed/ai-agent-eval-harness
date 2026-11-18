@@ -145,7 +145,7 @@ class AbstractSandbox(ABC):
         else:
             self.event_bus = event_bus
 
-        from .runtime_faults import FaultDeliveryController
+        from .mutations.runtime_faults import FaultDeliveryController
 
         self.cancellation_event = (
             cancellation_event if cancellation_event is not None else threading.Event()
@@ -157,8 +157,8 @@ class AbstractSandbox(ABC):
         topology = scenario.get("metadata", {}).get("agent_topology", {})
         self.shared_state = SharedStateRegistry(topology, event_bus=self.event_bus)
         self.current_agent = "default_agent"
-        from .commit_faults import SandboxCommitBoundary
-        from .tool_faults import ToolFaultExecutor
+        from .mutations.commit_faults import SandboxCommitBoundary
+        from .mutations.tool_faults import ToolFaultExecutor
 
         self.commit_boundary = SandboxCommitBoundary(self)
         self.tool_faults = ToolFaultExecutor(self)
@@ -446,39 +446,6 @@ class ToolSandbox(AbstractSandbox):
 
         return await tool_sandbox_service.isolate(call_data, core_executor)
 
-    def _is_authenticated_adapter_bound(self, tool_name: str) -> bool:
-        """Verify whether tool execution is authorized by an authenticated runtime adapter.
-
-        Scenario data cannot self-authorize live provenance. Unauthenticated environment variables
-        cannot authorize live provenance. Live provenance is accepted only when cryptographically
-        authenticated under the authoritative state authority trust key.
-        """
-        token = os.getenv("AGENTV_AUTHENTICATED_ADAPTER_TOKEN")
-        if not token or not isinstance(token, str):
-            return False
-        try:
-            from eval_runner.state_authority import (
-                StateAuthorityKeyMissingError,
-                get_state_authority_trust_key,
-            )
-
-            key = get_state_authority_trust_key()
-        except (StateAuthorityKeyMissingError, ValueError, OSError) as exc:
-            logger.debug("State authority trust key not available for adapter token: %s", exc)
-            return False
-        import hashlib
-        import hmac
-
-        expected = hmac.new(
-            key, f"authenticated_execution_adapter:{tool_name}".encode(), hashlib.sha3_256
-        ).hexdigest()
-        if hmac.compare_digest(token.strip(), expected):
-            return True
-        expected_wildcard = hmac.new(
-            key, b"authenticated_execution_adapter", hashlib.sha3_256
-        ).hexdigest()
-        return hmac.compare_digest(token.strip(), expected_wildcard)
-
     def get_tool_provenance(self, tool_name: str) -> str:
         """Determine execution provenance for a declared or simulated tool.
 
@@ -491,10 +458,6 @@ class ToolSandbox(AbstractSandbox):
                 return "simulated"
         all_tool_defs = self.scenario.get("tools", {})
         if tool_name in all_tool_defs:
-            tool_def = all_tool_defs[tool_name]
-            if isinstance(tool_def, dict) and tool_def.get("provenance") == "live":
-                if self._is_authenticated_adapter_bound(tool_name):
-                    return "live"
             return "simulated"
         if (
             tool_name.startswith("mock_")
@@ -561,9 +524,19 @@ class ToolSandbox(AbstractSandbox):
             }
         else:
             tool_def = all_tool_defs[tool_name]
-        tool_provenance = self.get_tool_provenance(tool_name)
-        if tool_provenance != "live":
-            self.has_simulated_tools = True
+        from .mutations.mutation_evidence import evidence_hash
+        from .mutations.tool_contracts import argument_error, argument_schema
+
+        schema_error = argument_error(argument_schema(tool_def), params)
+        if schema_error is not None:
+            return {
+                "status": "error",
+                "error_code": "TOOL_SCHEMA_VIOLATION",
+                "validator": schema_error.validator,
+                "arguments_hash": evidence_hash(params),
+                "message": "Tool arguments violate the declared input schema",
+            }
+        self.has_simulated_tools = True
         self.grounding_hits["tools"][tool_name] = self.grounding_hits["tools"].get(tool_name, 0) + 1
         policies = self.scenario.get("metadata", {}).get("policies", {})
 
@@ -701,7 +674,7 @@ class ToolSandbox(AbstractSandbox):
             self.commit_boundary.commit(proposed_diff, params, active_agent)
         except Exception as exc:
             from .events import EvidenceDeliveryError
-            from .runtime_faults import FaultDeliveryError
+            from .mutations.runtime_faults import FaultDeliveryError
 
             if isinstance(exc, (FaultDeliveryError, EvidenceDeliveryError)):
                 raise

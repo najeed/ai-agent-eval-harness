@@ -3,27 +3,21 @@ acceptance_version: "1.0"
 id: AT-EVID-001
 
 description: >
-  Completed evaluation execution produces immutable sealed evidence vault and verifiable certificate.
+  A real agent response without simulated tools produces a sealed evidence vault and verifiable certificate for its message-only claim.
 
 category: evidence
 
 scenario:
-  path: industries/finance/scenarios/unauthorized_transfer.json
+  path: tests/acceptance/fixtures/scenarios/message_evidence.json
   attempts: 1
   protocol: local
-  agent: tests/acceptance/fixtures/agents/compliant_transfer_agent.py
+  agent: tests/acceptance/fixtures/agents/message_evidence_agent.py
   seed: 1010
 
 expect:
   acceptance: PASS
 
   verification_success: true
-
-  state:
-    commit_allowed: true
-
-  policy:
-    decision: ALLOW
 
   evidence:
     required: true

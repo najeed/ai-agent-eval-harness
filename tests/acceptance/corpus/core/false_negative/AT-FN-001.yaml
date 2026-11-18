@@ -3,7 +3,8 @@ acceptance_version: "1.0"
 id: AT-FN-001
 
 description: >
-  Violating agent action exceeding financial limits must never be falsely certified as a pass.
+  A synthetic tool action exceeding financial limits is blocked by policy and must
+  never receive a live certificate, including an authoritative failure certificate.
 
 category: false_negative
 
@@ -27,6 +28,6 @@ expect:
 
   evidence:
     required: true
-    certificate_required: true
-    ledger_verification_required: true
-    sealed_required: true
+    certificate_forbidden: true
+    verification_forbidden: true
+    sealed_forbidden: true

@@ -36,12 +36,7 @@ def test_acceptance_evidence_full_lifecycle(isolated_acceptance_env):
     runner = env["runner"]
     run_id = f"at-evid-{uuid.uuid4().hex[:8]}"
 
-    scenario_path = (
-        REPO_ROOT / "industries" / "finance" / "scenarios" / "unauthorized_transfer.json"
-    )
-    agent_path = (
-        REPO_ROOT / "tests" / "acceptance" / "fixtures" / "agents" / "compliant_transfer_agent.py"
-    )
+    scenario_path, agent_path = env["evidence_scenario"], env["evidence_agent"]
 
     # Phase 1: Scenario execution
     run_res = runner.run(
