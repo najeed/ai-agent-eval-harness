@@ -178,7 +178,7 @@ jobs:
           python tools/ci/run_mutation_tests.py --full --workers 3
         else
           echo "Running SAMPLED mutation sentinel on PR / feature branch..."
-          python tools/ci/run_mutation_tests.py --workers 3
+          python tools/ci/run_mutation_tests.py --workers 3 --seed "$GITHUB_RUN_ID"
         fi
 
     - name: Upload Mutation Assurance Report
@@ -241,3 +241,4 @@ jobs:
       env:
         TRAJECTORY_DIR: tests/data/mock_trajectories
         AGENTV_REQUIRE_BROWSER_ACCEPTANCE: '1'
+        AGENTV_BROWSER_UI_BUILD_DIR: ui/visual-console/dist

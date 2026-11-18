@@ -855,11 +855,19 @@ CRITICAL_MUTATION_TARGETS += (
 
 # Select only the relevant guard contracts in each fresh target control.
 FAULT_GUARD_CORPORA: dict[str, tuple[str, ...]] = {
+    "tool_faults.py": (
+        "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_prepared_tool_ticket_requires_each_ownership_binding",
+    ),
+    "approval_faults.py": (
+        "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_expired_approval_must_be_durably_observed_under_the_same_run",
+        "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_replay_requires_a_nonempty_string_authorization_identity",
+    ),
     "approval_validation.py": (
         "tests/unit/core/test_fault_delivery_guard_contracts.py::test_payload_hash_requires_two_string_values",
         "tests/unit/core/test_fault_delivery_guard_contracts.py::test_payload_hash_string_comparison_controls",
     ),
     "mutation_rules.py": (
+        "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_partial_commit_requires_exact_keys_and_strict_boolean_existence",
         "tests/unit/core/test_fault_delivery_guard_contracts.py::test_response_chain_rejects_non_string_or_empty_hash_even_when_consumer_matches",
         "tests/unit/core/test_fault_delivery_guard_contracts.py::test_response_chain_accepts_bound_string_and_rejects_changed_consumer",
         "tests/unit/core/test_fault_delivery_guard_contracts.py::test_response_transformation_requires_complete_bound_provenance",
@@ -957,6 +965,7 @@ CRITICAL_MUTATION_TARGETS += tuple(
                     "test_preexisting_contract_violation_cannot_be_reported_as_injected",
                 ),
                 "execute": (
+                    "test_prepared_tool_ticket_requires_each_ownership_binding",
                     "test_tool_execute_deadline_validation_and_premature_cancellation",
                     "test_tool_execute_latency_unjittered_when_timeout_set",
                     "test_tool_timeout_boundary_interception",
@@ -1022,6 +1031,8 @@ CRITICAL_MUTATION_TARGETS += tuple(
             ("deliver_authorization_fault",),
             {
                 "deliver_authorization_fault": (
+                    "test_expired_approval_must_be_durably_observed_under_the_same_run",
+                    "test_replay_requires_a_nonempty_string_authorization_identity",
                     "test_deliver_authorization_fault_guards_and_stale_pre_approved",
                     "test_deliver_authorization_fault_cross_run_ownership_mismatch",
                     "test_real_approval_faults_persist_transitions_and_bound_receipts",
@@ -1063,6 +1074,7 @@ CRITICAL_MUTATION_TARGETS += tuple(
                     "test_faults_reach_real_session_consumer_with_bound_proofs",
                 ),
                 "valid_extended_observations": (
+                    "test_partial_commit_requires_exact_keys_and_strict_boolean_existence",
                     "test_valid_rollback_receipt_rejects_one_unrelated_malformed_observation",
                     "test_malformed_nested_authorization_evidence_returns_failures",
                     "test_replay_composes_with_bound_response_corruption",
@@ -1136,10 +1148,22 @@ CRITICAL_MUTATION_TARGETS += (
     ),
     CriticalMutationTarget(
         BASE_DIR / "eval_runner" / "session_components" / "state_parity.py",
-        ("tests/unit/core/test_state_authority.py", "tests/unit/core/test_parity_hardened.py"),
+        (
+            "tests/unit/core/test_state_authority.py",
+            "tests/unit/core/test_parity_hardened.py",
+            "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_mixed_authority_projections_capture_the_complete_required_prestate",
+            "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_invalid_authority_identity_is_typed_unobservable_evidence",
+            "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_async_authority_identity_is_closed_and_rejected_before_fetch",
+            "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_message_observation_ignores_later_user_and_system_entries",
+            "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_state_acquisition_requires_a_coroutine_getter",
+            "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_state_acquisition_rejects_missing_projection_before_dispatch",
+        ),
         frozenset({"capture_external_prestate", "preexecution_failure", "_resolve_target"}),
         scope_test_names={
             "capture_external_prestate": (
+                "test_mixed_authority_projections_capture_the_complete_required_prestate",
+                "test_invalid_authority_identity_is_typed_unobservable_evidence",
+                "test_async_authority_identity_is_closed_and_rejected_before_fetch",
                 "test_state_parity_verifier_external_evidence_target_and_prestate",
                 "test_required_authority_prestate_stops_before_agent_and_hitl",
             ),
@@ -1148,6 +1172,10 @@ CRITICAL_MUTATION_TARGETS += (
                 "test_required_prestate_is_not_waived_by_optional_peer",
             ),
             "_resolve_target": (
+                "test_invalid_authority_identity_is_typed_unobservable_evidence",
+                "test_message_observation_ignores_later_user_and_system_entries",
+                "test_state_acquisition_requires_a_coroutine_getter",
+                "test_state_acquisition_rejects_missing_projection_before_dispatch",
                 "test_state_parity_verifier_external_evidence_target_and_prestate",
                 "test_state_parity_verifier_policy_spec_resolution_branches",
                 "test_live_state_observation_allows_configured_unauthenticated_authority",

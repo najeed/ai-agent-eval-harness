@@ -22,16 +22,36 @@ from eval_runner.state_authority import (
 )
 
 
+@pytest.fixture
+def authority_evidence_stores(tmp_path, monkeypatch):
+    """Bind run/artifact providers together despite conflicting ambient evidence."""
+    from eval_runner import config
+    from eval_runner.reference.local_artifact import LocalFileArtifactStore
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    ambient_dir = tmp_path / "ambient-evidence"
+    ambient = LocalFileArtifactStore(ambient_dir)
+    for run_id in ("prestate-stop", "before-gate"):
+        ambient.store_artifact(
+            run_id,
+            "scenario_resolved.json",
+            json.dumps({"id": "unrelated-ambient-scenario"}),
+            content_type="application/json",
+        )
+    monkeypatch.setattr(config, "RUN_LOG_DIR", ambient_dir)
+    isolated_dir = tmp_path / "runs"
+    return LocalFileRunStore(isolated_dir), LocalFileArtifactStore(isolated_dir), ambient
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize("gate", [False, True])
 @pytest.mark.parametrize("failure", ["missing_signer", "unreachable"])
 async def test_required_authority_prestate_stops_before_agent_and_hitl(
-    tmp_path, monkeypatch, gate, failure
+    tmp_path, monkeypatch, gate, failure, authority_evidence_stores
 ):
     from agentv_runtime.evidence_graph import build_evidence_graph_from_events
     from eval_runner import config
     from eval_runner.reference.approval_store import FileApprovalStore
-    from eval_runner.reference.local_run_store import LocalFileRunStore
     from eval_runner.runner import DefaultRunner
     from eval_runner.session import SessionManager
 
@@ -81,7 +101,7 @@ async def test_required_authority_prestate_stops_before_agent_and_hitl(
             "edges": [],
         },
     }
-    store = LocalFileRunStore(tmp_path / "runs")
+    store, artifact_store, ambient = authority_evidence_stores
     with (
         patch.object(state_authority_registry, "get_connector", return_value=connector),
         patch.object(SessionManager, "_handle_hitl", new_callable=AsyncMock) as hitl,
@@ -90,7 +110,7 @@ async def test_required_authority_prestate_stops_before_agent_and_hitl(
         ) as agent,
         patch.object(FileApprovalStore, "create_request") as approval,
     ):
-        await DefaultRunner(run_store=store).run(
+        await DefaultRunner(run_store=store, artifact_store=artifact_store).run(
             scenario, run_id="prestate-stop", metadata={"agent": "https://agent.example/eval"}
         )
     hitl.assert_not_awaited()
@@ -137,6 +157,9 @@ async def test_required_authority_prestate_stops_before_agent_and_hitl(
             scenario_data=scenario,
         )
     assert build_evidence_graph_from_events([(e, json.dumps(e)) for e in events])["total_nodes"] > 0
+    assert json.loads(ambient.get_artifact("prestate-stop", "scenario_resolved.json")) == {
+        "id": "unrelated-ambient-scenario"
+    }
 
 
 @pytest.mark.parametrize("requiredness", ["OPTIONAL", "INFORMATIONAL", None])
@@ -191,10 +214,9 @@ def test_required_prestate_is_not_waived_by_optional_peer():
 @pytest.mark.parametrize("key_source", ["environment", "trust_root", "optional_missing"])
 @pytest.mark.parametrize("transport", ["https", "http"])
 async def test_authority_prestate_permits_valid_or_optional_before_gate(
-    tmp_path, monkeypatch, key_source, transport, aiohttp_client
+    tmp_path, monkeypatch, key_source, transport, aiohttp_client, authority_evidence_stores
 ):
     from eval_runner import config
-    from eval_runner.reference.local_run_store import LocalFileRunStore
     from eval_runner.runner import DefaultRunner
     from eval_runner.session import SessionManager
 
@@ -268,6 +290,7 @@ async def test_authority_prestate_permits_valid_or_optional_before_gate(
         },
         "workflow": {"nodes": [node], "edges": []},
     }
+    store, artifact_store, ambient = authority_evidence_stores
     with (
         patch.object(state_authority_registry, "get_connector", return_value=connector),
         patch.object(
@@ -280,7 +303,7 @@ async def test_authority_prestate_permits_valid_or_optional_before_gate(
             "eval_runner.session.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
         ) as agent,
     ):
-        await DefaultRunner(run_store=LocalFileRunStore(tmp_path / "runs")).run(
+        await DefaultRunner(run_store=store, artifact_store=artifact_store).run(
             scenario, run_id="before-gate"
         )
     gate.assert_awaited_once()
@@ -293,6 +316,9 @@ async def test_authority_prestate_permits_valid_or_optional_before_gate(
 
     if transport == "http":
         assert requests == ([] if key_source == "optional_missing" else ["/healthcare/state"])
+    assert json.loads(ambient.get_artifact("before-gate", "scenario_resolved.json")) == {
+        "id": "unrelated-ambient-scenario"
+    }
 
 
 @pytest.mark.asyncio
@@ -549,7 +575,9 @@ class TestSessionStateParityWithExternalAuthority:
         session_mock.scenario = {}
         verifier = SessionStateParityVerifier(session_manager=session_mock)
 
-        mock_connector = AsyncMock()
+        mock_connector = MagicMock()
+        mock_connector.observation_identity.return_value = {"authenticated": False}
+        mock_connector.fetch_state = AsyncMock()
         mock_connector.fetch_state.return_value = {
             "authorizations": [{"id": "AUTH-100", "status": "APPROVED"}]
         }
@@ -572,7 +600,9 @@ class TestSessionStateParityWithExternalAuthority:
         session_mock = MagicMock()
         session_mock.scenario = {}
         verifier = SessionStateParityVerifier(session_manager=session_mock)
-        connector = AsyncMock()
+        connector = MagicMock()
+        connector.observation_identity.return_value = {"authenticated": False}
+        connector.fetch_state = AsyncMock()
         connector.fetch_state.side_effect = [
             {"state": {"authorizations": []}},
             {"state": {"authorizations": [{"decision": "APPROVE"}]}},
@@ -641,7 +671,9 @@ class TestSessionStateParityWithExternalAuthority:
             }
         }
         verifier = SessionStateParityVerifier(session_manager=session_mock)
-        connector = AsyncMock()
+        connector = MagicMock()
+        connector.observation_identity.return_value = {"authenticated": False}
+        connector.fetch_state = AsyncMock()
         connector.fetch_state.return_value = {
             "decision": "DENY",
             "human_review_id": "review-1",
@@ -668,7 +700,9 @@ class TestSessionStateParityWithExternalAuthority:
         verifier = SessionStateParityVerifier(session_manager=session_mock)
 
         # 1. external:auth_name.prop subpath resolution
-        mock_connector = AsyncMock()
+        mock_connector = MagicMock()
+        mock_connector.observation_identity.return_value = {"authenticated": False}
+        mock_connector.fetch_state = AsyncMock()
         mock_connector.fetch_state.return_value = {"user": {"role": "admin"}}
         state_authority_registry.register_authority("user_service", mock_connector)
 
@@ -683,7 +717,9 @@ class TestSessionStateParityWithExternalAuthority:
         assert val == {"user": {"role": "admin"}}
 
         # 2. fetch_state throws exception -> returns None, "__unobserved_source__"
-        mock_err_conn = AsyncMock()
+        mock_err_conn = MagicMock()
+        mock_err_conn.observation_identity.return_value = {"authenticated": False}
+        mock_err_conn.fetch_state = AsyncMock()
         mock_err_conn.fetch_state.side_effect = RuntimeError("network drop")
         state_authority_registry.register_authority("error_service", mock_err_conn)
 
@@ -716,7 +752,9 @@ class TestSessionStateParityWithExternalAuthority:
         }
         verifier = SessionStateParityVerifier(session_manager=session_mock)
 
-        mock_connector = AsyncMock()
+        mock_connector = MagicMock()
+        mock_connector.observation_identity.return_value = {"authenticated": False}
+        mock_connector.fetch_state = AsyncMock()
         mock_connector.fetch_state.return_value = {"balance": 500}
         state_authority_registry.register_authority("default", mock_connector)
 

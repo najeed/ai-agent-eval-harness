@@ -319,12 +319,16 @@ def test_fast_scope_siblings_do_not_wait_for_a_different_slow_primer():
 def test_primed_scope_scheduler_supports_one_worker_and_empty_work():
     sentinel = _load_sentinel_module()
     points = [SimpleNamespace(scope="one", index=index) for index in range(3)]
-    assert (
-        sentinel._evaluate_primed_scopes(
-            points, lambda point: point, 1, lambda _: None, lambda _: None
-        )
-        == points
-    )
+    executed = []
+
+    def evaluate(point):
+        executed.append(point.index)
+        return point
+
+    results = sentinel._evaluate_primed_scopes(points, evaluate, 1, lambda _: None, lambda _: None)
+    assert executed == [0, 1, 2]
+    # wait() returns a set; completion reporting has no ordering guarantee.
+    assert sorted(point.index for point in results) == [0, 1, 2]
     assert (
         sentinel._evaluate_primed_scopes([], lambda point: point, 2, lambda _: None, lambda _: None)
         == []

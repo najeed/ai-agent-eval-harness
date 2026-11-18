@@ -338,7 +338,7 @@ class SessionStateParityVerifier:
                 if not isinstance(observation_identity, dict):
                     if inspect.iscoroutine(observation_identity):
                         observation_identity.close()
-                    observation_identity = {"authenticated": False}
+                    raise TypeError("State authority observation identity must be a dictionary")
                 # REMINDER: Revisit administrator-configured observation trust during the
                 # deferred security-contract review. Preserve local HTTP operation and require
                 # an explicit migration plan before introducing stronger source requirements.
@@ -413,7 +413,7 @@ class SessionStateParityVerifier:
                 if not isinstance(observation_identity, dict):
                     if inspect.iscoroutine(observation_identity):
                         observation_identity.close()
-                    observation_identity = {"authenticated": False}
+                    raise TypeError("State authority observation identity must be a dictionary")
 
                 identities = dict(self._observation_identities.get() or {})
                 identities[target_str] = observation_identity

@@ -9,18 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* Test reliability: single-worker scheduling checks execution order without assuming completed-future collection order, and scenario validation tests use correctly typed observer doubles. Browser journeys build current UI sources in session temporary storage by default; CI explicitly reuses its freshly built bundle instead of allowing stale local assets to determine acceptance results.
+* State-authority preflight tests bind isolated artifact and run stores explicitly. Conflicting ambient scenario snapshots no longer leak between parameterized cases; regressions verify the ambient snapshots are preserved and immutable-snapshot checks remain enforced.
+* Browser journey acceptance waits for policy evidence hydration and verifies the invalid-certificate fixture's specific verification failure and diagnostic cause, replacing obsolete three-state selectors and a fixed sleep.
+* Sampled-CI regressions independently verify tool-ticket ownership, durable approval rereads, authorization identities, partial-commit existence metadata, and state-observation boundaries. Malformed observer identity returns emit typed invalid evidence instead of being silently normalized. Sampled CI runs use the workflow run ID as a reproducible seed.
 * Response-transformation provenance regressions reject correctly hash-bound changes from the wrong fault, event kind, run, node, or execution instance, as well as broken ordering, continuity, and unchanged-payload claims. These cases cover the remaining reported response-chain survivor without excluding it or weakening validation.
-
 * Mutation execution primes independent source scopes concurrently within the existing worker limit and releases each scope's siblings only after its primer. All critical scopes have focused test selectors; exact-content AST metadata caching and selected-file bytecode warmup reduce planning work. Fresh controls and complete-corpus survival checks remain mandatory.
-
 * Regression contracts cover the six reported mutation survivors, including asymmetric hash types, mixed malformed observations, deadline/jitter requirements, contract-fault attribution, and truthful denial evidence. The sentinel now requires the complete configured target corpus before declaring survival; focused selectors remain fast kill paths.
-
 * Verification diagnostics retain primary execution and provisional-authority failures alongside secondary certificate errors. Authority diagnostic exceptions no longer invalidate an independently verified cryptographic result. Existing mutation-exclusion references track their unchanged expressions after verifier edits.
-
 * Policy audit preserves typed observations across all execution nodes and distinguishes loading, unavailable evidence, failed verification, recorded outcomes, and certified results. INVALID and NOT_EVALUATED are not treated as proven policy violations. Certificate verification failures retain their diagnostic causes, and the trust display no longer labels every verification failure as tampering.
-
 * Configured HTTP state authorities can reach HITL and qualify for certification using signed, source-bound observations without HTTPS, authentication headers, a separate host, or a standalone HMAC secret. Receipt signatures, public trust, run/phase/time bindings, and required-observation failure handling remain enforced. Superseded gates are commented with a reminder to revisit policy during the deferred security review.
-
 * Built-in HTTP observations use the configured system signing backend and existing Ed25519 receipts without a standalone HMAC secret. Public-only verification reuses system trust; registered independent observers retain their identity. Mismatched external receipts are rejected instead of re-signed by the harness.
 * Unobservable required authority pre-state blocks agent execution and scenario HITL gates immediately. Typed INVALID results preserve the observation cause; optional assertions retain their declared treatment, and trust keys must be explicitly provisioned.
 * The mutate CLI imports the canonical mutation package after the module move.

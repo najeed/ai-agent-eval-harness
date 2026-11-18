@@ -8,7 +8,7 @@ Validates the complete verification workflow journey across the browser interfac
   3. Live evaluation execution (execution_mode="live", declared=True).
   4. Live Debugger topology rendering.
   5. Induced assertion failure & RCA Failure Summary (causal node, expected vs actual).
-  6. Strict 3-state Policy tab assurance (PASS, FAIL, NOT VERIFIED).
+  6. Policy audit distinguishes failed verification from absent observations.
   7. Evidence package contract verification.
   8. Cryptographic verification authority & public privacy (unauthenticated manifest redaction).
 """
@@ -61,7 +61,7 @@ EXTERNAL_TOOL_NAMES = (
 
 
 @pytest.fixture
-def journey_console_server(tmp_path):
+def journey_console_server(tmp_path, browser_ui_build_dir):
     """Launches a live background Flask server with seeded scenario and run data."""
     # The server must share the lifecycle of the autouse registry/auth fixtures.
     # A module-scoped server otherwise keeps serving across their per-test resets.
@@ -70,23 +70,7 @@ def journey_console_server(tmp_path):
     runs_dir = root_dir / "runs"
     runs_dir.mkdir(parents=True, exist_ok=True)
 
-    from pathlib import Path
-
-    dist_dir = Path(
-        os.getenv(
-            "AGENTV_BROWSER_UI_BUILD_DIR",
-            str(config.PROJECT_ROOT / "ui" / "visual-console" / "dist"),
-        )
-    )
-    if not (dist_dir / "index.html").exists():
-        if os.getenv("AGENTV_REQUIRE_BROWSER_ACCEPTANCE") == "1":
-            pytest.fail(
-                "Required browser acceptance build is missing: ui/visual-console/dist/index.html"
-            )
-        pytest.skip(
-            "Visual Console build artifact ui/visual-console/dist/index.html not found. "
-            "Run 'npm run build' first."
-        )
+    dist_dir = browser_ui_build_dir
 
     # Seed through the explicit local provider.  The console must observe the
     # same provider-owned evidence it uses in production, never fixture files.
@@ -407,13 +391,13 @@ def test_verification_workflow_journey_playwright(journey_console_server):
     2. Preflight Readiness Probe (is_verifiable, badges)
     3. Live Debugger topology render
     4. Induced assertion failure & RCA Failure Summary (causal node, expected vs actual)
-    5. Strict 3-state Policy Tab assurance
+    5. Policy audit preserves the certificate verification failure and its cause
     6. Evidence Package contract
     7. Cryptographic Verification & Public Privacy
     """
     base_url, port, _, _ = journey_console_server
     try:
-        from playwright.sync_api import sync_playwright
+        from playwright.sync_api import expect, sync_playwright
     except ImportError as exc:
         if os.getenv("AGENTV_REQUIRE_BROWSER_ACCEPTANCE") == "1":
             pytest.fail(f"Required browser acceptance dependency missing: {exc}")
@@ -578,17 +562,31 @@ def test_verification_workflow_journey_playwright(journey_console_server):
             policy_tab_btn = page.locator("button:has-text('Policy & Guardrails')")
             assert policy_tab_btn.count() > 0
             policy_tab_btn.first.click()
-            time.sleep(0.3)
 
-            # Strict 3-state assurance: Exactly one must be present
-            pass_state = page.locator("[data-testid='policy-state-pass']").count()
-            fail_state = page.locator("[data-testid='policy-state-fail']").count()
-            not_verified_state = page.locator("[data-testid='policy-state-not-verified']").count()
-
-            total_active_states = pass_state + fail_state + not_verified_state
-            assert total_active_states == 1, (
-                f"Policy tab must render strictly one canonical state, found "
-                f"pass={pass_state}, fail={fail_state}, not_verified={not_verified_state}"
+            # This fixture has an invalid signature, not affirmative compliance
+            # and not proof that no policy evidence exists. Wait for hydration
+            # rather than sampling obsolete state IDs after a fixed sleep.
+            policy_states = page.locator("[data-testid^='policy-state-']")
+            expect(policy_states).to_have_count(1, timeout=JOURNEY_UI_TIMEOUT_MS)
+            failed_verification = page.get_by_test_id("policy-state-verification_failed")
+            expect(failed_verification).to_be_visible(timeout=JOURNEY_UI_TIMEOUT_MS)
+            expect(failed_verification).to_contain_text(
+                "NOT VERIFIED / SIGNATURE OR AUTHORITY VERIFICATION FAILED",
+                timeout=JOURNEY_UI_TIMEOUT_MS,
+            )
+            expect(failed_verification).not_to_contain_text("NO POLICY CHECKS RECORDED")
+            package_response = page.request.get(f"{base_url}/api/v1/evidence/packages/{RUN_ID}")
+            assert package_response.status == 200
+            verification_errors = package_response.json()["cryptographic_verification"]["errors"]
+            assert verification_errors
+            expect(failed_verification.get_by_role("alert")).to_contain_text(
+                verification_errors[0], timeout=JOURNEY_UI_TIMEOUT_MS
+            )
+            assert (
+                page.get_by_text(
+                    "PASS — Authoritative Policy Evidence Verified", exact=True
+                ).count()
+                == 0
             )
 
             browser.close()

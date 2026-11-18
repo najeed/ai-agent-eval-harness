@@ -814,8 +814,8 @@ def test_scenario_json_schema_draft07_lifecycle_validation_and_rejection(client,
         }
     }
     verifier = SessionStateParityVerifier(session_manager=session_mock)
-    mock_connector = AsyncMock()
-    mock_connector.fetch_state.return_value = {"record_id": "REC-99"}
+    mock_connector = MagicMock()
+    mock_connector.fetch_state = AsyncMock(return_value={"record_id": "REC-99"})
     mock_connector.observation_identity.return_value = {"authenticated": False}
     state_authority_registry.register_authority("um_meta", mock_connector)
 
