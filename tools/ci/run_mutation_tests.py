@@ -41,8 +41,9 @@ import subprocess
 import sys
 import threading
 import time
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -213,6 +214,7 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_trace_verification_rejects_malformed_inputs_before_provider_access",
                 "test_verify_trace_requires_provider_owned_bytes",
             ),
+            "verify_trace_async": ("test_verifier_signer_and_utilities_full_coverage",),
             "verify_run": (
                 "test_live_signed_certificate_honors_explicit_provisional_designation",
                 "test_verify_run_reads_only_the_supplied_provider",
@@ -273,10 +275,10 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 ("sign_trace_bytes", 642, "evidence_root_hash", "__mutation_missing_commitment__"),
                 ("sign_trace_bytes", 665, "evidence_root_hash", "__mutation_missing_commitment__"),
                 ("sign_trace_bytes", 668, "evidence_root_hash", "__mutation_missing_commitment__"),
-                ("verify_trace_certificate", 1911, "and", "or"),
-                ("verify_trace_certificate", 1919, "and", "or"),
-                ("verify_package_artifacts", 2505, "and", "or"),
-                ("verify_package", 3068, "and", "or"),
+                ("verify_trace_certificate", 1946, "and", "or"),
+                ("verify_trace_certificate", 1954, "and", "or"),
+                ("verify_package_artifacts", 2540, "and", "or"),
+                ("verify_package", 3103, "and", "or"),
                 ("sign_trace_bytes", 898, "or", "and"),
             }
         ),
@@ -307,19 +309,19 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "stored root only when the filtered root equals the declared root; an "
                 "already-matching root is unchanged, and an absent hint cannot match a hash."
             ),
-            ("verify_trace_certificate", 1911, "and", "or"): (
+            ("verify_trace_certificate", 1946, "and", "or"): (
                 "Equivalent for supported JSON evidence: filtering is an extra fallback; "
                 "its result is adopted only if it matches the expected root already verified."
             ),
-            ("verify_trace_certificate", 1919, "and", "or"): (
+            ("verify_trace_certificate", 1954, "and", "or"): (
                 "Equivalent for supported JSON evidence: the extra fallback only replaces "
                 "the graph when its root equals the expected, already-matched root."
             ),
-            ("verify_package_artifacts", 2505, "and", "or"): (
+            ("verify_package_artifacts", 2540, "and", "or"): (
                 "Equivalent for graph-builder outputs (dict or None): both branches yield "
                 "the same nodes; an empty dict has no nodes and defaults to []."
             ),
-            ("verify_package", 3068, "and", "or"): (
+            ("verify_package", 3103, "and", "or"): (
                 "Equivalent redundant-parse guard: replacing and with or only recomputes the "
                 "canonical evidence graph when roots already match (adopting the identical root), "
                 "leaving EvidenceRootMismatch and package validity completely unchanged."
@@ -337,6 +339,10 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
         ),
         frozenset({"execute", "_execute_core", "get_bounded_state", "_sanitize_path", "fork"}),
         scope_test_names={
+            "fork": (
+                "test_branch_join_atomically_rejects_conflicts_and_preserves_disjoint_deltas",
+                "test_branch_join_merges_stateful_simulator_deltas_without_sharing_instances",
+            ),
             "_execute_core": (
                 "test_policy_denial_without_detailed_violations_still_blocks_the_write",
                 "test_policy_input_commitment_supports_yaml_date_values",
@@ -377,6 +383,7 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
             }
         ),
         scope_test_names={
+            "is_certification_mode": ("test_handle_event_unowned_and_signing_failures",),
             "bind_run_provider": ("test_bind_and_release_run_provider_edge_cases",),
             "handle_event": (
                 "test_handle_event_unowned_and_signing_failures",
@@ -418,6 +425,19 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "rollback_run_lifecycle_to_open",
             }
         ),
+        scope_test_names={
+            scope: (
+                "test_run_lifecycle_edge_branches",
+                "test_run_lifecycle_comprehensive_coverage",
+            )
+            for scope in (
+                "get_run_lifecycle_state",
+                "transition_run_lifecycle",
+                "can_write_trace",
+                "assert_can_write_trace",
+                "rollback_run_lifecycle_to_open",
+            )
+        },
     ),
     CriticalMutationTarget(
         BASE_DIR / "eval_runner" / "session.py",
@@ -833,6 +853,29 @@ CRITICAL_MUTATION_TARGETS += (
     ),
 )
 
+# Select only the relevant guard contracts in each fresh target control.
+FAULT_GUARD_CORPORA: dict[str, tuple[str, ...]] = {
+    "approval_validation.py": (
+        "tests/unit/core/test_fault_delivery_guard_contracts.py::test_payload_hash_requires_two_string_values",
+        "tests/unit/core/test_fault_delivery_guard_contracts.py::test_payload_hash_string_comparison_controls",
+    ),
+    "mutation_rules.py": (
+        "tests/unit/core/test_fault_delivery_guard_contracts.py::test_response_chain_rejects_non_string_or_empty_hash_even_when_consumer_matches",
+        "tests/unit/core/test_fault_delivery_guard_contracts.py::test_response_chain_accepts_bound_string_and_rejects_changed_consumer",
+        "tests/unit/core/test_fault_delivery_guard_contracts.py::test_response_transformation_requires_complete_bound_provenance",
+        "tests/unit/core/test_fault_delivery_guard_contracts.py::test_valid_rollback_receipt_rejects_one_unrelated_malformed_observation",
+    ),
+    "mutation_registry.py": (
+        "tests/unit/core/test_fault_delivery_guard_contracts.py::test_deadline_stimulus_does_not_erase_independent_fault_requirements",
+    ),
+    "tool_contracts.py": (
+        "tests/unit/core/test_fault_delivery_guard_contracts.py::test_unrelated_schema_violation_is_not_injected_contract_delivery",
+    ),
+    "security_evidence.py": (
+        "tests/unit/core/test_fault_delivery_guard_contracts.py::test_security_denial_evidence_records_rejected_not_approved_for_every_oracle",
+    ),
+}
+
 # Extracted boundaries retain sentinel coverage rather than disappearing when
 # guards move out of the sandbox or approval provider modules.
 CRITICAL_MUTATION_TARGETS += tuple(
@@ -850,11 +893,13 @@ CRITICAL_MUTATION_TARGETS += tuple(
                 "tests/unit/core/test_approval_store.py::test_durable_expiry_preserves_bindings_and_cannot_be_republished",
                 "tests/unit/core/test_approval_store.py::test_durable_expiry_rejects_invalid_authorization_without_writes",
                 "tests/unit/core/test_runtime_mutation_plugin.py::test_atomic_approval_consumption_across_provider_instances",
+                *FAULT_GUARD_CORPORA[filename],
             )
             if filename == "approval_validation.py"
             else (
                 "tests/unit/core/test_runtime_mutation_plugin.py",
                 "tests/unit/core/test_approval_store.py",
+                *FAULT_GUARD_CORPORA.get(filename, ()),
             )
         ),
         frozenset(scopes),
@@ -870,6 +915,8 @@ CRITICAL_MUTATION_TARGETS += tuple(
                     "test_durable_expiry_rejects_invalid_authorization_without_writes",
                 ),
                 "payload_hash_matches": (
+                    "test_payload_hash_requires_two_string_values",
+                    "test_payload_hash_string_comparison_controls",
                     "test_approval_consumption_validates_every_authorization_binding",
                 ),
                 "validate_expiry": (
@@ -1008,11 +1055,15 @@ CRITICAL_MUTATION_TARGETS += tuple(
             ("valid_extended_observations", "_valid_response_chain"),
             {
                 "_valid_response_chain": (
+                    "test_response_transformation_requires_complete_bound_provenance",
+                    "test_response_chain_rejects_non_string_or_empty_hash_even_when_consumer_matches",
+                    "test_response_chain_accepts_bound_string_and_rejects_changed_consumer",
                     "test_replay_composes_with_bound_response_corruption",
                     "test_duplicate_execution_composes_with_verified_response_corruption",
                     "test_faults_reach_real_session_consumer_with_bound_proofs",
                 ),
                 "valid_extended_observations": (
+                    "test_valid_rollback_receipt_rejects_one_unrelated_malformed_observation",
                     "test_malformed_nested_authorization_evidence_returns_failures",
                     "test_replay_composes_with_bound_response_corruption",
                     "test_valid_extended_observations_approval_and_tool_rules",
@@ -1032,12 +1083,39 @@ CRITICAL_MUTATION_TARGETS += tuple(
                 "canonical_fault",
                 "canonical_edit",
             ),
-            {},
+            {
+                "required_deliveries": (
+                    "test_deadline_stimulus_does_not_erase_independent_fault_requirements",
+                ),
+                "capability": (
+                    "test_catalog_capabilities_distinguish_scenario_edits_from_execution_proofs",
+                ),
+                "canonical_edit": ("test_all_core_aliases_have_explicit_capabilities",),
+                "canonical_fault": ("test_all_core_aliases_have_explicit_capabilities",),
+                "selected_faults": (
+                    "test_runtime_and_certification_compile_the_same_approval_fault",
+                    "test_empty_malformed_payload_requires_a_bound_delivery_receipt",
+                ),
+                "runtime_plan": (
+                    "test_boundary_mutations_compile_requests_without_fabricating_results",
+                ),
+            },
         ),
         (
             "tool_contracts.py",
             ("argument_schema", "argument_error", "contract_violation"),
-            {},
+            {
+                "contract_violation": (
+                    "test_unrelated_schema_violation_is_not_injected_contract_delivery",
+                ),
+                "argument_schema": (
+                    "test_tool_contract_requires_observed_schema_rejection_and_consumer_receipt",
+                ),
+                "argument_error": (
+                    "test_preexisting_contract_violation_cannot_be_reported_as_injected",
+                    "test_tool_contract_requires_observed_schema_rejection_and_consumer_receipt",
+                ),
+            },
         ),
     )
 )
@@ -1048,13 +1126,45 @@ CRITICAL_MUTATION_TARGETS += (
         (
             "tests/unit/core/test_security_preflight_evidence.py",
             "tests/unit/core/test_security_preflight_failure_evidence.py",
+            *FAULT_GUARD_CORPORA["security_evidence.py"],
         ),
         frozenset({"record_security_rejection", "security_rejection_oracles"}),
+        scope_test_names={
+            scope: ("test_security_denial_evidence_records_rejected_not_approved_for_every_oracle",)
+            for scope in ("record_security_rejection", "security_rejection_oracles")
+        },
     ),
     CriticalMutationTarget(
         BASE_DIR / "eval_runner" / "session_components" / "state_parity.py",
         ("tests/unit/core/test_state_authority.py", "tests/unit/core/test_parity_hardened.py"),
         frozenset({"capture_external_prestate", "preexecution_failure", "_resolve_target"}),
+        scope_test_names={
+            "capture_external_prestate": (
+                "test_state_parity_verifier_external_evidence_target_and_prestate",
+                "test_required_authority_prestate_stops_before_agent_and_hitl",
+            ),
+            "preexecution_failure": (
+                "test_optional_unobservable_prestate_does_not_block_dispatch",
+                "test_required_prestate_is_not_waived_by_optional_peer",
+            ),
+            "_resolve_target": (
+                "test_state_parity_verifier_external_evidence_target_and_prestate",
+                "test_state_parity_verifier_policy_spec_resolution_branches",
+                "test_live_state_observation_allows_configured_unauthenticated_authority",
+            ),
+        },
+    ),
+    CriticalMutationTarget(
+        BASE_DIR / "eval_runner" / "observation_signing.py",
+        ("tests/unit/core/test_http_observation_signing.py",),
+        frozenset({"sign_observation"}),
+        scope_test_names={
+            "sign_observation": (
+                "test_http_receipts_reuse_system_signer_without_hmac",
+                "test_http_observer_never_falls_back_from_selected_backend",
+                "test_local_signer_rejects_mismatched_system_anchor",
+            )
+        },
     ),
 )
 
@@ -1825,22 +1935,33 @@ def _test_source_path(selector: str) -> Path:
     return BASE_DIR / selector.split("::", 1)[0]
 
 
+@lru_cache(maxsize=128)
+def _test_definition_names(source: str) -> tuple[str, ...]:
+    """Reuse immutable AST metadata only when the exact source bytes match."""
+    return tuple(
+        node.name
+        for node in ast.walk(ast.parse(source))
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef)
+        and node.name.startswith("test_")
+    )
+
+
 def _map_test_names_to_files(tests: list[str]) -> dict[str, str]:
     """Map each declared test function name to its defining test file."""
     name_to_file: dict[str, str] = {}
-    for test_path in tests:
+    # Preserve the original last-file precedence for duplicate test names,
+    # while reading each file only once even with interleaved node selectors.
+    unique_paths = dict.fromkeys(selector.split("::", 1)[0] for selector in reversed(tests))
+    for test_path in reversed(unique_paths):
         file_path = test_path.split("::", 1)[0].replace("\\", "/")
         try:
-            tree = ast.parse(_test_source_path(test_path).read_text(encoding="utf-8"))
+            names = _test_definition_names(_test_source_path(test_path).read_text(encoding="utf-8"))
         except (OSError, SyntaxError, UnicodeDecodeError) as err:
             raise RuntimeError(
                 f"Cannot inspect configured mutation test {test_path}: {err}"
             ) from err
-        for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef) and node.name.startswith(
-                "test_"
-            ):
-                name_to_file[node.name] = file_path
+        for name in names:
+            name_to_file[name] = file_path
     return name_to_file
 
 
@@ -1908,6 +2029,41 @@ def _partition_scope_primers(
         else:
             remainder.append(point)
     return primers, remainder
+
+
+def _evaluate_primed_scopes(
+    points: list[MutationPoint],
+    evaluate: Callable,
+    workers: int,
+    on_result: Callable,
+    on_idle: Callable,
+) -> list:
+    """Prime independent scopes concurrently; release siblings after their primer."""
+    primers, remainder = _partition_scope_primers(points)
+    siblings: dict[str, list[MutationPoint]] = {}
+    for point in remainder:
+        siblings.setdefault(point.scope, []).append(point)
+    results = []
+    released: set[str] = set()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
+        pending = {pool.submit(evaluate, point): point for point in primers}
+        while pending:
+            completed, _ = concurrent.futures.wait(
+                pending, timeout=10.0, return_when=concurrent.futures.FIRST_COMPLETED
+            )
+            if not completed:
+                on_idle(min(max(1, workers), len(pending)))
+                continue
+            for future in completed:
+                point = pending.pop(future)
+                result = future.result()
+                results.append(result)
+                on_result(result)
+                if point.scope not in released:
+                    released.add(point.scope)
+                    for sibling in siblings.get(point.scope, []):
+                        pending[pool.submit(evaluate, sibling)] = sibling
+    return results
 
 
 def _sha3_file(path: Path) -> str:
@@ -2147,10 +2303,11 @@ def evaluate_mutant(
             if res.returncode != 0 and not _collected_no_tests(res.returncode):
                 return "indeterminate"
 
-        # Phase 3: Fallback scoped module corpus
+        # Phase 3: The complete configured corpus must pass before declaring
+        # survival. Scoped files are only a fast path for finding a kill.
         if module_timing is not None:
             module_timing.record_full_corpus_fallback()
-        fallback_tests = scoped_test_files if scoped_test_files else tests
+        fallback_tests = tests
         full_flags = FAST_PYTEST_FLAGS + ["-x"]
         args_str = repr(fallback_tests + full_flags)
         loader_code = _make_loader_code(mutant_source, target_resolved, module_name, args_str)
@@ -2201,9 +2358,13 @@ def verify_sentinel_preconditions(
     targets_to_check = active_targets if active_targets is not None else list(TARGET_MODULES)
     print("\n1. Running Self-Validating Sentinel Precondition Checks...")
     print("   [Bytecode Warmup] Pre-compiling bytecode across target modules and tests...")
-    compileall.compile_dir(str(BASE_DIR / "eval_runner"), quiet=1, force=False)
-    compileall.compile_dir(str(BASE_DIR / "agentv_runtime"), quiet=1, force=False)
-    compileall.compile_dir(str(BASE_DIR / "tests"), quiet=1, force=False)
+    warmup_files = {BASE_DIR / "tests" / "conftest.py", *targets_to_check}
+    for target in targets_to_check:
+        warmup_files.update(_test_source_path(selector) for selector in _tests_for_module(target))
+    # Transitive imports compile normally. Avoid traversing every repository
+    # test and runtime module just to prepare a selected target's control.
+    for path in sorted(warmup_files):
+        compileall.compile_file(str(path), quiet=1, force=False)
 
     # Check target modules existence
     for target in targets_to_check:
@@ -2454,32 +2615,14 @@ def _evaluate_target_module(
         )
         return status, mp.description, mp
 
-    evaluations: list[tuple[str, str, MutationPoint]] = []
     progress.start()
-    # Prime exactly one mutant per source scope before concurrent fan-out.
-    # Once a primer identifies its killer, sibling mutants start with that one
-    # test rather than racing to repeat an expensive full-corpus fallback.
-    primers, remainder = _partition_scope_primers(sampled)
-    for primer in primers:
-        result = _eval_one(primer)
-        evaluations.append(result)
-        progress.report(result[0], f"{result[2].scope}: {result[1]}")
-
-    with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as pool:
-        pending = {pool.submit(_eval_one, mp) for mp in remainder}
-        while pending:
-            completed, pending = concurrent.futures.wait(
-                pending,
-                timeout=10.0,
-                return_when=concurrent.futures.FIRST_COMPLETED,
-            )
-            if not completed:
-                progress.heartbeat(min(num_workers, len(pending)))
-                continue
-            for future in completed:
-                result = future.result()
-                evaluations.append(result)
-                progress.report(result[0], f"{result[2].scope}: {result[1]}")
+    evaluations = _evaluate_primed_scopes(
+        sampled,
+        _eval_one,
+        num_workers,
+        lambda result: progress.report(result[0], f"{result[2].scope}: {result[1]}"),
+        progress.heartbeat,
+    )
     progress.close()
 
     # Timeout retries run only after every parallel worker has completed so

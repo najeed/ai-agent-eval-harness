@@ -822,6 +822,8 @@ def test_run_verify_endpoint_preserves_independent_validity_dimensions(run_app_a
         "certificate_authoritative": True,
         "verification_status": "ATTESTED_FAIL",
         "claim_scope": "external_business_state",
+        "failure_reason": "Signature check failed for system_id",
+        "failures": ["Signature check failed for system_id"],
     }
 
     with patch("eval_runner.verifier.TraceVerifier.verify_run", return_value=mock_verif_result):
@@ -837,6 +839,8 @@ def test_run_verify_endpoint_preserves_independent_validity_dimensions(run_app_a
         assert data["verification_status"] == "ATTESTED_FAIL"
         assert data["algorithm"] == "ED25519"
         assert data["signer_identity"] == "sec-oracle"
+        assert data["failure_reason"] == mock_verif_result["failure_reason"]
+        assert data["failures"] == mock_verif_result["failures"]
 
 
 def test_readiness_blocks_tampered_or_unverified_runs():

@@ -230,47 +230,6 @@ def test_extract_scenario_nodes_branches():
     assert _extract_scenario_nodes({"workflow": {"nodes": "invalid"}}) == []
 
 
-def test_authority_is_independent_exhaustive():
-    from eval_runner.certification_truth import authority_is_independent
-
-    # No agent declared -> fails closed (returns False)
-    assert authority_is_independent("https://auth.example.com", {}) is False
-
-    # Agent matches authority URL -> False
-    scen_matching = {
-        "metadata": {"agent": {"endpoint": "https://same-host.example.com"}},
-    }
-    assert authority_is_independent("https://same-host.example.com/state", scen_matching) is False
-
-    # Agent differs from authority URL -> True
-    assert (
-        authority_is_independent("https://different-host.example.com/state", scen_matching) is True
-    )
-
-    # Agent declared as direct string URL
-    scen_str = {"agent": "https://agent-str.example.com"}
-    assert authority_is_independent("https://agent-str.example.com/api", scen_str) is False
-    assert authority_is_independent("https://other-str.example.com/api", scen_str) is True
-
-    # Execution manifest with to_dict and runtime_config
-    class MockManifestObj:
-        def to_dict(self):
-            return {"runtime_config": {"agent": {"url": "https://manifest-agent.example.com"}}}
-
-    assert (
-        authority_is_independent(
-            "https://manifest-agent.example.com", {}, execution_manifest=MockManifestObj()
-        )
-        is False
-    )
-    assert (
-        authority_is_independent(
-            "https://other.example.com", {}, execution_manifest=MockManifestObj()
-        )
-        is True
-    )
-
-
 def test_unsupported_mutation_failures_exhaustive():
     from eval_runner.certification_truth import unsupported_mutation_failures
 
@@ -557,7 +516,7 @@ def test_state_claim_failures_exhaustive(monkeypatch):
     # Verify baseline valid passes with 0 failures
     assert state_claim_failures(scen_valid, valid_events, run_id="run_100") == []
 
-    # 7. Undeclared or non-HTTPS authority URL
+    # 7. A configured HTTP URL still requires receipts bound to that URL
     scen_http_auth = {
         "metadata": {
             "state_authorities": {"orders": {"url": "http://insecure.example.com"}},
@@ -565,11 +524,12 @@ def test_state_claim_failures_exhaustive(monkeypatch):
         },
         "workflow": [{"id": "n1", "expected_outcome": [valid_assertion]}],
     }
-    assert "AuthenticatedStateAuthorityUndeclared:n1:orders" in state_claim_failures(
-        scen_http_auth, valid_events, run_id="run_100"
+    assert any(
+        "InvalidIndependentStateEvidence" in failure
+        for failure in state_claim_failures(scen_http_auth, valid_events, run_id="run_100")
     )
 
-    # 8. Agent cannot be its own state authority
+    # 8. Same-origin deployment still requires the configured state source binding
     scen_self_auth = {
         "metadata": {
             "state_authorities": {"orders": {"url": "https://agent.example.com"}},
@@ -577,8 +537,9 @@ def test_state_claim_failures_exhaustive(monkeypatch):
         },
         "workflow": [{"id": "n1", "expected_outcome": [valid_assertion]}],
     }
-    assert "AgentCannotBeItsOwnStateAuthority:n1:orders" in state_claim_failures(
-        scen_self_auth, valid_events, run_id="run_100"
+    assert any(
+        "InvalidIndependentStateEvidence" in failure
+        for failure in state_claim_failures(scen_self_auth, valid_events, run_id="run_100")
     )
 
     # 9. No carriers found for node
@@ -1411,27 +1372,74 @@ def test_state_claim_receipt_and_temporal_validation_branches(monkeypatch):
     )
 
 
-def test_authority_is_independent_missing_branch_coverage():
-    from eval_runner.certification_truth import authority_is_independent
+# Superseded host-separation policy; retained at user request.
+# Current signed HTTP certification tests cover same-host and undeclared-agent deployments.
+# def test_authority_is_independent_exhaustive():
+#     from eval_runner.certification_truth import authority_is_independent
+#
+#     # No agent declared -> fails closed (returns False)
+#     assert authority_is_independent("https://auth.example.com", {}) is False
+#
+#     # Agent matches authority URL -> False
+#     scen_matching = {
+#         "metadata": {"agent": {"endpoint": "https://same-host.example.com"}},
+#     }
+#     assert authority_is_independent("https://same-host.example.com/state", scen_matching) is False
+#
+#     # Agent differs from authority URL -> True
+#     assert (
+#         authority_is_independent(
+#             "https://different-host.example.com/state", scen_matching
+#         ) is True
+#     )
+#
+#     # Agent declared as direct string URL
+#     scen_str = {"agent": "https://agent-str.example.com"}
+#     assert authority_is_independent("https://agent-str.example.com/api", scen_str) is False
+#     assert authority_is_independent("https://other-str.example.com/api", scen_str) is True
+#
+#     # Execution manifest with to_dict and runtime_config
+#     class MockManifestObj:
+#         def to_dict(self):
+#             return {"runtime_config": {"agent": {"url": "https://manifest-agent.example.com"}}}
+#
+#     assert (
+#         authority_is_independent(
+#             "https://manifest-agent.example.com", {}, execution_manifest=MockManifestObj()
+#         )
+#         is False
+#     )
+#     assert (
+#         authority_is_independent(
+#             "https://other.example.com", {}, execution_manifest=MockManifestObj()
+#         )
+#         is True
+#     )
 
-    auth_url = "https://orders.example.com"
-    # execution_manifest is not Mapping (branch 84->91)
-    assert (
-        authority_is_independent(
-            auth_url,
-            {"agent": "https://agent.example.com"},
-            execution_manifest="not_a_map",
-        )
-        is True
-    )
 
-    # scenario metadata is not Mapping (branch 92->94)
-    assert (
-        authority_is_independent(
-            auth_url, {"metadata": "not_a_map", "agent": "https://agent.example.com"}
-        )
-        is True
-    )
-
-    # agent dict has empty/whitespace endpoint (branch 100->97)
-    assert authority_is_independent(auth_url, {"agent": {"endpoint": "   "}}) is False
+# Superseded host-separation policy; retained at user request.
+# Current signed HTTP certification tests cover same-host and undeclared-agent deployments.
+# def test_authority_is_independent_missing_branch_coverage():
+#     from eval_runner.certification_truth import authority_is_independent
+#
+#     auth_url = "https://orders.example.com"
+#     # execution_manifest is not Mapping (branch 84->91)
+#     assert (
+#         authority_is_independent(
+#             auth_url,
+#             {"agent": "https://agent.example.com"},
+#             execution_manifest="not_a_map",
+#         )
+#         is True
+#     )
+#
+#     # scenario metadata is not Mapping (branch 92->94)
+#     assert (
+#         authority_is_independent(
+#             auth_url, {"metadata": "not_a_map", "agent": "https://agent.example.com"}
+#         )
+#         is True
+#     )
+#
+#     # agent dict has empty/whitespace endpoint (branch 100->97)
+#     assert authority_is_independent(auth_url, {"agent": {"endpoint": "   "}}) is False

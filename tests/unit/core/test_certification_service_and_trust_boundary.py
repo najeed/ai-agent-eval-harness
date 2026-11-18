@@ -443,23 +443,6 @@ def test_independent_state_claim_verifier_recomputes_source_and_content_binding(
         assert any("AuthoritativeRunIdentityRequired" in f for f in failures)
 
 
-def test_state_authority_independence_enforces_execution_manifest_endpoint():
-    from eval_runner.certification_truth import authority_is_independent
-
-    url = "https://authority.example/state"
-    scenario = {
-        "metadata": {
-            "agent": {"endpoint": "https://independent-agent.example/api"},
-        }
-    }
-    # Independent scenario endpoint passes
-    assert authority_is_independent(url, scenario) is True
-
-    # Execution manifest overrides agent endpoint to match authority origin -> fails closed
-    conflict_manifest = {"agent_config": {"endpoint": "https://authority.example/api"}}
-    assert authority_is_independent(url, scenario, execution_manifest=conflict_manifest) is False
-
-
 def test_certification_rollback_failure_preserves_signing_error(provider, monkeypatch, caplog):
     run_id = "rollback-observability"
     scenario = _seed_run(provider, run_id)
@@ -649,6 +632,119 @@ def _seed_run(
     return scenario
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize("agent_endpoint", [None, "same_origin"])
+@pytest.mark.parametrize("source_style", ["named", "direct_url"])
+async def test_configured_http_state_can_issue_and_detached_verify_certificate(
+    provider, monkeypatch, aiohttp_client, agent_endpoint, source_style
+):
+    from types import SimpleNamespace
+
+    from aiohttp import web
+
+    from agentv_runtime.package import VerificationPackage
+    from eval_runner.reference.signing import LocalEd25519SigningBackend
+    from eval_runner.session_components.state_parity import SessionStateParityVerifier
+    from eval_runner.verifier import VerificationAuthority
+
+    requests = []
+
+    async def state(request):
+        requests.append(request.path)
+        return web.json_response({"status": "pending" if len(requests) == 1 else "approved"})
+
+    app = web.Application()
+    app.router.add_get("/healthcare/state", state)
+    client = await aiohttp_client(app)
+    url = str(client.make_url("/healthcare/state"))
+    monkeypatch.setenv(
+        "AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST", str(client.make_url("/")).rstrip("/")
+    )
+    monkeypatch.delenv("AGENTV_STATE_AUTHORITY_KEY", raising=False)
+    monkeypatch.delenv("STATE_AUTHORITY_KEY", raising=False)
+
+    def forbidden_hmac():
+        raise AssertionError("HTTP observation must not require another deployment secret")
+
+    monkeypatch.setattr("eval_runner.state_authority.get_state_authority_trust_key", forbidden_hmac)
+    run_id = "configured-http-certification"
+    node = {
+        "id": "review",
+        "expected_outcome": [
+            {
+                "oracle_id": "oracle-1",
+                "target": "authority:healthcare",
+                "property": "status",
+                "expected": "approved",
+            }
+        ],
+    }
+    scenario = {
+        "id": "configured-http",
+        "version": "1.0.0",
+        "required_oracles": ["oracle-1"],
+        "metadata": {"state_authorities": {"healthcare": {"url": url}}},
+        "workflow": {"nodes": [node], "edges": []},
+    }
+    if source_style == "direct_url":
+        node["expected_outcome"][0]["target"] = "authority:" + url
+        scenario["metadata"].pop("state_authorities")
+    if agent_endpoint:
+        scenario["metadata"]["agent"] = {"endpoint": str(client.make_url("/agent"))}
+    verifier = SessionStateParityVerifier(
+        SimpleNamespace(
+            scenario=scenario,
+            execution_mode="live",
+            run_id=run_id,
+            current_execution_instance_id="review:1",
+            signing_backend=LocalEd25519SigningBackend(),
+        )
+    )
+    before = await verifier.capture_external_prestate(node, None, [])
+    assert verifier.preexecution_failure(node, before) is None
+    passed, evidence = await verifier.verify_state_parity(
+        node, None, [], external_state_before=before
+    )
+    assert passed
+    assert requests == ["/healthcare/state", "/healthcare/state"]
+    for phase in ("pre", "post"):
+        identity = evidence[0][f"{phase}_observation_identity"]
+        assert identity["authenticated"] is False
+        assert identity["transport"] == "http"
+        assert identity["connector_receipt"]["algorithm"] == "ed25519"
+    _seed_run(
+        provider,
+        run_id,
+        scenario_override=scenario,
+        extra_events=[
+            {
+                "event": "execution_graph_node",
+                "scenario_node_id": "review",
+                "execution_instance_id": "review:1",
+                "status": "completed",
+                "transition_evidence": evidence,
+            }
+        ],
+    )
+    certificate = execute_industrial_certification(
+        run_id, run_store=provider, scenario_data=scenario
+    )["manifest"]
+    live_verification = TraceVerifier.verify_run(run_id, run_store=provider)
+    assert live_verification["verified"] is True, live_verification
+    package = VerificationPackage.from_dict(certificate["verification_package"])
+    # Detached verification has public trust only; issuer private keys are absent.
+    for identity in ("system_id", "eval_kernel"):
+        (config.TRUST_ROOT / identity / "private_key.pem").unlink()
+    result = VerificationAuthority.verify_package(
+        package,
+        raw_trace_bytes=provider.get_trace_bytes(run_id),
+        canonical_manifest=certificate["execution_manifest"],
+        scenario_data=scenario,
+    )
+    assert result["certified"] is True, result["failures"]
+    assert result["authoritative"] is True
+
+
 def test_certification_signs_provider_owned_exact_trace_bytes(provider):
     run_id = "provider-certification-pass"
     scenario = _seed_run(provider, run_id)
@@ -661,6 +757,51 @@ def test_certification_signs_provider_owned_exact_trace_bytes(provider):
     assert TraceVerifier.verify_trace(
         provider.get_trace_bytes(run_id), manifest, run_store=provider
     )
+
+
+def test_run_verification_preserves_certificate_failure_details(provider, monkeypatch):
+    run_id = "certificate-diagnostic-failure"
+    scenario = _seed_run(provider, run_id)
+    execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+    certificate = copy.deepcopy(provider.get_manifest(run_id))
+    # A presented certificate with altered signed metadata must still fail;
+    # the caller must receive the signature verifier's reason, not just a boolean.
+    certificate["policy_ref"] = "changed-after-signing"
+    monkeypatch.setattr(provider, "get_manifest", lambda *args, **kwargs: certificate)
+    result = TraceVerifier.verify_run(run_id, run_store=provider)
+    assert result["file_integrity_valid"] is True
+    assert result["is_valid"] is False
+    assert result["cryptographically_valid"] is False
+    assert result["failures"]
+    assert any("signature" in reason.lower() for reason in result["failures"])
+    assert result["failure_reason"] == "; ".join(result["failures"])
+
+
+def test_authority_diagnostic_error_preserves_primary_reason_and_signature_validity(
+    provider, monkeypatch
+):
+    from eval_runner.verifier import VerificationAuthority
+
+    run_id = "independent-diagnostic-failures"
+    scenario = _seed_run(provider, run_id)
+    execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+
+    def primary_failure(*args, **kwargs):
+        raise RuntimeError("Primary verifier unavailable")
+
+    def authority_failure(*args, **kwargs):
+        raise RuntimeError("Authority diagnostic unavailable")
+
+    monkeypatch.setattr(TraceVerifier, "verify_trace_bytes", primary_failure)
+    monkeypatch.setattr(VerificationAuthority, "verify_certification_artifact", authority_failure)
+    result = TraceVerifier.verify_run(run_id, run_store=provider)
+    assert result["is_valid"] is False
+    assert result["certificate_authoritative"] is False
+    assert result["certificate_valid"] is False
+    assert result["file_integrity_valid"] is True
+    assert result["cryptographically_valid"] is True
+    assert "Verification error: Primary verifier unavailable" in result["failure_reason"]
+    assert "Authority verification error: Authority diagnostic unavailable" in result["failures"]
 
 
 def test_failed_evaluation_is_attested_but_never_certified(provider):
@@ -2829,30 +2970,32 @@ async def test_ci_gate_rejects_a_valid_negative_attestation(provider, monkeypatc
     assert await handle_gate(SimpleNamespace(run_id="negative", hash=None)) == 1
 
 
-def test_authority_is_independent_fails_closed_without_agent_endpoint():
-    """authority_is_independent fails closed when agent endpoint is undeclared."""
-    from eval_runner.certification_truth import authority_is_independent
-
-    url = "https://authority.example/state"
-
-    # 1. No agent declared -> fails closed (False)
-    scenario_no_agent = {"metadata": {"state_authorities": {"auth": {"url": url}}}}
-    assert authority_is_independent(url, scenario_no_agent) is False
-
-    # 2. Agent declared with same origin -> rejected (False)
-    scenario_same_origin = {
-        "metadata": {
-            "agent": {"endpoint": "https://authority.example/agent"},
-            "state_authorities": {"auth": {"url": url}},
-        }
-    }
-    assert authority_is_independent(url, scenario_same_origin) is False
-
-    # 3. Agent declared with distinct origin -> accepted (True)
-    scenario_independent = {
-        "metadata": {
-            "agent": {"endpoint": "https://agent.example/agent"},
-            "state_authorities": {"auth": {"url": url}},
-        }
-    }
-    assert authority_is_independent(url, scenario_independent) is True
+# Superseded host-separation policy; retained at user request.
+# Current signed HTTP certification tests cover same-host and undeclared-agent deployments.
+# def test_authority_is_independent_fails_closed_without_agent_endpoint():
+#     """authority_is_independent fails closed when agent endpoint is undeclared."""
+#     from eval_runner.certification_truth import authority_is_independent
+#
+#     url = "https://authority.example/state"
+#
+#     # 1. No agent declared -> fails closed (False)
+#     scenario_no_agent = {"metadata": {"state_authorities": {"auth": {"url": url}}}}
+#     assert authority_is_independent(url, scenario_no_agent) is False
+#
+#     # 2. Agent declared with same origin -> rejected (False)
+#     scenario_same_origin = {
+#         "metadata": {
+#             "agent": {"endpoint": "https://authority.example/agent"},
+#             "state_authorities": {"auth": {"url": url}},
+#         }
+#     }
+#     assert authority_is_independent(url, scenario_same_origin) is False
+#
+#     # 3. Agent declared with distinct origin -> accepted (True)
+#     scenario_independent = {
+#         "metadata": {
+#             "agent": {"endpoint": "https://agent.example/agent"},
+#             "state_authorities": {"auth": {"url": url}},
+#         }
+#     }
+#     assert authority_is_independent(url, scenario_independent) is True

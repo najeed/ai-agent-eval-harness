@@ -19,6 +19,40 @@ from eval_runner.console.routes.evidence import (
 )
 
 
+@pytest.mark.parametrize("outcome", ["PASS", "FAIL", "INVALID", "NOT_EVALUATED"])
+def test_observed_policy_results_survive_later_nodes_and_duplicate_carriers(outcome):
+    from eval_runner.console.routes.evidence import _collect_observed_assertions
+
+    policy = {
+        "oracle_id": "policy:human_review_before_adverse_commit",
+        "requiredness": "REQUIRED",
+        "outcome": outcome,
+        "passed": outcome == "PASS",
+    }
+    review = {
+        "event": "execution_graph_node",
+        "scenario_node_id": "physician_review",
+        "oracle_results": [policy],
+    }
+    observations = _collect_observed_assertions(
+        [
+            review,
+            {"event": "execution_graph_node", "data": review},
+            {
+                "event": "execution_graph_node",
+                "data": {
+                    "scenario_node_id": "notify_provider",
+                    "oracle_results": [{"oracle_id": "notification:sent", "outcome": "PASS"}],
+                },
+            },
+        ]
+    )
+    assert len(observations) == 2
+    assert observations[0]["oracle_id"] == policy["oracle_id"]
+    assert observations[0]["outcome"] == outcome
+    assert observations[0]["scenario_node_id"] == "physician_review"
+
+
 @pytest.fixture
 def client(tmp_path, monkeypatch):
     runs_dir = tmp_path / "runs"

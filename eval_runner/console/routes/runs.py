@@ -1232,7 +1232,10 @@ def verify_run(run_id):
             or signer.get("key_id")
             or result.get("signer_identity"),
             **(
-                {"failure_reason": "Trace or certificate verification failed."}
+                {
+                    "failure_reason": result.get("failure_reason")
+                    or "Trace or certificate verification failed."
+                }
                 if not verified
                 else {}
             ),

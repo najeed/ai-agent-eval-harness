@@ -19,6 +19,10 @@ interface VerifyResult {
   policy_compliant?: boolean;
   certificate_authoritative?: boolean;
   claim_scope?: string;
+  file_integrity_valid?: boolean;
+  trace_hash?: string;
+  failures?: string[];
+  failure_reason?: string;
 }
 
 export const TrustCenter: React.FC = () => {
@@ -254,7 +258,7 @@ export const TrustCenter: React.FC = () => {
                     </span>
                   ) : (
                     <span className="bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded flex items-center gap-1">
-                      <XCircle className="w-3 h-3" /> CRYPTOGRAPHIC SEAL INVALID
+                      <XCircle className="w-3 h-3" /> CERTIFICATE VERIFICATION FAILED
                     </span>
                   )}
                 </div>
@@ -276,7 +280,7 @@ export const TrustCenter: React.FC = () => {
                 <div className="bg-slate-950/60 p-2 rounded border border-slate-800 space-y-0.5">
                   <span className="text-[9px] text-slate-500 uppercase font-bold block">1. Cryptographic</span>
                   <span className={`font-mono font-bold ${verifyResult.cryptographically_valid ? 'text-emerald-400' : 'text-red-400'}`}>
-                    {verifyResult.cryptographically_valid ? 'SEALED & VALID' : 'TAMPERED / INVALID'}
+                    {verifyResult.cryptographically_valid ? 'SEALED & VALID' : 'VERIFICATION FAILED'}
                   </span>
                 </div>
                 <div className="bg-slate-950/60 p-2 rounded border border-slate-800 space-y-0.5">
@@ -294,10 +298,21 @@ export const TrustCenter: React.FC = () => {
                   <span className="text-[9px] text-slate-500 uppercase font-bold block">3. Authority</span>
                   <span className={`font-mono font-bold ${verifyResult.certificate_authoritative ? 'text-indigo-400' : 'text-amber-400'
                     }`}>
-                    {verifyResult.certificate_authoritative ? (verifyResult.manifest?.execution_mode?.toUpperCase() || 'AUTHORITATIVE') : 'PROVISIONAL'}
+                    {verifyResult.certificate_authoritative ? (verifyResult.manifest?.execution_mode?.toUpperCase() || 'AUTHORITATIVE') : 'UNVERIFIED'}
                   </span>
                 </div>
               </div>
+
+              {(verifyResult.failure_reason || Boolean(verifyResult.failures?.length)) && (
+                <div role="alert" className="text-xs text-red-300 space-y-1">
+                  <span className="font-bold">Verification details</span>
+                  {verifyResult.failures?.length ? (
+                    <ul className="list-disc pl-4">
+                      {verifyResult.failures.map((failure, index) => <li key={index}>{failure}</li>)}
+                    </ul>
+                  ) : <p>{verifyResult.failure_reason}</p>}
+                </div>
+              )}
 
               <div className="space-y-2 border-t border-slate-800/80 pt-4 text-xs">
                 <div className="flex justify-between">
@@ -310,7 +325,7 @@ export const TrustCenter: React.FC = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Trace Integrity Hash</span>
-                  <span className="text-slate-350 font-mono text-[10px] truncate max-w-[200px]">{verifyResult.manifest?.trace_hash || 'SHA3-256 matches'}</span>
+                  <span className="text-slate-350 font-mono text-[10px] truncate max-w-[200px]">{verifyResult.file_integrity_valid === true ? 'SHA3-256 matches' : verifyResult.file_integrity_valid === false ? 'Hash verification failed' : verifyResult.trace_hash || verifyResult.manifest?.trace_hash || 'Not available'}</span>
                 </div>
               </div>
 

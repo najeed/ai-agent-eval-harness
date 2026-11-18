@@ -116,37 +116,15 @@ class SessionStateParityVerifier:
             raw_ident = (self._observation_identities.get() or {}).get(source, {})
             ident = dict(raw_ident) if isinstance(raw_ident, dict) else {}
             receipt = ident.get("connector_receipt")
-            if (
-                isinstance(receipt, dict)
-                and ident.get("authenticated") is True
-                and (
-                    receipt.get("response_digest") != snapshot_hash or receipt.get("phase") != "pre"
-                )
+            if isinstance(receipt, dict) and (
+                receipt.get("response_digest") != snapshot_hash or receipt.get("phase") != "pre"
             ):
-                from eval_runner.state_authority import create_authenticated_connector_receipt
-
-                fallback_id = (
-                    f"{node.get('id')}:attempt:1"
-                    if isinstance(node, dict) and node.get("id")
-                    else None
-                )
-                exec_id = (
-                    getattr(self.session_manager, "current_execution_instance_id", None)
-                    or fallback_id
-                    or receipt.get("execution_id")
-                    or getattr(self.session_manager, "run_id", None)
-                )
-                ident["connector_receipt"] = create_authenticated_connector_receipt(
-                    connector_id=ident.get("connector_id", ""),
-                    source_id=ident.get("source_id", ""),
-                    is_authenticated=True,
-                    request_spec=receipt.get("request"),
-                    response_digest=snapshot_hash,
-                    execution_id=exec_id,
-                    phase="pre",
-                    run_id=getattr(self.session_manager, "run_id", None),
-                    timestamp=receipt.get("timestamp"),
-                )
+                observations[source] = {
+                    "invalid": True,
+                    "error": "Authority receipt does not bind the captured pre-state and phase",
+                    "error_type": "ObservationReceiptMismatch",
+                }
+                continue
             observations[source] = {
                 "state": copy.deepcopy(observed),
                 "property_path": property_path,
@@ -352,39 +330,50 @@ class SessionStateParityVerifier:
 
             try:
                 connector = state_authority_registry.get_connector(
-                    auth_name, scenario_authorities=scenario_authorities
+                    auth_name,
+                    scenario_authorities=scenario_authorities,
+                    signing_backend=getattr(self.session_manager, "signing_backend", None),
                 )
                 observation_identity = connector.observation_identity()
                 if not isinstance(observation_identity, dict):
                     if inspect.iscoroutine(observation_identity):
                         observation_identity.close()
                     observation_identity = {"authenticated": False}
-                live = getattr(self.session_manager, "execution_mode", None) == "live"
-                declared = (
-                    isinstance(scenario_authorities, dict) and auth_name in scenario_authorities
-                )
-                if live and declared:
-                    from eval_runner.certification_truth import authority_is_independent
-                    from eval_runner.utils import crypto
-
-                    declaration = scenario_authorities[auth_name]
-                    url = (
-                        (declaration.get("url") or declaration.get("endpoint"))
-                        if isinstance(declaration, dict)
-                        else None
-                    )
-                    declared = isinstance(url, str) and observation_identity.get(
-                        "source_id"
-                    ) == "sha3_256:" + crypto.checksum(url.rstrip("/"))
-                if live and declared:
-                    exec_manifest = getattr(self.session_manager, "execution_manifest", None)
-                    declared = authority_is_independent(
-                        url, scenario, execution_manifest=exec_manifest
-                    )
-                if live and (not declared or observation_identity.get("authenticated") is not True):
-                    raise ValueError(
-                        "Independent authenticated authority is required for live state evidence"
-                    )
+                # REMINDER: Revisit administrator-configured observation trust during the
+                # deferred security-contract review. Preserve local HTTP operation and require
+                # an explicit migration plan before introducing stronger source requirements.
+                # Disabled: certification policy previously blocked configured HTTP
+                # sources before HITL. Administrator-selected sources may use HTTP
+                # or share the agent host; signatures and source binding protect
+                # recorded evidence without claiming independent source authorship.
+                # live = getattr(self.session_manager, "execution_mode", None) == "live"
+                # declared = (
+                #     isinstance(scenario_authorities, dict) and auth_name in scenario_authorities
+                # )
+                # if live and declared:
+                #     from eval_runner.certification_truth import authority_is_independent
+                #     from eval_runner.utils import crypto
+                #
+                #     declaration = scenario_authorities[auth_name]
+                #     url = (
+                #         (declaration.get("url") or declaration.get("endpoint"))
+                #         if isinstance(declaration, dict)
+                #         else None
+                #     )
+                #     declared = isinstance(url, str) and observation_identity.get(
+                #         "source_id"
+                #     ) == "sha3_256:" + crypto.checksum(url.rstrip("/"))
+                # if live and declared:
+                #     exec_manifest = getattr(self.session_manager, "execution_manifest", None)
+                #     declared = authority_is_independent(
+                #         url, scenario, execution_manifest=exec_manifest
+                #     )
+                # if live and (
+                #     not declared or observation_identity.get("authenticated") is not True
+                # ):
+                #     raise ValueError(
+                #         "Independent authenticated authority is required for live state evidence"
+                #     )
                 raw_state = await connector.fetch_state()
 
                 # P0-06: Apply Bounded State Capture & Projection

@@ -100,8 +100,8 @@ def _deduplicate_assertions(raw: list[dict[str, Any]]) -> list[dict[str, Any]]:
             prev_outcome = str(existing.get("outcome") or "").upper()
             curr_outcome = str(a.get("outcome") or "").upper()
             is_failed = (
-                prev_passed is False
-                or curr_passed is False
+                (prev_passed is False and not prev_outcome)
+                or (curr_passed is False and not curr_outcome)
                 or prev_outcome in ("FAIL", "FAILED")
                 or curr_outcome in ("FAIL", "FAILED")
             )
@@ -115,6 +115,17 @@ def _deduplicate_assertions(raw: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     merged["outcome"] = prev_outcome
                 else:
                     merged["outcome"] = "FAIL"
+            elif "INVALID" in (prev_outcome, curr_outcome):
+                merged["outcome"] = "INVALID"
+                merged["passed"] = False
+            elif any(
+                value in {"NOT_EVALUATED", "NOT_APPLICABLE", "SKIPPED"}
+                for value in (prev_outcome, curr_outcome)
+            ):
+                merged["outcome"] = "NOT_EVALUATED"
+                merged["passed"] = False
+            if "REQUIRED" in (existing.get("requiredness"), a.get("requiredness")):
+                merged["requiredness"] = "REQUIRED"
             # Retain non-null expected / actual / description if present in either
             if merged.get("expected") is None and existing.get("expected") is not None:
                 merged["expected"] = existing["expected"]
@@ -124,6 +135,38 @@ def _deduplicate_assertions(raw: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 merged["description"] = existing["description"]
             by_key[key] = merged
     return list(by_key.values())
+
+
+def _collect_observed_assertions(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Collect diagnostic typed results across nodes, never granting certification."""
+    observed: list[dict[str, Any]] = []
+
+    def collect(carrier: dict[str, Any], context: dict[str, Any], depth: int = 0) -> None:
+        if depth > 5:
+            return
+        scope = {
+            "scenario_node_id": carrier.get("scenario_node_id")
+            or carrier.get("node_id")
+            or context.get("scenario_node_id"),
+            "execution_instance_id": carrier.get("execution_instance_id")
+            or context.get("execution_instance_id"),
+        }
+        scope = {key: value for key, value in scope.items() if value is not None}
+        for key in ("assertions", "oracle_results", "executed_oracle_results"):
+            values = carrier.get(key)
+            if isinstance(values, list):
+                observed.extend({**scope, **item} for item in values if isinstance(item, dict))
+        for key in ("data", "result", "verdict", "finalization"):
+            nested = carrier.get(key)
+            if isinstance(nested, dict):
+                collect(nested, scope, depth + 1)
+
+    for event in events:
+        collect(event, {})
+        if event.get("event") in {"oracle_result", "assertion_result"}:
+            data = event.get("data")
+            observed.append({**event, **data} if isinstance(data, dict) else dict(event))
+    return _deduplicate_assertions(observed)
 
 
 def build_verification_package(
@@ -277,13 +320,7 @@ def build_verification_package(
     # not artifact presence.
     # Trace assertions are provider-owned observations for RCA.  They cannot
     # determine a verdict, score, or certification state.
-    observed_assertions: list[dict[str, Any]] = []
-    for ev in reversed(events):
-        ev_data = ev.get("data", {}) if isinstance(ev.get("data"), dict) else {}
-        ev_asserts = ev_data.get("assertions") or ev.get("assertions")
-        if isinstance(ev_asserts, list) and ev_asserts:
-            observed_assertions = [item for item in ev_asserts if isinstance(item, dict)]
-            break
+    observed_assertions = _collect_observed_assertions(events)
 
     # The trace is never an independent certification authority.  A package
     # can report a certified outcome only when the provider has sealed a

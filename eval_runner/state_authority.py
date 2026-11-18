@@ -349,6 +349,7 @@ def create_authenticated_connector_receipt(
     encoding_version: str = "v2",
     key: bytes | None = None,
     signing_key: Any | None = None,
+    signing_backend: Any | None = None,
 ) -> dict[str, Any]:
     """Create an authenticated connector receipt with cryptographic MAC or asymmetric signature."""
     ts = str(timestamp or datetime.now(UTC).isoformat())
@@ -366,7 +367,13 @@ def create_authenticated_connector_receipt(
             raise ValueError("Connector receipt v2 requires nonempty 'run_id'")
 
     resolved_token = None
-    if key is not None:
+    if signing_backend is not None and (key is not None or signing_key is not None):
+        raise ValueError("Observation signing backend cannot be combined with another signing key")
+    if signing_backend is not None:
+        resolved_token = hashlib.sha3_256(
+            f"connector_receipt:{connector_id}:{source_id}".encode()
+        ).hexdigest()
+    elif key is not None:
         resolved_token = compute_connector_receipt_token(connector_id, source_id, key=key)
     elif signing_key is None:
         try:
@@ -397,25 +404,28 @@ def create_authenticated_connector_receipt(
     if run_id:
         receipt["run_id"] = str(run_id).strip()
 
-    if signing_key is not None:
+    if signing_key is not None or signing_backend is not None:
         from cryptography.hazmat.primitives import serialization
         from cryptography.hazmat.primitives.asymmetric import ed25519
 
-        priv = signing_key
-        if isinstance(priv, (str, bytes)):
-            pem_b = priv.encode("utf-8") if isinstance(priv, str) else priv
-            priv = serialization.load_pem_private_key(pem_b, password=None)
-        if not isinstance(priv, ed25519.Ed25519PrivateKey):
-            raise TypeError("signing_key must be an Ed25519PrivateKey or valid PEM bytes")
-
         payload = canonical_receipt_payload_bytes(receipt)
-        sig_bytes = priv.sign(payload)
-        sig_hex = sig_bytes.hex()
+        if signing_backend is not None:
+            from eval_runner.observation_signing import sign_observation
+
+            sig_hex, pub = sign_observation(payload, signing_backend, connector_id)
+        else:
+            priv = signing_key
+            if isinstance(priv, (str, bytes)):
+                pem_b = priv.encode("utf-8") if isinstance(priv, str) else priv
+                priv = serialization.load_pem_private_key(pem_b, password=None)
+            if not isinstance(priv, ed25519.Ed25519PrivateKey):
+                raise TypeError("signing_key must be an Ed25519PrivateKey or valid PEM bytes")
+            sig_hex = priv.sign(payload).hex()
+            pub = priv.public_key()
         receipt["algorithm"] = "ed25519"
         receipt["signature_ed25519"] = sig_hex
         receipt["signature"] = sig_hex
         receipt["mac"] = sig_hex
-        pub = priv.public_key()
         pub_pem = pub.public_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo,
@@ -425,6 +435,27 @@ def create_authenticated_connector_receipt(
         receipt["mac"] = compute_connector_receipt_mac(receipt, key=key)
         receipt["signature"] = receipt["mac"]
     return receipt
+
+
+def receipt_public_key(identity):
+    """Read public trust only; receipt-carried keys and private material are not anchors."""
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+
+    if not isinstance(identity, str) or not identity:
+        return None
+    anchor = os.getenv(f"AES_PUBLIC_KEY_{identity.upper()}")
+    if anchor:
+        public_key = serialization.load_pem_public_key(anchor.encode("utf-8"))
+    elif getattr(config, "TRUST_ROOT", None):
+        root = Path(config.TRUST_ROOT).resolve()
+        candidate = (root / identity / "public_key.pem").resolve()
+        if not candidate.is_relative_to(root) or not candidate.is_file():
+            return None
+        public_key = serialization.load_pem_public_key(candidate.read_bytes())
+    else:
+        return None
+    return public_key if isinstance(public_key, ed25519.Ed25519PublicKey) else None
 
 
 def verify_connector_receipt_authenticity(
@@ -473,21 +504,7 @@ def verify_connector_receipt_authenticity(
                     )
                     pub_key = serialization.load_pem_public_key(raw_b)
             else:
-                conn_id = str(receipt.get("connector_id", "")).strip()
-                if conn_id:
-                    # Read public anchors only. IdentityService can derive a public
-                    # key from private issuer material, which detached verification
-                    # must never require. Receipt-carried keys are not trust anchors.
-                    env_anchor = os.getenv(f"AES_PUBLIC_KEY_{conn_id.upper()}")
-                    if env_anchor:
-                        pub_key = serialization.load_pem_public_key(env_anchor.encode("utf-8"))
-                    elif getattr(config, "TRUST_ROOT", None):
-                        root = Path(config.TRUST_ROOT).resolve()
-                        candidate_file = (root / conn_id / "public_key.pem").resolve()
-                        if not candidate_file.is_relative_to(root):
-                            return False
-                        if candidate_file.is_file():
-                            pub_key = serialization.load_pem_public_key(candidate_file.read_bytes())
+                pub_key = receipt_public_key(receipt.get("connector_id"))
 
             if pub_key is None or not isinstance(pub_key, ed25519.Ed25519PublicKey):
                 return False
@@ -570,10 +587,12 @@ class HttpStateAuthorityConnector(StateAuthorityConnector):
         base_url: str,
         default_headers: dict[str, str] | None = None,
         ssl_context: Any | None = None,
+        signing_backend: Any | None = None,
     ):
         self.base_url = _validate_external_authority_url(base_url.rstrip("/"))
         self.default_headers = default_headers or {}
         self.ssl_context = ssl_context
+        self.signing_backend = signing_backend
 
     def observation_identity(
         self,
@@ -591,7 +610,16 @@ class HttpStateAuthorityConnector(StateAuthorityConnector):
         )
         source_id = "sha3_256:" + hashlib.sha3_256(self.base_url.encode()).hexdigest()
         is_auth = urlparse(self.base_url).scheme == "https" and credentials
-        connector_id = f"connector:http:{source_id}"
+        from eval_runner.runtime_services import resolve_signing_backend
+
+        backend = resolve_signing_backend(explicit=self.signing_backend)
+        connector_id = getattr(backend, "identity", "system_id")
+        if (
+            not isinstance(connector_id, str)
+            or not connector_id
+            or connector_id != connector_id.strip()
+        ):
+            raise TypeError("Configured observation signer identity must be a nonempty string")
         enc_ver = "v2" if (phase and run_id) else "v1"
         receipt = create_authenticated_connector_receipt(
             connector_id=connector_id,
@@ -604,6 +632,7 @@ class HttpStateAuthorityConnector(StateAuthorityConnector):
             run_id=run_id,
             timestamp=timestamp,
             encoding_version=enc_ver,
+            signing_backend=backend,
         )
         return {
             "source_id": source_id,
@@ -689,6 +718,7 @@ class ExternalStateAuthorityRegistry:
         self,
         target_name_or_url: str,
         scenario_authorities: dict[str, Any] | None = None,
+        signing_backend: Any | None = None,
     ) -> StateAuthorityConnector:
         # A scenario declaration must not reuse another session's credentials or URL.
         if scenario_authorities and target_name_or_url in scenario_authorities:
@@ -708,18 +738,29 @@ class ExternalStateAuthorityRegistry:
                     ssl_context = ssl.create_default_context(cafile=str(ssl_context))
                 if url:
                     connector = HttpStateAuthorityConnector(
-                        base_url=url, default_headers=headers, ssl_context=ssl_context
+                        base_url=url,
+                        default_headers=headers,
+                        ssl_context=ssl_context,
+                        signing_backend=signing_backend,
                     )
                     return connector
 
         if target_name_or_url in self._connectors:
-            return self._connectors[target_name_or_url]
+            connector = self._connectors[target_name_or_url]
+            if (
+                isinstance(connector, HttpStateAuthorityConnector)
+                and connector.signing_backend is None
+                and signing_backend is not None
+            ):
+                connector = copy.copy(connector)
+                connector.signing_backend = signing_backend
+            return connector
 
         # 3. Dynamic HTTP URL target
         if target_name_or_url.startswith("http://") or target_name_or_url.startswith("https://"):
-            connector = HttpStateAuthorityConnector(base_url=target_name_or_url)
-            self._connectors[target_name_or_url] = connector
-            return connector
+            return HttpStateAuthorityConnector(
+                base_url=target_name_or_url, signing_backend=signing_backend
+            )
 
         raise KeyError(
             f"No external state authority registered for '{target_name_or_url}' "

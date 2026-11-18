@@ -24,7 +24,7 @@ from eval_runner.state_authority import (
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("gate", [False, True])
-@pytest.mark.parametrize("failure", ["missing_key", "unreachable"])
+@pytest.mark.parametrize("failure", ["missing_signer", "unreachable"])
 async def test_required_authority_prestate_stops_before_agent_and_hitl(
     tmp_path, monkeypatch, gate, failure
 ):
@@ -41,8 +41,6 @@ async def test_required_authority_prestate_stops_before_agent_and_hitl(
     IdentityService._provision_local_identity("system_id")
     monkeypatch.delenv("AGENTV_STATE_AUTHORITY_KEY", raising=False)
     monkeypatch.delenv("STATE_AUTHORITY_KEY", raising=False)
-    if failure == "unreachable":
-        monkeypatch.setenv("AGENTV_STATE_AUTHORITY_KEY", "regression-authority-key")
     monkeypatch.setenv("AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST", "https://authority.example")
     with patch(
         "eval_runner.state_authority.socket.getaddrinfo",
@@ -51,6 +49,10 @@ async def test_required_authority_prestate_stops_before_agent_and_hitl(
         connector = HttpStateAuthorityConnector(
             "https://authority.example/state", default_headers={"Authorization": "Bearer fixture"}
         )
+    if failure == "missing_signer":
+        from types import SimpleNamespace
+
+        connector.signing_backend = SimpleNamespace(can_sign=lambda: False)
     fetch = AsyncMock(side_effect=TimeoutError("authority observation timed out"))
     monkeypatch.setattr(connector, "fetch_state", fetch)
     scenario = {
@@ -94,7 +96,7 @@ async def test_required_authority_prestate_stops_before_agent_and_hitl(
     hitl.assert_not_awaited()
     agent.assert_not_awaited()
     approval.assert_not_called()
-    if failure == "missing_key":
+    if failure == "missing_signer":
         fetch.assert_not_awaited()
     else:
         fetch.assert_awaited_once()
@@ -106,7 +108,9 @@ async def test_required_authority_prestate_stops_before_agent_and_hitl(
     ]
     assert invalid and all(e["outcome"] == "INVALID" and e["passed"] is False for e in invalid)
     diagnostic = (
-        "trust key is required" if failure == "missing_key" else "authority observation timed out"
+        "observation signer is unavailable"
+        if failure == "missing_signer"
+        else "authority observation timed out"
     )
     assert diagnostic in invalid[0]["error"]
     terminal = [
@@ -185,8 +189,9 @@ def test_required_prestate_is_not_waived_by_optional_peer():
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("key_source", ["environment", "trust_root", "optional_missing"])
+@pytest.mark.parametrize("transport", ["https", "http"])
 async def test_authority_prestate_permits_valid_or_optional_before_gate(
-    tmp_path, monkeypatch, key_source
+    tmp_path, monkeypatch, key_source, transport, aiohttp_client
 ):
     from eval_runner import config
     from eval_runner.reference.local_run_store import LocalFileRunStore
@@ -198,13 +203,20 @@ async def test_authority_prestate_permits_valid_or_optional_before_gate(
     monkeypatch.setattr(config, "TRUST_ROOT", trust_root)
     from eval_runner.identity import IdentityService
 
-    IdentityService._provision_local_identity("system_id")
+    private_key = IdentityService._provision_local_identity("system_id")
     monkeypatch.delenv("AGENTV_STATE_AUTHORITY_KEY", raising=False)
     monkeypatch.delenv("STATE_AUTHORITY_KEY", raising=False)
     if key_source == "environment":
-        monkeypatch.setenv("AGENTV_STATE_AUTHORITY_KEY", "explicit-regression-key")
-    elif key_source == "trust_root":
-        (trust_root / "state_authority.key").write_bytes(b"explicit-regression-key")
+        from cryptography.hazmat.primitives import serialization
+
+        monkeypatch.setenv(
+            "CORE_ARTIFACT_SIGNING_PEM",
+            private_key.private_bytes(
+                serialization.Encoding.PEM,
+                serialization.PrivateFormat.PKCS8,
+                serialization.NoEncryption(),
+            ).decode("utf-8"),
+        )
     monkeypatch.setenv("AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST", "https://authority.example")
     with patch(
         "eval_runner.state_authority.socket.getaddrinfo",
@@ -213,7 +225,27 @@ async def test_authority_prestate_permits_valid_or_optional_before_gate(
         connector = HttpStateAuthorityConnector(
             "https://authority.example/state", default_headers={"Authorization": "Bearer fixture"}
         )
-    fetch = AsyncMock(return_value={"status": "pending"})
+    requests = []
+    if transport == "http":
+
+        async def state(request):
+            requests.append(request.path)
+            return web.json_response({"status": "pending"})
+
+        app = web.Application()
+        app.router.add_get("/healthcare/state", state)
+        client = await aiohttp_client(app)
+        monkeypatch.setenv(
+            "AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST", str(client.make_url("/")).rstrip("/")
+        )
+        connector = HttpStateAuthorityConnector(str(client.make_url("/healthcare/state")))
+        fetch = AsyncMock(wraps=connector.fetch_state)
+    else:
+        fetch = AsyncMock(return_value={"status": "pending"})
+    if key_source == "optional_missing":
+        from types import SimpleNamespace
+
+        connector.signing_backend = SimpleNamespace(can_sign=lambda: False)
     monkeypatch.setattr(connector, "fetch_state", fetch)
     node = {
         "id": "review",
@@ -259,9 +291,12 @@ async def test_authority_prestate_permits_valid_or_optional_before_gate(
     else:
         fetch.assert_awaited_once()
 
+    if transport == "http":
+        assert requests == ([] if key_source == "optional_missing" else ["/healthcare/state"])
+
 
 @pytest.mark.asyncio
-async def test_live_state_observation_rejects_unauthenticated_declared_authority():
+async def test_live_state_observation_allows_configured_unauthenticated_authority():
     from types import SimpleNamespace
 
     session = SimpleNamespace(
@@ -280,9 +315,9 @@ async def test_live_state_observation_rejects_unauthenticated_declared_authority
         state, path = await verifier._resolve_target(
             {"target": "authority:orders", "property": "status"}, None, [], {}
         )
-    assert state is None
-    assert path == "__unobserved_source__"
-    connector.fetch_state.assert_not_awaited()
+    assert state == {"status": "approved"}
+    assert path == "status"
+    connector.fetch_state.assert_awaited_once()
 
 
 class TestBoundedStateCaptureContract:
@@ -755,7 +790,7 @@ def test_state_authority_connector_identity_and_receipt_tokens(monkeypatch: pyte
     """Verify HttpStateAuthorityConnector observation identity and cryptographic tokens."""
     from eval_runner.state_authority import (
         HttpStateAuthorityConnector,
-        compute_connector_receipt_token,
+        verify_connector_receipt_authenticity,
     )
 
     monkeypatch.setattr(
@@ -771,14 +806,13 @@ def test_state_authority_connector_identity_and_receipt_tokens(monkeypatch: pyte
     ident_auth = https_conn.observation_identity()
     assert ident_auth["authenticated"] is True
     assert ident_auth["transport"] == "https"
-    assert ident_auth["connector_id"].startswith("connector:http:")
+    assert ident_auth["connector_id"] == "system_id"
     receipt_auth = ident_auth["connector_receipt"]
     assert receipt_auth["authenticated"] is True
     assert receipt_auth["source_id"] == ident_auth["source_id"]
     assert receipt_auth["connector_id"] == ident_auth["connector_id"]
-    assert receipt_auth["retrieval_token"] == compute_connector_receipt_token(
-        ident_auth["connector_id"], ident_auth["source_id"]
-    )
+    assert receipt_auth["algorithm"] == "ed25519"
+    assert verify_connector_receipt_authenticity(receipt_auth)
 
     # 2. Unauthenticated HTTP connector
     http_conn = HttpStateAuthorityConnector(
@@ -790,9 +824,8 @@ def test_state_authority_connector_identity_and_receipt_tokens(monkeypatch: pyte
     assert ident_unauth["transport"] == "http"
     receipt_unauth = ident_unauth["connector_receipt"]
     assert receipt_unauth["authenticated"] is False
-    assert receipt_unauth["retrieval_token"] == compute_connector_receipt_token(
-        ident_unauth["connector_id"], ident_unauth["source_id"]
-    )
+    assert receipt_unauth["algorithm"] == "ed25519"
+    assert verify_connector_receipt_authenticity(receipt_unauth)
 
 
 def test_state_authority_receipt_tampering_and_forgery_rejection():

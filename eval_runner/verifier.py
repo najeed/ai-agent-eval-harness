@@ -1269,6 +1269,7 @@ class TraceVerifier:
                 "provisional": provisional,
                 "failure_reason": "Run has not been cryptographically certified.",
             }
+        failures: list[str] = []
         try:
             verify_kwargs = dict(kwargs)
             verify_kwargs.pop("trace_only", None)
@@ -1290,6 +1291,7 @@ class TraceVerifier:
                 exc_info=True,
             )
             valid, failure_reason = False, f"Verification error: {exc}"
+            failures.append(failure_reason)
         else:
             failure_reason = (
                 None if valid else "Trace content hash or signature verification failed."
@@ -1302,6 +1304,7 @@ class TraceVerifier:
         if valid and not execution_truth_eligible(mode, provisional):
             valid = False
             failure_reason = "Authoritative verification requires a non-provisional live run."
+            failures.append(failure_reason)
         compliance = manifest.get("compliance") or {}
         certification = manifest.get("certification") or {}
         package_data = manifest.get("verification_package") or {}
@@ -1356,6 +1359,7 @@ class TraceVerifier:
                     trace_only=False,
                 )
                 cryptographically_valid = bool(cert_res.get("verified"))
+                failures.extend(cert_res.get("errors") or [])
             except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
                 logger.debug(
                     "Secondary certificate verification failed: %s",
@@ -1364,7 +1368,37 @@ class TraceVerifier:
                     exc_info=True,
                 )
                 cryptographically_valid = False
+                failures.append(f"Certificate verification error: {exc}")
+            # An authority/package diagnostic cannot invalidate an independently
+            # verified envelope signature or erase the primary failure cause.
+            package = manifest.get("verification_package")
+            execution_manifest = manifest.get("execution_manifest")
+            if cryptographically_valid and package and execution_manifest:
+                if isinstance(execution_manifest, Mapping) and "run_id" not in execution_manifest:
+                    execution_manifest = {**execution_manifest, "run_id": run_id}
+                try:
+                    artifact_result = VerificationAuthority.verify_certification_artifact(
+                        package,
+                        raw_trace_bytes=bytes(trace_bytes),
+                        canonical_manifest=execution_manifest,
+                        scenario_data=scenario_data
+                        or manifest.get("scenario_data")
+                        or manifest.get("scenario"),
+                    )
+                    failures.extend(artifact_result.get("failures") or [])
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                ) as exc:
+                    logger.debug("Authority diagnostic verification failed: %s", exc, exc_info=True)
+                    failures.append(f"Authority verification error: {exc}")
             certificate_valid = False
+            if failures:
+                failure_reason = "; ".join(str(failure) for failure in failures)
 
         return {
             "run_id": run_id,
@@ -1394,6 +1428,7 @@ class TraceVerifier:
             "execution_mode": mode,
             "provisional": provisional,
             "failure_reason": failure_reason,
+            "failures": failures,
         }
 
         # authoritative source — avoids parent-prop fragility on direct/deep navigation.

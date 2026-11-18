@@ -4,6 +4,7 @@ import ast
 import io
 import os
 import sys
+import threading
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from types import SimpleNamespace
@@ -74,6 +75,36 @@ def test_mutation_sentinel_marks_full_no_test_corpus_indeterminate():
         )
 
     assert status == "indeterminate"
+
+
+@pytest.mark.parametrize(
+    "full_exit,expected", [(0, "survived"), (1, "killed"), (5, "indeterminate")]
+)
+def test_survival_requires_full_configured_corpus_after_scoped_success(full_exit, expected):
+    sentinel = _load_sentinel_module()
+    target = Path("eval_runner/utils/base.py").resolve()
+    tests = [
+        "tests/unit/core/test_core_utilities.py",
+        "tests/unit/core/test_provider_native_verifier.py",
+    ]
+    responses = [
+        SimpleNamespace(returncode=0, stdout=""),
+        SimpleNamespace(returncode=full_exit, stdout=""),
+    ]
+    with patch.object(sentinel.subprocess, "run", side_effect=responses) as run:
+        result = sentinel.evaluate_mutant(
+            target,
+            target.read_text(encoding="utf-8"),
+            tests,
+            scope="validate",
+            scope_test_selector="test_validate",
+            scoped_test_files=[tests[0]],
+        )
+    assert result == expected
+    assert run.call_count == 2
+    assert tests[1] not in run.call_args_list[0].kwargs["input"]
+    assert tests[1] in run.call_args_list[1].kwargs["input"]
+    assert "'-k'" not in run.call_args_list[1].kwargs["input"]
 
 
 def test_mutation_sentinel_killer_cache_is_scoped_to_module_and_corpus():
@@ -235,13 +266,130 @@ def second(value):
     assert len(primers) + len(remainder) == len(points)
 
 
+def test_independent_scope_primers_overlap_but_siblings_wait_for_their_own_primer():
+    sentinel = _load_sentinel_module()
+    rendezvous = threading.Barrier(2, timeout=5)
+    primed = set()
+    lock = threading.Lock()
+    points = [
+        SimpleNamespace(scope=scope, index=index)
+        for scope in ("first", "second")
+        for index in range(3)
+    ]
+    seen = []
+
+    def evaluate(point):
+        if point.index == 0:
+            rendezvous.wait()
+            with lock:
+                primed.add(point.scope)
+        else:
+            with lock:
+                assert point.scope in primed
+        return point
+
+    results = sentinel._evaluate_primed_scopes(points, evaluate, 2, seen.append, lambda _: None)
+    assert len(results) == len(points)
+    assert {(item.scope, item.index) for item in results} == {
+        (item.scope, item.index) for item in points
+    }
+    assert seen == results
+
+
+def test_fast_scope_siblings_do_not_wait_for_a_different_slow_primer():
+    sentinel = _load_sentinel_module()
+    fast_sibling_started = threading.Event()
+    points = [
+        SimpleNamespace(scope="slow", index=0),
+        SimpleNamespace(scope="fast", index=0),
+        SimpleNamespace(scope="fast", index=1),
+    ]
+
+    def evaluate(point):
+        if point.scope == "slow":
+            assert fast_sibling_started.wait(timeout=5)
+        elif point.index == 1:
+            fast_sibling_started.set()
+        return point
+
+    results = sentinel._evaluate_primed_scopes(points, evaluate, 2, lambda _: None, lambda _: None)
+    assert len(results) == 3
+
+
+def test_primed_scope_scheduler_supports_one_worker_and_empty_work():
+    sentinel = _load_sentinel_module()
+    points = [SimpleNamespace(scope="one", index=index) for index in range(3)]
+    assert (
+        sentinel._evaluate_primed_scopes(
+            points, lambda point: point, 1, lambda _: None, lambda _: None
+        )
+        == points
+    )
+    assert (
+        sentinel._evaluate_primed_scopes([], lambda point: point, 2, lambda _: None, lambda _: None)
+        == []
+    )
+
+
+def test_primed_scope_scheduler_preserves_statuses_and_propagates_errors():
+    sentinel = _load_sentinel_module()
+    points = [
+        SimpleNamespace(scope="one", status=status)
+        for status in ("killed", "survived", "timeout", "indeterminate")
+    ]
+    results = sentinel._evaluate_primed_scopes(
+        points, lambda point: point.status, 2, lambda _: None, lambda _: None
+    )
+    assert sorted(results) == sorted(point.status for point in points)
+
+    def fail_primer(point):
+        raise RuntimeError("Primer execution failed")
+
+    with pytest.raises(RuntimeError, match="Primer execution failed"):
+        sentinel._evaluate_primed_scopes(points, fail_primer, 2, lambda _: None, lambda _: None)
+
+
+def test_test_metadata_cache_reuses_content_but_refreshes_after_edits(tmp_path):
+    sentinel = _load_sentinel_module()
+    sentinel.BASE_DIR = tmp_path
+    subject = tmp_path / "tests_sample.py"
+    subject.write_text("def test_first(): pass\n", encoding="utf-8")
+    with patch.object(sentinel.ast, "parse", wraps=ast.parse) as parse:
+        first = sentinel._map_test_names_to_files(
+            ["tests_sample.py::test_first", "tests_sample.py"]
+        )
+        second = sentinel._map_test_names_to_files(["tests_sample.py"])
+        assert first == second == {"test_first": "tests_sample.py"}
+        assert parse.call_count == 1
+        subject.write_text("def test_replacement(): pass\n", encoding="utf-8")
+        assert sentinel._map_test_names_to_files(["tests_sample.py"]) == {
+            "test_replacement": "tests_sample.py"
+        }
+        assert parse.call_count == 2
+
+
+def test_test_metadata_deduplication_preserves_last_file_precedence(tmp_path):
+    sentinel = _load_sentinel_module()
+    sentinel.BASE_DIR = tmp_path
+    for name in ("left.py", "right.py"):
+        (tmp_path / name).write_text("def test_shared(): pass\n", encoding="utf-8")
+    mapping = sentinel._map_test_names_to_files(
+        [
+            "left.py::test_one",
+            "right.py",
+            "left.py::test_two",
+        ]
+    )
+    assert mapping["test_shared"] == "left.py"
+
+
 def test_mutation_sentinel_critical_scope_maps_reference_real_tests():
     """Explicit mappings are validated names, not opaque string guesses."""
     sentinel = _load_sentinel_module()
 
     for target in sentinel.CRITICAL_MUTATION_TARGETS:
         declared = sentinel._declared_test_names(list(target.tests))
-        for scope in sentinel.MODULE_SCOPE_TEST_MAP[target.path]:
+        for scope in target.scopes:
             selector = sentinel._scope_test_selector(target.path, scope, declared)
             assert selector is not None
 
@@ -519,6 +667,8 @@ def test_mutation_baseline_uses_the_same_injection_loader():
     sentinel = _load_sentinel_module()
     target = sentinel.TARGET_MODULES[0]
     with (
+        patch("compileall.compile_file", return_value=True) as compile_file,
+        patch("compileall.compile_dir") as compile_dir,
         patch.object(sentinel, "_load_baseline_cache", return_value={}),
         patch.object(sentinel, "_write_baseline_cache"),
         patch.object(sentinel.time, "monotonic", side_effect=[0.0, 20.0]),
@@ -530,6 +680,12 @@ def test_mutation_baseline_uses_the_same_injection_loader():
     assert run.call_args.args[0][-1] == "-"
     assert "base64.b64decode" in run.call_args.kwargs["input"]
     assert timeouts[target.name] >= 3 * 20.0
+    compile_dir.assert_not_called()
+    expected_warmup = {target, sentinel.BASE_DIR / "tests/conftest.py"}
+    expected_warmup.update(
+        sentinel._test_source_path(selector) for selector in sentinel._tests_for_module(target)
+    )
+    assert {Path(call.args[0]) for call in compile_file.call_args_list} == expected_warmup
 
 
 def test_cached_mutant_respects_measured_timeout_budget():

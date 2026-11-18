@@ -61,54 +61,60 @@ def _extract_scenario_nodes(scenario: Mapping) -> list[dict]:
     return []
 
 
-def authority_is_independent(url, scenario, execution_manifest=None):
-    """An evaluated agent endpoint cannot serve as its own state authority.
-
-    Fails closed: when verifying external state claims, the evaluated agent
-    endpoint must be explicitly declared and distinct from the authority origin.
-    """
-
-    def origin(value):
-        parsed = urlparse(value)
-        return (
-            parsed.scheme.lower(),
-            parsed.hostname,
-            parsed.port or (443 if parsed.scheme == "https" else 80),
-        )
-
-    meta = scenario.get("metadata")
-    meta_dict = meta if isinstance(meta, Mapping) else {}
-    raw_agents = [meta_dict.get("agent"), scenario.get("agent")]
-    raw_agents.extend(node.get("agent") for node in _extract_scenario_nodes(scenario))
-    exec_manifest = execution_manifest or scenario.get("execution_manifest") or {}
-    if hasattr(exec_manifest, "to_dict"):
-        exec_manifest = exec_manifest.to_dict()
-    if isinstance(exec_manifest, Mapping):
-        raw_agents.append(exec_manifest.get("agent_config"))
-        raw_agents.append(exec_manifest.get("agent"))
-        rc = exec_manifest.get("runtime_config")
-        if isinstance(rc, Mapping):
-            raw_agents.append(rc.get("agent_config"))
-            raw_agents.append(rc.get("agent"))
-    meta = scenario.get("metadata") or {}
-    if isinstance(meta, Mapping):
-        raw_agents.append(meta.get("agent_config"))
-    raw_agents.append(scenario.get("agent_config"))
-
-    declared_endpoints = []
-    for agent in raw_agents:
-        if isinstance(agent, Mapping):
-            ep = agent.get("endpoint") or agent.get("url")
-            if isinstance(ep, str) and ep.strip():
-                declared_endpoints.append(ep.strip())
-        elif isinstance(agent, str) and agent.startswith(("http://", "https://")):
-            declared_endpoints.append(agent.strip())
-
-    if not declared_endpoints:
-        return False
-
-    auth_origin = origin(url)
-    return all(origin(ep) != auth_origin for ep in declared_endpoints)
+# REMINDER: Revisit administrator-configured observation trust during the
+# deferred security-contract review. Preserve local HTTP operation and require
+# an explicit migration plan before introducing stronger source requirements.
+# Superseded policy retained for review: administrator-configured state sources
+# may share the agent origin or use HTTP. Host separation is not proof of
+# independent authorship; signed, source-bound receipts remain mandatory.
+# def authority_is_independent(url, scenario, execution_manifest=None):
+#     """An evaluated agent endpoint cannot serve as its own state authority.
+#
+#     Fails closed: when verifying external state claims, the evaluated agent
+#     endpoint must be explicitly declared and distinct from the authority origin.
+#     """
+#
+#     def origin(value):
+#         parsed = urlparse(value)
+#         return (
+#             parsed.scheme.lower(),
+#             parsed.hostname,
+#             parsed.port or (443 if parsed.scheme == "https" else 80),
+#         )
+#
+#     meta = scenario.get("metadata")
+#     meta_dict = meta if isinstance(meta, Mapping) else {}
+#     raw_agents = [meta_dict.get("agent"), scenario.get("agent")]
+#     raw_agents.extend(node.get("agent") for node in _extract_scenario_nodes(scenario))
+#     exec_manifest = execution_manifest or scenario.get("execution_manifest") or {}
+#     if hasattr(exec_manifest, "to_dict"):
+#         exec_manifest = exec_manifest.to_dict()
+#     if isinstance(exec_manifest, Mapping):
+#         raw_agents.append(exec_manifest.get("agent_config"))
+#         raw_agents.append(exec_manifest.get("agent"))
+#         rc = exec_manifest.get("runtime_config")
+#         if isinstance(rc, Mapping):
+#             raw_agents.append(rc.get("agent_config"))
+#             raw_agents.append(rc.get("agent"))
+#     meta = scenario.get("metadata") or {}
+#     if isinstance(meta, Mapping):
+#         raw_agents.append(meta.get("agent_config"))
+#     raw_agents.append(scenario.get("agent_config"))
+#
+#     declared_endpoints = []
+#     for agent in raw_agents:
+#         if isinstance(agent, Mapping):
+#             ep = agent.get("endpoint") or agent.get("url")
+#             if isinstance(ep, str) and ep.strip():
+#                 declared_endpoints.append(ep.strip())
+#         elif isinstance(agent, str) and agent.startswith(("http://", "https://")):
+#             declared_endpoints.append(agent.strip())
+#
+#     if not declared_endpoints:
+#         return False
+#
+#     auth_origin = origin(url)
+#     return all(origin(ep) != auth_origin for ep in declared_endpoints)
 
 
 def state_claim_failures(
@@ -120,10 +126,12 @@ def state_claim_failures(
     require_temporal_bounds: bool = False,
     permitted_clock_skew_seconds: float = DEFAULT_PERMITTED_CLOCK_SKEW_SECONDS,
 ):
-    """Require source-bound, authenticated pre/post observations for business state.
+    """Require signed, source-bound pre/post observations from configured authorities.
 
     Sandbox assertions remain useful diagnostics; they cannot establish an
-    external business-state claim. Message-only verification has its own scope.
+    external business-state claim. Configured HTTP sources are permitted; receipt
+    signatures attest harness observation, not independent source authorship.
+    Message-only verification has its own scope.
     """
     if not isinstance(scenario, Mapping):
         return ["StateClaimScenarioMissing"]
@@ -201,20 +209,34 @@ def state_claim_failures(
                 if isinstance(row, Mapping):
                     carriers.setdefault(data.get("execution_instance_id"), []).append(row)
         for assertion, source in external_assertions:
-            name = source.split(":", 1)[1].split(".", 1)[0] if ":" in source else "default"
+            raw_name = source.split(":", 1)[1] if ":" in source else "default"
+            direct_url = raw_name.startswith(("http://", "https://"))
+            name = raw_name if direct_url else raw_name.split(".", 1)[0]
             declaration = authorities.get(name) if isinstance(authorities, Mapping) else None
             url = (
                 (declaration.get("url") or declaration.get("endpoint"))
                 if isinstance(declaration, Mapping)
+                else raw_name
+                if direct_url
                 else None
             )
-            if not isinstance(url, str) or urlparse(url).scheme != "https":
-                failures.append(f"AuthenticatedStateAuthorityUndeclared:{node_id}:{name}")
+            if (
+                not isinstance(url, str)
+                or urlparse(url).scheme not in {"http", "https"}
+                or not urlparse(url).hostname
+            ):
+                failures.append(f"StateAuthorityUndeclared:{node_id}:{name}")
                 continue
+            # The former HTTPS-only and different-agent-origin gates are disabled.
+            # Configured source identity plus verified receipt integrity establishes
+            # harness-attested observations; it does not claim source authorship.
+            # if not isinstance(url, str) or urlparse(url).scheme != "https":
+            #     failures.append(f"AuthenticatedStateAuthorityUndeclared:{node_id}:{name}")
+            #     continue
+            # if not authority_is_independent(url, scenario, execution_manifest=execution_manifest):
+            #     failures.append(f"AgentCannotBeItsOwnStateAuthority:{node_id}:{name}")
+            #     continue
             expected_source = "sha3_256:" + hashlib.sha3_256(url.rstrip("/").encode()).hexdigest()
-            if not authority_is_independent(url, scenario, execution_manifest=execution_manifest):
-                failures.append(f"AgentCannotBeItsOwnStateAuthority:{node_id}:{name}")
-                continue
             if not carriers:
                 failures.append(f"IndependentStateObservationMissing:{node_id}:{source}")
             for execution_id, rows in carriers.items():
@@ -228,10 +250,11 @@ def state_claim_failures(
                             identity = row.get(f"{phase}_observation_identity") or {}
                             if (
                                 not isinstance(identity, Mapping)
-                                or identity.get("authenticated") is not True
                                 or identity.get("source_id") != expected_source
                             ):
-                                raise ValueError("Unbound or unauthenticated source")
+                                raise ValueError(
+                                    "Observation source does not match configured authority"
+                                )
                             connector_id = identity.get("connector_id")
                             receipt = identity.get("connector_receipt") or row.get(
                                 f"{phase}_connector_receipt"
@@ -247,8 +270,17 @@ def state_claim_failures(
                                 or receipt.get("connector_id") != connector_id
                             ):
                                 raise ValueError("Connector receipt source or connector mismatch")
-                            if receipt.get("authenticated") is not True:
-                                raise ValueError("Connector receipt unauthenticated")
+                            # Source authentication is descriptive, not eligibility.
+                            # if identity.get("authenticated") is not True:
+                            #     raise ValueError("Unbound or unauthenticated source")
+                            # if receipt.get("authenticated") is not True:
+                            #     raise ValueError("Connector receipt unauthenticated")
+                            if (
+                                type(identity.get("authenticated")) is not bool
+                                or type(receipt.get("authenticated")) is not bool
+                                or identity["authenticated"] != receipt["authenticated"]
+                            ):
+                                raise ValueError("Observation transport assurance mismatch")
 
                             # Profile & encoding validation: require unambiguous
                             # v2 receipts in certification.
@@ -474,7 +506,8 @@ def state_claim_failures(
                                 )
                         else:
                             raw_source = source.split(":", 1)[1] if ":" in source else "default"
-                            if "." in raw_source:
+                            # Dots in a direct URL belong to its hostname, not a state path.
+                            if "." in raw_source and not direct_url:
                                 suffix = raw_source.split(".", 1)[1]
                                 path = f"{suffix}.{path}" if path else suffix
                             for phase, actual in (
