@@ -105,26 +105,34 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
     setAuditLoading(true);
     setStreamLoading(true);
 
-    fetch(`/api/v1/runs/${run.run_id}/verify`)
-      .then(async res => {
-        if (!res.ok) throw new Error(`Verification unavailable (HTTP ${res.status})`);
-        return res.json();
-      })
-      .then(data => { if (!cancelled) setAuditResult(data); })
-      .catch(e => { if (!cancelled) setAuditError(String(e.message)); })
-      .finally(() => { if (!cancelled) setAuditLoading(false); });
+    let refreshVersion = 0;
+    const refreshVerification = () => {
+      const version = ++refreshVersion;
+      const current = () => !cancelled && version === refreshVersion;
+      fetch(`/api/v1/runs/${run.run_id}/verify`)
+        .then(async res => {
+          if (!res.ok) throw new Error(`Verification unavailable (HTTP ${res.status})`);
+          return res.json();
+        })
+        .then(data => { if (current()) { setAuditResult(data); setAuditError(''); } })
+        .catch(e => { if (current()) setAuditError(String(e.message)); })
+        .finally(() => { if (current()) setAuditLoading(false); });
 
-    fetch(`/api/v1/evidence/packages/${run.run_id}`)
-      .then(async res => {
-        if (!res.ok) throw new Error(`Evidence unavailable (HTTP ${res.status})`);
-        return res.json();
-      })
-      .then(data => {
-        if (!data || data.error) throw new Error(data?.error || 'Evidence response unavailable');
-        if (!cancelled) setEvidencePackage(data);
-      })
-      .catch(() => { if (!cancelled) setPackageUnavailable(true); })
-      .finally(() => { if (!cancelled) setPackageLoading(false); });
+      fetch(`/api/v1/evidence/packages/${run.run_id}`)
+        .then(async res => {
+          if (!res.ok) throw new Error(`Evidence unavailable (HTTP ${res.status})`);
+          return res.json();
+        })
+        .then(data => {
+          if (!data || data.error) throw new Error(data?.error || 'Evidence response unavailable');
+          if (current()) { setEvidencePackage(data); setPackageUnavailable(false); }
+        })
+        .catch(() => { if (current()) setPackageUnavailable(true); })
+        .finally(() => { if (current()) setPackageLoading(false); });
+    };
+    refreshVerification();
+    // Certification may occur after this view opens or in another console tab.
+    window.addEventListener('focus', refreshVerification);
 
     // Authoritative trace hydration via SSE endpoint
     const accumulatedEvents: any[] = [];
@@ -142,6 +150,7 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
           setStreamEvents([...accumulatedEvents]);
           if (ev.event === 'run_end' || ev.event === 'trace_sealed' || ev.event === 'verification_certificate_issued') {
             setStreamLoading(false);
+            refreshVerification();
           }
         } catch {}
       };
@@ -159,9 +168,10 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
 
     return () => {
       cancelled = true;
+      window.removeEventListener('focus', refreshVerification);
       if (es) es.close();
     };
-  }, [run?.run_id]);
+  }, [run?.run_id, run?.status, run?.verdict]);
 
   // Hydrated Assertions: from evidencePackage (verdict/graph) or trace events
   const normalizeAssertions = (rawAssertions: any[]) => {
@@ -358,7 +368,7 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
   }, [assertionEvidence]);
 
   const isEvaluationSuccess =
-    (run.status === 'COMPLETED' ||
+    (auditResult?.evaluation_passed === true || run.status === 'COMPLETED' ||
       run.status === 'PASSED' ||
       run.resultStatus === 'PASS' ||
       run.score === 1.0) &&
@@ -462,7 +472,7 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
           ? `FAIL; ${failedAssertions.length} assertion(s) failed. First failure: ${failedAssertions[0].name ?? failedAssertions[0].metric ?? 'unnamed'
           } on node '${failedAssertions[0].node ?? '?'}'.`
           : (isUncertified || crypto?.has_certificate === false) && isEvaluationSuccess
-            ? 'Execution completed and runtime assertions passed. External business-state changes are not independently certified.'
+            ? 'Runtime evaluation passed. This run has not been cryptographically certified.'
             : crypto && crypto.errors?.length > 0
               ? `NOT VERIFIED; ${crypto.errors[0]}`
               : isNotVerified

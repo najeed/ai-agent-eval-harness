@@ -13,6 +13,29 @@ const verifiedPackage = { evidence_chain_valid: true,
   cryptographic_verification: { verified: true, authority_valid: true },
   verdict: { assertions: [policy, notification] } };
 
+test('an uncertified policy PASS is observed, not a signature or authority rejection', () => {
+  const result = buildPolicyAudit({ events: trace,
+    audit: { has_certificate: false, is_valid: false, certificate_authoritative: false,
+      verification_status: 'UNVERIFIED', evaluation_passed: true,
+      failure_reason: 'Run has not been cryptographically certified.' },
+    evidencePackage: { cryptographic_verification: {
+      has_certificate: false, verified: false, authority_valid: false, errors: [],
+    } } });
+  assert.equal(result.state, 'OBSERVED');
+  assert.equal(result.outcome, 'PASS');
+  assert.equal(result.verified, false);
+  assert.deepEqual(result.errors, []);
+});
+
+test('missing certification cannot hide explicit invalid evidence', () => {
+  const result = buildPolicyAudit({ events: trace,
+    audit: { has_certificate: false, verification_status: 'UNVERIFIED',
+      failure_reason: 'Run has not been cryptographically certified.' },
+    evidencePackage: { verdict: { verified_outcome: 'EVIDENCE_INVALID' } } });
+  assert.equal(result.state, 'VERIFICATION_FAILED');
+  assert.deepEqual(result.errors, ['Evidence package outcome: EVIDENCE_INVALID']);
+});
+
 test('physician policy PASS survives a later non-policy node and duplicate flat/wrapped carriers', () => {
   const result = buildPolicyAudit({ events: [...trace, { event: 'execution_graph_node', data: trace[0] }] });
   assert.equal(result.state, 'OBSERVED');

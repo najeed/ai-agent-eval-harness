@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-for (const mode of ['signature_failure', 'certified', 'invalid', 'absent'] as const) {
+for (const mode of ['signature_failure', 'certified', 'invalid', 'absent', 'uncertified'] as const) {
   test(`policy audit distinguishes ${mode} from absent evidence`, async ({ page }) => {
     const policy = { oracle_id: 'policy:human_review_before_adverse_commit',
       scenario_node_id: 'physician_review', requiredness: 'REQUIRED',
@@ -10,7 +10,7 @@ for (const mode of ['signature_failure', 'certified', 'invalid', 'absent'] as co
       { event: 'execution_graph_node', data: { scenario_node_id: 'notify_provider', oracle_results: [{ oracle_id: 'notification:sent', outcome: 'PASS' }] } },
       { event: 'run_end' },
     ];
-    const verified = mode === 'certified' || mode === 'absent';
+    let verified = mode === 'certified' || mode === 'absent';
     await page.route('**/api/**', route => {
       const path = new URL(route.request().url()).pathname;
       const payload = path === '/api/auth/me'
@@ -18,12 +18,17 @@ for (const mode of ['signature_failure', 'certified', 'invalid', 'absent'] as co
         : path === '/api/runs'
           ? { runs: [{ run_id: 'policy-audit', status: 'COMPLETED', execution_mode: 'live' }] }
           : path.endsWith('/verify')
+            && mode === 'uncertified' && !verified
+            ? { has_certificate: false, is_valid: false, certificate_authoritative: false,
+              verification_status: 'UNVERIFIED', evaluation_passed: true,
+              failure_reason: 'Run has not been cryptographically certified.' }
+          : path.endsWith('/verify')
             ? { is_valid: verified, certificate_authoritative: verified, has_certificate: true, verification_status: verified ? 'VERIFIED' : 'FAILED_VERIFICATION',
               failures: verified ? [] : ["EnvelopeSignatureVerificationFailed: 'system_id'"] }
             : path.includes('/evidence/packages/')
               ? { evidence_chain_valid: verified, cryptographic_verification: {
-                verified, authority_valid: verified, has_certificate: true,
-                errors: verified ? [] : ["EnvelopeSignatureVerificationFailed: 'system_id'"],
+                verified, authority_valid: verified, has_certificate: mode !== 'uncertified' || verified,
+                errors: verified || mode === 'uncertified' ? [] : ["EnvelopeSignatureVerificationFailed: 'system_id'"],
               }, verdict: { assertions: verified && mode !== 'absent' ? [policy] : [] } }
               : { status: 'ok', nav: [], profiles: [] };
       return route.fulfill({ json: payload });
@@ -48,6 +53,15 @@ for (const mode of ['signature_failure', 'certified', 'invalid', 'absent'] as co
       await expect(page.getByRole('alert').filter({ hasText: 'EnvelopeSignatureVerificationFailed' })).toBeVisible();
       await expect(page.getByText('PASS — Authoritative Policy Evidence Verified', { exact: true })).toHaveCount(0);
       await expect(page.getByText(/POLICY BREACH DETECTED/)).toHaveCount(0);
+    } else if (mode === 'uncertified') {
+      await expect(page.getByTestId('policy-state-observed')).toContainText('OBSERVED POLICY PASS / NOT CERTIFIED');
+      await expect(page.getByTestId('policy-observation')).toContainText('OBSERVED PASS');
+      await expect(page.getByText('NOT VERIFIED / SIGNATURE OR AUTHORITY VERIFICATION FAILED', { exact: true })).toHaveCount(0);
+      // Certification after initial hydration must become visible without reopening the run.
+      verified = true;
+      await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+      await expect(page.getByTestId('policy-state-certified')).toBeVisible();
+      await expect(page.getByText('PASS — Authoritative Policy Evidence Verified', { exact: true })).toBeVisible();
     } else if (mode === 'certified') {
       await expect(page.getByText('PASS — Authoritative Policy Evidence Verified', { exact: true })).toBeVisible();
       await expect(page.getByTestId('policy-observation')).toHaveCount(1);

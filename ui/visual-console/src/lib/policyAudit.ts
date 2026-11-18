@@ -140,12 +140,15 @@ export function buildPolicyAudit(input: {
   const errors = [...new Set([
     ...(Array.isArray(crypto.errors) ? crypto.errors : []),
     ...(Array.isArray(audit.failures) ? audit.failures : []),
-    ...(audit.failure_reason ? [audit.failure_reason] : []),
+    // An absent certificate is an unmet prerequisite, not a rejected signature.
+    ...(audit.failure_reason && !(audit.has_certificate === false
+      && ['UNVERIFIED', 'UNCERTIFIED'].includes(audit.verification_status ?? audit.verdict))
+      ? [audit.failure_reason] : []),
     ...(['EVIDENCE_INVALID', 'AUTHORITY_REJECTED'].includes(pkg.verdict?.verified_outcome)
       ? [`Evidence package outcome: ${pkg.verdict.verified_outcome}`] : []),
   ].filter((item): item is string => typeof item === 'string' && Boolean(item)))];
   const rejected = errors.length > 0 || crypto.verified === false && crypto.has_certificate === true
-    || crypto.authority_valid === false || audit.has_certificate === true
+    || crypto.authority_valid === false && crypto.has_certificate !== false || audit.has_certificate === true
       && (audit.is_valid === false || audit.certificate_authoritative === false);
   const state = rejected ? 'VERIFICATION_FAILED' : input.loading ? 'PENDING'
     : input.unavailable ? 'UNAVAILABLE' : verified && certified.length ? 'CERTIFIED'
