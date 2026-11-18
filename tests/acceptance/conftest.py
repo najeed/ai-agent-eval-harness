@@ -91,4 +91,11 @@ def acceptance_aggregator(repo_root, tmp_path_factory) -> AcceptanceReportAggreg
     agg = AcceptanceReportAggregator(repo_root=repo_root)
     yield agg
     if agg.results:
-        agg.generate_report_files(tmp_path_factory.mktemp("acceptance-reports"))
+        configured = os.environ.get("AGENTV_ACCEPTANCE_REPORT_DIR")
+        if configured:
+            report_dir = Path(configured)
+            if not report_dir.is_absolute():
+                report_dir = repo_root / report_dir
+        else:
+            report_dir = tmp_path_factory.mktemp("acceptance-reports")
+        agg.generate_report_files(report_dir)

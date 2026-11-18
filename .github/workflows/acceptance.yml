@@ -107,6 +107,7 @@ jobs:
         env:
           AGENTV_REQUIRE_BROWSER_ACCEPTANCE: '1'
           AGENTV_REQUIRE_EXTERNAL_ORACLE: '1'
+          AGENTV_ACCEPTANCE_REPORT_DIR: reports/acceptance
           AGENTV_ACCEPTANCE_ORACLE_URL: http://127.0.0.1:8099/acceptance-oracle
           AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST: http://127.0.0.1:8099
       - name: Enforce Release Certification Gate

@@ -132,6 +132,7 @@ jobs:
           pytest -m acceptance_release tests/acceptance tests/ui --ignore=tests/acceptance/test_release_evidence_chain_matrix.py --ignore=tests/acceptance/test_digest_signature_release_matrix.py -o junit_family=xunit1 --junitxml=reports/acceptance-release.xml
         env:
           AGENTV_REQUIRE_EXTERNAL_ORACLE: '1'
+          AGENTV_ACCEPTANCE_REPORT_DIR: reports/acceptance
           AGENTV_REQUIRE_BROWSER_ACCEPTANCE: '1'
           AGENTV_ACCEPTANCE_ORACLE_URL: http://127.0.0.1:8099/acceptance-oracle
           AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST: http://127.0.0.1:8099

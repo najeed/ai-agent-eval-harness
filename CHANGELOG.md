@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* Release acceptance workflows explicitly publish corpus summaries to the directory consumed by the certification gate and attestation tools. Ordinary tests continue writing reports to isolated temporary storage.
 * Test reliability: single-worker scheduling checks execution order without assuming completed-future collection order, and scenario validation tests use correctly typed observer doubles. Browser journeys build current UI sources in session temporary storage by default; CI explicitly reuses its freshly built bundle instead of allowing stale local assets to determine acceptance results.
 * State-authority preflight tests bind isolated artifact and run stores explicitly. Conflicting ambient scenario snapshots no longer leak between parameterized cases; regressions verify the ambient snapshots are preserved and immutable-snapshot checks remain enforced.
 * Browser journey acceptance waits for policy evidence hydration and verifies the invalid-certificate fixture's specific verification failure and diagnostic cause, replacing obsolete three-state selectors and a fixed sleep.
