@@ -85,14 +85,14 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **cyclecore-pq** | 0.3.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **datasets** | 5.2.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **GitPython** | 3.2.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **google-genai** | 3.5.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **langchain** | 1.5.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **google-genai** | 3.6.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **langchain** | 1.5.2 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-anthropic** | 1.7.11 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-core** | 1.8.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langchain-google-genai** | 4.5.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **langchain-google-genai** | 4.5.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **langchain-ollama** | 1.1.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langchain-openai** | 1.8.2 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langgraph** | 1.2.22 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-openai** | 1.8.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langgraph** | 1.2.23 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langserve** | 0.3.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langsmith** | 0.15.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **lxml** | 6.1.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
