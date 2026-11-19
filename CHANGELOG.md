@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* Mutation subprocesses use private pytest base directories even when the parent configures a shared `--basetemp`. Kills require call-phase failure evidence and a passing unmodified control with the same test selection; setup/teardown failures remain indeterminate. CI retains per-mutation diagnostics, and focused contracts cover independent replay bindings and valid bounded-state acquisition.
 * Run details refresh verification and package data after terminal/certification events and on tab focus, rejecting stale responses. Uncertified policy observations no longer appear as signature failures; explicit invalid evidence still fails verification.
 * Release acceptance workflows explicitly publish corpus summaries to the directory consumed by the certification gate and attestation tools. Ordinary tests continue writing reports to isolated temporary storage.
 * Test reliability: single-worker scheduling checks execution order without assuming completed-future collection order, and scenario validation tests use correctly typed observer doubles. Browser journeys build current UI sources in session temporary storage by default; CI explicitly reuses its freshly built bundle instead of allowing stale local assets to determine acceptance results.

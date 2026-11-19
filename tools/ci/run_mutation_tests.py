@@ -861,6 +861,7 @@ FAULT_GUARD_CORPORA: dict[str, tuple[str, ...]] = {
     "approval_faults.py": (
         "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_expired_approval_must_be_durably_observed_under_the_same_run",
         "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_replay_requires_a_nonempty_string_authorization_identity",
+        "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_replay_consumption_requires_each_independent_binding",
     ),
     "approval_validation.py": (
         "tests/unit/core/test_fault_delivery_guard_contracts.py::test_payload_hash_requires_two_string_values",
@@ -1033,6 +1034,7 @@ CRITICAL_MUTATION_TARGETS += tuple(
                 "deliver_authorization_fault": (
                     "test_expired_approval_must_be_durably_observed_under_the_same_run",
                     "test_replay_requires_a_nonempty_string_authorization_identity",
+                    "test_replay_consumption_requires_each_independent_binding",
                     "test_deliver_authorization_fault_guards_and_stale_pre_approved",
                     "test_deliver_authorization_fault_cross_run_ownership_mismatch",
                     "test_real_approval_faults_persist_transitions_and_bound_receipts",
@@ -1157,6 +1159,7 @@ CRITICAL_MUTATION_TARGETS += (
             "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_message_observation_ignores_later_user_and_system_entries",
             "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_state_acquisition_requires_a_coroutine_getter",
             "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_state_acquisition_rejects_missing_projection_before_dispatch",
+            "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_bounded_state_acquisition_preserves_valid_dictionary_result",
         ),
         frozenset({"capture_external_prestate", "preexecution_failure", "_resolve_target"}),
         scope_test_names={
@@ -1176,6 +1179,7 @@ CRITICAL_MUTATION_TARGETS += (
                 "test_message_observation_ignores_later_user_and_system_entries",
                 "test_state_acquisition_requires_a_coroutine_getter",
                 "test_state_acquisition_rejects_missing_projection_before_dispatch",
+                "test_bounded_state_acquisition_preserves_valid_dictionary_result",
                 "test_state_parity_verifier_external_evidence_target_and_prestate",
                 "test_state_parity_verifier_policy_spec_resolution_branches",
                 "test_live_state_observation_allows_configured_unauthenticated_authority",
@@ -2183,7 +2187,7 @@ def _make_loader_code(mutant_source: str, orig_file: Path, module_name: str, arg
     encoded_source = base64.b64encode(mutant_source.encode("utf-8")).decode("ascii")
 
     return f"""
-import base64, sys, importlib, importlib.abc, importlib.util
+import base64, sys, importlib, importlib.abc, importlib.util, json, tempfile
 sys.path.insert(0, r"{BASE_DIR}")
 source = base64.b64decode({encoded_source!r}).decode("utf-8")
 code = compile(source, r"{orig_file}", "exec")
@@ -2203,7 +2207,19 @@ class MutantModule(importlib.abc.MetaPathFinder, importlib.abc.Loader):
 sys.meta_path.insert(0, MutantModule())
 importlib.import_module("{module_name}")
 import pytest
-sys.exit(pytest.main({args_str}))
+class FailureEvidence:
+    def __init__(self):
+        self.failures = []
+    def pytest_runtest_logreport(self, report):
+        if report.failed:
+            self.failures.append(dict(nodeid=report.nodeid, when=report.when))
+evidence = FailureEvidence()
+# CLI arguments override inherited PYTEST_ADDOPTS. Every subprocess owns its
+# base directory; parallel pytest sessions must never clean each other's files.
+with tempfile.TemporaryDirectory(prefix="agentv-mutant-") as base_temp:
+    exit_code = pytest.main({args_str} + ["--basetemp", base_temp + "/pytest"], plugins=[evidence])
+print("AGENTV_MUTATION_FAILURES=" + json.dumps(evidence.failures))
+sys.exit(exit_code)
 """
 
 
@@ -2220,6 +2236,8 @@ def evaluate_mutant(
     killer_cache: dict[tuple[str, tuple[str, ...], str], str] | None = None,
     cache_lock: threading.Lock | None = None,
     module_timing: ModuleTiming | None = None,
+    passed_controls: set[tuple[str, ...]] | None = None,
+    diagnostics: list[dict[str, Any]] | None = None,
 ) -> str:
     """
     Evaluates mutant using dynamic in-memory injection without mutating target_file on disk.
@@ -2245,6 +2263,71 @@ def evaluate_mutant(
     env["PYTHONPATH"] = f"{BASE_DIR}{os.pathsep}{env.get('PYTHONPATH', '')}"
 
     cache_key = _mutation_cache_key(module_name, tests, scope)
+
+    def run_selection(source: str, selection: list[str], *, control: bool = False):
+        loader = _make_loader_code(source, target_resolved, module_name, repr(selection))
+        result = subprocess.run(
+            [sys.executable, "-"],
+            cwd=BASE_DIR,
+            capture_output=True,
+            input=loader,
+            text=True,
+            timeout=timeout_seconds,
+            env=env,
+        )
+        if diagnostics is not None:
+            diagnostics.append(
+                {
+                    "control": control,
+                    "selection": selection,
+                    "returncode": result.returncode,
+                    "stdout": result.stdout,
+                    "stderr": getattr(result, "stderr", ""),
+                }
+            )
+        return result
+
+    def confirm_kill(result, selection: list[str]) -> str:
+        marker = "AGENTV_MUTATION_FAILURES="
+        reports = [
+            line[len(marker) :] for line in result.stdout.splitlines() if line.startswith(marker)
+        ]
+        try:
+            failures = json.loads(reports[-1]) if reports else []
+        except json.JSONDecodeError:
+            return "indeterminate"
+        if (
+            not isinstance(failures, list)
+            or not failures
+            or any(not isinstance(row, dict) or row.get("when") != "call" for row in failures)
+        ):
+            # pytest exit 1 also covers setup/teardown failures. Those are not
+            # evidence that a test detected the injected behavioral change.
+            return "indeterminate"
+        key = tuple(selection)
+        if cache_lock:
+            with cache_lock:
+                controlled = passed_controls is not None and key in passed_controls
+        else:
+            controlled = passed_controls is not None and key in passed_controls
+        if not controlled:
+            original = (
+                original_bytes.decode("utf-8")
+                if original_bytes is not None
+                else target_file.read_text(encoding="utf-8")
+            )
+            if run_selection(original, selection, control=True).returncode != 0:
+                return "indeterminate"
+            if passed_controls is not None:
+                if cache_lock:
+                    with cache_lock:
+                        passed_controls.add(key)
+                else:
+                    passed_controls.add(key)
+        elif diagnostics is not None:
+            diagnostics.append({"control": True, "selection": selection, "reused": True})
+        _extract_and_cache_killer(result.stdout)
+        return "killed"
 
     def _extract_and_cache_killer(output: str) -> None:
         if killer_cache is not None and scope and scope != "module":
@@ -2285,17 +2368,8 @@ def evaluate_mutant(
             killer_file = test_name_to_file.get(cached_killer) if test_name_to_file else None
             phase1_tests = [killer_file] if killer_file else (scoped_test_files or tests)
             fast_flags = FAST_PYTEST_FLAGS + ["-k", cached_killer, "-x"]
-            args_str = repr(phase1_tests + fast_flags)
-            loader_code = _make_loader_code(mutant_source, target_resolved, module_name, args_str)
-            res = subprocess.run(
-                [sys.executable, "-"],
-                cwd=BASE_DIR,
-                capture_output=True,
-                input=loader_code,
-                text=True,
-                timeout=timeout_seconds,
-                env=env,
-            )
+            selection = phase1_tests + fast_flags
+            res = run_selection(mutant_source, selection)
             if _collected_no_tests(res.returncode):
                 # Cached selectors can become stale as tests are renamed or
                 # moved. They are an optimization, never kill evidence.
@@ -2305,7 +2379,7 @@ def evaluate_mutant(
                 else:
                     killer_cache.pop(cache_key, None)
             elif res.returncode == 1:
-                return "killed"
+                return confirm_kill(res, selection)
             elif res.returncode != 0:
                 return "indeterminate"
 
@@ -2314,20 +2388,10 @@ def evaluate_mutant(
         if scope_test_selector:
             phase2_tests = scoped_test_files if scoped_test_files else tests
             scoped_flags = FAST_PYTEST_FLAGS + ["-k", scope_test_selector, "-x"]
-            args_str = repr(phase2_tests + scoped_flags)
-            loader_code = _make_loader_code(mutant_source, target_resolved, module_name, args_str)
-            res = subprocess.run(
-                [sys.executable, "-"],
-                cwd=BASE_DIR,
-                capture_output=True,
-                input=loader_code,
-                text=True,
-                timeout=timeout_seconds,
-                env=env,
-            )
+            selection = phase2_tests + scoped_flags
+            res = run_selection(mutant_source, selection)
             if res.returncode == 1:
-                _extract_and_cache_killer(res.stdout)
-                return "killed"
+                return confirm_kill(res, selection)
             if res.returncode != 0 and not _collected_no_tests(res.returncode):
                 return "indeterminate"
 
@@ -2337,25 +2401,15 @@ def evaluate_mutant(
             module_timing.record_full_corpus_fallback()
         fallback_tests = tests
         full_flags = FAST_PYTEST_FLAGS + ["-x"]
-        args_str = repr(fallback_tests + full_flags)
-        loader_code = _make_loader_code(mutant_source, target_resolved, module_name, args_str)
-        res = subprocess.run(
-            [sys.executable, "-"],
-            cwd=BASE_DIR,
-            capture_output=True,
-            input=loader_code,
-            text=True,
-            timeout=timeout_seconds,
-            env=env,
-        )
+        selection = fallback_tests + full_flags
+        res = run_selection(mutant_source, selection)
         if _collected_no_tests(res.returncode):
             sys.stderr.write(
                 "      [Mutant] Full corpus collected no tests; mutation result is indeterminate.\n"
             )
             return "indeterminate"
         if res.returncode == 1:
-            _extract_and_cache_killer(res.stdout)
-            return "killed"
+            return confirm_kill(res, selection)
         if res.returncode != 0:
             return "indeterminate"
         return "survived"
@@ -2613,6 +2667,7 @@ def _evaluate_target_module(
 
     num_workers = max(1, getattr(args, "workers", 1))
     progress = _MutationProgress(len(sampled), num_workers)
+    passed_controls: set[tuple[str, ...]] = set()
 
     def _eval_one(mp: MutationPoint) -> tuple[str, str, MutationPoint]:
         if mp.is_incompetent:
@@ -2627,6 +2682,7 @@ def _evaluate_target_module(
             return "incompetent", desc, mp
 
         scoped_files = _scoped_test_files(target, mp.scope, test_name_to_file, tests)
+        diagnostics: list[dict[str, Any]] = []
         status = evaluate_mutant(
             target,
             mutant_source,
@@ -2640,6 +2696,27 @@ def _evaluate_target_module(
             killer_cache=shared_killer_cache,
             cache_lock=cache_lock,
             module_timing=timing,
+            passed_controls=passed_controls,
+            diagnostics=diagnostics,
+        )
+        diagnostic_dir = REPORT_DIR / "mutation_diagnostics"
+        diagnostic_dir.mkdir(parents=True, exist_ok=True)
+        source_hash = hashlib.sha3_256(mutant_source.encode("utf-8")).hexdigest()
+        (diagnostic_dir / f"{target.stem}-{source_hash}.json").write_text(
+            json.dumps(
+                {
+                    "module": rel_path.as_posix(),
+                    "mutation": mp.description,
+                    "source_hash": source_hash,
+                    "original_source_hash": hashlib.sha3_256(original_bytes).hexdigest(),
+                    "status": status,
+                    "python": sys.version,
+                    "platform": sys.platform,
+                    "phases": diagnostics,
+                },
+                indent=2,
+            ),
+            encoding="utf-8",
         )
         return status, mp.description, mp
 

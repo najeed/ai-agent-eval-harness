@@ -127,6 +127,37 @@ def test_replay_requires_a_nonempty_string_authorization_identity(authorization_
     controller._receipt.assert_not_called()
 
 
+@pytest.mark.parametrize("binding", ["run_id", "payload_hash"])
+def test_replay_consumption_requires_each_independent_binding(binding):
+    marker = {"run_id": "run", "payload_hash": "digest", "authorization_id": "spent-id"}
+    marker[binding] = "unrelated"
+    request = ApprovalRequest(
+        approval_token="approval",
+        run_id="run",
+        status="APPROVED",
+        outbound_payload_hash="digest",
+        metadata={"consumption": marker},
+    )
+    store = SimpleNamespace(
+        get_request=Mock(return_value=request),
+        consume_request=Mock(),
+        revoke_request=Mock(),
+    )
+    controller = SimpleNamespace(
+        run_id="run", _identity=Mock(return_value={}), _observe=Mock(), _receipt=Mock()
+    )
+    with pytest.raises(FaultDeliveryError, match="A bound prior consumption was not observed"):
+        deliver_authorization_fault(
+            controller, "approval_replay", store, request, None, "review", "review:1"
+        )
+    store.consume_request.assert_not_called()
+    store.revoke_request.assert_not_called()
+    controller._receipt.assert_not_called()
+    assert [call.args[0] for call in controller._observe.call_args_list] == [
+        "authorization_request"
+    ]
+
+
 @pytest.mark.parametrize("defect", ["extra_before_key", "integer_exists"])
 def test_partial_commit_requires_exact_keys_and_strict_boolean_existence(defect):
     before, after, proposed = {"a": 0, "b": 0}, {"a": 1, "b": 0}, {"a": 1, "b": 2}
@@ -263,3 +294,18 @@ async def test_state_acquisition_rejects_missing_projection_before_dispatch():
     )
     assert observed is None and path == "__unobserved_source__"
     getter.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_bounded_state_acquisition_preserves_valid_dictionary_result():
+    getter = AsyncMock(return_value={"status": "pending", "unrelated": "private"})
+    verifier = SessionStateParityVerifier(SimpleNamespace())
+    observed, path = await verifier._resolve_target(
+        {"target": "state", "projection": ["status"]},
+        SimpleNamespace(get_bounded_state=getter),
+        [],
+        {},
+    )
+    assert observed == {"status": "pending"}
+    assert path != "__unobserved_source__"
+    getter.assert_awaited_once_with(["status"])

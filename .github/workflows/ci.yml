@@ -186,7 +186,9 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: mutation-assurance
-        path: reports/mutation_scorecard.md
+        path: |
+          reports/mutation_scorecard.md
+          reports/mutation_diagnostics/
         if-no-files-found: ignore
 
   ui-test:

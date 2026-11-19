@@ -2,6 +2,7 @@
 
 import ast
 import io
+import json
 import os
 import sys
 import threading
@@ -89,8 +90,13 @@ def test_survival_requires_full_configured_corpus_after_scoped_success(full_exit
     ]
     responses = [
         SimpleNamespace(returncode=0, stdout=""),
-        SimpleNamespace(returncode=full_exit, stdout=""),
+        SimpleNamespace(
+            returncode=full_exit,
+            stdout='AGENTV_MUTATION_FAILURES=[{"nodeid":"test.py::test_guard","when":"call"}]',
+        ),
     ]
+    if full_exit == 1:
+        responses.append(SimpleNamespace(returncode=0, stdout=""))
     with patch.object(sentinel.subprocess, "run", side_effect=responses) as run:
         result = sentinel.evaluate_mutant(
             target,
@@ -101,7 +107,7 @@ def test_survival_requires_full_configured_corpus_after_scoped_success(full_exit
             scoped_test_files=[tests[0]],
         )
     assert result == expected
-    assert run.call_count == 2
+    assert run.call_count == (3 if full_exit == 1 else 2)
     assert tests[1] not in run.call_args_list[0].kwargs["input"]
     assert tests[1] in run.call_args_list[1].kwargs["input"]
     assert "'-k'" not in run.call_args_list[1].kwargs["input"]
@@ -700,7 +706,15 @@ def test_cached_mutant_respects_measured_timeout_budget():
         sentinel._mutation_cache_key("eval_runner.utils.base", tests, "validate"): "test_validate"
     }
     with patch.object(
-        sentinel.subprocess, "run", return_value=SimpleNamespace(returncode=1, stdout="")
+        sentinel.subprocess,
+        "run",
+        side_effect=[
+            SimpleNamespace(
+                returncode=1,
+                stdout='AGENTV_MUTATION_FAILURES=[{"nodeid":"test.py::test_validate","when":"call"}]',
+            ),
+            SimpleNamespace(returncode=0, stdout=""),
+        ],
     ) as run:
         assert (
             sentinel.evaluate_mutant(
@@ -714,6 +728,116 @@ def test_cached_mutant_respects_measured_timeout_budget():
             == "killed"
         )
     assert run.call_args.kwargs["timeout"] == 90
+
+
+@pytest.mark.parametrize("phase", ["setup", "teardown", "missing"])
+def test_mutation_exit_one_requires_call_phase_failure_evidence(phase):
+    sentinel = _load_sentinel_module()
+    target = Path("eval_runner/utils/base.py").resolve()
+    output = (
+        ""
+        if phase == "missing"
+        else "AGENTV_MUTATION_FAILURES="
+        + json.dumps(
+            [
+                {"nodeid": "test.py::test_guard", "when": phase},
+            ]
+        )
+    )
+    with patch.object(
+        sentinel.subprocess, "run", return_value=SimpleNamespace(returncode=1, stdout=output)
+    ) as run:
+        assert (
+            sentinel.evaluate_mutant(target, target.read_text("utf-8"), ["test.py"])
+            == "indeterminate"
+        )
+    assert run.call_count == 1
+
+
+def test_mutation_kill_requires_a_passing_control_for_the_exact_selection():
+    sentinel = _load_sentinel_module()
+    target = Path("eval_runner/utils/base.py").resolve()
+    results = [
+        SimpleNamespace(
+            returncode=1,
+            stdout='AGENTV_MUTATION_FAILURES=[{"nodeid":"test.py::test_guard","when":"call"}]',
+        ),
+        SimpleNamespace(returncode=1, stdout="the unmodified selected test also failed"),
+    ]
+    with patch.object(sentinel.subprocess, "run", side_effect=results) as run:
+        assert (
+            sentinel.evaluate_mutant(target, target.read_text("utf-8"), ["test.py"])
+            == "indeterminate"
+        )
+    assert run.call_count == 2
+    assert run.call_args_list[0].kwargs["input"] == run.call_args_list[1].kwargs["input"]
+
+
+def test_mutation_control_reuse_is_bound_to_the_selected_tests():
+    sentinel = _load_sentinel_module()
+    target = Path("eval_runner/utils/base.py").resolve()
+    failed = SimpleNamespace(
+        returncode=1,
+        stdout='AGENTV_MUTATION_FAILURES=[{"nodeid":"test.py::test_guard","when":"call"}]',
+    )
+    passed = SimpleNamespace(returncode=0, stdout="")
+    controls = set()
+    diagnostics = []
+    with patch.object(
+        sentinel.subprocess, "run", side_effect=[failed, passed, failed, failed, passed]
+    ) as run:
+        for selection in (["test.py"], ["test.py"], ["other_test.py"]):
+            assert (
+                sentinel.evaluate_mutant(
+                    target,
+                    target.read_text("utf-8"),
+                    selection,
+                    passed_controls=controls,
+                    diagnostics=diagnostics,
+                )
+                == "killed"
+            )
+    assert run.call_count == 5
+    assert len(controls) == 2
+    assert sum(row.get("reused", False) for row in diagnostics) == 1
+    assert sum(row.get("control") and not row.get("reused") for row in diagnostics) == 2
+
+
+def test_mutation_loader_overrides_shared_parent_basetemp(tmp_path):
+    """Use unmodified probe code to check child isolation without a campaign."""
+    import shlex
+
+    sentinel = _load_sentinel_module()
+    sentinel.BASE_DIR = tmp_path
+    subject = tmp_path / "isolated_subject.py"
+    subject.write_text("ANSWER = 42\n", encoding="utf-8")
+    test = tmp_path / "test_isolated_subject.py"
+    test.write_text("def test_answer(tmp_path):\n    assert tmp_path.is_dir()\n", encoding="utf-8")
+    shared = tmp_path / "parent-base"
+    shared.mkdir()
+    marker = shared / "parent-owned.txt"
+    marker.write_text("preserve", encoding="utf-8")
+    code = sentinel._make_loader_code(
+        subject.read_text("utf-8"),
+        subject,
+        "isolated_subject",
+        repr([str(test)] + sentinel.FAST_PYTEST_FLAGS),
+    )
+    result = sentinel.subprocess.run(
+        [sys.executable, "-B", "-"],
+        input=code,
+        capture_output=True,
+        text=True,
+        env={
+            **os.environ,
+            "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+            "PYTEST_ADDOPTS": "--basetemp=" + shlex.quote(str(shared)),
+        },
+        timeout=60,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert marker.read_text("utf-8") == "preserve"
+    assert "AGENTV_MUTATION_FAILURES=[]" in result.stdout
 
 
 def test_mutation_progress_reports_failure_details_immediately():
