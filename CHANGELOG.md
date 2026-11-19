@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* CI mutation regressions cover malformed transformation references, independent policy evidence-target type/emptiness checks, and exactly-once authority pre-observation. Additional controls preserve explicit agent messages and independently enforce receipt digest/phase binding; all cases are included in the sentinel's focused and complete corpora.
 * Mutation subprocesses use private pytest base directories even when the parent configures a shared `--basetemp`. Kills require call-phase failure evidence and a passing unmodified control with the same test selection; setup/teardown failures remain indeterminate. CI retains per-mutation diagnostics, and focused contracts cover independent replay bindings and valid bounded-state acquisition.
 * Run details refresh verification and package data after terminal/certification events and on tab focus, rejecting stale responses. Uncertified policy observations no longer appear as signature failures; explicit invalid evidence still fails verification.
 * Release acceptance workflows explicitly publish corpus summaries to the directory consumed by the certification gate and attestation tools. Ordinary tests continue writing reports to isolated temporary storage.

@@ -309,3 +309,113 @@ async def test_bounded_state_acquisition_preserves_valid_dictionary_result():
     assert observed == {"status": "pending"}
     assert path != "__unobserved_source__"
     getter.assert_awaited_once_with(["status"])
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("include_message", [False, True])
+async def test_prestate_observes_each_authority_once_and_skips_non_authorities(include_message):
+    verifier = SessionStateParityVerifier(SimpleNamespace(scenario={}))
+    assertions = [
+        {"target": "authority:orders", "projection": ["status"]},
+        {"target": "authority:orders", "projection": ["approval"]},
+    ]
+    if include_message:
+        assertions.insert(0, {"target": "message", "expected": "submitted"})
+    node = {"id": "review", "expected_outcome": assertions}
+    state = {"status": "pending", "approval": {"reviewed": False}}
+    with patch.object(
+        verifier, "_resolve_target", new_callable=AsyncMock, return_value=(state, None)
+    ) as resolve:
+        captured = await verifier.capture_external_prestate(node, None, [])
+    resolve.assert_awaited_once()
+    assert resolve.await_args.args[0]["target"] == "authority:orders"
+    assert resolve.await_args.args[0]["projection"] == ["approval", "status"]
+    assert set(captured) == {"authority:orders"}
+    assert captured["authority:orders"]["state"] == state
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "evidence_target", [None, "", 42, True, [], ["state"], {}, {"target": "state"}, "state"]
+)
+async def test_policy_evidence_target_is_a_nonempty_string_before_dispatch(evidence_target):
+    policy = {
+        "required": True,
+        "oracle_id": "policy:review",
+        "evidence_target": evidence_target,
+        "projection": ["status"],
+    }
+    verifier = SessionStateParityVerifier(
+        SimpleNamespace(
+            scenario={"metadata": {"policies": {"review": policy}}},
+        )
+    )
+    getter = AsyncMock(return_value={"status": "pending"})
+    evaluator = SimpleNamespace(evaluate_policy=Mock(return_value=SimpleNamespace(allowed=True)))
+    with (
+        patch("eval_runner.runtime_services.resolve_policy_evaluator", return_value=evaluator),
+        patch.object(
+            verifier,
+            "_resolve_target",
+            wraps=verifier._resolve_target,
+        ) as resolve,
+    ):
+        observed, path = await resolve(
+            {"target": "policy:review", "oracle_id": "policy:review"},
+            SimpleNamespace(get_bounded_state=getter),
+            [],
+            {},
+        )
+    if evidence_target == "state":
+        assert observed is True
+        getter.assert_awaited_once_with(["status"])
+        evaluator.evaluate_policy.assert_called_once_with(policy, {"status": "pending"})
+        assert resolve.await_count == 2
+    else:
+        assert observed is None and path == "__unobserved_source__"
+        assert resolve.await_count == 1
+        getter.assert_not_awaited()
+        evaluator.evaluate_policy.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_explicit_agent_message_does_not_invoke_summary_fallback():
+    summary = Mock(return_value="unrelated fallback")
+    verifier = SessionStateParityVerifier(SimpleNamespace(_extract_agent_summary=summary))
+    observed, _ = await verifier._resolve_target(
+        {"target": "message"},
+        None,
+        [{"role": "agent", "content": "agent result"}],
+        {},
+    )
+    assert observed == "agent result"
+    summary.assert_not_called()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("defect", [None, "response_digest", "phase"])
+async def test_prestate_receipt_requires_digest_and_phase_independently(defect):
+    from eval_runner.state_authority import bound_state_snapshot
+
+    state = {"status": "pending"}
+    _, digest = bound_state_snapshot(state)
+    receipt = {"response_digest": digest, "phase": "pre"}
+    if defect:
+        receipt[defect] = "unrelated"
+    verifier = SessionStateParityVerifier(SimpleNamespace(scenario={}))
+    verifier._observation_identities.set({"authority:orders": {"connector_receipt": receipt}})
+    with patch.object(
+        verifier, "_resolve_target", new_callable=AsyncMock, return_value=(state, None)
+    ):
+        captured = await verifier.capture_external_prestate(
+            {"id": "review", "expected_outcome": [{"target": "authority:orders"}]},
+            None,
+            [],
+        )
+    observation = captured["authority:orders"]
+    if defect:
+        assert observation["invalid"] is True
+        assert observation["error_type"] == "ObservationReceiptMismatch"
+    else:
+        assert observation["state"] == state
+        assert observation["snapshot_hash"] == digest

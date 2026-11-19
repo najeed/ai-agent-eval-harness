@@ -84,6 +84,9 @@ def test_response_chain_accepts_bound_string_and_rejects_changed_consumer():
         "unchanged_payload",
         "consumer_hash",
         "missing_source",
+        "reference_not_mapping",
+        "reference_missing_id",
+        "reference_non_string_id",
     ],
 )
 def test_response_transformation_requires_complete_bound_provenance(defect):
@@ -166,6 +169,12 @@ def test_response_transformation_requires_complete_bound_provenance(defect):
         reference["evidence_hash"] = evidence_hash("forged-reference")
     elif defect == "missing_source":
         index.pop("modification")
+    elif defect == "reference_not_mapping":
+        transformed["observation"]["transformation_ref"] = ["modification"]
+    elif defect == "reference_missing_id":
+        reference.pop("event_id")
+    elif defect == "reference_non_string_id":
+        reference["event_id"] = 42
     assert _valid_response_chain(receipt, bound, index) is False
 
 

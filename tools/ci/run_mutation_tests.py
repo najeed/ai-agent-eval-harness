@@ -1160,10 +1160,16 @@ CRITICAL_MUTATION_TARGETS += (
             "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_state_acquisition_requires_a_coroutine_getter",
             "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_state_acquisition_rejects_missing_projection_before_dispatch",
             "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_bounded_state_acquisition_preserves_valid_dictionary_result",
+            "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_prestate_observes_each_authority_once_and_skips_non_authorities",
+            "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_policy_evidence_target_is_a_nonempty_string_before_dispatch",
+            "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_explicit_agent_message_does_not_invoke_summary_fallback",
+            "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_prestate_receipt_requires_digest_and_phase_independently",
         ),
         frozenset({"capture_external_prestate", "preexecution_failure", "_resolve_target"}),
         scope_test_names={
             "capture_external_prestate": (
+                "test_prestate_observes_each_authority_once_and_skips_non_authorities",
+                "test_prestate_receipt_requires_digest_and_phase_independently",
                 "test_mixed_authority_projections_capture_the_complete_required_prestate",
                 "test_invalid_authority_identity_is_typed_unobservable_evidence",
                 "test_async_authority_identity_is_closed_and_rejected_before_fetch",
@@ -1175,6 +1181,8 @@ CRITICAL_MUTATION_TARGETS += (
                 "test_required_prestate_is_not_waived_by_optional_peer",
             ),
             "_resolve_target": (
+                "test_policy_evidence_target_is_a_nonempty_string_before_dispatch",
+                "test_explicit_agent_message_does_not_invoke_summary_fallback",
                 "test_invalid_authority_identity_is_typed_unobservable_evidence",
                 "test_message_observation_ignores_later_user_and_system_entries",
                 "test_state_acquisition_requires_a_coroutine_getter",
