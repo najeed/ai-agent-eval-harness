@@ -5,6 +5,7 @@ description = "High-Signal Industry Dataset Utility"
 authors = [
     { name = "Najeed Khan", email = "agentvos@agentvos.ai" }
 ]
+license = "Apache-2.0"
 dependencies = [
     "click==8.5.1",
     "pydantic==2.14.3",
@@ -19,5 +20,9 @@ requires-python = ">=3.12"
 dataproc-cli = "dataproc_engine.cli.main:cli"
 
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=77.0.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.package-dir]
+dataproc_engine = "."
+
