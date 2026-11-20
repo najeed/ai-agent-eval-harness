@@ -97,3 +97,21 @@ def test_validate_signing_response_valid_raw_hex(remote):
     valid_hex = raw.key.sign(b"{}").hex()
     result = validate_signing_response(b"{}", valid_hex, identity=policy.identity, purpose=PACKAGE)
     assert result == valid_hex
+
+
+def test_validate_signing_response_structured_envelope(remote):
+    backend, _, policy = remote
+    response = backend.sign_payload(b"{}", purpose=PACKAGE)
+    assert (
+        validate_signing_response(
+            b"{}", response, identity=policy.identity, purpose=PACKAGE, public_key=policy.public_key
+        )
+        == response
+    )
+
+    tampered = dict(response)
+    tampered["signature"] = "a" * len(response["signature"])
+    with pytest.raises(SignatureContractError, match="Invalid or unauthorized"):
+        validate_signing_response(
+            b"{}", tampered, identity=policy.identity, purpose=PACKAGE, public_key=policy.public_key
+        )

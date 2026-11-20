@@ -831,7 +831,7 @@ CRITICAL_MUTATION_TARGETS += (
                 "test_invalid_or_oversized_signer_identity_never_reaches_remote",
             ),
             "validate_signing_response": (
-                "test_bad_structured_response_cannot_publish_or_seal",
+                "test_validate_signing_response_structured_envelope",
                 "test_raw_signing_response_cannot_use_permissive_hex_whitespace",
                 "test_validate_signing_response_valid_raw_hex",
             ),

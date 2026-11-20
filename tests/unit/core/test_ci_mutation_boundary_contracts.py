@@ -158,7 +158,16 @@ def test_replay_consumption_requires_each_independent_binding(binding):
     ]
 
 
-@pytest.mark.parametrize("defect", ["extra_before_key", "integer_exists"])
+@pytest.mark.parametrize(
+    "defect",
+    [
+        "extra_before_key",
+        "integer_exists",
+        "none_after_exists",
+        "none_before_exists",
+        "non_mapping_after_exists",
+    ],
+)
 def test_partial_commit_requires_exact_keys_and_strict_boolean_existence(defect):
     before, after, proposed = {"a": 0, "b": 0}, {"a": 1, "b": 0}, {"a": 1, "b": 2}
     before_exists, after_exists = {"a": True, "b": True}, {"a": True, "b": True}
@@ -187,19 +196,31 @@ def test_partial_commit_requires_exact_keys_and_strict_boolean_existence(defect)
     assert valid_extended_observations(receipt, bound, {}, 0, evidence_hash) is True
     if defect == "extra_before_key":
         before_exists["not-proposed"] = True
-    else:
+    elif defect == "integer_exists":
         before_exists["b"] = 1  # Equality with True must not hide invalid existence metadata.
+    elif defect == "none_after_exists":
+        commit["after_exists"] = None
+    elif defect == "none_before_exists":
+        commit["before_exists"] = None
+    elif defect == "non_mapping_after_exists":
+        commit["after_exists"] = ["a", "b"]
     assert valid_extended_observations(receipt, bound, {}, 0, evidence_hash) is False
 
 
 @pytest.mark.asyncio
-async def test_mixed_authority_projections_capture_the_complete_required_prestate():
+@pytest.mark.parametrize("empty_style", ["missing", "non_list_string", "non_list_int"])
+async def test_mixed_authority_projections_capture_the_complete_required_prestate(empty_style):
     verifier = SessionStateParityVerifier(SimpleNamespace(scenario={}))
+    second_assertion = {"target": "authority:orders"}
+    if empty_style == "non_list_string":
+        second_assertion["projection"] = "non_list_field"
+    elif empty_style == "non_list_int":
+        second_assertion["projection"] = 42
     node = {
         "id": "review",
         "expected_outcome": [
             {"target": "authority:orders", "projection": ["status"]},
-            {"target": "authority:orders"},
+            second_assertion,
         ],
     }
     state = {"status": "pending", "approval": {"reviewed": False}}
@@ -301,7 +322,7 @@ async def test_bounded_state_acquisition_preserves_valid_dictionary_result():
     getter = AsyncMock(return_value={"status": "pending", "unrelated": "private"})
     verifier = SessionStateParityVerifier(SimpleNamespace())
     observed, path = await verifier._resolve_target(
-        {"target": "state", "projection": ["status"]},
+        {"target": "state", "projection": ["status"], "property": "field_to_ignore"},
         SimpleNamespace(get_bounded_state=getter),
         [],
         {},
@@ -336,7 +357,19 @@ async def test_prestate_observes_each_authority_once_and_skips_non_authorities(i
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "evidence_target", [None, "", 42, True, [], ["state"], {}, {"target": "state"}, "state"]
+    "evidence_target",
+    [
+        None,
+        "",
+        42,
+        True,
+        [],
+        ["state"],
+        {},
+        {"target": "state"},
+        "state",
+        "message",
+    ],
 )
 async def test_policy_evidence_target_is_a_nonempty_string_before_dispatch(evidence_target):
     policy = {
@@ -352,6 +385,9 @@ async def test_policy_evidence_target_is_a_nonempty_string_before_dispatch(evide
     )
     getter = AsyncMock(return_value={"status": "pending"})
     evaluator = SimpleNamespace(evaluate_policy=Mock(return_value=SimpleNamespace(allowed=True)))
+    history = (
+        [{"role": "agent", "content": "agent message"}] if evidence_target == "message" else []
+    )
     with (
         patch("eval_runner.runtime_services.resolve_policy_evaluator", return_value=evaluator),
         patch.object(
@@ -363,7 +399,7 @@ async def test_policy_evidence_target_is_a_nonempty_string_before_dispatch(evide
         observed, path = await resolve(
             {"target": "policy:review", "oracle_id": "policy:review"},
             SimpleNamespace(get_bounded_state=getter),
-            [],
+            history,
             {},
         )
     if evidence_target == "state":
@@ -371,6 +407,12 @@ async def test_policy_evidence_target_is_a_nonempty_string_before_dispatch(evide
         getter.assert_awaited_once_with(["status"])
         evaluator.evaluate_policy.assert_called_once_with(policy, {"status": "pending"})
         assert resolve.await_count == 2
+    elif evidence_target == "message":
+        # Non-dict observation (string) must be rejected before evaluating policy
+        assert observed is None and path == "__unobserved_source__"
+        assert resolve.await_count == 2
+        getter.assert_not_awaited()
+        evaluator.evaluate_policy.assert_not_called()
     else:
         assert observed is None and path == "__unobserved_source__"
         assert resolve.await_count == 1

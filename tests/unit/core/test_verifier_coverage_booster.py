@@ -29,6 +29,7 @@ from eval_runner.verifier import (
     CertificationFailedError,
     CoreTraceSigner,
     TraceVerifier,
+    VerificationAuthority,
     verify_trace_certificate,
 )
 
@@ -247,6 +248,69 @@ def test_verify_run_anomalies_and_exceptions():
         )
         assert res["verification_status"] == "FAILED_VERIFICATION"
         assert "Verification error: Sub-verification crashed" in res["failure_reason"]
+
+    # Authority fallback gating and execution_manifest run_id injection
+    with patch.object(TraceVerifier, "verify_trace_bytes", return_value=False):
+        with patch.object(
+            VerificationAuthority, "verify_certification_artifact", return_value={"failures": []}
+        ) as mock_artifact:
+            # Case 1: cryptographically_valid is True,
+            # manifest has package and execution_manifest without run_id
+            with patch(
+                "eval_runner.verifier.verify_trace_certificate",
+                return_value={"verified": True, "errors": []},
+            ):
+                mock_store.get_run.return_value = {"run_id": "run-exec-man"}
+                mock_store.get_manifest.return_value = {
+                    "run_id": "run-exec-man",
+                    "vc_version": "3.0.0",
+                    "verification_package": {"pkg": 1},
+                    "execution_manifest": {"env": "prod"},
+                }
+                TraceVerifier.verify_run("run-exec-man", run_store=mock_store)
+                mock_artifact.assert_called_once()
+                assert (
+                    mock_artifact.call_args.kwargs["canonical_manifest"]["run_id"] == "run-exec-man"
+                )
+                mock_artifact.reset_mock()
+
+                # Case 2: execution_manifest is not a Mapping (e.g. list), must not unpack and crash
+                mock_store.get_manifest.return_value = {
+                    "run_id": "run-exec-man",
+                    "vc_version": "3.0.0",
+                    "verification_package": {"pkg": 1},
+                    "execution_manifest": ["item1"],
+                }
+                TraceVerifier.verify_run("run-exec-man", run_store=mock_store)
+                mock_artifact.assert_called_once()
+                assert mock_artifact.call_args.kwargs["canonical_manifest"] == ["item1"]
+                mock_artifact.reset_mock()
+
+                # Case 3: execution_manifest is None,
+                # verify_certification_artifact must NOT be called
+                mock_store.get_manifest.return_value = {
+                    "run_id": "run-exec-man",
+                    "vc_version": "3.0.0",
+                    "verification_package": {"pkg": 1},
+                    "execution_manifest": None,
+                }
+                TraceVerifier.verify_run("run-exec-man", run_store=mock_store)
+                mock_artifact.assert_not_called()
+
+            # Case 4: cryptographically_valid is False,
+            # verify_certification_artifact must NOT be called
+            with patch(
+                "eval_runner.verifier.verify_trace_certificate",
+                return_value={"verified": False, "errors": ["SigFail"]},
+            ):
+                mock_store.get_manifest.return_value = {
+                    "run_id": "run-exec-man",
+                    "vc_version": "3.0.0",
+                    "verification_package": {"pkg": 1},
+                    "execution_manifest": {"env": "prod"},
+                }
+                TraceVerifier.verify_run("run-exec-man", run_store=mock_store)
+                mock_artifact.assert_not_called()
 
 
 def test_verify_trace_certificate_pqc_exception():
