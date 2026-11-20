@@ -330,6 +330,17 @@ def test_stream_registered_idle_run_closes_when_writer_is_gone(app, provider_sco
         assert stream_text(app, "r1") == ""
 
 
+def test_stream_headers_pep_3333_hop_by_hop_compliance(app, provider_scope):
+    provider_scope.get_run.return_value = {"run_id": "r1", "status": "RUNNING"}
+    with app.test_request_context("/"):
+        response = runs.stream_run_logs.__wrapped__("r1")
+        assert response.mimetype == "text/event-stream"
+        assert response.headers.get("Cache-Control") == "no-cache"
+        assert response.headers.get("X-Accel-Buffering") == "no"
+        # PEP 3333 §Hop-by-Hop Headers: MUST NOT contain hop-by-hop headers
+        assert "Connection" not in response.headers
+
+
 # Former backend fallback/control tests: all use runtime discovery, not a reference backend.
 def test_cancel_uses_discovered_execution_backend(app, provider_scope):
     provider_scope.get_run.return_value = {"run_id": "r1"}

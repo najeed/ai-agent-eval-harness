@@ -1170,7 +1170,6 @@ def stream_run_logs(run_id):
             headers={
                 "Cache-Control": "no-cache",
                 "X-Accel-Buffering": "no",
-                "Connection": "keep-alive",
             },
         )
 
