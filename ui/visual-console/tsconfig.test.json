@@ -15,6 +15,7 @@
   "include": [
     "src/lib/aesDocument.ts",
     "src/lib/debuggerLogic.ts",
+    "src/lib/trustCenterLogic.ts",
     "src/auth/runtimeAuthContext.ts",
     "src/types/extension-contract.ts",
     "src/utils/navigationIcons.tsx",
@@ -23,5 +24,3 @@
     "tests/**/*.ts"
   ]
 }
-
-

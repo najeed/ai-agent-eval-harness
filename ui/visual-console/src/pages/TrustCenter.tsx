@@ -4,6 +4,7 @@ import { ShieldCheck, ShieldAlert, Award, CheckCircle, XCircle, Search, Key, Ref
 import { useRBAC } from '../context/RBACContext';
 import { ProvisionalBadge } from '../components/ProvisionalBadge';
 import { useRunReportAction } from '../lib/runReportAction';
+import { evaluateTraceEligibility } from '../lib/trustCenterLogic';
 
 interface VerifyResult {
   run_id: string;
@@ -50,21 +51,7 @@ export const TrustCenter: React.FC = () => {
   const [resolvedKey, setResolvedKey] = useState('');
   const [showDiagnostics, setShowDiagnostics] = useState(false);
   const certificationPending = Boolean(runDetails && !runDetails.has_certificate);
-  const isEmptyTrace = Boolean(
-    runDetails &&
-    ((runDetails.evidence_nodes !== undefined && Number(runDetails.evidence_nodes) === 0) ||
-      runDetails.can_certify === false ||
-      (runDetails.size !== undefined && Number(runDetails.size) === 0))
-  );
-  const isCriteriaFailed = Boolean(
-    runDetails &&
-    !isEmptyTrace &&
-    ((runDetails.score !== undefined && Number(runDetails.score) < 1.0) ||
-      (runDetails.decision?.score !== undefined && Number(runDetails.decision.score) < 1.0) ||
-      (Array.isArray(runDetails.failed_oracles) && runDetails.failed_oracles.length > 0) ||
-      runDetails.verdict === 'FAILED' ||
-      runDetails.verification_status === 'FAILED')
-  );
+  const { isEmptyTrace, isCriteriaFailed } = evaluateTraceEligibility(runDetails);
 
   const inspectTargetRun = async (rid: string) => {
     if (!rid.trim()) {
