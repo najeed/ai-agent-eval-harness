@@ -26,7 +26,7 @@ def test_local_signing_evidence_cannot_claim_live_kms_or_release_approval(tmp_pa
     path = tmp_path / "junit.xml"
     report(path)
     result = verify(path)
-    assert result["passed_cases"] == 153
+    assert result["passed_cases"] == 154
     assert result["core_local_evidence_verified"]
     assert not result["live_kms_evidence_verified"]
     assert not result["large_payload_kms_feature_claim_ready"]
@@ -64,8 +64,8 @@ def test_sync_matrix_from_junit_xml(tmp_path):
     manifest_path = tmp_path / "synced_manifest.json"
 
     num_funcs, total_cases = sync_matrix(source_junit=junit_path, manifest_path=manifest_path)
-    assert total_cases == 153
-    assert num_funcs == 30
+    assert total_cases == 154
+    assert num_funcs == 31
 
     reloaded = load_required_matrix(manifest_path)
     assert reloaded == REQUIRED

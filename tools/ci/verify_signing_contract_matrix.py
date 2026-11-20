@@ -51,6 +51,7 @@ FALLBACK_REQUIRED: dict[str, int] = {
     "test_signature_semantics_and_exact_field_types_are_not_inferred": 6,
     "test_strict_transport_json_rejects_ambiguous_or_unsupported_inputs": 11,
     "test_unsigned_envelope_requires_bytes_and_identity": 1,
+    "test_validate_signing_response_structured_envelope": 1,
     "test_validate_signing_response_valid_raw_hex": 1,
 }
 

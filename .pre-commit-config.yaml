@@ -30,3 +30,9 @@ repos:
         files: ^(requirements\.txt|pyproject\.toml|dataproc_engine/pyproject\.toml|ui/visual-console/package\.json|vscode-extension/package\.json|docs/package\.json|COMPLIANCE\.md|NOTICE)$
         pass_filenames: false
 
+      - id: check-signing-contract-purity
+        name: check-signing-contract-purity
+        entry: python tools/ci/verify_signing_contract_matrix.py --check-purity
+        language: system
+        files: ^(tests/unit/core/test_(digest_signature|signing_acceptance|signing_input_policy)_contract\.py|tests/acceptance/test_digest_signature_release_matrix\.py|tests/acceptance/manifests/signing_contract_matrix\.json)$
+        pass_filenames: false

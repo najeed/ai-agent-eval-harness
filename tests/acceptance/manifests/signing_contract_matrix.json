@@ -1,6 +1,6 @@
 {
   "profile": "agentv.signature.digest-envelope.v1",
-  "total_cases": 153,
+  "total_cases": 154,
   "target_modules": [
     "tests/unit/core/test_digest_signature_contract.py",
     "tests/unit/core/test_signing_acceptance_matrix.py",
@@ -37,6 +37,7 @@
     "test_signature_semantics_and_exact_field_types_are_not_inferred": 6,
     "test_strict_transport_json_rejects_ambiguous_or_unsupported_inputs": 11,
     "test_unsigned_envelope_requires_bytes_and_identity": 1,
+    "test_validate_signing_response_structured_envelope": 1,
     "test_validate_signing_response_valid_raw_hex": 1
   }
 }
