@@ -13,6 +13,7 @@ import logging
 import os
 import random
 import re
+import warnings
 from collections.abc import Callable, Coroutine
 from typing import Any
 
@@ -133,8 +134,13 @@ def classify_llm_error(error: Exception, provider: str = "generic") -> LLMError:
 
     # Extract status code from error attributes if available
     status_code: int | None = None
-    for attr in ("code", "status", "status_code", "http_status"):
-        val = getattr(error, attr, None)
+    for attr in ("status", "status_code", "http_status", "code"):
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", DeprecationWarning)
+                val = getattr(error, attr, None)
+        except (AttributeError, TypeError):
+            continue
         if isinstance(val, int):
             status_code = val
             break

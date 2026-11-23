@@ -116,8 +116,10 @@ async def test_run_playground_empty_input_exits(monkeypatch, capsys):
 def test_playground_main_entrypoint(monkeypatch):
     """Test __main__ block execution when invoked as main module."""
     import runpy
+    import sys
 
     monkeypatch.setattr("builtins.input", lambda _: "exit")
     monkeypatch.setenv("AGENT_API_URL", "http://localhost:5001/execute_task")
+    monkeypatch.delitem(sys.modules, "eval_runner.playground", raising=False)
 
     runpy.run_module("eval_runner.playground", run_name="__main__")

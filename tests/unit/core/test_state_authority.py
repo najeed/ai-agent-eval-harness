@@ -210,6 +210,25 @@ def test_required_prestate_is_not_waived_by_optional_peer():
     } == {("optional", "OPTIONAL", "INVALID"), ("required", "REQUIRED", "INVALID")}
 
 
+def test_preexecution_failure_permits_valid_required_prestate():
+    from types import SimpleNamespace
+
+    bus = MagicMock()
+    verifier = SessionStateParityVerifier(
+        SimpleNamespace(
+            event_bus=bus, run_id="valid-prestate", current_execution_instance_id="review:1"
+        )
+    )
+    node = {
+        "id": "review",
+        "expected_outcome": [
+            {"oracle_id": "required", "target": "authority:orders", "required": True},
+        ],
+    }
+    assert verifier.preexecution_failure(node, {"authority:orders": {"status": "ok"}}) is None
+    bus.emit.assert_not_called()
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize("key_source", ["environment", "trust_root", "optional_missing"])
 @pytest.mark.parametrize("transport", ["https", "http"])

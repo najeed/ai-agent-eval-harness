@@ -19,11 +19,11 @@ dependencies = [
     "Flask==3.1.3",
     "flask-cors==6.0.5",
     "requests==2.34.2",
-    "certifi>=2026.10.23",
+    "certifi>=2026.11.20",
     "urllib3==2.8.0",
     "Werkzeug==3.1.9",
     "jsonschema==4.26.0",
-    "PyYAML==6.0.3",
+    "PyYAML==6.0.4",
     "pydantic==2.14.3",
     "numpy>=2.4.6,<2.5.0",
     "PyJWT==2.15.1",
@@ -58,7 +58,7 @@ framework-langgraph = [
     "langgraph==1.2.24",
 ]
 framework-ag2 = [
-    "ag2==1.3.3",
+    "ag2==1.3.4",
 ]
 framework-crewai = [
 #    "crewai==1.15.44; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
@@ -78,13 +78,13 @@ langchain-ollama = [
     "langchain-ollama>=1.1.0",
 ]
 langsmith = [
-    "langsmith==0.15.1",
+    "langsmith==0.16.0",
 ]
 
 # 4. Domain & Task Extras
 nlp = [
     "sentence-transformers==6.3.0",
-    "transformers==5.23.0",
+    "transformers==5.24.0",
     "datasets==5.2.0",
 ]
 docs = [
@@ -107,7 +107,7 @@ frameworks = [
     "langchain-core>=1.8.4",
     "langserve>=0.3.3",
     "langgraph==1.2.24",
-    "ag2==1.3.3",
+    "ag2==1.3.4",
 #    "crewai==1.15.44; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
 ]
 langchain-all = [
@@ -117,25 +117,25 @@ langchain-all = [
     "langchain-anthropic>=1.7.12",
     "langchain-google-genai>=4.5.2",
     "langchain-ollama>=1.1.0",
-    "langsmith==0.15.1",
+    "langsmith==0.16.0",
 ]
 
 all = [
     "sentence-transformers==6.3.0",
-    "transformers==5.23.0",
+    "transformers==5.24.0",
     "datasets==5.2.0",
     "google-genai==3.6.1",
     "langchain==1.5.2",
     "langchain-core>=1.8.4",
     "langserve>=0.3.3",
     "langgraph==1.2.24",
-    "ag2==1.3.3",
+    "ag2==1.3.4",
 #    "crewai==1.15.44; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
     "langchain-openai==1.8.5",
     "langchain-anthropic>=1.7.12",
     "langchain-google-genai>=4.5.2",
     "langchain-ollama>=1.1.0",
-    "langsmith==0.15.1",
+    "langsmith==0.16.0",
     "pypdf==7.1.1",
     "python-docx==1.2.0",
     "lxml==6.1.3",

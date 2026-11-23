@@ -18,7 +18,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | :--- | :--- | :--- | :--- |
 | **aiohttp** | 3.14.5 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **Authlib** | 1.9.10 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **certifi** | 2026.10.23 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **certifi** | 2026.11.20 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **cryptography** | 50,<51 | Apache 2.0 / BSD | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **Flask** | 3.1.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **flask-cors** | 6.0.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
@@ -33,7 +33,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **pydantic** | 2.14.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **PyJWT** | 2.15.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **python-dotenv** | 1.2.4 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **PyYAML** | 6.0.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **PyYAML** | 6.0.4 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **requests** | 2.34.2 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **sqlalchemy** | 2.1.9 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **urllib3** | 2.8.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
@@ -81,7 +81,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 ### 2.6 Optional Ecosystem & Framework Integrations (`pyproject.toml [project.optional-dependencies]`)
 | Package | Version | License | License File |
 | :--- | :--- | :--- | :--- |
-| **ag2** | 1.3.3 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **ag2** | 1.3.4 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **cyclecore-pq** | 0.3.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **datasets** | 5.2.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **GitPython** | 3.2.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
@@ -94,13 +94,13 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **langchain-openai** | 1.8.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langgraph** | 1.2.24 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langserve** | 0.3.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langsmith** | 0.15.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langsmith** | 0.16.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **lxml** | 6.1.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **pypdf** | 7.1.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **python-docx** | 1.2.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **reportlab** | 5.1.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **sentence-transformers** | 6.3.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **transformers** | 5.23.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **transformers** | 5.24.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **weasyprint** | 70.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 
 ## 3. Obligations & Compliance Steps

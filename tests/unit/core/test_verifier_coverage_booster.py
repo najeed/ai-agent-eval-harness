@@ -1053,6 +1053,7 @@ def test_sign_trace_bytes_filtered_finalization_evidence_root_adopted(tmp_path):
         evidence_root_hash=filtered_root,
     )
     assert manifest["evidence_root_hash"] == filtered_root
+    assert manifest["verification_package"]["trace_seal"]["event_count"] == 1
 
 
 def test_sign_trace_bytes_filtered_run_end_finalization_evidence_root_adopted(tmp_path):
@@ -1080,6 +1081,7 @@ def test_sign_trace_bytes_filtered_run_end_finalization_evidence_root_adopted(tm
         evidence_root_hash=filtered_root,
     )
     assert manifest["evidence_root_hash"] == filtered_root
+    assert manifest["verification_package"]["trace_seal"]["event_count"] == 1
 
 
 def test_verify_run_provisional_live_must_fail_authoritative(tmp_path):

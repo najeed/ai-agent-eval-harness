@@ -32,9 +32,11 @@ import ast
 import base64
 import bisect
 import concurrent.futures
+import difflib
 import hashlib
 import json
 import os
+import queue
 import random
 import re
 import subprocess
@@ -53,6 +55,16 @@ REPORT_DIR = Path(os.environ.get("AGENTV_MUTATION_OUTPUT_DIR", str(BASE_DIR / "r
 REPORT_PATH = REPORT_DIR / "mutation_scorecard.md"
 BASELINE_CACHE_PATH = REPORT_DIR / "mutation_baseline_cache.json"
 BASELINE_CACHE_VERSION = 2
+KILLER_CACHE_PATH = REPORT_DIR / "mutation_killer_cache.json"
+KILLER_CACHE_VERSION = 1
+MUTANT_MATRIX_PATH = Path(
+    os.environ.get(
+        "AGENTV_MUTANT_MATRIX_PATH",
+        str(BASE_DIR / "tests" / "acceptance" / "manifests" / "mutant_killer_matrix.json"),
+    )
+)
+MUTANT_MATRIX_PROFILE = "agentv.mutation.mutant-to-test-matrix.v1"
+MUTANT_MATRIX_VERSION = 1
 
 # Strips heavy, slow third-party plugins that add 3-5s of startup latency per mutant
 FAST_PYTEST_FLAGS = [
@@ -201,6 +213,7 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_sign_trace_bytes_finalization_hash_from_top_level_and_cert_payload_execution_mode",
                 "test_sign_trace_bytes_private_key_without_private_bytes_raises",
                 "test_sign_trace_bytes_evidence_capture_metadata_precedence_and_guards",
+                "test_certification_finalization_carrier_contract",
             ),
             "verify_trace_bytes": (
                 "test_byte_verification_requires_explicit_run_and_provider",
@@ -233,6 +246,7 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_verify_trace_certificate_pqc_exception",
                 "test_verify_trace_certificate_unsupported_algorithm_without_profile_rejected",
                 "test_verify_trace_certificate_mutant_branches",
+                "test_verify_trace_cert_missing_scenario_data_fails_verification",
             ),
             "verify_package_artifacts": (
                 "test_legacy_manifest_projection_does_not_override_declared_binding",
@@ -244,6 +258,7 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_verify_package_artifacts_candidate_manifest_without_compliance_ignored",
                 "test_verify_package_artifacts_multiple_candidates_without_hash_does_not_diverge",
                 "test_verify_package_artifacts_coverage_booster",
+                "test_live_signed_certificate_honors_explicit_provisional_designation",
             ),
             "verify_package": (
                 "test_legacy_signed_package_profile_is_explicitly_non_authoritative",
@@ -255,6 +270,7 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_verify_package_trace_parsing_failure_and_split_chain_and_attested_fail",
                 "test_verify_package_certificate_hash_binds_evidence_root_hash",
                 "test_verify_package_coverage_booster",
+                "test_trace_seal_trust_envelope_tamper_detected",
             ),
             "verify_certification_artifact": (
                 "test_legacy_signed_package_profile_is_explicitly_non_authoritative",
@@ -267,6 +283,12 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_verify_certification_artifact_invalid_evaluator_suppresses_missing_finalization",
                 "test_verify_certification_artifact_run_end_carrier_alone_succeeds",
                 "test_verify_certification_artifact_coverage_booster",
+                "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution",
+                "test_detached_verifier_rejects_simulated_tool_provenance_in_live_run",
+                "test_authoritative_negative_package_is_attested_and_never_certified",
+            ),
+            "verify_package_signature_only": (
+                "test_verify_package_signature_only_complete_branches",
             ),
         },
         excluded_mutations=frozenset(
@@ -343,6 +365,10 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_branch_join_atomically_rejects_conflicts_and_preserves_disjoint_deltas",
                 "test_branch_join_merges_stateful_simulator_deltas_without_sharing_instances",
             ),
+            "execute": (
+                "test_sandbox_execute_missing_branches",
+                "test_tool_sandbox_execution_quiesce_and_policy_branches",
+            ),
             "_execute_core": (
                 "test_policy_denial_without_detailed_violations_still_blocks_the_write",
                 "test_policy_input_commitment_supports_yaml_date_values",
@@ -403,6 +429,10 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
             ),
             "freeze_run": (
                 "test_freezing_an_unassigned_identity_preserves_its_public_recorder_state",
+                "test_freeze_run_and_utility_hooks",
+            ),
+            "close_execution_writes": (
+                "test_close_execution_writes_does_not_change_provider_lifecycle",
                 "test_freeze_run_and_utility_hooks",
             ),
         },
@@ -739,8 +769,14 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_lifecycle",
                 "test_fallback_scan_when_token_file_missing_and_corruptions",
                 "test_get_request_skips_orphan_token_files_during_fallback",
+                "test_expiry_guard_is_shared_by_decision_and_action_consumption",
+                "test_sqlite_approval_store_degraded_and_stream_branches",
             ),
-            "get_request_by_run_id": ("test_lifecycle",),
+            "get_request_by_run_id": (
+                "test_lifecycle",
+                "test_file_approval_store_extra_branches",
+                "test_sqlite_approval_store_degraded_and_stream_branches",
+            ),
             "resolve_request": (
                 "test_resolve_errors",
                 "test_rejected_request_uses_rejected_default_audit_reason",
@@ -748,6 +784,9 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_hitl_resume_already_resolved",
                 "test_cross_scope_isolation_read_and_resolve",
                 "test_system_scope_can_resolve_legacy_unscoped_request",
+                "test_file_approval_store_extra_branches",
+                "test_sqlite_approval_store_degraded_and_stream_branches",
+                "test_expiry_guard_is_shared_by_decision_and_action_consumption",
             ),
             "_transition_request": (
                 "test_expiry_and_decision_serialize_across_provider_instances",
@@ -773,11 +812,16 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "test_expiry_and_decision_serialize_across_provider_instances",
                 "test_atomic_approval_consumption_across_provider_instances",
             ),
-            "list_pending": ("test_lifecycle",),
+            "list_pending": (
+                "test_lifecycle",
+                "test_file_approval_store_extra_branches",
+                "test_sqlite_approval_store_degraded_and_stream_branches",
+            ),
             "delete_request": (
                 "test_delete_request_reports_and_removes_both_durable_records",
                 "test_delete_request_reports_token_deletion_when_run_record_is_missing",
                 "test_delete_request_unlink_exceptions",
+                "test_sqlite_approval_store_degraded_and_stream_branches",
             ),
         },
     ),
@@ -907,7 +951,11 @@ CRITICAL_MUTATION_TARGETS += tuple(
             if filename == "approval_validation.py"
             else (
                 "tests/unit/core/test_runtime_mutation_plugin.py",
-                "tests/unit/core/test_approval_store.py",
+                *(
+                    ("tests/unit/core/test_approval_store.py",)
+                    if filename == "approval_faults.py"
+                    else ()
+                ),
                 *FAULT_GUARD_CORPORA.get(filename, ()),
             )
         ),
@@ -1177,6 +1225,7 @@ CRITICAL_MUTATION_TARGETS += (
                 "test_required_authority_prestate_stops_before_agent_and_hitl",
             ),
             "preexecution_failure": (
+                "test_preexecution_failure_permits_valid_required_prestate",
                 "test_optional_unobservable_prestate_does_not_block_dispatch",
                 "test_required_prestate_is_not_waived_by_optional_peer",
             ),
@@ -1244,6 +1293,7 @@ BASELINE_TESTS = [
 # Timeout = max(wall-clock) * 2.0 = 15.0 * 2.0 = 30.0s (provides 2x headroom).
 # Any value below ~10s fires before tests execute → meaningless 100% from timeouts.
 MUTANT_TIMEOUT_SECONDS = 30.0
+PYTEST_USAGE_ERROR = 4
 PYTEST_NO_TESTS_COLLECTED = 5
 
 
@@ -1394,6 +1444,8 @@ class MutationPoint:
         "description",
         "is_incompetent",
         "scope",
+        "scope_key",
+        "target",
     )
 
     def __init__(
@@ -1406,6 +1458,8 @@ class MutationPoint:
         description: str,
         is_incompetent: bool,
         scope: str = "",
+        scope_key: str | None = None,
+        target: Any = None,
     ):
         self.index = index
         self.lineno = lineno
@@ -1415,6 +1469,8 @@ class MutationPoint:
         self.description = f"[{index}] line {lineno}: {description}"
         self.is_incompetent = is_incompetent
         self.scope = scope
+        self.scope_key = scope_key if scope_key is not None else scope
+        self.target = target
 
 
 class _MutationProgress:
@@ -1967,8 +2023,8 @@ def _mutation_cache_key(
 
 
 def _collected_no_tests(returncode: int) -> bool:
-    """Identify pytest's explicit no-tests-collected outcome."""
-    return returncode == PYTEST_NO_TESTS_COLLECTED
+    """Identify pytest's explicit no-tests-collected outcome (code 5 empty or code 4 not found)."""
+    return returncode in (PYTEST_NO_TESTS_COLLECTED, PYTEST_USAGE_ERROR)
 
 
 def _test_source_path(selector: str) -> Path:
@@ -1978,12 +2034,21 @@ def _test_source_path(selector: str) -> Path:
 @lru_cache(maxsize=128)
 def _test_definition_names(source: str) -> tuple[str, ...]:
     """Reuse immutable AST metadata only when the exact source bytes match."""
-    return tuple(
-        node.name
-        for node in ast.walk(ast.parse(source))
-        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef)
-        and node.name.startswith("test_")
-    )
+    tree = ast.parse(source)
+    names: list[str] = []
+    for node in tree.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name.startswith(
+            "test_"
+        ):
+            names.append(node.name)
+        elif isinstance(node, ast.ClassDef):
+            for item in node.body:
+                if isinstance(
+                    item, (ast.FunctionDef, ast.AsyncFunctionDef)
+                ) and item.name.startswith("test_"):
+                    names.append(item.name)
+                    names.append(f"{node.name}::{item.name}")
+    return tuple(names)
 
 
 def _map_test_names_to_files(tests: list[str]) -> dict[str, str]:
@@ -2061,11 +2126,12 @@ def _partition_scope_primers(
     """Reserve the first deterministic mutant from each source scope as a cache primer."""
     primers: list[MutationPoint] = []
     remainder: list[MutationPoint] = []
-    primed_scopes: set[str] = set()
+    primed_scopes: set[Any] = set()
     for point in points:
-        if point.scope not in primed_scopes:
+        scope_key = getattr(point, "scope_key", getattr(point, "scope", ""))
+        if scope_key not in primed_scopes:
             primers.append(point)
-            primed_scopes.add(point.scope)
+            primed_scopes.add(scope_key)
         else:
             remainder.append(point)
     return primers, remainder
@@ -2080,11 +2146,12 @@ def _evaluate_primed_scopes(
 ) -> list:
     """Prime independent scopes concurrently; release siblings after their primer."""
     primers, remainder = _partition_scope_primers(points)
-    siblings: dict[str, list[MutationPoint]] = {}
+    siblings: dict[Any, list[MutationPoint]] = {}
     for point in remainder:
-        siblings.setdefault(point.scope, []).append(point)
+        scope_key = getattr(point, "scope_key", getattr(point, "scope", ""))
+        siblings.setdefault(scope_key, []).append(point)
     results = []
-    released: set[str] = set()
+    released: set[Any] = set()
     with concurrent.futures.ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
         pending = {pool.submit(evaluate, point): point for point in primers}
         while pending:
@@ -2099,9 +2166,10 @@ def _evaluate_primed_scopes(
                 result = future.result()
                 results.append(result)
                 on_result(result)
-                if point.scope not in released:
-                    released.add(point.scope)
-                    for sibling in siblings.get(point.scope, []):
+                scope_key = getattr(point, "scope_key", getattr(point, "scope", ""))
+                if scope_key not in released:
+                    released.add(scope_key)
+                    for sibling in siblings.get(scope_key, []):
                         pending[pool.submit(evaluate, sibling)] = sibling
     return results
 
@@ -2182,6 +2250,249 @@ def _write_baseline_cache(entries: Mapping[str, Mapping[str, Any]]) -> None:
         sys.stderr.write(f"  [Warn] Could not write baseline cache: {err}\n")
 
 
+def _load_killer_cache() -> dict[tuple[str, tuple[str, ...], str], str]:
+    """Load persistent killer test mapping across runs."""
+    if not KILLER_CACHE_PATH.exists():
+        return {}
+    try:
+        payload = json.loads(KILLER_CACHE_PATH.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as err:
+        sys.stderr.write(f"  [Warn] Ignoring unreadable killer cache: {err}\n")
+        return {}
+    if not isinstance(payload, dict) or payload.get("version") != KILLER_CACHE_VERSION:
+        return {}
+    entries = payload.get("entries")
+    if not isinstance(entries, dict):
+        return {}
+    cache: dict[tuple[str, tuple[str, ...], str], str] = {}
+    for raw_key, test_name in entries.items():
+        if not isinstance(test_name, str):
+            continue
+        try:
+            parts = raw_key.split("::", 2)
+            if len(parts) == 3:
+                mod, tests_str, sc = parts
+                tests_tuple = tuple(tests_str.split("|")) if tests_str else ()
+                cache[(mod, tests_tuple, sc)] = test_name
+        except Exception:
+            continue
+    return cache
+
+
+def _write_killer_cache(cache: Mapping[tuple[str, tuple[str, ...], str], str]) -> None:
+    """Persist successful killer test mappings as an ignored reports artifact."""
+    if not cache:
+        return
+    REPORT_DIR.mkdir(parents=True, exist_ok=True)
+    entries = {
+        f"{mod}::{'|'.join(tests)}::{sc}": test_name
+        for (mod, tests, sc), test_name in cache.items()
+    }
+    payload = {"version": KILLER_CACHE_VERSION, "entries": entries}
+    try:
+        KILLER_CACHE_PATH.write_text(
+            json.dumps(payload, sort_keys=True, indent=2), encoding="utf-8"
+        )
+    except OSError as err:
+        sys.stderr.write(f"  [Warn] Could not write killer cache: {err}\n")
+
+
+class MutantKillerMatrix:
+    """
+    Automated Mutant-to-Test Preserved Matrix loaded into script memory once at run execution.
+    Provides O(1) single-killer test lookups for each exact mutant, with scope-level fallback.
+    Automatically self-heals by recording newly observed kills and evicting stale test mappings.
+    """
+
+    def __init__(self, path: Path | None = None):
+        self.path = path or MUTANT_MATRIX_PATH
+        self.mutants: dict[str, dict[str, str]] = {}
+        self.scopes: dict[str, dict[str, str]] = {}
+        self.lock = threading.Lock()
+        self._dirty = False
+
+    @classmethod
+    def load(cls, path: Path | None = None) -> MutantKillerMatrix:
+        matrix = cls(path)
+        if not matrix.path.exists():
+            return matrix
+        try:
+            payload = json.loads(matrix.path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as err:
+            sys.stderr.write(f"  [Warn] Ignoring unreadable mutant killer matrix: {err}\n")
+            return matrix
+        if not isinstance(payload, dict) or payload.get("version") != MUTANT_MATRIX_VERSION:
+            return matrix
+
+        raw_mutants = payload.get("mutants", {})
+        if isinstance(raw_mutants, dict):
+            for k, v in raw_mutants.items():
+                if isinstance(k, str) and isinstance(v, dict) and "test_name" in v:
+                    matrix.mutants[k] = v
+
+        raw_scopes = payload.get("scopes", {})
+        if isinstance(raw_scopes, dict):
+            for k, v in raw_scopes.items():
+                if isinstance(k, str) and isinstance(v, dict) and "test_name" in v:
+                    matrix.scopes[k] = v
+
+        return matrix
+
+    def seed_from_targets(self, targets: tuple[CriticalMutationTarget, ...]) -> None:
+        """Seed scope-level killer defaults from declared target configuration if missing."""
+        with self.lock:
+            for target_config in targets:
+                try:
+                    rel_mod = str(target_config.path.relative_to(BASE_DIR).as_posix())
+                except ValueError:
+                    rel_mod = target_config.path.name
+                test_map = _map_test_names_to_files(list(target_config.tests))
+                for scope, test_names in (target_config.scope_test_names or {}).items():
+                    scope_key = f"{rel_mod}::{scope}"
+                    if scope_key not in self.scopes and test_names:
+                        first_test = test_names[0]
+                        test_file = test_map.get(first_test, "")
+                        if test_file:
+                            self.scopes[scope_key] = {
+                                "test_file": test_file,
+                                "test_name": first_test,
+                                "nodeid": f"{test_file}::{first_test}",
+                            }
+                            self._dirty = True
+
+    def get_killer(
+        self,
+        module_rel_path: str,
+        scope: str,
+        lineno: int,
+        original: str,
+        mutated: str,
+    ) -> tuple[str | None, str | None]:
+        """
+        Returns (test_file, test_name) if known in matrix, or (None, None).
+        Checks exact mutant first, then falls back to scope-level killer.
+        """
+        with self.lock:
+            # 1. Exact mutant match
+            mutant_key = f"{module_rel_path}::{scope}::{lineno}::{original}->{mutated}"
+            entry = self.mutants.get(mutant_key)
+            if entry:
+                return entry.get("test_file"), entry.get("test_name")
+
+            # 2. Scope-level match
+            scope_key = f"{module_rel_path}::{scope}"
+            scope_entry = self.scopes.get(scope_key)
+            if scope_entry:
+                return scope_entry.get("test_file"), scope_entry.get("test_name")
+
+            return None, None
+
+    def get_killer_nodeid(
+        self,
+        module_rel_path: str,
+        scope: str,
+        lineno: int,
+        original: str,
+        mutated: str,
+    ) -> tuple[str | None, str | None, str | None]:
+        """
+        Returns (test_file, test_name, nodeid) if known in matrix, or (None, None, None).
+        Checks exact mutant first, then falls back to scope-level killer.
+        """
+        with self.lock:
+            # 1. Exact mutant match
+            mutant_key = f"{module_rel_path}::{scope}::{lineno}::{original}->{mutated}"
+            entry = self.mutants.get(mutant_key)
+            if entry:
+                test_file = entry.get("test_file")
+                test_name = entry.get("test_name")
+                nodeid = entry.get("nodeid") or (
+                    f"{test_file}::{test_name}" if test_file and test_name else None
+                )
+                return test_file, test_name, nodeid
+
+            # 2. Scope-level match
+            scope_key = f"{module_rel_path}::{scope}"
+            scope_entry = self.scopes.get(scope_key)
+            if scope_entry:
+                test_file = scope_entry.get("test_file")
+                test_name = scope_entry.get("test_name")
+                nodeid = scope_entry.get("nodeid") or (
+                    f"{test_file}::{test_name}" if test_file and test_name else None
+                )
+                return test_file, test_name, nodeid
+
+            return None, None, None
+
+    def record_kill(
+        self,
+        module_rel_path: str,
+        scope: str,
+        lineno: int,
+        original: str,
+        mutated: str,
+        test_file: str,
+        test_name: str,
+        nodeid: str = "",
+    ) -> None:
+        """Record an observed kill into the in-memory matrix."""
+        mutant_key = f"{module_rel_path}::{scope}::{lineno}::{original}->{mutated}"
+        scope_key = f"{module_rel_path}::{scope}"
+        record = {
+            "test_file": test_file,
+            "test_name": test_name,
+            "nodeid": nodeid or f"{test_file}::{test_name}",
+        }
+        with self.lock:
+            self.mutants[mutant_key] = record
+            if scope_key not in self.scopes:
+                self.scopes[scope_key] = record
+            self._dirty = True
+
+    def evict(
+        self,
+        module_rel_path: str,
+        scope: str,
+        lineno: int,
+        original: str,
+        mutated: str,
+    ) -> None:
+        """Evict a stale killer test mapping (e.g. renamed or moved test)."""
+        mutant_key = f"{module_rel_path}::{scope}::{lineno}::{original}->{mutated}"
+        scope_key = f"{module_rel_path}::{scope}"
+        with self.lock:
+            if mutant_key in self.mutants:
+                del self.mutants[mutant_key]
+                self._dirty = True
+            if scope_key in self.scopes:
+                del self.scopes[scope_key]
+                self._dirty = True
+
+    def save(self) -> None:
+        """Atomically persist the in-memory matrix to disk."""
+        with self.lock:
+            if not self._dirty and self.path.exists():
+                return
+            payload = {
+                "profile": MUTANT_MATRIX_PROFILE,
+                "version": MUTANT_MATRIX_VERSION,
+                "total_mutants": len(self.mutants),
+                "total_scopes": len(self.scopes),
+                "mutants": self.mutants,
+                "scopes": self.scopes,
+            }
+            try:
+                self.path.parent.mkdir(parents=True, exist_ok=True)
+                temp_path = self.path.with_suffix(".tmp")
+                temp_path.write_text(
+                    json.dumps(payload, sort_keys=True, indent=2), encoding="utf-8"
+                )
+                temp_path.replace(self.path)
+                self._dirty = False
+            except OSError as err:
+                sys.stderr.write(f"  [Warn] Failed to write mutant killer matrix: {err}\n")
+
+
 def format_sentinel_duration(duration_seconds: float) -> str:
     """Render precise elapsed seconds alongside a pytest-style wall-clock duration."""
     whole_seconds = max(0, int(duration_seconds))
@@ -2231,6 +2542,413 @@ sys.exit(exit_code)
 """
 
 
+def apply_mutant_to_module(
+    target_mod: Any,
+    source: str,
+    orig_file: Path | str,
+) -> Callable[[], None]:
+    """
+    Applies surgical mutant code directly into an existing in-memory module dict,
+    and returns a clean zero-overhead restoration callable.
+
+    Preserves existing class/function references and identity addresses so callers
+    and imported test suites see the mutated behavior immediately.
+    """
+    mod_snapshot = dict(target_mod.__dict__)
+    code = compile(source, str(orig_file), "exec")
+    exec(code, target_mod.__dict__)  # nosec B102
+
+    # In-place update methods on existing class objects so any module holding
+    # an imported reference (e.g. from parent packages or consumers) sees mutations
+    patched_classes: list[tuple[type, dict[str, Any]]] = []
+    for name, new_val in list(target_mod.__dict__.items()):
+        old_val = mod_snapshot.get(name)
+        if isinstance(old_val, type) and isinstance(new_val, type) and old_val is not new_val:
+            old_attrs = dict(old_val.__dict__)
+            for attr_name, attr_val in new_val.__dict__.items():
+                if attr_name not in ("__dict__", "__weakref__"):
+                    try:
+                        setattr(old_val, attr_name, attr_val)
+                    except (AttributeError, TypeError):
+                        pass
+            target_mod.__dict__[name] = old_val
+            patched_classes.append((old_val, old_attrs))
+
+    def restore() -> None:
+        for old_cls, orig_attrs in patched_classes:
+            current_cls_keys = set(old_cls.__dict__.keys())
+            for k in current_cls_keys:
+                if k not in orig_attrs and k not in ("__dict__", "__weakref__"):
+                    try:
+                        delattr(old_cls, k)
+                    except (AttributeError, TypeError):
+                        pass
+            for k, v in orig_attrs.items():
+                if k not in ("__dict__", "__weakref__"):
+                    try:
+                        setattr(old_cls, k, v)
+                    except (AttributeError, TypeError):
+                        pass
+        current_keys = set(target_mod.__dict__.keys())
+        for k in current_keys:
+            if k not in mod_snapshot:
+                del target_mod.__dict__[k]
+        target_mod.__dict__.update(mod_snapshot)
+
+    return restore
+
+
+def purge_test_modules() -> None:
+    """
+    Purge test modules from sys.modules so that subsequent test executions
+    re-import test files fresh and bind directly to the mutated module state.
+    """
+    for k in list(sys.modules.keys()):
+        if (
+            k.startswith("tests.")
+            or k.startswith("test_")
+            or k == "tests"
+            or ".test_" in k
+            or "_test_" in k
+        ):
+            sys.modules.pop(k, None)
+            continue
+        mod = sys.modules.get(k)
+        if mod is not None:
+            f = getattr(mod, "__file__", "") or ""
+            f_norm = f.replace("\\", "/").split("/")
+            if "tests" in f_norm:
+                sys.modules.pop(k, None)
+
+
+def run_worker_daemon() -> None:
+    """
+    Persistent in-process evaluation worker daemon.
+    Listens on stdin for JSON-encoded mutant evaluation requests, executes
+    test selections in-memory via surgical module patching and pytest.main,
+    and outputs line-delimited JSON results on stdout.
+    """
+    import importlib
+    import io
+    import tempfile
+    from contextlib import redirect_stderr, redirect_stdout
+
+    import pytest
+
+    # Pre-compile / warm up core imports
+    # Notify coordinator that worker is ready
+    sys.stdout.write(json.dumps({"event": "ready", "pid": os.getpid()}) + "\n")
+    sys.stdout.flush()
+
+    with tempfile.TemporaryDirectory(prefix="agentv-worker-") as base_temp:
+        while True:
+            line = sys.stdin.readline()
+            if not line:
+                break
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                cmd_data = json.loads(line)
+            except Exception as parse_err:
+                sys.stdout.write(
+                    json.dumps({"event": "error", "error": f"JSON decode error: {parse_err}"})
+                    + "\n"
+                )
+                sys.stdout.flush()
+                continue
+
+            cmd = cmd_data.get("cmd")
+            if cmd == "ping":
+                sys.stdout.write(json.dumps({"event": "pong"}) + "\n")
+                sys.stdout.flush()
+                continue
+            elif cmd == "shutdown":
+                sys.stdout.write(json.dumps({"event": "shutdown_ack"}) + "\n")
+                sys.stdout.flush()
+                break
+            elif cmd == "evaluate":
+                req_id = cmd_data.get("id")
+                target_file_str = cmd_data.get("target_file", "")
+                module_name = cmd_data.get("module_name", "")
+                source = cmd_data.get("source", "")
+                selection = cmd_data.get("selection", [])
+
+                target_file = Path(target_file_str)
+
+                # Purge previously imported test modules before evaluation
+                purge_test_modules()
+
+                try:
+                    if module_name not in sys.modules:
+                        importlib.import_module(module_name)
+                    target_mod = sys.modules[module_name]
+                except Exception as imp_err:
+                    err_out = (
+                        f"Import error for {module_name}: {imp_err}\nAGENTV_MUTATION_FAILURES=[]\n"
+                    )
+                    sys.stdout.write(
+                        json.dumps(
+                            {
+                                "event": "result",
+                                "id": req_id,
+                                "returncode": 2,
+                                "failures": [],
+                                "stdout": err_out,
+                                "stderr": str(imp_err),
+                            }
+                        )
+                        + "\n"
+                    )
+                    sys.stdout.flush()
+                    continue
+
+                class FailureEvidence:
+                    def __init__(self):
+                        self.failures = []
+
+                    def pytest_runtest_logreport(self, report):
+                        if report.failed:
+                            self.failures.append(dict(nodeid=report.nodeid, when=report.when))
+
+                evidence = FailureEvidence()
+                restore: Callable[[], None] | None = None
+                captured_out = io.StringIO()
+                captured_err = io.StringIO()
+                exit_code = 1
+                try:
+                    restore = apply_mutant_to_module(target_mod, source, target_file)
+                    pytest_args = list(selection) + [
+                        "--basetemp",
+                        os.path.join(base_temp, "pytest"),
+                    ]
+                    with redirect_stdout(captured_out), redirect_stderr(captured_err):
+                        exit_code = pytest.main(pytest_args, plugins=[evidence])
+                except Exception as eval_err:
+                    captured_err.write(f"Worker evaluation error: {eval_err}\n")
+                    exit_code = 2
+                finally:
+                    if restore is not None:
+                        try:
+                            restore()
+                        except Exception as rest_err:
+                            captured_err.write(f"Worker restore error: {rest_err}\n")
+                    # Purge test modules again after restore
+                    purge_test_modules()
+
+                out_str = captured_out.getvalue()
+                out_str += f"\nAGENTV_MUTATION_FAILURES={json.dumps(evidence.failures)}\n"
+
+                resp = {
+                    "event": "result",
+                    "id": req_id,
+                    "returncode": int(exit_code),
+                    "failures": evidence.failures,
+                    "stdout": out_str,
+                    "stderr": captured_err.getvalue(),
+                }
+                sys.stdout.write(json.dumps(resp) + "\n")
+                sys.stdout.flush()
+            else:
+                sys.stdout.write(
+                    json.dumps({"event": "error", "error": f"Unknown cmd: {cmd}"}) + "\n"
+                )
+                sys.stdout.flush()
+
+
+class MutantWorkerClient:
+    """
+    Coordinator-side client managing one persistent worker daemon process.
+    Uses stdin/stdout JSON streaming with timeout and death detection.
+    """
+
+    def __init__(self, worker_id: int, env: dict[str, str]):
+        self.worker_id = worker_id
+        runner_path = Path(__file__).resolve()
+        self.proc = subprocess.Popen(
+            [sys.executable, "-u", str(runner_path), "--worker-daemon"],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            bufsize=1,
+            cwd=BASE_DIR,
+            env=env,
+        )
+        self._stdout_queue: queue.Queue[str | None] = queue.Queue()
+        self._reader_thread = threading.Thread(
+            target=self._read_stdout, daemon=True, name=f"worker-{worker_id}-reader"
+        )
+        self._reader_thread.start()
+        # Synchronize startup
+        ready_line = self._readline(timeout=30.0)
+        if not ready_line or '"ready"' not in ready_line:
+            self.kill()
+            raise RuntimeError(
+                f"Worker daemon {worker_id} failed to initialize. Output: {ready_line}"
+            )
+
+    def _read_stdout(self) -> None:
+        try:
+            if self.proc.stdout is not None:
+                for line in iter(self.proc.stdout.readline, ""):
+                    self._stdout_queue.put(line)
+        except Exception:
+            pass
+        finally:
+            self._stdout_queue.put(None)
+
+    def _readline(self, timeout: float) -> str | None:
+        try:
+            return self._stdout_queue.get(timeout=timeout)
+        except queue.Empty:
+            return None
+
+    def evaluate(
+        self,
+        target_file: Path,
+        module_name: str,
+        source: str,
+        selection: list[str],
+        timeout_seconds: float,
+    ) -> subprocess.CompletedProcess[str]:
+        if self.proc.poll() is not None:
+            raise RuntimeError(
+                f"Worker daemon {self.worker_id} has terminated (exit code {self.proc.returncode})"
+            )
+
+        req = {
+            "cmd": "evaluate",
+            "target_file": str(target_file),
+            "module_name": module_name,
+            "source": source,
+            "selection": selection,
+        }
+        try:
+            assert self.proc.stdin is not None
+            self.proc.stdin.write(json.dumps(req) + "\n")
+            self.proc.stdin.flush()
+        except OSError as exc:
+            raise RuntimeError(
+                f"Failed to communicate with worker daemon {self.worker_id}: {exc}"
+            ) from exc
+
+        line = self._readline(timeout=timeout_seconds)
+        if line is None:
+            self.kill()
+            raise subprocess.TimeoutExpired(cmd=selection, timeout=timeout_seconds)
+
+        try:
+            data = json.loads(line)
+        except Exception as exc:
+            raise RuntimeError(f"Worker daemon {self.worker_id} sent invalid JSON: {line}") from exc
+
+        if data.get("event") != "result":
+            raise RuntimeError(f"Worker daemon {self.worker_id} returned unexpected event: {data}")
+
+        return subprocess.CompletedProcess(
+            args=selection,
+            returncode=data.get("returncode", 1),
+            stdout=data.get("stdout", ""),
+            stderr=data.get("stderr", ""),
+        )
+
+    def kill(self) -> None:
+        try:
+            if self.proc.poll() is None:
+                self.proc.kill()
+                self.proc.wait(timeout=2.0)
+        except Exception:
+            pass
+        finally:
+            for stream in (self.proc.stdin, self.proc.stdout, self.proc.stderr):
+                if stream is not None:
+                    try:
+                        stream.close()
+                    except Exception:
+                        pass
+
+
+class MutantWorkerPool:
+    """
+    Coordinates a pool of persistent worker daemons, distributing in-memory
+    mutant evaluations and rejuvenating failed or timed-out workers automatically.
+    """
+
+    def __init__(self, size: int, env: dict[str, str] | None = None):
+        self.size = max(1, size)
+        self.env = env or os.environ.copy()
+        self.env["PYTHONPATH"] = f"{BASE_DIR}{os.pathsep}{self.env.get('PYTHONPATH', '')}"
+        self._workers: queue.Queue[MutantWorkerClient] = queue.Queue()
+        self._all_workers: list[MutantWorkerClient] = []
+        self._lock = threading.Lock()
+        self._closed = False
+        self._worker_counter = 0
+
+    def start(self) -> None:
+        with self._lock:
+            for _ in range(self.size):
+                worker = self._spawn_worker()
+                self._workers.put(worker)
+
+    def _spawn_worker(self) -> MutantWorkerClient:
+        self._worker_counter += 1
+        worker = MutantWorkerClient(self._worker_counter, self.env)
+        self._all_workers.append(worker)
+        return worker
+
+    def evaluate(
+        self,
+        target_file: Path,
+        module_name: str,
+        source: str,
+        selection: list[str],
+        timeout_seconds: float = 30.0,
+    ) -> subprocess.CompletedProcess[str]:
+        if self._closed:
+            raise RuntimeError("MutantWorkerPool is closed")
+
+        try:
+            worker = self._workers.get(timeout=timeout_seconds)
+        except queue.Empty:
+            raise subprocess.TimeoutExpired(cmd=selection, timeout=timeout_seconds) from None
+
+        try:
+            res = worker.evaluate(target_file, module_name, source, selection, timeout_seconds)
+            self._workers.put(worker)
+            return res
+        except subprocess.TimeoutExpired:
+            with self._lock:
+                if not self._closed:
+                    new_worker = self._spawn_worker()
+                    self._workers.put(new_worker)
+            raise
+        except Exception:
+            worker.kill()
+            with self._lock:
+                if not self._closed:
+                    new_worker = self._spawn_worker()
+                    self._workers.put(new_worker)
+            raise
+
+    def close(self) -> None:
+        with self._lock:
+            self._closed = True
+            for w in self._all_workers:
+                try:
+                    w.kill()
+                except Exception:
+                    pass
+            self._all_workers.clear()
+
+    def __enter__(self) -> MutantWorkerPool:
+        self.start()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        self.close()
+
+
 def evaluate_mutant(
     target_file: Path,
     mutant_source: str,
@@ -2246,11 +2964,14 @@ def evaluate_mutant(
     module_timing: ModuleTiming | None = None,
     passed_controls: set[tuple[str, ...]] | None = None,
     diagnostics: list[dict[str, Any]] | None = None,
+    matrix: MutantKillerMatrix | None = None,
+    mp: MutationPoint | None = None,
+    worker_pool: MutantWorkerPool | None = None,
 ) -> str:
     """
     Evaluates mutant using dynamic in-memory injection without mutating target_file on disk.
     Applies 3-phase cascading acceleration:
-      1. Cached killer-test execution (stops in ~1 test if cached)
+      1. Preserved Matrix / cached killer-test execution (stops in ~1 test if recorded)
       2. Targeted source-scope test execution (-k selector -x), when viable
       3. Fallback full module corpus execution (-x)
     Returns status: 'killed', 'survived', 'timeout', 'indeterminate', or
@@ -2273,16 +2994,25 @@ def evaluate_mutant(
     cache_key = _mutation_cache_key(module_name, tests, scope)
 
     def run_selection(source: str, selection: list[str], *, control: bool = False):
-        loader = _make_loader_code(source, target_resolved, module_name, repr(selection))
-        result = subprocess.run(
-            [sys.executable, "-"],
-            cwd=BASE_DIR,
-            capture_output=True,
-            input=loader,
-            text=True,
-            timeout=timeout_seconds,
-            env=env,
-        )
+        if worker_pool is not None:
+            result = worker_pool.evaluate(
+                target_file=target_file,
+                module_name=module_name,
+                source=source,
+                selection=selection,
+                timeout_seconds=timeout_seconds,
+            )
+        else:
+            loader = _make_loader_code(source, target_resolved, module_name, repr(selection))
+            result = subprocess.run(
+                [sys.executable, "-"],
+                cwd=BASE_DIR,
+                capture_output=True,
+                input=loader,
+                text=True,
+                timeout=timeout_seconds,
+                env=env,
+            )
         if diagnostics is not None:
             diagnostics.append(
                 {
@@ -2334,58 +3064,109 @@ def evaluate_mutant(
                     passed_controls.add(key)
         elif diagnostics is not None:
             diagnostics.append({"control": True, "selection": selection, "reused": True})
-        _extract_and_cache_killer(result.stdout)
+        _extract_and_cache_killer(result.stdout, failures)
         return "killed"
 
-    def _extract_and_cache_killer(output: str) -> None:
-        if killer_cache is not None and scope and scope != "module":
+    def _extract_and_cache_killer(
+        output: str, failures: list[dict[str, Any]] | None = None
+    ) -> None:
+        extracted_file = None
+        extracted_name = None
+        extracted_nodeid = None
+        if failures:
+            for f in failures:
+                nid = f.get("nodeid")
+                if nid and "::" in nid:
+                    extracted_nodeid = str(nid).strip().replace("\\", "/")
+                    parts = extracted_nodeid.split("::")
+                    extracted_file = parts[0]
+                    extracted_name = parts[-1].split("[")[0]
+                    break
+        if not extracted_nodeid:
             m = re.search(r"FAILED\s+([^:\s]+)::([A-Za-z0-9_]+)", output)
             if m:
-                test_file = m.group(1).strip().replace("\\", "/")
-                test_name = m.group(2).strip()
-                if test_name_to_file is not None:
-                    test_name_to_file[test_name] = test_file
-                if cache_lock:
-                    with cache_lock:
-                        killer_cache[cache_key] = test_name
-                else:
-                    killer_cache[cache_key] = test_name
+                extracted_file = m.group(1).strip().replace("\\", "/")
+                extracted_name = m.group(2).strip()
+                extracted_nodeid = f"{extracted_file}::{extracted_name}"
             else:
                 m2 = re.search(r"FAILED\s+[^:]+::([A-Za-z0-9_]+)", output)
                 if m2:
-                    test_name = m2.group(1)
-                    if cache_lock:
-                        with cache_lock:
-                            killer_cache[cache_key] = test_name
-                    else:
-                        killer_cache[cache_key] = test_name
+                    extracted_name = m2.group(1)
+                    extracted_file = (
+                        test_name_to_file.get(extracted_name, "") if test_name_to_file else ""
+                    )
+                    if extracted_file:
+                        extracted_nodeid = f"{extracted_file}::{extracted_name}"
+
+        if extracted_name:
+            if extracted_file and test_name_to_file is not None:
+                test_name_to_file[extracted_name] = extracted_file
+            if matrix is not None and mp is not None and extracted_file:
+                matrix.record_kill(
+                    str(rel_path.as_posix()),
+                    mp.scope,
+                    mp.lineno,
+                    mp.original,
+                    mp.mutated,
+                    extracted_file,
+                    extracted_name,
+                    extracted_nodeid or f"{extracted_file}::{extracted_name}",
+                )
+            if killer_cache is not None and scope and scope != "module":
+                if cache_lock:
+                    with cache_lock:
+                        killer_cache[cache_key] = extracted_name
+                else:
+                    killer_cache[cache_key] = extracted_name
 
     try:
-        # Phase 1: Try cached killer test first (fast-fail on 1 test)
-        cached_killer = None
-        if killer_cache and scope:
+        # Phase 1: Try cached killer test from in-memory
+        # Preserved Matrix first (fast-fail on 1 test)
+        cached_killer_file = None
+        cached_killer_name = None
+        cached_nodeid = None
+        if matrix is not None and mp is not None:
+            cached_killer_file, cached_killer_name, cached_nodeid = matrix.get_killer_nodeid(
+                str(rel_path.as_posix()), mp.scope, mp.lineno, mp.original, mp.mutated
+            )
+        if not cached_killer_name and killer_cache and scope:
             if cache_lock:
                 with cache_lock:
-                    cached_killer = killer_cache.get(cache_key)
+                    cached_killer_name = killer_cache.get(cache_key)
             else:
-                cached_killer = killer_cache.get(cache_key)
+                cached_killer_name = killer_cache.get(cache_key)
 
-        if cached_killer:
+        if cached_nodeid or cached_killer_name:
             if module_timing is not None:
                 module_timing.record_cache_hit()
-            killer_file = test_name_to_file.get(cached_killer) if test_name_to_file else None
-            phase1_tests = [killer_file] if killer_file else (scoped_test_files or tests)
-            fast_flags = FAST_PYTEST_FLAGS + ["-k", cached_killer, "-x"]
-            selection = phase1_tests + fast_flags
+            killer_file = cached_killer_file or (
+                test_name_to_file.get(cached_killer_name) if test_name_to_file else None
+            )
+            target_nodeid = cached_nodeid or (
+                f"{killer_file}::{cached_killer_name}"
+                if killer_file and cached_killer_name
+                else None
+            )
+            if target_nodeid:
+                selection = [target_nodeid] + FAST_PYTEST_FLAGS + ["-x"]
+            else:
+                phase1_tests = [killer_file] if killer_file else (scoped_test_files or tests)
+                fast_flags = FAST_PYTEST_FLAGS + ["-k", cached_killer_name, "-x"]
+                selection = phase1_tests + fast_flags
             res = run_selection(mutant_source, selection)
             if _collected_no_tests(res.returncode):
                 # Cached selectors can become stale as tests are renamed or
                 # moved. They are an optimization, never kill evidence.
-                if cache_lock:
-                    with cache_lock:
+                if matrix is not None and mp is not None:
+                    matrix.evict(
+                        str(rel_path.as_posix()), mp.scope, mp.lineno, mp.original, mp.mutated
+                    )
+                if killer_cache is not None:
+                    if cache_lock:
+                        with cache_lock:
+                            killer_cache.pop(cache_key, None)
+                    else:
                         killer_cache.pop(cache_key, None)
-                else:
-                    killer_cache.pop(cache_key, None)
             elif res.returncode == 1:
                 return confirm_kill(res, selection)
             elif res.returncode != 0:
@@ -2432,6 +3213,7 @@ def verify_sentinel_preconditions(
     active_targets: list[Path] | None = None,
     *,
     workers: int = 1,
+    no_cache: bool = False,
 ) -> tuple[dict[str, float], dict[Path, float]]:
     """
     Self-validating precondition checks executed before any mutation testing begins.
@@ -2535,8 +3317,7 @@ def verify_sentinel_preconditions(
 
     # Prove each unmodified target through the same loader used for mutants.
     # A native import baseline cannot detect loader-induced collection failures.
-    # Deliberately serial: concurrent Python/pytest startup is slower and less
-    # stable on Windows under import and disk contention.
+    # Concurrency is bounded by workers to saturate host CPUs without thrashing.
     env = os.environ.copy()
     env["PYTHONPATH"] = f"{BASE_DIR}{os.pathsep}{env.get('PYTHONPATH', '')}"
     module_timeouts: dict[str, float] = {}
@@ -2544,9 +3325,10 @@ def verify_sentinel_preconditions(
     baseline_cache = _load_baseline_cache()
     corpus_groups = [(tuple(_tests_for_module(target)), [target]) for target in targets_to_check]
 
-    for tests, targets in corpus_groups:
-        cache_key = _baseline_cache_key(tests, tuple(targets))
-        # Historical timings are artifacts, never substitutes for a live control.
+    def _execute_baseline_control(
+        group: tuple[tuple[str, ...], list[Path]],
+    ) -> tuple[tuple[str, ...], list[Path], float, subprocess.CompletedProcess]:
+        tests, targets = group
         args_str = repr(list(tests) + FAST_PYTEST_FLAGS)
         target = targets[0]
         module_name = ".".join(target.relative_to(BASE_DIR).with_suffix("").parts)
@@ -2559,129 +3341,170 @@ def verify_sentinel_preconditions(
             cmd, input=py_code, cwd=BASE_DIR, capture_output=True, text=True, env=env
         )
         elapsed = time.monotonic() - t0
+        return tests, targets, elapsed, res
 
-        if res.returncode != 0:
-            names = ", ".join(target.name for target in targets)
-            print(f"  [FAIL] Baseline test suite for '{names}' failed or collected no tests!")
-            print(f"         Command output:\n{res.stdout}\n{res.stderr}")
-            sys.exit(1)
-
-        baseline_cache[cache_key] = {
-            "duration_seconds": elapsed,
-            "tests": list(tests),
-            "targets": [target.relative_to(BASE_DIR).as_posix() for target in targets],
-        }
-        status = "verified"
-
+    baseline_workers = max(1, min(workers, len(corpus_groups)))
+    if baseline_workers > 1:
         print(
-            f"   [Baseline {status}] corpus={', '.join(tests)} "
-            f"targets={', '.join(target.name for target in targets)}"
+            f"   [Concurrent Baselines] Validating {len(corpus_groups)} corpus groups "
+            f"with {baseline_workers} concurrent workers..."
         )
-        for target in targets:
-            module_name = target.name
-            dynamic_timeout = max(MUTANT_TIMEOUT_SECONDS, min(300.0, elapsed * 3.0))
-            module_timeouts[module_name] = dynamic_timeout
-            baseline_durations[target] = elapsed
-            headroom = dynamic_timeout / elapsed if elapsed > 0 else 999.0
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=baseline_workers) as pool:
+        futures = [pool.submit(_execute_baseline_control, group) for group in corpus_groups]
+        for fut in concurrent.futures.as_completed(futures):
+            tests, targets, elapsed, res = fut.result()
+            if res.returncode != 0:
+                names = ", ".join(target.name for target in targets)
+                print(f"  [FAIL] Baseline test suite for '{names}' failed or collected no tests!")
+                print(f"         Command output:\n{res.stdout}\n{res.stderr}")
+                sys.exit(1)
+
+            cache_key = _baseline_cache_key(tests, tuple(targets))
+            baseline_cache[cache_key] = {
+                "duration_seconds": elapsed,
+                "tests": list(tests),
+                "targets": [target.relative_to(BASE_DIR).as_posix() for target in targets],
+            }
+            status = "verified"
+
             print(
-                f"   • Module '{module_name}' baseline: {elapsed:.2f}s "
-                f"(Timeout: {dynamic_timeout:.1f}s, Headroom: {headroom:.2f}x)"
+                f"   [Baseline {status}] corpus={', '.join(tests)} "
+                f"targets={', '.join(target.name for target in targets)}"
             )
+            for target in targets:
+                module_name = target.name
+                dynamic_timeout = max(MUTANT_TIMEOUT_SECONDS, min(300.0, elapsed * 3.0))
+                module_timeouts[module_name] = dynamic_timeout
+                baseline_durations[target] = elapsed
+                headroom = dynamic_timeout / elapsed if elapsed > 0 else 999.0
+                print(
+                    f"   • Module '{module_name}' baseline: {elapsed:.2f}s "
+                    f"(Timeout: {dynamic_timeout:.1f}s, Headroom: {headroom:.2f}x)"
+                )
 
     _write_baseline_cache(baseline_cache)
     print("  [OK] Precondition checks PASSED cleanly.\n")
     return module_timeouts, baseline_durations
 
 
-def _evaluate_target_module(
-    target: Path,
+class _TargetEvaluationContext:
+    """Pre-computed evaluation state and sampled points for a single target module."""
+
+    def __init__(
+        self,
+        target: Path,
+        args: Any,
+        module_timeouts: dict[str, float],
+        baseline_seconds: float,
+        shared_killer_cache: dict[tuple[str, tuple[str, ...], str], str] | None = None,
+        cache_lock: threading.Lock | None = None,
+        shared_passed_controls: set[tuple[str, ...]] | None = None,
+    ):
+        self.target = target
+        self.rel_path = target.relative_to(BASE_DIR)
+        self.module_name = target.name
+        self.tests = _tests_for_module(target)
+        self.test_name_to_file = _map_test_names_to_files(self.tests)
+        self.declared_test_names = set(self.test_name_to_file.keys())
+        self.timeout_sec = module_timeouts.get(self.module_name, MUTANT_TIMEOUT_SECONDS)
+
+        self.original_bytes = target.read_bytes()
+        self.original_source = target.read_text(encoding="utf-8")
+        self.source_lines = [line + "\n" for line in self.original_source.splitlines()]
+
+        try:
+            tree = ast.parse(self.original_source)
+        except (SyntaxError, ValueError, TypeError) as exc:
+            print(f"  [FAIL] Failed to parse AST for {self.rel_path}: {exc}")
+            sys.exit(1)
+
+        annotation_lines = _annotation_line_numbers(tree)
+        all_points = discover_mutation_points(self.original_source, annotation_lines)
+        selected_scopes = MODULE_SCOPE_MAP.get(target, frozenset())
+        required_families = MODULE_REQUIRED_OPERATOR_FAMILIES.get(target, frozenset())
+        eligible_families = (
+            MODULE_ELIGIBLE_OPERATOR_FAMILIES[target]
+            or required_families
+            or HIGH_IMPACT_OPERATOR_FAMILIES
+        )
+        scoped_points = [
+            point
+            for point in all_points
+            if point.scope in selected_scopes
+            and mutation_operator_family(point) in eligible_families
+            and (point.scope, point.lineno, point.original, point.mutated)
+            not in MODULE_EXCLUDED_MUTATIONS[target]
+        ]
+        num_points = len(scoped_points)
+        competent_points = [p for p in scoped_points if not p.is_incompetent]
+        num_competent = len(competent_points)
+
+        is_full = getattr(args, "full", False)
+        seed = getattr(args, "seed", None)
+        if is_full:
+            sampled = scoped_points
+            print(
+                f"   • Module: {self.rel_path} ({num_points} critical-surface mutation points, "
+                "evaluating ALL 100%)"
+            )
+        else:
+            max_mutants = min(num_competent, 15)
+            rng = random.Random(seed) if seed is not None else random.Random()
+            sampled = (
+                rng.sample(competent_points, max_mutants)
+                if num_competent > max_mutants
+                else list(competent_points)
+            )
+            sampled.sort(key=lambda p: (p.lineno, p.col_offset))
+            seed_info = f" [seed={seed}]" if seed is not None else ""
+            print(
+                f"   • Module: {self.rel_path} ({num_points} total, "
+                f"{num_competent} runtime-effective, "
+                f"randomly sampled {len(sampled)}{seed_info})"
+            )
+
+        for p in sampled:
+            p.target = target
+            p.scope_key = f"{self.module_name}:{p.scope}"
+
+        self.sampled = sampled
+        self.timing = ModuleTiming(baseline_seconds=baseline_seconds)
+        self.passed_controls: set[tuple[str, ...]] = (
+            shared_passed_controls if shared_passed_controls is not None else set()
+        )
+
+
+def _evaluate_contexts(
+    contexts: list[_TargetEvaluationContext],
     args: Any,
-    module_timeouts: dict[str, float],
-    baseline_seconds: float,
     shared_killer_cache: dict[tuple[str, tuple[str, ...], str], str] | None = None,
     cache_lock: threading.Lock | None = None,
-) -> tuple[int, int, int, int, int, list[dict], ModuleTiming]:
+    matrix: MutantKillerMatrix | None = None,
+    worker_pool: MutantWorkerPool | None = None,
+) -> list[tuple[int, int, int, int, int, list[dict], ModuleTiming]]:
     """
-    Evaluates mutants for a single target module using mutant-level concurrency.
-    Returns: (killed, survived, timeout, indeterminate, incompetent, mutant_records, timing)
+    Evaluates mutants across one or more target contexts concurrently using a global
+    work-stealing mutant pool so workers never stall between modules.
     """
-    rel_path = target.relative_to(BASE_DIR)
-    module_name = target.name
-    tests = _tests_for_module(target)
-    test_name_to_file = _map_test_names_to_files(tests)
-    declared_test_names = set(test_name_to_file.keys())
-    timeout_sec = module_timeouts.get(module_name, MUTANT_TIMEOUT_SECONDS)
+    if not contexts:
+        return []
 
-    original_bytes = target.read_bytes()
-    original_source = target.read_text(encoding="utf-8")
-    source_lines = [line + "\n" for line in original_source.splitlines()]
-
-    try:
-        tree = ast.parse(original_source)
-    except (SyntaxError, ValueError, TypeError) as exc:
-        print(f"  [FAIL] Failed to parse AST for {rel_path}: {exc}")
-        sys.exit(1)
-
-    annotation_lines = _annotation_line_numbers(tree)
-    all_points = discover_mutation_points(original_source, annotation_lines)
-    selected_scopes = MODULE_SCOPE_MAP.get(target, frozenset())
-    required_families = MODULE_REQUIRED_OPERATOR_FAMILIES.get(target, frozenset())
-    eligible_families = (
-        MODULE_ELIGIBLE_OPERATOR_FAMILIES[target]
-        or required_families
-        or HIGH_IMPACT_OPERATOR_FAMILIES
-    )
-    scoped_points = [
-        point
-        for point in all_points
-        if point.scope in selected_scopes
-        and mutation_operator_family(point) in eligible_families
-        and (point.scope, point.lineno, point.original, point.mutated)
-        not in MODULE_EXCLUDED_MUTATIONS[target]
-    ]
-    num_points = len(scoped_points)
-    competent_points = [p for p in scoped_points if not p.is_incompetent]
-    num_competent = len(competent_points)
-
-    if args.full:
-        sampled = scoped_points
-        print(
-            f"   • Module: {rel_path} ({num_points} critical-surface mutation points, "
-            "evaluating ALL 100%)"
-        )
-    else:
-        max_mutants = min(num_competent, 15)
-        rng = random.Random(args.seed) if args.seed is not None else random.Random()
-        sampled = (
-            rng.sample(competent_points, max_mutants)
-            if num_competent > max_mutants
-            else list(competent_points)
-        )
-        sampled.sort(key=lambda p: (p.lineno, p.col_offset))
-        seed_info = f" [seed={args.seed}]" if args.seed is not None else ""
-        print(
-            f"   • Module: {rel_path} ({num_points} total, {num_competent} runtime-effective, "
-            f"randomly sampled {len(sampled)}{seed_info})"
-        )
-
-    killed = 0
-    survived = 0
-    timeout = 0
-    indeterminate = 0
-    incompetent = 0
-    records: list[dict] = []
-    timing = ModuleTiming(baseline_seconds=baseline_seconds)
-    mutation_started_at = time.monotonic()
-
+    target_map = {ctx.target: ctx for ctx in contexts}
+    all_sampled = [p for ctx in contexts for p in ctx.sampled]
     num_workers = max(1, getattr(args, "workers", 1))
-    progress = _MutationProgress(len(sampled), num_workers)
-    passed_controls: set[tuple[str, ...]] = set()
+    progress = _MutationProgress(len(all_sampled), num_workers)
+
+    target_start_times: dict[Path, float] = {ctx.target: time.monotonic() for ctx in contexts}
+    target_end_times: dict[Path, float] = {ctx.target: time.monotonic() for ctx in contexts}
 
     def _eval_one(mp: MutationPoint) -> tuple[str, str, MutationPoint]:
+        target = getattr(mp, "target", None)
+        ctx = target_map.get(target, contexts[0])
         if mp.is_incompetent:
             return "incompetent", f"{mp.description}  (annotation-only, no runtime effect)", mp
 
-        mutant_source = _apply_surgical_mutation(source_lines, mp)
+        mutant_source = _apply_surgical_mutation(ctx.source_lines, mp)
         if mutant_source is None:
             desc = (
                 f"{mp.description}  "
@@ -2689,34 +3512,38 @@ def _evaluate_target_module(
             )
             return "incompetent", desc, mp
 
-        scoped_files = _scoped_test_files(target, mp.scope, test_name_to_file, tests)
+        scoped_files = _scoped_test_files(ctx.target, mp.scope, ctx.test_name_to_file, ctx.tests)
         diagnostics: list[dict[str, Any]] = []
         status = evaluate_mutant(
-            target,
+            ctx.target,
             mutant_source,
-            tests,
-            timeout_seconds=timeout_sec,
-            original_bytes=original_bytes,
+            ctx.tests,
+            timeout_seconds=ctx.timeout_sec,
+            original_bytes=ctx.original_bytes,
             scope=mp.scope,
-            scope_test_selector=_scope_test_selector(target, mp.scope, declared_test_names),
+            scope_test_selector=_scope_test_selector(ctx.target, mp.scope, ctx.declared_test_names),
             scoped_test_files=scoped_files,
-            test_name_to_file=test_name_to_file,
+            test_name_to_file=ctx.test_name_to_file,
             killer_cache=shared_killer_cache,
             cache_lock=cache_lock,
-            module_timing=timing,
-            passed_controls=passed_controls,
+            module_timing=ctx.timing,
+            passed_controls=ctx.passed_controls,
             diagnostics=diagnostics,
+            matrix=matrix,
+            mp=mp,
+            worker_pool=worker_pool,
         )
+        target_end_times[ctx.target] = time.monotonic()
         diagnostic_dir = REPORT_DIR / "mutation_diagnostics"
         diagnostic_dir.mkdir(parents=True, exist_ok=True)
         source_hash = hashlib.sha3_256(mutant_source.encode("utf-8")).hexdigest()
-        (diagnostic_dir / f"{target.stem}-{source_hash}.json").write_text(
+        (diagnostic_dir / f"{ctx.target.stem}-{source_hash}.json").write_text(
             json.dumps(
                 {
-                    "module": rel_path.as_posix(),
+                    "module": ctx.rel_path.as_posix(),
                     "mutation": mp.description,
                     "source_hash": source_hash,
-                    "original_source_hash": hashlib.sha3_256(original_bytes).hexdigest(),
+                    "original_source_hash": hashlib.sha3_256(ctx.original_bytes).hexdigest(),
                     "status": status,
                     "python": sys.version,
                     "platform": sys.platform,
@@ -2730,7 +3557,7 @@ def _evaluate_target_module(
 
     progress.start()
     evaluations = _evaluate_primed_scopes(
-        sampled,
+        all_sampled,
         _eval_one,
         num_workers,
         lambda result: progress.report(result[0], f"{result[2].scope}: {result[1]}"),
@@ -2743,52 +3570,158 @@ def _evaluate_target_module(
     final_evaluations: list[tuple[str, str, MutationPoint]] = []
     for status, desc, mp in evaluations:
         if status == "timeout":
-            print(f"      [RETRY SERIAL]   [{rel_path.as_posix()}] {desc}", flush=True)
-            timing.record_timeout_retry()
+            t = getattr(mp, "target", None)
+            ctx = target_map.get(t, contexts[0])
+            print(f"      [RETRY SERIAL]   [{ctx.rel_path.as_posix()}] {desc}", flush=True)
+            ctx.timing.record_timeout_retry()
             status, desc, mp = _eval_one(mp)
         final_evaluations.append((status, desc, mp))
 
-    for status, desc, mp in final_evaluations:
-        if status == "killed":
-            killed += 1
-            icon = "[KILLED]"
-        elif status == "timeout":
-            timeout += 1
-            icon = "[TIMEOUT]"
-        elif status == "survived":
-            survived += 1
-            icon = "[SURVIVED]"
-        elif status == "indeterminate":
-            indeterminate += 1
-            icon = "[INDETERMINATE]"
-        else:
-            incompetent += 1
-            icon = "[INCOMPETENT]"
+    # Partition evaluations back into their per-target contexts
+    results_by_target: dict[Path, list[tuple[str, str, MutationPoint]]] = {
+        ctx.target: [] for ctx in contexts
+    }
+    for item in final_evaluations:
+        t = getattr(item[2], "target", None)
+        target_key = t if t in results_by_target else contexts[0].target
+        results_by_target[target_key].append(item)
 
-        records.append({"module": str(rel_path), "mutation": mp.description, "status": status})
-        print(f"      {icon:15s} [{rel_path.as_posix()}] {desc}", flush=True)
+    module_results: list[tuple[int, int, int, int, int, list[dict], ModuleTiming]] = []
+    for ctx in contexts:
+        k = 0
+        s = 0
+        t = 0
+        ind = 0
+        inc = 0
+        records: list[dict] = []
+        for status, desc, mp in results_by_target[ctx.target]:
+            if status == "killed":
+                k += 1
+                icon = "[KILLED]"
+            elif status == "timeout":
+                t += 1
+                icon = "[TIMEOUT]"
+            elif status == "survived":
+                s += 1
+                icon = "[SURVIVED]"
+            elif status == "indeterminate":
+                ind += 1
+                icon = "[INDETERMINATE]"
+            else:
+                inc += 1
+                icon = "[INCOMPETENT]"
 
-    timing.mutant_seconds = time.monotonic() - mutation_started_at
-    return killed, survived, timeout, indeterminate, incompetent, records, timing
+            records.append(
+                {"module": str(ctx.rel_path), "mutation": mp.description, "status": status}
+            )
+            print(f"      {icon:15s} [{ctx.rel_path.as_posix()}] {desc}", flush=True)
+
+        ctx.timing.mutant_seconds = max(
+            0.01, target_end_times[ctx.target] - target_start_times[ctx.target]
+        )
+        print(
+            f"   [Module complete] {ctx.rel_path.as_posix()}: "
+            f"execution={format_sentinel_duration(ctx.timing.mutant_seconds)}, "
+            f"baseline={format_sentinel_duration(ctx.timing.baseline_seconds)}",
+            flush=True,
+        )
+        module_results.append((k, s, t, ind, inc, records, ctx.timing))
+
+    return module_results
+
+
+def _evaluate_target_module(
+    target: Path,
+    args: Any,
+    module_timeouts: dict[str, float],
+    baseline_seconds: float,
+    shared_killer_cache: dict[tuple[str, tuple[str, ...], str], str] | None = None,
+    cache_lock: threading.Lock | None = None,
+    matrix: MutantKillerMatrix | None = None,
+    worker_pool: MutantWorkerPool | None = None,
+) -> tuple[int, int, int, int, int, list[dict], ModuleTiming]:
+    """
+    Evaluates mutants for a single target module using mutant-level concurrency.
+    Returns: (killed, survived, timeout, indeterminate, incompetent, mutant_records, timing)
+    """
+    ctx = _TargetEvaluationContext(
+        target, args, module_timeouts, baseline_seconds, shared_killer_cache, cache_lock
+    )
+    return _evaluate_contexts(
+        [ctx], args, shared_killer_cache, cache_lock, matrix=matrix, worker_pool=worker_pool
+    )[0]
 
 
 def assert_sources_unchanged(sources: Mapping[Path, bytes]) -> None:
-    """Invalidate a run when its inputs change, preserving every workspace edit."""
+    """Report edits and invalidate only consequential changes to validation inputs."""
     changed = []
     for path, expected in sources.items():
         try:
             current = path.read_bytes()
-            if current != expected and current.replace(b"\r\n", b"\n") != expected.replace(
-                b"\r\n", b"\n"
-            ):
-                changed.append(str(path))
-        except OSError:
+        except OSError as error:
+            print(f"  [Input changed] {path}: cannot read file: {error}", flush=True)
+            changed.append(str(path))
+            continue
+        if current == expected:
+            continue
+        before = expected.decode("utf-8-sig", errors="replace")
+        after = current.decode("utf-8-sig", errors="replace")
+        reason = "validation behavior changed"
+        consequential = True
+        if path.resolve() == Path(__file__).resolve():
+            consequential = False
+            reason = "runner already loaded in memory; disk edit does not replace running code"
+        elif before.replace("\r\n", "\n") == after.replace("\r\n", "\n"):
+            consequential = False
+            reason = "encoding marker or line endings only"
+        elif path.suffix == ".py":
+            try:
+                consequential = ast.dump(ast.parse(before)) != ast.dump(ast.parse(after))
+                if not consequential:
+                    reason = "Python syntax tree unchanged (formatting/comments only)"
+            except (SyntaxError, ValueError):
+                reason = "Python input no longer parses or cannot be compared"
+        elif path.suffix == ".toml":
+            import tomllib
+
+            try:
+                consequential = tomllib.loads(before) != tomllib.loads(after)
+                if not consequential:
+                    reason = "TOML configuration values unchanged"
+            except tomllib.TOMLDecodeError:
+                reason = "TOML input no longer parses or cannot be compared"
+        print(f"  [Input changed] {path}: {reason}", flush=True)
+        diff = "".join(
+            difflib.unified_diff(
+                before.splitlines(keepends=True),
+                after.splitlines(keepends=True),
+                fromfile=f"{path} (run start)",
+                tofile=f"{path} (current)",
+            )
+        )
+        if diff:
+            print(diff, flush=True)
+        if consequential:
             changed.append(str(path))
     if changed:
         raise RuntimeError(
             "MutationSourceChanged: validation inputs changed; workspace edits preserved: "
             + ", ".join(changed)
         )
+
+
+def snapshot_validation_inputs(active_targets: list[Path]) -> dict[Path, bytes]:
+    """Track only the selected targets, their test files, and shared configuration."""
+    inputs = set(active_targets)
+    inputs.update(
+        _test_source_path(selector)
+        for target in active_targets
+        for selector in _tests_for_module(target)
+    )
+    inputs.update(
+        {Path(__file__).resolve(), BASE_DIR / "pyproject.toml", BASE_DIR / "tests" / "conftest.py"}
+    )
+    return {path: path.read_bytes() for path in inputs if path.is_file()}
 
 
 def run_mutation_sentinel() -> None:
@@ -2820,6 +3753,32 @@ def run_mutation_sentinel() -> None:
         type=str,
         default=None,
         help="Optional module name or path substring to filter targets (e.g. evidence_graph.py).",
+    )
+    parser.add_argument(
+        "--no-cache",
+        action="store_true",
+        help="Do not load or persist the mutant killer cache.",
+    )
+    parser.add_argument(
+        "--matrix-file",
+        type=str,
+        default=None,
+        help="Path to external preserved mutant-to-test matrix JSON file.",
+    )
+    parser.add_argument(
+        "--no-matrix",
+        action="store_true",
+        help="Do not load or update the external mutant-to-test preserved matrix.",
+    )
+    parser.add_argument(
+        "--strict-control",
+        action="store_true",
+        help="Force running control execution for every mutant kill even if proven in baseline.",
+    )
+    parser.add_argument(
+        "--no-daemon",
+        action="store_true",
+        help="Disable worker daemon pool and execute each mutant in a fresh subprocess.",
     )
     args = parser.parse_args()
 
@@ -2880,17 +3839,6 @@ def run_mutation_sentinel() -> None:
     import atexit
     import signal
 
-    validation_inputs = set(TARGET_MODULES)
-    validation_inputs.update(
-        _test_source_path(selector)
-        for target in TARGET_MODULES
-        for selector in _tests_for_module(target)
-    )
-    validation_inputs.update(
-        {Path(__file__).resolve(), BASE_DIR / "pyproject.toml", BASE_DIR / "tests" / "conftest.py"}
-    )
-    pristine_sources = {path: path.read_bytes() for path in validation_inputs if path.is_file()}
-
     def cleanup_runner_lock():
         try:
             if lock_file.exists() and lock_file.read_text(encoding="utf-8").strip() == str(
@@ -2902,7 +3850,12 @@ def run_mutation_sentinel() -> None:
 
     def signal_handler(signum, frame):
         cleanup_runner_lock()
-        sys.exit(128 + signum if isinstance(signum, int) else 1)
+        if "worker_pool" in locals() and worker_pool is not None:
+            try:
+                worker_pool.close()
+            except Exception:
+                pass
+        os._exit(128 + signum if isinstance(signum, int) else 1)
 
     atexit.register(cleanup_runner_lock)
     for sig in (
@@ -2919,10 +3872,11 @@ def run_mutation_sentinel() -> None:
                 )
 
     if args.target:
+        target_filters = [f.strip().lower() for f in args.target.split(",") if f.strip()]
         active_targets = [
             t
             for t in TARGET_MODULES
-            if args.target.lower() in t.name.lower() or args.target.lower() in str(t).lower()
+            if any(f in t.name.lower() or f in str(t).lower() for f in target_filters)
         ]
         if not active_targets:
             print(f"  [FAIL] No target modules matched filter: {args.target}")
@@ -2930,9 +3884,11 @@ def run_mutation_sentinel() -> None:
     else:
         active_targets = list(TARGET_MODULES)
 
+    pristine_sources = snapshot_validation_inputs(active_targets)
+
     # 1. Self-Validating Precondition Verification
     module_timeouts, baseline_durations = verify_sentinel_preconditions(
-        active_targets, workers=args.workers
+        active_targets, workers=args.workers, no_cache=getattr(args, "no_cache", False)
     )
 
     # 2. Mutation Discovery & Testing
@@ -2945,19 +3901,98 @@ def run_mutation_sentinel() -> None:
     mutant_records: list[dict] = []
     module_timings: list[tuple[Path, ModuleTiming]] = []
 
-    shared_killer_cache: dict[tuple[str, tuple[str, ...], str], str] = {}
+    shared_killer_cache: dict[tuple[str, tuple[str, ...], str], str] = (
+        {} if getattr(args, "no_cache", False) else _load_killer_cache()
+    )
     cache_lock = threading.Lock()
+    if shared_killer_cache:
+        print(
+            f"   [Killer Cache] Loaded {len(shared_killer_cache)} "
+            "pre-computed killer test mappings."
+        )
+
+    matrix_file_path = Path(args.matrix_file) if args.matrix_file else MUTANT_MATRIX_PATH
+    if args.no_matrix:
+        matrix = None
+    else:
+        matrix = MutantKillerMatrix.load(matrix_file_path)
+        matrix.seed_from_targets(CRITICAL_MUTATION_TARGETS)
+        print(
+            f"   [Preserved Matrix] Loaded external matrix: {matrix_file_path.name} "
+            f"({len(matrix.mutants)} exact mutant mappings, {len(matrix.scopes)} scope targets)"
+        )
+
     try:
+        shared_passed_controls: set[tuple[str, ...]] = set()
+        if matrix is not None and not getattr(args, "strict_control", False):
+            for target in active_targets:
+                if target in baseline_durations:
+                    rel_str = str(target.relative_to(BASE_DIR).as_posix())
+                    target_nodeids: set[str] = set()
+                    for mkey, mentry in matrix.mutants.items():
+                        if mkey.startswith(rel_str + "::"):
+                            nid = mentry.get("nodeid") or (
+                                f"{mentry.get('test_file')}::{mentry.get('test_name')}"
+                                if mentry.get("test_file") and mentry.get("test_name")
+                                else None
+                            )
+                            if nid:
+                                target_nodeids.add(nid)
+                    for skey, sentry in matrix.scopes.items():
+                        if skey.startswith(rel_str + "::"):
+                            nid = sentry.get("nodeid") or (
+                                f"{sentry.get('test_file')}::{sentry.get('test_name')}"
+                                if sentry.get("test_file") and sentry.get("test_name")
+                                else None
+                            )
+                            if nid:
+                                target_nodeids.add(nid)
+                    for nid in target_nodeids:
+                        shared_passed_controls.add(tuple([nid] + FAST_PYTEST_FLAGS + ["-x"]))
+                        parts = nid.split("::")
+                        if len(parts) >= 2:
+                            shared_passed_controls.add(
+                                tuple([parts[0]] + FAST_PYTEST_FLAGS + ["-k", parts[-1], "-x"])
+                            )
+            if shared_passed_controls:
+                print(
+                    f"   [Control Deduplication] Pre-seeded {len(shared_passed_controls)} "
+                    "baseline-verified killer controls."
+                )
+
         print(f"2. Mutating Verification Modules & Scoring Test Suite ({mode_label})...")
-        for target in active_targets:
-            k, s, t, ind, inc, recs, timing = _evaluate_target_module(
+        use_pool = not getattr(args, "no_daemon", False)
+        worker_pool: MutantWorkerPool | None = None
+        if use_pool:
+            pool_size = max(1, getattr(args, "workers", 1))
+            print(
+                f"   [Worker Pool] Initializing {pool_size} persistent evaluation worker daemons..."
+            )
+            worker_pool = MutantWorkerPool(size=pool_size)
+            worker_pool.start()
+            print(f"   [Worker Pool] {pool_size} worker daemons warm and ready.")
+
+        contexts = [
+            _TargetEvaluationContext(
                 target,
                 args,
                 module_timeouts,
                 baseline_durations[target],
                 shared_killer_cache,
                 cache_lock,
+                shared_passed_controls=shared_passed_controls,
             )
+            for target in active_targets
+        ]
+        results = _evaluate_contexts(
+            contexts,
+            args,
+            shared_killer_cache,
+            cache_lock,
+            matrix=matrix,
+            worker_pool=worker_pool,
+        )
+        for target, (k, s, t, ind, inc, recs, timing) in zip(active_targets, results, strict=False):
             total_killed += k
             total_survived += s
             total_timeout += t
@@ -2966,9 +4001,16 @@ def run_mutation_sentinel() -> None:
             mutant_records.extend(recs)
             module_timings.append((target, timing))
     finally:
+        if "worker_pool" in locals() and worker_pool is not None:
+            worker_pool.close()
         try:
             assert_sources_unchanged(pristine_sources)
         finally:
+            if matrix is not None:
+                matrix.save()
+            if not getattr(args, "no_cache", False):
+                with cache_lock:
+                    _write_killer_cache(shared_killer_cache)
             cleanup_runner_lock()
 
     # 3. Calculate Refined Mutation Metrics
@@ -3116,4 +4158,7 @@ Enterprise verification assurance scorecard generated by surgical AST mutation a
 
 
 if __name__ == "__main__":
-    run_mutation_sentinel()
+    if "--worker-daemon" in sys.argv:
+        run_worker_daemon()
+    else:
+        run_mutation_sentinel()

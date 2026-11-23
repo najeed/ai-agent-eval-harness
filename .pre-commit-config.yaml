@@ -36,3 +36,17 @@ repos:
         language: system
         files: ^(tests/unit/core/test_(digest_signature|signing_acceptance|signing_input_policy)_contract\.py|tests/acceptance/test_digest_signature_release_matrix\.py|tests/acceptance/manifests/signing_contract_matrix\.json)$
         pass_filenames: false
+
+      - id: check-mutant-matrix-integrity
+        name: check-mutant-matrix-integrity
+        entry: python tools/ci/verify_mutant_matrix.py --check-integrity
+        language: system
+        files: ^(tests/acceptance/manifests/mutant_killer_matrix\.json|tools/ci/run_mutation_tests\.py)$
+        pass_filenames: false
+
+      - id: check-provider-boundaries
+        name: check-provider-boundaries
+        entry: python tools/ci/check_provider_boundaries.py
+        language: system
+        files: ^(eval_runner/.*\.py|tools/ci/check_provider_boundaries\.py)$
+        pass_filenames: false

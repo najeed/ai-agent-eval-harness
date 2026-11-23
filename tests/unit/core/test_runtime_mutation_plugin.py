@@ -2616,3 +2616,142 @@ def test_valid_extended_observations_approval_and_tool_rules():
         )
         is False
     )
+
+    # 4. Mutant [98]: approval_replay consumption mapping checks
+    valid_cons = {
+        "approval_token": "tok1",
+        "consumption": {
+            "run_id": "r1",
+            "payload_hash": "digest",
+            "authorization_id": "auth1",
+        },
+    }
+    receipt_replay = {
+        "fault": "approval_replay",
+        "observed": {**valid_rej, "code": "ApprovalReplayBlocked"},
+        "run_id": "r1",
+    }
+    bound_replay = [
+        {"kind": "authorization_request", "observation": valid_req},
+        {"kind": "authorization_consumed", "observation": valid_cons},
+        {"kind": "authorization_attempt", "observation": {**valid_att, "payload_hash": "digest"}},
+        {
+            "kind": "authorization_rejected",
+            "observation": {**valid_rej, "code": "ApprovalReplayBlocked"},
+        },
+        {"kind": "authorization_cleanup", "observation": valid_clean},
+    ]
+    assert valid_extended_observations(receipt_replay, bound_replay, {}, 1, lambda x: "h") is True
+
+    # Mutant [98]: non-mapping consumption
+    bound_cons_non_mapping = [
+        {"kind": "authorization_request", "observation": valid_req},
+        {
+            "kind": "authorization_consumed",
+            "observation": {"approval_token": "tok1", "consumption": "not_a_mapping"},
+        },
+        {"kind": "authorization_attempt", "observation": {**valid_att, "payload_hash": "digest"}},
+        {
+            "kind": "authorization_rejected",
+            "observation": {**valid_rej, "code": "ApprovalReplayBlocked"},
+        },
+        {"kind": "authorization_cleanup", "observation": valid_clean},
+    ]
+    assert (
+        valid_extended_observations(receipt_replay, bound_cons_non_mapping, {}, 1, lambda x: "h")
+        is False
+    )
+
+    # 5. Mutants [144] & [145]: tool_replay source_ref checks
+    req_obs = {"request_hash": "req_h"}
+    rec_obs = {
+        "consumer_received": True,
+        "payload_hash": "pay_h",
+        "expected_hash": "pay_h",
+        "request_hash": "req_h",
+    }
+    avail_obs = {"payload_hash": "pay_h"}
+    replayed_obs = {
+        "request_hash": "req_h",
+        "payload_hash": "pay_h",
+        "tool_dispatched": False,
+        "source_ref": {"event_id": "src_evt", "evidence_hash": "ev_h"},
+    }
+    receipt_tool_replay = {"fault": "tool_replay", "observed": rec_obs, "run_id": "r1"}
+    bound_tool_replay = [
+        {"event_id": "avail_evt", "kind": "tool_response_available", "observation": avail_obs},
+        {"kind": "tool_execution_requested", "observation": req_obs},
+        {"event_id": "rep_evt", "kind": "tool_response_replayed", "observation": replayed_obs},
+        {"kind": "tool_consumer_received", "observation": rec_obs},
+    ]
+    source_obs = {"consumer_received": True, "request_hash": "req_h", "payload_hash": "pay_h"}
+    index_replay = {
+        "avail_evt": ("ev_avail", {}, 1),
+        "rep_evt": ("ev_rep", {}, 3),
+        "src_evt": (
+            "ev_h",
+            {"kind": "tool_response_delivered", "run_id": "r1", "observation": source_obs},
+            2,
+        ),
+    }
+    # Mutant [145]: valid tool_replay with mapping ref must return True
+    assert (
+        valid_extended_observations(
+            receipt_tool_replay, bound_tool_replay, index_replay, 4, lambda x: "h"
+        )
+        is True
+    )
+
+    # Mutant [144]: non-string event_id in source_ref must be rejected (return False)
+    replayed_non_str_event_id = {
+        **replayed_obs,
+        "source_ref": {"event_id": 9999, "evidence_hash": "ev_h"},
+    }
+    bound_non_str_event_id = [
+        {"event_id": "avail_evt", "kind": "tool_response_available", "observation": avail_obs},
+        {"kind": "tool_execution_requested", "observation": req_obs},
+        {
+            "event_id": "rep_evt",
+            "kind": "tool_response_replayed",
+            "observation": replayed_non_str_event_id,
+        },
+        {"kind": "tool_consumer_received", "observation": rec_obs},
+    ]
+    index_non_str = {
+        **index_replay,
+        9999: (
+            "ev_h",
+            {"kind": "tool_response_delivered", "run_id": "r1", "observation": source_obs},
+            2,
+        ),
+    }
+    assert (
+        valid_extended_observations(
+            receipt_tool_replay, bound_non_str_event_id, index_non_str, 4, lambda x: "h"
+        )
+        is False
+    )
+
+    # 6. Mutant [164]: timeout_boundary starts presence check
+    req_timeout = {"request_hash": "req_h", "timeout_ms": 500}
+    deadline_obs = {
+        "timeout_ms": 500,
+        "task_cancelled": True,
+        "response_withheld": True,
+        "elapsed_seconds": 1.0,
+    }
+    start_obs = {"request_hash": "req_h"}
+    receipt_timeout = {"fault": "timeout_boundary", "observed": rec_obs}
+    bound_timeout = [
+        {"event_id": "avail_evt", "kind": "tool_response_available", "observation": avail_obs},
+        {"kind": "tool_execution_requested", "observation": req_timeout},
+        {"kind": "tool_invocation_started", "observation": start_obs},
+        {"kind": "tool_deadline_expired", "observation": deadline_obs},
+        {"kind": "tool_consumer_received", "observation": rec_obs},
+    ]
+    index_timeout = {"avail_evt": ("ev_avail", {}, 1)}
+    # Mutant [164]: timeout_boundary with invocation starts must return True
+    assert (
+        valid_extended_observations(receipt_timeout, bound_timeout, index_timeout, 4, lambda x: "h")
+        is True
+    )

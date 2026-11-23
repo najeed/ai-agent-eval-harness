@@ -964,3 +964,304 @@ def test_mutation_input_check_preserves_workspace_edits(tmp_path, change):
             assert target.read_bytes() == b"USER_EDIT = 2\n"
         else:
             assert not target.exists()
+
+
+@pytest.mark.parametrize(
+    "edited",
+    [
+        b"# explanatory comment\nVALUE = 1\n",
+        b"VALUE  =  (1)\n",
+        b"VALUE = 1\r\n",
+        b"\xef\xbb\xbfVALUE = 1\n",
+    ],
+)
+def test_mutation_input_check_reports_inconsequential_python_edits(tmp_path, edited, capsys):
+    sentinel = _load_sentinel_module()
+    target = tmp_path / "subject.py"
+    target.write_bytes(edited)
+    sentinel.assert_sources_unchanged({target: b"VALUE = 1\n"})
+    assert "[Input changed]" in capsys.readouterr().out
+    assert target.read_bytes() == edited
+
+
+def test_mutation_input_check_prints_consequential_diff_before_rejecting(tmp_path, capsys):
+    sentinel = _load_sentinel_module()
+    target = tmp_path / "subject.py"
+    target.write_text("VALUE = 2\n", encoding="utf-8")
+    with pytest.raises(RuntimeError, match="MutationSourceChanged"):
+        sentinel.assert_sources_unchanged({target: b"VALUE = 1\n"})
+    output = capsys.readouterr().out
+    assert str(target) in output
+    assert "-VALUE = 1" in output and "+VALUE = 2" in output
+
+
+def test_mutation_input_check_runner_disk_edits_do_not_replace_loaded_code(
+    tmp_path, monkeypatch, capsys
+):
+    sentinel = _load_sentinel_module()
+    runner = tmp_path / "run_mutation_tests.py"
+    monkeypatch.setattr(sentinel, "__file__", str(runner))
+    runner.write_text("print('new timing output')\n", encoding="utf-8")
+    sentinel.assert_sources_unchanged({runner: b"print('old output')\n"})
+    output = capsys.readouterr().out
+    assert "already loaded in memory" in output
+    assert "+print('new timing output')" in output
+
+
+@pytest.mark.parametrize(
+    "edited,reject",
+    [
+        ("# comment\n[tool.pytest]\ntimeout = 30\n", False),
+        ("[tool.pytest]\ntimeout = 60\n", True),
+        ("[invalid", True),
+    ],
+)
+def test_mutation_input_check_compares_configuration_values(tmp_path, edited, reject):
+    sentinel = _load_sentinel_module()
+    config = tmp_path / "pyproject.toml"
+    config.write_text(edited, encoding="utf-8")
+    inputs = {config: b"[tool.pytest]\ntimeout = 30\n"}
+    if reject:
+        with pytest.raises(RuntimeError, match="MutationSourceChanged"):
+            sentinel.assert_sources_unchanged(inputs)
+    else:
+        sentinel.assert_sources_unchanged(inputs)
+
+
+def test_mutation_input_snapshot_excludes_unselected_modules_and_tests(tmp_path, monkeypatch):
+    sentinel = _load_sentinel_module()
+    monkeypatch.setattr(sentinel, "BASE_DIR", tmp_path)
+    selected, unrelated = tmp_path / "selected.py", tmp_path / "unrelated.py"
+    selected_test, unrelated_test = tmp_path / "test_selected.py", tmp_path / "test_unrelated.py"
+    for path in (selected, unrelated, selected_test, unrelated_test):
+        path.write_text("VALUE = 1\n", encoding="utf-8")
+    monkeypatch.setattr(sentinel, "TARGET_MODULES", [selected, unrelated])
+    monkeypatch.setattr(
+        sentinel,
+        "_tests_for_module",
+        lambda target: [
+            str(selected_test if target == selected else unrelated_test),
+        ],
+    )
+    snapshot = sentinel.snapshot_validation_inputs([selected])
+    assert selected in snapshot and selected_test in snapshot
+    assert unrelated not in snapshot and unrelated_test not in snapshot
+    unrelated.write_text("VALUE = 2\n", encoding="utf-8")
+    unrelated_test.unlink()
+    sentinel.assert_sources_unchanged(snapshot)
+
+
+def test_mutant_killer_matrix_lifecycle_and_persistence(tmp_path):
+    """MutantKillerMatrix loads, lookups, records, evicts, and atomically saves mappings."""
+    sentinel = _load_sentinel_module()
+    matrix_file = tmp_path / "test_matrix.json"
+    matrix = sentinel.MutantKillerMatrix(matrix_file)
+
+    # Initial empty state
+    test_file, test_name = matrix.get_killer(
+        "eval_runner/verifier.py", "sign_trace_bytes", 10, "==", "!="
+    )
+    assert test_file is None and test_name is None
+
+    # Record exact kill
+    matrix.record_kill(
+        "eval_runner/verifier.py",
+        "sign_trace_bytes",
+        10,
+        "==",
+        "!=",
+        "tests/unit/core/test_signing.py",
+        "test_sign",
+    )
+    test_file, test_name = matrix.get_killer(
+        "eval_runner/verifier.py", "sign_trace_bytes", 10, "==", "!="
+    )
+    assert test_file == "tests/unit/core/test_signing.py"
+    assert test_name == "test_sign"
+
+    # Scope fallback lookup for a different line in the same scope
+    scope_file, scope_test = matrix.get_killer(
+        "eval_runner/verifier.py", "sign_trace_bytes", 99, "and", "or"
+    )
+    assert scope_file == "tests/unit/core/test_signing.py"
+    assert scope_test == "test_sign"
+
+    # Save to disk
+    matrix.save()
+    assert matrix_file.exists()
+
+    # Load from disk into fresh memory
+    loaded = sentinel.MutantKillerMatrix.load(matrix_file)
+    f, n = loaded.get_killer("eval_runner/verifier.py", "sign_trace_bytes", 10, "==", "!=")
+    assert f == "tests/unit/core/test_signing.py"
+    assert n == "test_sign"
+
+    # Evict stale mapping
+    loaded.evict("eval_runner/verifier.py", "sign_trace_bytes", 10, "==", "!=")
+    f_after, n_after = loaded.get_killer(
+        "eval_runner/verifier.py", "sign_trace_bytes", 10, "==", "!="
+    )
+    assert f_after is None and n_after is None
+
+
+def test_mutant_killer_matrix_seed_from_targets():
+    """MutantKillerMatrix seeds scope killer mappings from declared target metadata."""
+    sentinel = _load_sentinel_module()
+    matrix = sentinel.MutantKillerMatrix()
+    matrix.seed_from_targets(sentinel.CRITICAL_MUTATION_TARGETS)
+    assert len(matrix.scopes) > 50
+
+    # verifier.py::verify_package has seeded scope killer
+    f, n = matrix.get_killer("eval_runner/verifier.py", "verify_package", 123, "True", "False")
+    assert f is not None
+    assert n is not None
+
+
+def test_verify_mutant_matrix_check_integrity_clean():
+    """Canonical mutant killer matrix passes AST referential integrity with 0 violations."""
+    from tools.ci.verify_mutant_matrix import DEFAULT_MANIFEST, check_integrity
+
+    violations_count, violations = check_integrity(DEFAULT_MANIFEST)
+    assert violations_count == 0, f"Unexpected matrix integrity violations: {violations}"
+
+
+def test_verify_mutant_matrix_check_integrity_detects_violations(tmp_path):
+    """Mutant matrix integrity verifier catches non-existent files, functions, and scopes."""
+    import json
+
+    from tools.ci.verify_mutant_matrix import check_integrity
+
+    bad_manifest = tmp_path / "bad_matrix.json"
+    bad_data = {
+        "mutants": {
+            "eval_runner/verifier.py::verify_trace::1::x": {
+                "test_file": "tests/unit/non_existent.py",
+                "test_name": "test_ghost",
+            },
+            "eval_runner/verifier.py::verify_trace::2::y": {
+                "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
+                "test_name": "test_phantom_function_does_not_exist",
+            },
+        },
+        "scopes": {},
+    }
+    bad_manifest.write_text(json.dumps(bad_data), encoding="utf-8")
+
+    count, violations = check_integrity(bad_manifest)
+    assert count > 0
+    assert any("does not exist" in v for v in violations)
+    assert any("test_phantom_function_does_not_exist" in v for v in violations)
+    assert any("Missing scope target" in v for v in violations)
+
+
+def test_verify_mutant_matrix_sync_prunes_and_seeds(tmp_path):
+    """sync_matrix prunes dead entries and seeds missing scope targets."""
+    import json
+
+    from tools.ci.verify_mutant_matrix import check_integrity, sync_matrix
+
+    test_manifest = tmp_path / "sync_matrix.json"
+    initial_data = {
+        "mutants": {
+            "eval_runner/verifier.py::stale_mutant::1": {
+                "test_file": "tests/unit/ghost.py",
+                "test_name": "test_ghost",
+            }
+        },
+        "scopes": {},
+    }
+    test_manifest.write_text(json.dumps(initial_data), encoding="utf-8")
+
+    pruned_m, pruned_s, seeded_s = sync_matrix(test_manifest)
+    assert pruned_m == 1
+    assert seeded_s > 0
+
+    # After sync, integrity should be clean
+    count, violations = check_integrity(test_manifest)
+    assert count == 0, f"Violations remaining after sync: {violations}"
+
+
+def test_apply_mutant_to_module_in_place_and_restore():
+    """apply_mutant_to_module patches module dict in-place and restores it cleanly."""
+    import types
+
+    sentinel = _load_sentinel_module()
+
+    dummy_mod = types.ModuleType("dummy_test_module")
+    dummy_mod.original_val = 100
+    dummy_mod.foo = lambda: "original"
+
+    mutant_code = """
+original_val = 999
+injected_val = "new"
+def foo():
+    return "mutated"
+"""
+    restore = sentinel.apply_mutant_to_module(dummy_mod, mutant_code, "dummy.py")
+    assert dummy_mod.original_val == 999
+    assert dummy_mod.injected_val == "new"
+    assert dummy_mod.foo() == "mutated"
+
+    restore()
+    assert dummy_mod.original_val == 100
+    assert dummy_mod.foo() == "original"
+    assert not hasattr(dummy_mod, "injected_val")
+
+
+def test_mutant_worker_pool_lifecycle(tmp_path):
+    """MutantWorkerPool manages worker daemon lifecycle and executes test selections."""
+    sentinel = _load_sentinel_module()
+
+    pool = sentinel.MutantWorkerPool(size=1)
+    with pool:
+        assert len(pool._all_workers) == 1
+        worker = pool._all_workers[0]
+        assert worker.proc.poll() is None
+
+        # Execute evaluation on unmutated canonical target
+        target = Path("agentv_runtime/canonical.py").resolve()
+        source = target.read_text(encoding="utf-8")
+        test_file = "tests/unit/core/test_rfc8785_canonicalization.py"
+        selection = [f"{test_file}::test_rfc8785_structures"] + sentinel.FAST_PYTEST_FLAGS + ["-x"]
+
+        res = pool.evaluate(
+            target_file=target,
+            module_name="agentv_runtime.canonical",
+            source=source,
+            selection=selection,
+            timeout_seconds=30.0,
+        )
+        assert res.returncode == 0
+        assert "AGENTV_MUTATION_FAILURES=" in res.stdout
+
+    # After exit, worker process must be terminated
+    assert worker.proc.poll() is not None
+
+
+def test_mutant_worker_pool_timeout_rejuvenation():
+    """MutantWorkerPool catches timeouts, kills unresponsive workers, and spawns replacements."""
+    sentinel = _load_sentinel_module()
+
+    pool = sentinel.MutantWorkerPool(size=1)
+    with pool:
+        old_worker = pool._all_workers[0]
+        # Simulate worker timeout using a mock worker that raises TimeoutExpired
+        with patch.object(
+            old_worker,
+            "evaluate",
+            side_effect=sentinel.subprocess.TimeoutExpired(cmd=["test"], timeout=0.1),
+        ):
+            with pytest.raises(sentinel.subprocess.TimeoutExpired):
+                pool.evaluate(
+                    target_file=Path("eval_runner/verifier.py"),
+                    module_name="eval_runner.verifier",
+                    source="",
+                    selection=["tests/dummy.py"],
+                    timeout_seconds=0.1,
+                )
+
+        # Pool must have spawned a replacement worker
+        assert len(pool._all_workers) == 2
+        new_worker = pool._all_workers[1]
+        assert new_worker is not old_worker
+        assert new_worker.proc.poll() is None
