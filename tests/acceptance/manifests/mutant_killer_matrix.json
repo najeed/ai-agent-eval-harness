@@ -2146,14 +2146,14 @@
       "test_name": "test_valid_extended_observations_approval_and_tool_rules"
     },
     "eval_runner/mutations/mutation_rules.py::valid_extended_observations::308::any->all": {
-      "nodeid": "tests/unit/core/test_runtime_mutation_plugin.py::test_replay_composes_with_bound_response_corruption[None-False]",
+      "nodeid": "tests/unit/core/test_runtime_mutation_plugin.py::test_valid_extended_observations_approval_and_tool_rules",
       "test_file": "tests/unit/core/test_runtime_mutation_plugin.py",
-      "test_name": "test_replay_composes_with_bound_response_corruption"
+      "test_name": "test_valid_extended_observations_approval_and_tool_rules"
     },
     "eval_runner/mutations/mutation_rules.py::valid_extended_observations::313::not->": {
-      "nodeid": "tests/unit/core/test_runtime_mutation_plugin.py::test_replay_composes_with_bound_response_corruption[None-False]",
+      "nodeid": "tests/unit/core/test_runtime_mutation_plugin.py::test_valid_extended_observations_approval_and_tool_rules",
       "test_file": "tests/unit/core/test_runtime_mutation_plugin.py",
-      "test_name": "test_replay_composes_with_bound_response_corruption"
+      "test_name": "test_valid_extended_observations_approval_and_tool_rules"
     },
     "eval_runner/mutations/mutation_rules.py::valid_extended_observations::313::not->removed": {
       "nodeid": "tests/unit/core/test_runtime_mutation_plugin.py::test_replay_composes_with_bound_response_corruption",
@@ -2161,19 +2161,19 @@
       "test_name": "test_replay_composes_with_bound_response_corruption"
     },
     "eval_runner/mutations/mutation_rules.py::valid_extended_observations::313::or->and": {
-      "nodeid": "tests/unit/core/test_runtime_mutation_plugin.py::test_replay_composes_with_bound_response_corruption[malformed_source_ref-False]",
+      "nodeid": "tests/unit/core/test_runtime_mutation_plugin.py::test_valid_extended_observations_approval_and_tool_rules",
       "test_file": "tests/unit/core/test_runtime_mutation_plugin.py",
-      "test_name": "test_replay_composes_with_bound_response_corruption"
+      "test_name": "test_valid_extended_observations_approval_and_tool_rules"
     },
     "eval_runner/mutations/mutation_rules.py::valid_extended_observations::317::not->": {
-      "nodeid": "tests/unit/core/test_runtime_mutation_plugin.py::test_replay_composes_with_bound_response_corruption[None-False]",
+      "nodeid": "tests/unit/core/test_runtime_mutation_plugin.py::test_valid_extended_observations_approval_and_tool_rules",
       "test_file": "tests/unit/core/test_runtime_mutation_plugin.py",
-      "test_name": "test_replay_composes_with_bound_response_corruption"
+      "test_name": "test_valid_extended_observations_approval_and_tool_rules"
     },
     "eval_runner/mutations/mutation_rules.py::valid_extended_observations::336::not->": {
-      "nodeid": "tests/unit/core/test_runtime_mutation_plugin.py::test_duplicate_execution_composes_with_verified_response_corruption",
+      "nodeid": "tests/unit/core/test_runtime_mutation_plugin.py::test_valid_extended_observations_approval_and_tool_rules",
       "test_file": "tests/unit/core/test_runtime_mutation_plugin.py",
-      "test_name": "test_duplicate_execution_composes_with_verified_response_corruption"
+      "test_name": "test_valid_extended_observations_approval_and_tool_rules"
     },
     "eval_runner/mutations/mutation_rules.py::valid_extended_observations::336::not->removed": {
       "nodeid": "tests/unit/core/test_runtime_mutation_plugin.py::test_duplicate_execution_composes_with_verified_response_corruption",
@@ -3316,7 +3316,7 @@
       "test_name": "test_policy_evidence_target_is_a_nonempty_string_before_dispatch"
     },
     "eval_runner/session_components/state_parity.py::_resolve_target::455::not->": {
-      "nodeid": "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_policy_evidence_target_is_a_nonempty_string_before_dispatch[42]",
+      "nodeid": "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_policy_evidence_target_is_a_nonempty_string_before_dispatch[]",
       "test_file": "tests/unit/core/test_ci_mutation_boundary_contracts.py",
       "test_name": "test_policy_evidence_target_is_a_nonempty_string_before_dispatch"
     },
@@ -3631,7 +3631,7 @@
       "test_name": "test_policy_denial_without_detailed_violations_still_blocks_the_write"
     },
     "eval_runner/tool_sandbox.py::_execute_core::558::in->not in": {
-      "nodeid": "tests/unit/core/test_sandbox_policy_commit_contract.py::test_policy_denial_without_detailed_violations_still_blocks_the_write[violations2]",
+      "nodeid": "tests/unit/core/test_sandbox_policy_commit_contract.py::test_policy_denial_without_detailed_violations_still_blocks_the_write[violations1]",
       "test_file": "tests/unit/core/test_sandbox_policy_commit_contract.py",
       "test_name": "test_policy_denial_without_detailed_violations_still_blocks_the_write"
     },
@@ -4486,9 +4486,9 @@
       "test_name": "test_detached_package_cannot_drop_issuer_provisional_restriction"
     },
     "eval_runner/verifier.py::verify_certification_artifact::4078::and->or": {
-      "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_coverage_booster",
-      "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
-      "test_name": "test_verify_certification_artifact_coverage_booster"
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
     },
     "eval_runner/verifier.py::verify_certification_artifact::4078::not->": {
       "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
@@ -4586,7 +4586,7 @@
       "test_name": "test_legacy_manifest_projection_does_not_override_declared_binding"
     },
     "eval_runner/verifier.py::verify_package::3009::and->or": {
-      "nodeid": "tests/unit/core/test_diagnostic_manifest_binding_contract.py::test_legacy_manifest_projection_does_not_override_declared_binding[False-verify_package-altered-False]",
+      "nodeid": "tests/unit/core/test_diagnostic_manifest_binding_contract.py::test_legacy_manifest_projection_does_not_override_declared_binding[False-verify_package-matching-True]",
       "test_file": "tests/unit/core/test_diagnostic_manifest_binding_contract.py",
       "test_name": "test_legacy_manifest_projection_does_not_override_declared_binding"
     },
@@ -4946,7 +4946,7 @@
       "test_name": "test_legacy_manifest_projection_does_not_override_declared_binding"
     },
     "eval_runner/verifier.py::verify_package_artifacts::2303::and->or": {
-      "nodeid": "tests/unit/core/test_diagnostic_manifest_binding_contract.py::test_legacy_manifest_projection_does_not_override_declared_binding[False-verify_package_artifacts-altered-False]",
+      "nodeid": "tests/unit/core/test_diagnostic_manifest_binding_contract.py::test_legacy_manifest_projection_does_not_override_declared_binding[False-verify_package_artifacts-matching-True]",
       "test_file": "tests/unit/core/test_diagnostic_manifest_binding_contract.py",
       "test_name": "test_legacy_manifest_projection_does_not_override_declared_binding"
     },

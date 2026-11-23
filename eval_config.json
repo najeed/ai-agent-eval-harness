@@ -1,0 +1,5 @@
+{
+    "industry": "general",
+    "agent_api_url": "local://C:\\Users\\najee\\OneDrive\\Documents\\Projects\\ai-agent-eval-harness\\walkthroughs\\Phase 1 - Foundations - Beginner\\adapters\\local_agent_shim.py",
+    "max_turns": 10
+}

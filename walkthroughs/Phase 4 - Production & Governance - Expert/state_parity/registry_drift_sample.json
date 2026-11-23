@@ -1,0 +1,17 @@
+{
+    "golden": {
+        "env_version": "1.2.3",
+        "python_runtime": "3.9.12",
+        "api_endpoint": "https://api.aethelgard.io/v1",
+        "max_concurrency": 50,
+        "secure_mode": true
+    },
+    "staging": {
+        "env_version": "1.2.3-BETA",
+        "python_runtime": "3.9.12",
+        "api_endpoint": "https://api.aethelgard.io/v1",
+        "max_concurrency": 60,
+        "secure_mode": true
+    },
+    "status": "DRIFT_PENDING"
+}

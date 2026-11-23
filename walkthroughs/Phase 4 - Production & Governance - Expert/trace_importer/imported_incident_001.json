@@ -1,0 +1,16 @@
+{
+    "aes_version": 1.4,
+    "metadata": {
+        "name": "Imported Incident 001",
+        "id": "prod_001"
+    },
+    "workflow": {
+        "nodes": [
+            {
+                "id": "imported_node_1",
+                "task_description": "Update high-value ledger B-777 with $10,000 credit."
+            }
+        ],
+        "edges": []
+    }
+}

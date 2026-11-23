@@ -1,0 +1,18 @@
+{
+    "metadata": {
+        "name": "Industrial Fleet Heatmap",
+        "id": "heatmap_001"
+    },
+    "statistics": {
+        "total_failures": 10,
+        "distribution": {
+            "Reasoning": 4,
+            "Tool_Use": 3,
+            "Domain_Knowledge": 0,
+            "Safety_Violation": 3
+        }
+    },
+    "critical_sectors": [
+        "telecom"
+    ]
+}

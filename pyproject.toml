@@ -75,10 +75,10 @@ langchain-gemini = [
     "langchain-google-genai>=4.5.2",
 ]
 langchain-ollama = [
-    "langchain-ollama>=1.1.0",
+    "langchain-ollama>=1.2.0",
 ]
 langsmith = [
-    "langsmith==0.16.0",
+    "langsmith==0.16.1",
 ]
 
 # 4. Domain & Task Extras
@@ -116,8 +116,8 @@ langchain-all = [
     "langchain-openai==1.8.5",
     "langchain-anthropic>=1.7.12",
     "langchain-google-genai>=4.5.2",
-    "langchain-ollama>=1.1.0",
-    "langsmith==0.16.0",
+    "langchain-ollama>=1.2.0",
+    "langsmith==0.16.1",
 ]
 
 all = [
@@ -134,8 +134,8 @@ all = [
     "langchain-openai==1.8.5",
     "langchain-anthropic>=1.7.12",
     "langchain-google-genai>=4.5.2",
-    "langchain-ollama>=1.1.0",
-    "langsmith==0.16.0",
+    "langchain-ollama>=1.2.0",
+    "langsmith==0.16.1",
     "pypdf==7.1.1",
     "python-docx==1.2.0",
     "lxml==6.1.3",
