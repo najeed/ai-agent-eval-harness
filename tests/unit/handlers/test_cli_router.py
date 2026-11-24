@@ -12,7 +12,24 @@ from eval_runner import cli
     [
         (["agentv", "init"], "eval_runner.handlers.environment.handle_init"),
         (
-            ["agentv", "import-drift", "--input", "x", "--industry", "x"],
+            [
+                "agentv",
+                "import-drift",
+                "--input",
+                "x",
+                "--industry",
+                "x",
+                "--format",
+                "jsonl",
+                "--expectations",
+                "e.json",
+                "--scenario-id",
+                "s1",
+                "--execution-mode",
+                "live",
+                "--output",
+                "out.json",
+            ],
             "eval_runner.handlers.scenarios.handle_import_drift",
         ),
         (

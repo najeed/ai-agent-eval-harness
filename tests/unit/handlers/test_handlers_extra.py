@@ -284,8 +284,19 @@ async def test_spec_to_eval_success(tmp_path):
 
 @pytest.mark.asyncio
 async def test_import_drift_success(tmp_path):
-    args = MagicMock(input="trace.jsonl", industry="fin", output_dir=str(tmp_path))
-    with patch("eval_runner.drift_importer.import_trace_as_scenario") as mock_i:
+    args = MagicMock(
+        input="trace.jsonl",
+        format="jsonl",
+        expectations="exp.json",
+        scenario_id="s1",
+        execution_mode="live",
+        industry="fin",
+        output=str(tmp_path / "draft.json"),
+    )
+    with patch(
+        "eval_runner.drift_importer.import_trace_as_scenario",
+        return_value={"operation": "import", "state": "draft"},
+    ) as mock_i:
         assert await scenarios.handle_import_drift(args) == 0
         mock_i.assert_called_once()
 

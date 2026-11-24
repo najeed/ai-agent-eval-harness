@@ -31,7 +31,7 @@ class ServerThread(threading.Thread):
     def __init__(self, app, port: int):
         super().__init__(daemon=True)
         self.port = port
-        self.server = make_server("127.0.0.1", port, app)
+        self.server = make_server("127.0.0.1", port, app, threaded=True)
         self.ctx = app.app_context()
         self.ctx.push()
 

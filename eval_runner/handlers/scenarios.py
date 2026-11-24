@@ -301,8 +301,16 @@ async def handle_import_drift(args):
         # Lazy Import: Defer 'drift_importer' until drift conversion is executed
         from .. import drift_importer
 
-        out_dir = Path(getattr(args, "output_dir", "scenarios"))
-        drift_importer.import_trace_as_scenario(Path(args.input), args.industry, out_dir)
+        result = drift_importer.import_trace_as_scenario(
+            Path(args.input),
+            format=args.format,
+            expectations_path=Path(args.expectations),
+            scenario_id=args.scenario_id,
+            execution_mode=args.execution_mode,
+            industry=args.industry,
+            output_path=Path(args.output),
+        )
+        print(json.dumps(result))
         return 0
     except Exception as e:
         logging.getLogger(__name__).debug("Failure in handle_import_drift", exc_info=True)

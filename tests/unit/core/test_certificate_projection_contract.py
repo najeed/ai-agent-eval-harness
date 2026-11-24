@@ -199,6 +199,75 @@ def test_trusted_requester_is_signed_and_idempotent(finalization_source):
     assert checked["verified"] is False
 
 
+def test_sign_trace_bytes_excludes_top_level_and_nested_finalization_events(tmp_path):
+    import json
+    from unittest.mock import MagicMock
+
+    base_event = {"event": "run_start", "run_id": "run-fin-excl", "timestamp": "t0"}
+    base_raw = (json.dumps(base_event) + "\n").encode("utf-8")
+    store = MagicMock()
+    store.get_trace_bytes.return_value = base_raw
+    expected_digest = TraceVerifier.sign_trace_bytes(
+        base_raw, run_id="run-fin-excl", run_store=store, execution_mode="live"
+    )["verification_package"]["evidence_root_hash"]
+
+    for run_end in (
+        {"event": "run_end", "run_id": "run-fin-excl", "finalization": {"ok": True}},
+        {"event": "run_end", "run_id": "run-fin-excl", "data": {"finalization": {"ok": True}}},
+    ):
+        raw = ("\n".join(json.dumps(e) for e in (base_event, run_end)) + "\n").encode("utf-8")
+        store.get_trace_bytes.return_value = raw
+        cert = TraceVerifier.sign_trace_bytes(
+            raw, run_id="run-fin-excl", run_store=store, execution_mode="live"
+        )
+        assert cert["verification_package"]["evidence_root_hash"] == expected_digest
+        assert cert["verification_package"]["trace_seal"]["event_count"] == 1
+
+
+def test_verify_certification_artifact_rejects_trust_root_path_traversal(
+    finalization_source, monkeypatch, tmp_path
+):
+    import dataclasses
+    import json
+    import shutil
+
+    from agentv_runtime.finalization import EvaluatorFinalizationRecord
+    from eval_runner import config
+
+    provider, scenario = finalization_source
+    raw = provider.get_trace_bytes("run-a")
+    lines = [json.loads(line) for line in raw.decode("utf-8").splitlines() if line.strip()]
+    for ev in lines:
+        if ev.get("event") == "evaluator_finalization":
+            rec = EvaluatorFinalizationRecord.from_dict(
+                {**ev["data"], "evaluator_identity": "../outside_id"},
+                require_authoritative=False,
+            )
+            rec = dataclasses.replace(rec, finalization_hash=rec.compute_finalization_hash())
+            ev["data"] = rec.to_dict()
+    trav_raw = ("\n".join(json.dumps(ev) for ev in lines) + "\n").encode("utf-8")
+
+    monkeypatch.setattr(provider, "get_trace_bytes", lambda _rid, **_kw: trav_raw)
+    cert = TraceVerifier.sign_trace_bytes(
+        trav_raw, run_id="run-a", run_store=provider, execution_mode="live"
+    )
+    outside = tmp_path / "outside_id"
+    outside.mkdir(parents=True)
+    shutil.copy2(config.TRUST_ROOT / "system_id" / "public_key.pem", outside / "public_key.pem")
+    explicit_root = tmp_path / "explicit_root"
+    explicit_root.mkdir()
+
+    result = VerificationAuthority.verify_certification_artifact(
+        cert["verification_package"],
+        raw_trace_bytes=trav_raw,
+        canonical_manifest=ExecutionManifest.from_dict(cert["execution_manifest"]),
+        scenario_data=scenario,
+        trust_root=explicit_root,
+    )
+    assert result["verified"] is False
+    assert any("EvaluatorKeyMissing" in f for f in result["failures"]), result["failures"]
+
+
 def test_capture_receipt_failures_exhaustive():
     import hashlib
 

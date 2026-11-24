@@ -110,10 +110,23 @@ async def test_handle_verify_missing(capsys, physical_env, monkeypatch):
 async def test_handle_import_drift(mock_args, capsys):
     """Test 'import-drift' command handler. Forensic: Full-stack scenario drift analysis."""
     mock_args.input = "trace.jsonl"
+    mock_args.format = "jsonl"
+    mock_args.expectations = "exp.json"
+    mock_args.scenario_id = "s1"
+    mock_args.execution_mode = "live"
     mock_args.industry = "telecom"
-    mock_args.output_dir = "scenarios"
+    mock_args.output = "out.json"
     with patch(
-        "eval_runner.handlers.scenarios.drift_importer.import_trace_as_scenario"
+        "eval_runner.handlers.scenarios.drift_importer.import_trace_as_scenario",
+        return_value={"operation": "import", "state": "draft"},
     ) as mock_import:
-        await scenarios.handle_import_drift(mock_args)
-        mock_import.assert_called_once_with(Path("trace.jsonl"), "telecom", Path("scenarios"))
+        assert await scenarios.handle_import_drift(mock_args) == 0
+        mock_import.assert_called_once_with(
+            Path("trace.jsonl"),
+            format="jsonl",
+            expectations_path=Path("exp.json"),
+            scenario_id="s1",
+            execution_mode="live",
+            industry="telecom",
+            output_path=Path("out.json"),
+        )

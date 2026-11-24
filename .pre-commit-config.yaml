@@ -39,9 +39,9 @@ repos:
 
       - id: check-mutant-matrix-integrity
         name: check-mutant-matrix-integrity
-        entry: python tools/ci/verify_mutant_matrix.py --check-integrity
+        entry: python tools/ci/verify_mutant_matrix.py --sync --check-integrity
         language: system
-        files: ^(tests/acceptance/manifests/mutant_killer_matrix\.json|tools/ci/run_mutation_tests\.py)$
+        always_run: true
         pass_filenames: false
 
       - id: check-provider-boundaries

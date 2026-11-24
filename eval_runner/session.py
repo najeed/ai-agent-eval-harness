@@ -2254,7 +2254,7 @@ class SessionManager:
             # The graph event already contains the full evidence, but emitting
             # it here prevents a later consensus summary from looking like the
             # cause of a state-verification failure.
-            print(f"      [Verification] ❌ {task_results['message']}")
+            print(f"      [Verification] [FAIL] {task_results['message']}")
         elif overall == "reconciliation_failed":
             task_results["triage_tag"] = "RECONCILIATION_FAILED"
             task_results["message"] = (

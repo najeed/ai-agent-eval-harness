@@ -3486,7 +3486,7 @@
       "test_name": "test_policy_evidence_target_is_a_nonempty_string_before_dispatch"
     },
     "eval_runner/session_components/state_parity.py::_resolve_target::455::not->": {
-      "nodeid": "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_policy_evidence_target_is_a_nonempty_string_before_dispatch[42]",
+      "nodeid": "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_policy_evidence_target_is_a_nonempty_string_before_dispatch[]",
       "test_file": "tests/unit/core/test_ci_mutation_boundary_contracts.py",
       "test_name": "test_policy_evidence_target_is_a_nonempty_string_before_dispatch"
     },
@@ -3801,7 +3801,7 @@
       "test_name": "test_policy_denial_without_detailed_violations_still_blocks_the_write"
     },
     "eval_runner/tool_sandbox.py::_execute_core::558::in->not in": {
-      "nodeid": "tests/unit/core/test_sandbox_policy_commit_contract.py::test_policy_denial_without_detailed_violations_still_blocks_the_write[violations2]",
+      "nodeid": "tests/unit/core/test_sandbox_policy_commit_contract.py::test_policy_denial_without_detailed_violations_still_blocks_the_write[violations1]",
       "test_file": "tests/unit/core/test_sandbox_policy_commit_contract.py",
       "test_name": "test_policy_denial_without_detailed_violations_still_blocks_the_write"
     },
@@ -4191,9 +4191,9 @@
       "test_name": "test_explicit_oracle_carrier_reference_requires_recorded_source"
     },
     "eval_runner/verifier.py::sign_trace_bytes::838::or->and": {
-      "nodeid": "tests/unit/core/test_execution_mode_binding_contract.py::test_scenario_defined_tool_provenance_is_simulated_even_in_live_mode[None]",
-      "test_file": "tests/unit/core/test_execution_mode_binding_contract.py",
-      "test_name": "test_scenario_defined_tool_provenance_is_simulated_even_in_live_mode"
+      "nodeid": "tests/unit/core/test_certificate_projection_contract.py::test_sign_trace_bytes_excludes_top_level_and_nested_finalization_events",
+      "test_file": "tests/unit/core/test_certificate_projection_contract.py",
+      "test_name": "test_sign_trace_bytes_excludes_top_level_and_nested_finalization_events"
     },
     "eval_runner/verifier.py::sign_trace_bytes::857::execution_mode->__mutation_missing_commitment__": {
       "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_sign_trace_bytes_finalization_hash_from_top_level_and_cert_payload_execution_mode",
@@ -4384,6 +4384,11 @@
       "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_coverage_booster",
       "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
       "test_name": "test_verify_certification_artifact_coverage_booster"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3775::and->or": {
+      "nodeid": "tests/unit/core/test_certificate_projection_contract.py::test_verify_certification_artifact_rejects_trust_root_path_traversal",
+      "test_file": "tests/unit/core/test_certificate_projection_contract.py",
+      "test_name": "test_verify_certification_artifact_rejects_trust_root_path_traversal"
     },
     "eval_runner/verifier.py::verify_certification_artifact::3784::not->": {
       "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
@@ -4921,9 +4926,9 @@
       "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
     },
     "eval_runner/verifier.py::verify_certification_artifact::4086::and->or": {
-      "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_coverage_booster",
-      "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
-      "test_name": "test_verify_certification_artifact_coverage_booster"
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
     },
     "eval_runner/verifier.py::verify_certification_artifact::4086::not->": {
       "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
@@ -5036,7 +5041,7 @@
       "test_name": "test_legacy_manifest_projection_does_not_override_declared_binding"
     },
     "eval_runner/verifier.py::verify_package::3009::and->or": {
-      "nodeid": "tests/unit/core/test_diagnostic_manifest_binding_contract.py::test_legacy_manifest_projection_does_not_override_declared_binding[False-verify_package-altered-False]",
+      "nodeid": "tests/unit/core/test_diagnostic_manifest_binding_contract.py::test_legacy_manifest_projection_does_not_override_declared_binding[False-verify_package-matching-True]",
       "test_file": "tests/unit/core/test_diagnostic_manifest_binding_contract.py",
       "test_name": "test_legacy_manifest_projection_does_not_override_declared_binding"
     },
@@ -5396,7 +5401,7 @@
       "test_name": "test_legacy_manifest_projection_does_not_override_declared_binding"
     },
     "eval_runner/verifier.py::verify_package_artifacts::2303::and->or": {
-      "nodeid": "tests/unit/core/test_diagnostic_manifest_binding_contract.py::test_legacy_manifest_projection_does_not_override_declared_binding[False-verify_package_artifacts-altered-False]",
+      "nodeid": "tests/unit/core/test_diagnostic_manifest_binding_contract.py::test_legacy_manifest_projection_does_not_override_declared_binding[False-verify_package_artifacts-matching-True]",
       "test_file": "tests/unit/core/test_diagnostic_manifest_binding_contract.py",
       "test_name": "test_legacy_manifest_projection_does_not_override_declared_binding"
     },
@@ -6834,7 +6839,7 @@
       "test_name": "test_certificate_integrity_accepts_declared_scenario_hash_locations"
     }
   },
-  "total_mutants": 1242,
+  "total_mutants": 1243,
   "total_scopes": 124,
   "version": 1
 }

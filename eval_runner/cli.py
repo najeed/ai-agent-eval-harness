@@ -737,6 +737,13 @@ Usage: agentv <command> [options]
     drift_parser.set_defaults(func=_dispatch_scenarios)
     drift_parser.add_argument("--path", "--input", dest="input", required=True)
     drift_parser.add_argument("--industry", required=True)
+    drift_parser.add_argument("--format", choices=["json", "jsonl"], required=True)
+    drift_parser.add_argument("--expectations", required=True)
+    drift_parser.add_argument("--scenario-id", required=True)
+    drift_parser.add_argument(
+        "--execution-mode", choices=["live", "simulated", "hybrid"], required=True
+    )
+    drift_parser.add_argument("--output", required=True)
 
     # 6. REPORTING & ANALYSIS
     report_parser = subparsers.add_parser("report", help="Generate HTML report")

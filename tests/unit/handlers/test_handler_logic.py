@@ -217,11 +217,22 @@ async def test_scenarios_coverage_pure(mock_config):
     with (
         patch("eval_runner.mutations.mutator.mutate_scenario", return_value={}),
         patch("eval_runner.spec_parser.parse_markdown_to_scenario", return_value={}),
-        patch("eval_runner.drift_importer.import_trace_as_scenario"),
+        patch("eval_runner.drift_importer.import_trace_as_scenario", return_value={}),
     ):
         assert await scenarios.handle_mutate(MockArgs(tmp_path, input=str(input_file))) == 0
         assert await scenarios.handle_spec_to_eval(MockArgs(tmp_path, input=str(input_file))) == 0
-        assert await scenarios.handle_import_drift(MockArgs(tmp_path, input=str(input_file))) == 0
+        assert (
+            await scenarios.handle_import_drift(
+                MockArgs(
+                    tmp_path,
+                    input=str(input_file),
+                    expectations=str(tmp_path / "e.json"),
+                    scenario_id="s1",
+                    execution_mode="live",
+                )
+            )
+            == 0
+        )
 
 
 @pytest.mark.asyncio

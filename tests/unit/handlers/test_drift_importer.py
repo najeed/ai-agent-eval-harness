@@ -1,93 +1,206 @@
+"""Unit tests for strict native-recording import and the Core import-drift CLI."""
+
+from __future__ import annotations
+
+import hashlib
 import json
 
 import pytest
 
-from eval_runner.drift_importer import import_trace_as_scenario
+from eval_runner import cli
+from eval_runner.drift_importer import (
+    import_trace_as_scenario,
+    parse_recording,
+    publish_draft,
+)
+from eval_runner.handlers.scenarios import handle_import_drift
+from eval_runner.loader import get_scenario_validator, load_scenario
 
 
-def test_import_trace_as_scenario(tmp_path):
-    # Create a mock trace file
-    trace_data = [
-        {"role": "user", "content": "Hello"},
-        {"role": "assistant", "content": "How can I help?"},
-    ]
-    trace_file = tmp_path / "trace.json"
-    with open(trace_file, "w") as f:
-        json.dump(trace_data, f)
-
-    output_dir = tmp_path / "scenarios"
-    industry = "telecom"
-
-    # Run import
-    scenario_path = import_trace_as_scenario(trace_file, industry, output_dir)
-
-    # Verify output
-    assert scenario_path.exists()
-    with open(scenario_path) as f:
-        scenario = json.loads(f.read())
-
-    assert scenario["aes_version"] == 1.4
-    assert scenario["industry"] == "telecom"
-    assert scenario["use_case"] == "production_replay"
-    assert len(scenario["workflow"]["nodes"]) == 1
-    assert scenario["metadata"]["ground_truth_history"] == [
-        {"role": "user", "content": "Hello"},
-        {"role": "assistant", "content": "How can I help?"},
+def _sample_recording() -> list[dict]:
+    return [
+        {"event": "run_start", "scenario": "recorded_session", "run_id": "rec-1"},
+        {"event": "agent_request", "task": "Look up balance"},
+        {"event": "agent_response", "content": {"message": "Balance is $10"}},
+        {"event": "agent_request", "task": "Confirm currency"},
+        {"event": "agent_response", "content": {"message": "Currency is USD"}},
     ]
 
 
-def test_import_invalid_json(tmp_path):
-    invalid_file = tmp_path / "invalid.json"
-    invalid_file.write_text("not json")
-
-    output_dir = tmp_path / "scenarios"
-
-    # Updated to match actual error message from load_events wrapped by import_trace_as_scenario
-    with pytest.raises(
-        ValueError,
-        match="Failed to parse trace: No valid JSON events could be parsed from the trace file.",
-    ):
-        import_trace_as_scenario(invalid_file, "generic", output_dir)
-
-
-def test_import_empty_history(tmp_path):
-    empty_file = tmp_path / "empty.json"
-    empty_file.write_text("[]")
-
-    output_dir = tmp_path / "scenarios"
-
-    # This should trigger the "No conversation history found in trace" error
-    with pytest.raises(ValueError, match="No conversation history found in trace"):
-        import_trace_as_scenario(empty_file, "generic", output_dir)
-
-
-def test_import_nonexistent_trace_file(tmp_path):
-    missing_file = tmp_path / "nonexistent.json"
-    output_dir = tmp_path / "scenarios"
-    with pytest.raises(FileNotFoundError, match="Trace file not found"):
-        import_trace_as_scenario(missing_file, "generic", output_dir)
-
-
-def test_import_trace_dict_with_history(tmp_path, monkeypatch):
-    trace_dict = {
-        "history": [
-            {"role": "user", "content": "Question"},
-            {"role": "agent", "content": "Answer"},
-        ]
+def _sample_expectations() -> dict:
+    return {
+        "turn-1": [{"target": "message", "mode": "regex", "expected": r"\$10"}],
+        "turn-2": [{"target": "message", "mode": "regex", "expected": "USD"}],
     }
-    trace_file = tmp_path / "trace_dict.json"
-    trace_file.write_text("{}")
-    monkeypatch.setattr("eval_runner.drift_importer.load_events", lambda _: trace_dict)
 
-    output_dir = tmp_path / "scenarios"
-    scenario_path = import_trace_as_scenario(trace_file, "finance", output_dir)
-    assert scenario_path.exists()
-    data = json.loads(scenario_path.read_text())
-    assert data["metadata"]["ground_truth_history"] == trace_dict["history"]
 
-    # Imported files must satisfy the same contract as ordinary user-authored scenarios.
-    from eval_runner.loader import get_scenario_validator, load_scenario
+def test_import_trace_as_scenario_compiles_valid_aes_and_preserves_sources(tmp_path):
+    trace_file = tmp_path / "trace.jsonl"
+    raw_trace = "\n".join(json.dumps(item) for item in _sample_recording()) + "\n"
+    trace_file.write_text(raw_trace, encoding="utf-8")
 
-    get_scenario_validator().validate(data)
-    loaded = load_scenario(scenario_path)
-    assert loaded["metadata"]["ground_truth_history"] == trace_dict["history"]
+    exp_file = tmp_path / "expectations.json"
+    raw_exp = json.dumps(_sample_expectations())
+    exp_file.write_text(raw_exp, encoding="utf-8")
+
+    output_file = tmp_path / "draft.json"
+    trace_sha_before = hashlib.sha256(trace_file.read_bytes()).hexdigest()
+    exp_sha_before = hashlib.sha256(exp_file.read_bytes()).hexdigest()
+
+    result = import_trace_as_scenario(
+        trace_file,
+        format="jsonl",
+        expectations_path=exp_file,
+        scenario_id="reviewed-import-1",
+        execution_mode="live",
+        industry="telecom",
+        output_path=output_file,
+    )
+
+    assert result["operation"] == "import"
+    assert result["state"] == "draft"
+    assert result["turns"] == 2
+    assert result["scenario_id"] == "reviewed-import-1"
+    assert hashlib.sha256(trace_file.read_bytes()).hexdigest() == trace_sha_before
+    assert hashlib.sha256(exp_file.read_bytes()).hexdigest() == exp_sha_before
+
+    draft = json.loads(output_file.read_text(encoding="utf-8"))
+    assert draft["aes_version"] == 1.4
+    assert draft["industry"] == "telecom"
+    assert draft["metadata"]["execution_mode"] == "live"
+    assert draft["metadata"]["recorded_history"] == _sample_recording()
+    assert [node["id"] for node in draft["workflow"]["nodes"]] == ["turn-1", "turn-2"]
+    assert draft["workflow"]["edges"] == [{"from": "turn-1", "to": "turn-2"}]
+    assert draft["workflow"]["nodes"][0]["expected_outcome"] == _sample_expectations()["turn-1"]
+    assert draft["workflow"]["nodes"][1]["expected_outcome"] == _sample_expectations()["turn-2"]
+
+    get_scenario_validator().validate(draft)
+    loaded = load_scenario(output_file)
+    assert loaded["metadata"]["recorded_history"] == _sample_recording()
+
+
+def test_import_rejects_overwrite_and_preserves_existing_output(tmp_path):
+    trace_file = tmp_path / "trace.json"
+    trace_file.write_text(json.dumps(_sample_recording()), encoding="utf-8")
+    exp_file = tmp_path / "expectations.json"
+    exp_file.write_text(json.dumps(_sample_expectations()), encoding="utf-8")
+    output_file = tmp_path / "existing.json"
+    output_file.write_text('{"keep": true}\n', encoding="utf-8")
+
+    with pytest.raises(FileExistsError):
+        import_trace_as_scenario(
+            trace_file,
+            format="json",
+            expectations_path=exp_file,
+            scenario_id="reviewed-import-1",
+            execution_mode="simulated",
+            industry="finance",
+            output_path=output_file,
+        )
+    assert output_file.read_text(encoding="utf-8") == '{"keep": true}\n'
+
+    fresh = tmp_path / "fresh.json"
+    publish_draft(fresh, b'{"ok": true}\n')
+    with pytest.raises(FileExistsError):
+        publish_draft(fresh, b'{"ok": false}\n')
+    assert fresh.read_bytes() == b'{"ok": true}\n'
+
+
+@pytest.mark.parametrize(
+    ("payload", "fmt"),
+    [
+        (b"not json", "json"),
+        (b'{"a": 1}\nnot json\n', "jsonl"),
+        (b'[{"a": 1, "a": 2}]', "json"),
+        (b'[{"x": NaN}]', "json"),
+        (b"[]", "json"),
+        (
+            json.dumps(
+                [
+                    {"event": "run_start", "scenario": "recorded_session", "run_id": "r1"},
+                    {"event": "agent_request", "task": "Incomplete turn"},
+                ]
+            ).encode(),
+            "json",
+        ),
+    ],
+)
+def test_parse_recording_rejects_malformed_and_incomplete_inputs(payload, fmt):
+    with pytest.raises(ValueError):
+        parse_recording(payload, fmt)
+
+
+def test_import_rejects_missing_file_and_mismatched_expectations(tmp_path):
+    missing = tmp_path / "missing.json"
+    exp_file = tmp_path / "expectations.json"
+    exp_file.write_text(json.dumps(_sample_expectations()), encoding="utf-8")
+    with pytest.raises(ValueError, match="unlinked regular file"):
+        import_trace_as_scenario(
+            missing,
+            format="json",
+            expectations_path=exp_file,
+            scenario_id="reviewed-import-1",
+            execution_mode="live",
+            industry="finance",
+            output_path=tmp_path / "out.json",
+        )
+
+    trace_file = tmp_path / "trace.json"
+    trace_file.write_text(json.dumps(_sample_recording()), encoding="utf-8")
+    bad_exp = tmp_path / "bad_exp.json"
+    bad_exp.write_text(
+        json.dumps({"turn-1": _sample_expectations()["turn-1"]}),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="every turn-N"):
+        import_trace_as_scenario(
+            trace_file,
+            format="json",
+            expectations_path=bad_exp,
+            scenario_id="reviewed-import-1",
+            execution_mode="live",
+            industry="finance",
+            output_path=tmp_path / "out2.json",
+        )
+
+
+@pytest.mark.asyncio
+async def test_import_drift_cli_parser_and_handler(tmp_path, capsys):
+    parser = cli.get_parser()
+    with pytest.raises(SystemExit):
+        parser.parse_args(["import-drift", "--path", "trace.json"])
+
+    trace_file = tmp_path / "trace.json"
+    trace_file.write_text(json.dumps(_sample_recording()), encoding="utf-8")
+    exp_file = tmp_path / "expectations.json"
+    exp_file.write_text(json.dumps(_sample_expectations()), encoding="utf-8")
+    output_file = tmp_path / "cli-draft.json"
+
+    args = parser.parse_args(
+        [
+            "import-drift",
+            "--input",
+            str(trace_file),
+            "--industry",
+            "finance",
+            "--format",
+            "json",
+            "--expectations",
+            str(exp_file),
+            "--scenario-id",
+            "cli-import-1",
+            "--execution-mode",
+            "hybrid",
+            "--output",
+            str(output_file),
+        ]
+    )
+    rc = await handle_import_drift(args)
+    assert rc == 0
+    out = json.loads(capsys.readouterr().out)
+    assert out["scenario_id"] == "cli-import-1"
+    assert output_file.is_file()
+
+    # Re-running against existing output fails without overwriting
+    rc_fail = await handle_import_drift(args)
+    assert rc_fail == 1

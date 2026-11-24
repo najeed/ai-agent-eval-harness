@@ -30,7 +30,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **opentelemetry-sdk** | 1.45.2 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **Pillow** | 13.0.0 | HPND | [HPND.txt](LICENSES/HPND.txt) |
 | **psutil** | 7.2.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **pydantic** | 2.14.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **pydantic** | 2.14.4 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **PyJWT** | 2.15.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **python-dotenv** | 1.2.4 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **PyYAML** | 6.0.4 | MIT | [MIT.txt](LICENSES/MIT.txt) |
@@ -76,7 +76,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **click** | 8.5.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **pandas** | 3.1.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **pyarrow** | 26.0.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **pydantic** | 2.14.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **pydantic** | 2.14.4 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 
 ### 2.6 Optional Ecosystem & Framework Integrations (`pyproject.toml [project.optional-dependencies]`)
 | Package | Version | License | License File |
