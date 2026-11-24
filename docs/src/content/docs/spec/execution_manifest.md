@@ -38,18 +38,24 @@ The manifest is defined in [`agentv_runtime.manifest`](https://github.com/najeed
 ```python
 @dataclass(frozen=True)
 class ExecutionManifest:
-    manifest_id: str  # Format: "man_{scenario_id}_{sha3_256[:12]}"
-    scenario_id: str  # Unique scenario identifier
-    scenario_version: str  # Scenario semantic version (e.g., "1.0.0")
-    scenario_hash: str  # SHA3-256 hash of canonical scenario JSON payload
-    tenant_id: str = "default"  # Multi-tenant isolation boundary
-    workspace_id: str = "default"  # Workspace partition within tenant
-    agent_config: dict[str, Any]  # Target endpoint, model, protocol, headers
-    runtime_config: dict[str, Any]  # Max turns, timeouts, sandbox flags
-    environment: dict[str, Any]  # Sealed environmental snapshot
-    created_at: str  # ISO 8601 UTC timestamp
-    created_by: str = "system"  # Authenticated principal ID
-    metadata: dict[str, Any]  # Arbitrary tags and execution context
+    manifest_id: str
+    scenario_id: str
+    scenario_version: str
+    scenario_hash: str
+    tenant_id: str = 'default'
+    workspace_id: str = 'default'
+    scope_digest: str = ''
+    scope: dict[str, str] = field(default_factory=dict)
+    agent_config: dict[str, Any] = field(default_factory=dict)
+    runtime_config: dict[str, Any] = field(default_factory=dict)
+    environment: dict[str, Any] = field(default_factory=dict)
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    created_by: str = 'system'
+    metadata: dict[str, Any] = field(default_factory=dict)
+    schema_version: str = '2.0.0'
+    producer_identity: str = 'agentv.manifest_builder'
+    producer_version: str = '2.0.0'
+    parent_artifact_refs: list[str] = field(default_factory=list)
 ```
 
 ### Deterministic Integrity Hashing & Binding Formulas
@@ -160,3 +166,8 @@ Before initiating execution or issuing a cryptographic certificate, the engine a
 2. **`READY_TO_EXECUTE`**: Target configuration, environment shims, and scenario DAG are verified; ready for initial execution loop.
 3. **`READY_TO_CERTIFY`**: Execution completed successfully with valid append-only `run.jsonl` traces; ready for cryptographic verification pass.
 4. **`CERTIFIABLE`**: All required oracles, behavioral assertions, and hash bindings have passed, permitting irreversible detached signature application.
+
+ScopeToken commits normalized provider-owned scope tags in `scope_digest`.
+AuthPrincipal entitlements and ScopePolicy resolve that scope before launch;
+caller-selected tenant labels cannot confer ownership. Manifest IDs are generated
+as `man_<16 hex characters>` from the launch inputs and timestamp.

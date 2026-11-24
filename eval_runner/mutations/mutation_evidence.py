@@ -165,7 +165,7 @@ def fault_receipt_failures(events, required_faults=(), *, run_id=None):
             valid = valid and _valid_fault_observations(receipt, observations)
         if not valid:
             failures.append(f"InvalidMutationDeliveryEvidence:{receipt.get('fault_id')}")
-        elif receipt.get("delivery") == "DELIVERED":
+        else:
             delivered.add((receipt["fault"], receipt["node_id"], receipt["execution_instance_id"]))
     for requirement in required_faults:
         fault, node = requirement if isinstance(requirement, tuple) else (requirement, None)

@@ -752,8 +752,9 @@ Usage: agentv <command> [options]
 
     calibrate_parser = subparsers.add_parser("calibrate", help="Measure judge agreement")
     calibrate_parser.set_defaults(func=_dispatch_analysis)
-    calibrate_parser.add_argument("--run-id", required=True)
-    calibrate_parser.add_argument("--golden")
+    calibrate_parser.add_argument("--run-id", required=False)
+    calibrate_parser.add_argument("--path", "--trace", required=False)
+    calibrate_parser.add_argument("--golden", required=False)
     calibrate_parser.add_argument("--plot", action="store_true")
 
     trend_parser = subparsers.add_parser("trend", help="Detect pass-rate regression")

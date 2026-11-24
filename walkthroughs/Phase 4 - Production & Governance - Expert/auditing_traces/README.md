@@ -16,7 +16,7 @@ Industrial evaluations generate a `run.jsonl` (Flight Recorder). Every state tra
 ### Step 2: Programmatic Audit
 Instead of reading thousands of lines of JSON, we use an audit script to find the "needle in the haystack." Run the audit script:
 ```bash
-python walkthroughs/Phase 4 - Production & Governance - Expert/auditing_traces/audit_trace.py
+python "walkthroughs/Phase 4 - Production & Governance - Expert/auditing_traces/audit_trace.py"
 ```
 
 ### Step 3: Find the Breach

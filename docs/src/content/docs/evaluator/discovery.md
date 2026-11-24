@@ -3,89 +3,39 @@ title: Authoritative Discovery Engine
 description: Understanding shim activation policies, strict relevance, and environment discovery in AgentV v1.6.0.
 ---
 
-The **Authoritative Discovery Engine** is a core component of the AgentV v1.6.0 industrial architecture. It ensures that only necessary and sanctioned simulators (shims) are activated during an evaluation, minimizing the forensic surface area and preventing unauthorized tool execution.
+Shim activation is controlled by `ToolSandbox.get_active_simulators()` after
+merging built-in, configured and plugin simulator classes.
 
-## 1. Activation Hierarchy
+## Activation rules
 
-AgentV uses a multi-tier activation policy to determine which shims should be instantiated in the `ToolSandbox`.
+1. `GLOBAL_ENABLED_SHIMS` is the outer gate. A shim must be named there or the
+   global list must include `*`.
+2. If the scenario omits `enabled_shims`, activate only shims identified as
+   relevant from its tools/assertion contract.
+3. If the scenario provides `enabled_shims`, activate only names in that list,
+   or all globally allowed shims when the list includes `*`. An explicit empty
+   list activates none. Relevance does not override an explicit list.
 
-| **1** | **Master Gate (Global)** | **Mandatory Hard Gate**. Controlled by `GLOBAL_ENABLED_SHIMS`. If a shim is blocked here, it is never activated. |
-| **2** | **Forensic Relevance** | Activated if globally allowed AND explicitly targeted in the scenario's `expected_outcome` or `success_criteria`. |
-| **3** | **Scenario Enablement** | Activated if globally allowed AND listed in the scenario's `enabled_shims` array. |
+`metadata.capabilities` selects agent routing capabilities; it does not activate
+simulators. Declare tool requirements and valid assertion targets, or explicitly
+list the shims needed for execution.
 
----
+## Explicit configuration
 
-## 2. Capabilities vs. Shim Activation
-
-It is important to distinguish between **Agent Capabilities** and **Shim Activation**:
-
-- **Capabilities** (`metadata.capabilities`): High-level metadata (e.g., `sql_generation`, `api_integration`) used for agent selection and capability-based routing. These do **not** trigger shim activation.
-- **Shim Activation**: Driven strictly by the Activation Hierarchy above. A shim is only provisioned if it is forensically relevant to the contract or explicitly enabled.
-
-*Example*: Listing `sql_generation` in capabilities will not activate the `database` shim. You must either use a `database_` tool or mention a `shim:database` outcome to trigger activation.
-
-### Strict vs. Permissive Mode
-
-The engine operates in two modes based on the scenario configuration:
-
-- **Strict Discovery Mode**: Triggered when `enabled_shims` is explicitly provided in the scenario (even if empty `[]`). Only relevant or explicitly listed shims are activated.
-- **Legacy Permissive Mode**: Triggered when `enabled_shims` is missing. The engine activates all shims sanctioned by the `GLOBAL_ENABLED_SHIMS` policy to maintain backward compatibility.
-
----
-
-## 2. Forensic Relevance Engine
-
-The Discovery Engine scans the scenario's **Task Workflow** to identify shims required for contract verification.
+This scenario fragment permits the database shim, subject to global policy:
 
 ```json
-{
-  "workflow": {
-    "nodes": [
-      {
-        "id": "task_1",
-        "expected_outcome": {
-          "target": "shim:database:query_result",
-          "value": "..."
-        }
-      }
-    ]
-  }
-}
+{"enabled_shims": ["database"]}
 ```
 
-In the example above, the `database` shim is automatically flagged as **Relevant** and will be activated even if not explicitly listed in `enabled_shims`.
+Custom shim configurations live in `.aes/config/shims.d/`. The registry's `type`
+can select a registered simulator class. Plugins add simulator classes through
+`on_register_simulators`; the sandbox constructs them with `config=shim_cfg`.
+See [world shimming](/extender/shimming/) for a complete dispatch example.
 
----
+## Diagnose missing shims
 
-## 3. Registry & Type Resolution
-
-The engine resolves shim identities across the **Authoritative Registry**:
-
-1.  **Baseline Shims**: Internal simulators provided by the `eval_runner.simulators` package (e.g., `git`, `api`, `filesystem`).
-2.  **Extended Shims**: Configured via `.aes/config/shims.d/` JSON files.
-3.  **Plugin Shims**: Dynamically injected via the `on_register_simulators` plugin hook.
-
-### Type Overrides
-You can alias shims to use specific simulator classes via the `type` property in the registry:
-
-```json
-{
-  "shims": {
-    "proprietary_db": {
-      "type": "database",
-      "resources": { "url": "..." }
-    }
-  }
-}
-```
-The `proprietary_db` shim will be instantiated using the built-in `DatabaseSimulator` class with custom resources.
-
----
-
-## 4. Troubleshooting Discovery
-
-If a tool call fails with "Shim not activated," follow these steps:
-
-1.  **Check Scenario Contract**: Ensure the shim is mentioned in `expected_outcome` or added to `enabled_shims`.
-2.  **Check Global Policy**: Verify that `GLOBAL_ENABLED_SHIMS` in `eval_runner/config.py` is not blocking the shim.
-3.  **Run Doctor**: Execute `agentv doctor` to verify that the registry is correctly indexing your shim configurations.
+Check both the global gate and the scenario's explicit list. When the list is
+absent, inspect whether the scenario's actual tool/assertion syntax is recognized
+as relevant. Run `agentv doctor --registry` to inspect resolved configuration.
+An explicit list is the clearest way to request a custom shim.

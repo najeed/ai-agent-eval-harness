@@ -24,7 +24,7 @@ agentv list --search finance
 ### Step 3: Run the Discovery Script
 For a guided experience, execute the interactive script.
 ```bash
-python walkthroughs/Phase 1 - Foundations - Beginner/discovery/Step_1_Run_Discovery.py
+python "walkthroughs/Phase 1 - Foundations - Beginner/discovery/Step_1_Run_Discovery.py"
 ```
 
 ## 📊 Key Concepts

@@ -13,10 +13,13 @@
         "id": "node_writer",
         "role": "Writer",
         "task_description": "Generate a technical report on 'Core Reactor Stability'.",
-        "expected_outcome": {
-          "type": "contains",
-          "value": "Stability: Evaluated"
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Stability: Evaluated",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "node_auditor",
@@ -47,7 +50,7 @@
   },
   "evaluation": {
     "consensus": {
-      "strategy": "Sequential_Approval",
+      "strategy": "Majority_Vote",
       "min_judges": 1
     }
   }

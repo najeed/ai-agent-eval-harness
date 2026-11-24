@@ -3767,6 +3767,14 @@ class VerificationAuthority:
                 eval_pub = public_key_pem
             elif key_registry and fin_record.evaluator_identity in key_registry:
                 eval_pub = key_registry[fin_record.evaluator_identity]
+            elif trust_root is not None:
+                root = Path(trust_root).resolve()
+                key_path = (root / fin_record.evaluator_identity / "public_key.pem").resolve()
+                eval_pub = (
+                    key_path.read_bytes()
+                    if key_path.is_relative_to(root) and key_path.is_file()
+                    else None
+                )
             else:
                 from eval_runner.identity import IdentityService
 

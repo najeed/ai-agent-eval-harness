@@ -3,66 +3,29 @@ title: Drift Management & Edge-Case Triage
 description: Ingest real-world behavior and analyze agent failures using the Triage Engine.
 ---
 
-Industrial agent evaluation requires more than static datasets; it needs the ability to learn from real-world production "drift" and systematically classify why agents fail.
+Import production JSON/JSONL histories as editable AES scenario scaffolds:
 
-## 🔄 Behavioral Drift Importers
-
-The **Drift Importer** (`import-drift`) allows you to convert production interaction logs into reusable evaluation scenarios. This enables the creation of a "regression suite" from actual edge cases encountered in the field.
-
-### Usage
 ```bash
-agentv import-drift --input path/to/trace.json --industry telecom
+agentv import-drift --input logs/production.jsonl --industry telecom
 ```
 
-### Trace Format
-The engine expects standard role-based interaction objects:
-```json
-[
-  {"role": "user", "content": "I need help with my bill."},
-  {"role": "assistant", "content": "I can help with that. What is your account number?"}
-]
-```
+The CLI writes `scenarios/drift-<random UUID prefix>.json` by default. It does not
+select `industries/<industry>/scenarios` automatically and the filename is not a
+content hash. The source must contain nonempty role-based history.
 
-### Automated Scenario Generation
-Upon import, the engine generates a new **AES v1.4** scenario file in `industries/[industry]/scenarios/drift-[hash].json`. The original conversation is stored as `ground_truth_history` for N-shot comparison.
+Imported history is retained in `metadata.ground_truth_history`; the root includes
+numeric aes_version, metadata, workflow and evaluation. This is an editable
+baseline, not proof that the original production behavior was replayed. Replace
+the generic task and add explicit expected outputs, tools/state assertions and
+independent evidence before treating it as a meaningful regression suite.
 
----
-
-## 🔍 Edge-Case Triage Library
-
-The **Triage Engine** automatically inspects failed tasks and applies diagnostic tags based on the [Failure Taxonomy](/evaluator/taxonomy/).
-
-### Industrial Triage Tags
-| Tag | Description |
-| :--- | :--- |
-| **`CONNECTION_ERROR`** | Communication failure with the agent or LLM provider (e.g., 500 reset). |
-| **`POLICY_VIOLATION`** | The agent attempted an action forbidden by the [Secure Sandbox](/auditor/trust-protocol/). |
-| **`TOOL_ERROR`** | A World Shim returned an error status during tool execution. |
-| **`STALL`** | The agent hit the turn limit without reaching a terminal `final_answer`. |
-
-### How It Works
-After each run, the engine executes a heuristic pass over the trajectory.
 ```bash
-Task: refund_processing [FAILURE [CONNECTION_ERROR]]
-  FAILED Metric: generic_accuracy | Score: 0.00 | Threshold: 0.80
+agentv aes validate --path scenarios/YOUR_IMPORTED_SCENARIO.json
+agentv lint --path scenarios/YOUR_IMPORTED_SCENARIO.json
 ```
 
----
-
-## 🧪 Forensic Diagnostics (`explain`)
-
-While triage provides categorical tags, the `explain` command performs a deep forensic analysis of the execution trace to identify root causes.
-
-### Usage
-```bash
-agentv explain --run-id <id>
-```
-
-### Forensic Features
-- **Tiered Confidence Scoring**: Distinguishes between explicit violations (100%), induced system errors (85%), and heuristic fallbacks (50%).
-- **Remediation Advice**: Provides targeted prompts for refinement (e.g., "Refine sandbox policy for `read_file` to allow restricted access").
-- **Pinpoint Divergence**: Identifies the exact turn index where the agent's logic diverged from the [Trust Protocol](/auditor/trust-protocol/).
-
-:::tip
-**Visual Triage**: Failure tags are integrated into the [Integrated Console](/extender/api-reference/). High-priority tags like `POLICY_VIOLATION` are highlighted in the trajectory timeline for manual review.
-:::
+After running a scenario, use `agentv explain --run-id RUN_ID` or the Console to
+inspect actual failure evidence. Triage diagnoses provider-owned events and
+declared assertions; it does not infer correctness from a nonempty response.
+See [failure taxonomy](/evaluator/taxonomy/) and
+[state triage](/evaluator/triage-vfs/).

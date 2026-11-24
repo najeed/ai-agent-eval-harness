@@ -12,11 +12,12 @@ AgentV provides native integration with **LangGraph**, enabling comprehensive ev
 Wrap your LangGraph application in a lightweight FastAPI service conforming to the [Agent Interaction Contract](/integrator/agent-contract/):
 
 ```python
+import json
 from typing import Annotated, TypedDict
 from fastapi import FastAPI, Request
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
-from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
+from langchain_core.messages import HumanMessage, AIMessage
 
 app = FastAPI(title="LangGraph Agent Service")
 
@@ -41,7 +42,7 @@ def reasoner_node(state: AgentState) -> dict:
                     additional_kwargs={
                         "action": "call_tool",
                         "tool_name": "fetch_applicant_kyc",
-                        "tool_args": {"applicant_id": "APP-89421"},
+                        "tool_params": {"applicant_id": "APP-89421"},
                     },
                 )
             ]
@@ -73,17 +74,22 @@ graph = builder.compile()
 async def execute_task(request: Request):
     payload = await request.json()
     task_desc = payload["task_description"]
-    history = payload.get("conversation_history", [])
+    # Default HTTP requests contain only task_description.
+    # Populate history only if your explicit application payload contract supplies it.
+    history = []
 
-    # Map harness history into LangChain messages
+    # Application-level projection for explicitly supplied harness history.
+    # Environment results are observations, not LangChain ToolMessages: the
+    # harness does not guarantee matching LangChain tool_call_id values.
     messages = []
     for item in history:
-        if item["role"] == "user":
-            messages.append(HumanMessage(content=item["content"]))
-        elif item["role"] == "assistant":
-            messages.append(AIMessage(content=item.get("summary", "")))
-        elif item["role"] == "tool":
-            messages.append(ToolMessage(content=item["content"], tool_call_id="1"))
+        content = item.get("content", "")
+        if not isinstance(content, str):
+            content = json.dumps(content)
+        if item.get("role") == "agent":
+            messages.append(AIMessage(content=content))
+        elif item.get("role") in ("user", "environment"):
+            messages.append(HumanMessage(content=content))
 
     # If first turn, seed with initial prompt
     if not messages:
@@ -104,7 +110,7 @@ async def execute_task(request: Request):
             return {
                 "action": "call_tool",
                 "tool_name": kwargs["tool_name"],
-                "tool_args": kwargs.get("tool_args", {}),
+                "tool_params": kwargs.get("tool_params", {}),
                 "summary": "Invoking tool via LangGraph reasoner node.",
             }
         elif kwargs["action"] == "final_answer":
@@ -167,3 +173,7 @@ Navigate to `http://localhost:5000/debugger` to view:
 - Graph node execution order and cycle counts.
 - Virtual filesystem (VFS) environment diffs.
 - OpenTelemetry span timeline with millisecond-level step latencies.
+
+These HTTP wrappers receive the default `task_description` request. Full history,
+run identity and tool schemas require an explicitly configured application
+payload contract; see the [agent contract](/integrator/agent-contract/).

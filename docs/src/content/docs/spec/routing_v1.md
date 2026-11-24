@@ -12,9 +12,13 @@ Scenarios SHOULD NOT define hardcoded endpoints. Instead, they define required c
 {
   "aes_version": 1.4,
   "metadata": {
-    "id": "loan_approval_01"
+    "id": "loan_approval_01",
+    "name": "Loan approval routing",
+    "compliance_level": "Standard",
+    "capabilities": ["fintech_api"]
   },
-  "capabilities": ["fintech_api"]
+  "workflow": {"nodes": [{"id": "assess", "task_description": "Assess the loan"}], "edges": []},
+  "evaluation": {}
 }
 ```
 

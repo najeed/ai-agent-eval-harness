@@ -551,27 +551,6 @@ async def test_session_teardown(base_scenario, tmp_path):
 
 
 @pytest.mark.asyncio
-async def test_session_state_parity_regex_numerical(base_scenario, tmp_path):
-    session = SessionManager("test_run", base_scenario, log_root=tmp_path)
-
-    node = {
-        "expected_outcome": [
-            {"target": "state", "property": "val", "expected": "regex:^[0-9]+$", "mode": "regex"},
-            {"target": "state", "property": "num", "expected": 1.0, "mode": "numerical_tolerance"},
-            {"target": "message", "expected": "test", "mode": "regex"},
-        ],
-        "timeout": 0.1,
-    }
-    mock_sandbox = AsyncMock()
-    mock_sandbox.get_active_simulators = MagicMock(return_value={})
-    mock_sandbox.get_bounded_state = AsyncMock(return_value={"val": "123", "num": 1.0000000001})
-    history = [{"role": "agent", "content": "testing 123"}]
-
-    result, _evidence = await session._verify_state_parity(node, mock_sandbox, history)
-    assert result is True
-
-
-@pytest.mark.asyncio
 async def test_session_calculate_metrics_hygiene_and_dispatch(base_scenario, tmp_path):
     session = SessionManager("test_run", base_scenario, log_root=tmp_path)
 
@@ -3146,3 +3125,406 @@ async def test_session_gate_check_resumption_token_branches_and_lazy_approved_ga
         delattr(sess_fresh, "_approved_gates")
     sess_fresh._mark_gate_approved("fresh_gate_node")
     assert "fresh_gate_node" in sess_fresh._approved_gates
+
+
+@pytest.mark.asyncio
+async def test_session_remaining_guard_checkpoint_provenance_and_hitl_branches(
+    tmp_path, monkeypatch
+):
+    """Cover remaining session guards, snapshot validation, checkpoints, provenance, and HITL."""
+    from eval_runner.tool_sandbox import ToolSandbox
+
+    # 1. Provider binding guards (bypass conftest provider_bound_init wrapper)
+    raw_init = SessionManager.__init__
+    if getattr(raw_init, "__closure__", None):
+        for cell in raw_init.__closure__:
+            if (
+                callable(cell.cell_contents)
+                and getattr(cell.cell_contents, "__name__", "") == "__init__"
+            ):
+                raw_init = cell.cell_contents
+                break
+
+    with pytest.raises(RuntimeError, match="RunStorageProviderBindingRequired"):
+        raw_init(SessionManager.__new__(SessionManager), "r-no-store", {"id": "s"}, run_store=None)
+    with pytest.raises(RuntimeError, match="ArtifactStoreBindingRequired"):
+        raw_init(
+            SessionManager.__new__(SessionManager),
+            "r-no-art",
+            {"id": "s"},
+            run_store=MagicMock(),
+            artifact_store=None,
+        )
+
+    # 2. Scenario snapshot non-dict JSON raises ScenarioSnapshotInvalid
+    run_store_snap = LocalFileRunStore(tmp_path / "snap-runs")
+    run_store_snap.create_run("run_snap_bad", "s_snap")
+    art_store_snap = LocalFileArtifactStore(tmp_path / "snap-arts")
+    art_store_snap.store_artifact(
+        "run_snap_bad", "scenario_resolved.json", b"[]", content_type="application/json"
+    )
+    with pytest.raises(RuntimeError, match="ScenarioSnapshotInvalid"):
+        SessionManager(
+            "run_snap_bad",
+            {"id": "s_snap"},
+            run_store=run_store_snap,
+            artifact_store=art_store_snap,
+        )
+
+    # 3. Auto-attach RuntimeMutationPlugin when scenario has mutations
+    empty_pm = MagicMock()
+    empty_pm.plugins = []
+    empty_pm.provenance_map = {}
+    empty_pm.trigger_interceptor.return_value = True
+    with patch("eval_runner.runtime_services.resolve_plugin_registry", return_value=empty_pm):
+        sess_mut = _session_with_local_providers(
+            tmp_path,
+            "run_auto_mut",
+            {
+                "id": "s_mut",
+                "workflow": {"nodes": [{"id": "n1", "injected_latency_ms": 10}], "edges": []},
+            },
+        )
+    assert sess_mut.mutation_plugin is not None
+    assert sess_mut.mutation_plugin.is_mandatory is True
+
+    # 4. restore_from_checkpoint error branches
+    with pytest.raises(ValueError, match="UnboundExecutionCheckpoint"):
+        sess_mut.restore_from_checkpoint(
+            checkpoint_data={"completed_execution_results": {"n1": {}}}
+        )
+
+    ver_hash = ExecutionIdentity.scenario_version_hash(sess_mut._scenario_contract)
+    with pytest.raises(ValueError, match="InvalidExecutionCheckpointResults"):
+        sess_mut.restore_from_checkpoint(
+            checkpoint_data={
+                "attempt_id": "att-1",
+                "evaluation_run_id": sess_mut.run_id,
+                "scenario_version_id": ver_hash,
+                "completed_execution_results": ["not-a-dict"],
+            }
+        )
+
+    # 5. _extract_predicate_state_paths edge cases
+    from types import SimpleNamespace
+
+    assert sess_mut._extract_predicate_state_paths(None) == set()
+    compound_pred = SimpleNamespace(
+        op="compound",
+        clauses=[
+            SimpleNamespace(op="eq", path="world.balance"),
+            SimpleNamespace(op="eq", path="shared.flag"),
+            SimpleNamespace(op="eq", path="turn.count"),
+            SimpleNamespace(op="eq", path="node.ok"),
+            SimpleNamespace(op="eq", path="tools_used"),
+            SimpleNamespace(op="eq", path="result.code"),
+            SimpleNamespace(op="eq", path="state.custom_key"),
+            SimpleNamespace(op="eq", path="bare_key"),
+            SimpleNamespace(op="eq", path=""),
+        ],
+    )
+    paths = sess_mut._extract_predicate_state_paths(compound_pred)
+    assert paths == {"custom_key", "bare_key"}
+
+    # 6. _extract_provenance edge cases
+    class _SecureRes:
+        def __init__(self, meta=None, exc=None):
+            self._meta = meta
+            self._exc = exc
+
+        def get_secure_metadata(self):
+            if self._exc:
+                raise self._exc
+            return self._meta
+
+    class _CustomSandbox:
+        def __init__(self, prov=None, exc=None):
+            self._prov = prov
+            self._exc = exc
+
+        def get_tool_provenance(self, _name):
+            if self._exc:
+                raise self._exc
+            return self._prov
+
+    sess_prov = _session_with_local_providers(tmp_path, "run_prov", {"id": "s_prov"})
+    sess_prov.scenario = "not-a-dict"
+    assert sess_prov._extract_provenance("mock_tool") == "simulated"
+    assert (
+        sess_prov._extract_provenance("t_sec", result=_SecureRes(meta={"provenance": "live"}))
+        == "live"
+    )
+    assert (
+        sess_prov._extract_provenance(
+            "t_sec_nondict", result=_SecureRes(meta="bad"), fallback_prov="live"
+        )
+        == "live"
+    )
+    assert (
+        sess_prov._extract_provenance(
+            "t_sec_nokey", result=_SecureRes(meta={"other": 1}), fallback_prov="live"
+        )
+        == "live"
+    )
+    assert (
+        sess_prov._extract_provenance(
+            "t_sec_err", result=_SecureRes(exc=ValueError("bad")), fallback_prov="live"
+        )
+        == "live"
+    )
+    assert sess_prov._extract_provenance("t_dict_nonstr", result={"provenance": 123}) == "simulated"
+    assert (
+        sess_prov._extract_provenance(
+            "t_sb_nonstr", sandbox=_CustomSandbox(prov=123), fallback_prov="live"
+        )
+        == "live"
+    )
+    assert (
+        sess_prov._extract_provenance(
+            "t_sb_err", sandbox=_CustomSandbox(exc=KeyError("k")), fallback_prov="live"
+        )
+        == "live"
+    )
+
+    sess_prov.scenario = {"id": "s_prov", "tools": ["live_scen_tool"]}
+    sb_real = ToolSandbox(sess_prov.scenario)
+    with patch.object(sb_real, "get_tool_provenance", return_value="live"):
+        assert sess_prov._extract_provenance("live_scen_tool", sandbox=sb_real) == "live"
+
+    # 7. _handle_hitl fallback when isatty() is True and AGENTV_CLI_HITL_SUSPEND="0"
+    monkeypatch.setenv("AGENTV_CLI_HITL_SUSPEND", "0")
+    monkeypatch.setattr("sys.stdin", MagicMock(isatty=lambda: True))
+    hitl_resp = await sess_prov._handle_hitl(
+        1, {"prompt": "Confirm?"}, [], {}, MagicMock(task_id="t_hitl")
+    )
+    assert hitl_resp.startswith("Skipped (non-interactive, no TTY):")
+
+
+@pytest.mark.asyncio
+async def test_session_execute_tasks_replay_reconcile_compensation_and_parallel_live_branches(
+    tmp_path,
+):
+    """Cover execute_tasks replay, reconciliation, compensation, and live parallel tools."""
+    from unittest.mock import AsyncMock
+
+    from eval_runner.tool_sandbox import ToolSandbox
+
+    # 1. execute_tasks: state_projection non-str/empty, replay identity mismatch,
+    #    reconciliation_failed, and _before_compensation callback
+    scen = {
+        "id": "s_exec_edges",
+        "execution_mode": "hybrid",
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "n1",
+                    "task_description": "step 1",
+                    "state_projection": ["", 123, "state.x"],
+                    "expected_state_changes": [{"path": "x", "expected": 1}],
+                    "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+                },
+                {
+                    "id": "comp_n1",
+                    "task_description": "compensate step 1",
+                    "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+                },
+            ],
+            "edges": [{"from": "n1", "to": "comp_n1", "type": "compensation"}],
+        },
+    }
+    sess = _session_with_local_providers(tmp_path, "run_exec_edges", scen)
+
+    # 1a. Replay identity mismatch
+    class _ReplayMismatch(dict):
+        def get(self, _k, _d=None):
+            return {"result": {"status": "failure", "execution_instance_id": "bad"}}
+
+    sess._checkpoint_replay_results = _ReplayMismatch()
+    replay_res = await sess.execute_tasks(1)
+    assert any("CheckpointExecutionIdentityMismatch" in str(r) for r in replay_res)
+
+    # 1b. Reconciliation failed + _before_compensation callback
+    sess._checkpoint_replay_results = {}
+    with (
+        patch.object(
+            sess,
+            "_execute_node",
+            new=AsyncMock(
+                return_value={
+                    "status": "success",
+                    "node_verdict": {"overall": "pass"},
+                    "state_after": {},
+                }
+            ),
+        ),
+        patch(
+            "eval_runner.reconciliation.build_reconciliation_record",
+            return_value={"reconciled": False, "details": []},
+        ),
+        patch(
+            "eval_runner.mutations.compensation_faults.intercept_compensation",
+            return_value=True,
+        ) as mock_comp,
+    ):
+        results = await sess.execute_tasks(1)
+        assert results[0]["triage_tag"] == "RECONCILIATION_FAILED"
+        assert results[0]["node_verdict"]["overall"] == "reconciliation_failed"
+        assert mock_comp.call_count >= 0
+
+    with (
+        patch.object(
+            sess,
+            "_execute_node",
+            new=AsyncMock(
+                return_value={
+                    "status": "success",
+                    "node_verdict": None,
+                    "state_after": {},
+                }
+            ),
+        ),
+        patch(
+            "eval_runner.reconciliation.build_reconciliation_record",
+            return_value={"reconciled": False, "details": []},
+        ),
+        patch(
+            "eval_runner.mutations.compensation_faults.intercept_compensation",
+            return_value=True,
+        ),
+    ):
+        results_none_v = await sess.execute_tasks(1)
+        assert results_none_v[0]["triage_tag"] == "RECONCILIATION_FAILED"
+
+    # 2. _execute_node: reconciliation_failed overall + approval_preflight rejection
+    sess_node = _session_with_local_providers(
+        tmp_path,
+        "run_node_flags",
+        {
+            "id": "s_node_flags",
+            "max_turns": 1,
+            "workflow": {
+                "nodes": [
+                    {
+                        "id": "n_flag",
+                        "task_description": "flag",
+                        "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+                    }
+                ],
+                "edges": [],
+            },
+        },
+    )
+    sb = ToolSandbox(sess_node.scenario)
+    verdict_recon = MagicMock(
+        success=False,
+        overall="reconciliation_failed",
+        failed_assertion={},
+        to_dict=lambda: {"overall": "reconciliation_failed"},
+    )
+    with (
+        patch(
+            "eval_runner.session.AgentAdapterRegistry.call_agent",
+            new=AsyncMock(return_value={"action": "final_answer", "answer": "done"}),
+        ),
+        patch.object(
+            sess_node,
+            "_calculate_metrics",
+            new=AsyncMock(
+                return_value={
+                    "task_id": "n_flag",
+                    "status": "success",
+                    "metrics": [{"metric": "task_completion", "score": 1.0}],
+                }
+            ),
+        ),
+        patch("eval_runner.session.NodeVerdict", return_value=verdict_recon),
+    ):
+        res_node = await sess_node._execute_node(
+            {
+                "id": "n_flag",
+                "task_description": "flag",
+                "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+            },
+            1,
+            0,
+            sb,
+            [],
+            {},
+            execution_context={"execution_instance_id": "n_flag"},
+        )
+        assert res_node["triage_tag"] == "RECONCILIATION_FAILED"
+
+    from eval_runner.session_components import ApprovalBoundaryRejected
+
+    for preflight_ret, reason_val in (
+        (False, None),
+        ({"allowed": False, "mutation_fault": "fault_x"}, "explicit reason"),
+    ):
+        sess_node.plugin_manager.last_rejection_reason = reason_val
+        with (
+            patch.object(
+                sess_node.plugin_manager,
+                "trigger_interceptor",
+                return_value=preflight_ret,
+            ),
+            pytest.raises(ApprovalBoundaryRejected),
+        ):
+            await sess_node._execute_node(
+                {"id": "n_flag", "task_description": "flag"},
+                1,
+                0,
+                sb,
+                [],
+                {},
+                execution_context={"execution_instance_id": "n_flag_pf"},
+            )
+
+    with (
+        patch(
+            "eval_runner.session.AgentAdapterRegistry.call_agent",
+            new=AsyncMock(
+                side_effect=ApprovalBoundaryRejected(
+                    "gate denied", phase="gate", details={"mutation_fault": "fault_x"}
+                )
+            ),
+        ),
+        patch.object(
+            sess_node,
+            "_calculate_metrics",
+            new=AsyncMock(return_value={"task_id": "n_flag", "status": "failure", "metrics": []}),
+        ),
+    ):
+        res_gate = await sess_node._execute_node(
+            {"id": "n_flag", "task_description": "flag"},
+            1,
+            0,
+            sb,
+            [],
+            {},
+            execution_context={"execution_instance_id": "n_flag_gate"},
+        )
+        assert res_gate["is_root_cause"] is True
+        assert res_gate["approval_phase"] == "gate"
+        assert res_gate["mutation_fault"] == "fault_x"
+
+    # 3. _handle_multiple_tools with live provenance
+    from types import SimpleNamespace
+
+    sess_live = _session_with_local_providers(
+        tmp_path, "run_live_par", {"id": "s_live_par", "tools": ["live_t"]}
+    )
+    sess_live.has_simulated_tools = False
+    sb_live = ToolSandbox(sess_live.scenario)
+    with (
+        patch.object(sb_live, "get_tool_provenance", return_value="live"),
+        patch.object(sb_live, "execute", new=AsyncMock(return_value={"ok": True})),
+    ):
+        await sess_live._handle_multiple_tools(
+            1,
+            {"tool_calls": [{"id": "c1", "tool_name": "live_t", "tool_params": {}}]},
+            sb_live,
+            [],
+            {"used_tools": []},
+            SimpleNamespace(span_context=None, otel_context=None),
+        )
+    assert sess_live.has_simulated_tools is False

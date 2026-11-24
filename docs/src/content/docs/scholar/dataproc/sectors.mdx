@@ -30,15 +30,15 @@ The Dataproc Engine provides high-fidelity data generation and extraction capabi
 
 ---
 
-## Generator Architecture
+## Provider architecture and exported records
 
-Each sector in the Dataproc Engine uses a dedicated **Generator** class. Researchers can extend these generators to create custom datasets for niche research areas.
+The pipeline uses BaseProvider subclasses. Extend a provider to implement source
+retrieval and transformation for a new dataset; do not rely on a universal
+sector Generator API or generic noise-injection contract.
 
-### Deterministic Noise
-Generators support **Synthetic Noise Injection**, allowing researchers to test agent robustness against:
-- Data corruption (bit flips).
-- Incomplete records (missing fields).
-- Outdated information (temporal drift).
-
-### Veracity Checks
-Every generated record includes a `veracity_score` and a SHA3-256 `source_hash`. This ensures that in a research setting, you can prove the lineage of every data point used in the evaluation.
+The [standard envelope](/scholar/dataproc/) contains `id`, `industry`, `data`,
+`provenance` and `checksum`. Exports flatten the envelope to `record_id`, industry,
+checksum and provider-specific data/provenance fields. `veracity_score` and
+`source_hash` are not required across all providers. Source names in this table
+are references or analogies, not proof that each run contacted that service or
+achieved parity. Check actual provenance and simulation flags for every dataset.

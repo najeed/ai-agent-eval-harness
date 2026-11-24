@@ -5,12 +5,19 @@ description: High-fidelity financial data extraction and auditing for AI agents.
 
 The Finance sector is the foundational "Anchor" for the AgentV engine, providing gold-standard XBRL and macro indicators for benchmarking financial agents.
 
-## 📊 Status: **HARDENED**
+## 📊 Status: **Provider-dependent coverage**
 
 - **Architecture**: SEC EDGAR & FRED Multi-Source Layer.
-- **Verification**: 100% Parity with sources.
+- **Verification**: Validate the selected source and output records for this run; no universal live-source parity guarantee is implied.
 
 ## 📡 Data Sources
+
+The sources below describe reference datasets and task models. Actual connectivity
+depends on the implemented provider, credentials and supplied input files.
+Simulation is disabled by default; enable `--allow-simulation` deliberately and
+retain `simulation`/`execution_mode` provenance. A listed source is not proof
+that its live API was used or that all records match it.
+
 
 | Source | Description |
 | :--- | :--- |

@@ -3,7 +3,7 @@ title: CLI Reference & Command Dispatcher
 description: Comprehensive command-line reference for the AgentV enterprise evaluation framework.
 ---
 
-The `agentv` CLI (also available as `eval-runner`) is the primary entry point for executing evaluations, authoring specifications, diagnosing failures, managing trust protocols, and orchestrating visual debugging sessions.
+The `agentv` CLI is the primary entry point for executing evaluations, authoring specifications, diagnosing failures, managing trust protocols, and orchestrating visual debugging sessions.
 
 ```bash
 agentv <command> [subcommand] [options]
@@ -11,16 +11,20 @@ agentv <command> [subcommand] [options]
 
 ---
 
-## 🧭 Global Flags & Post-Quantum Controls
+## 🧭 Help, Version & Post-Quantum Controls
 
 | Flag | Description |
 | :--- | :--- |
 | `--version` | Display AgentV version (e.g., `AgentV 2.0.0`) and exit. |
 | `-h`, `--help` | Display structured usage instructions and available subcommands. |
-| `--pqc` | Globally force-enable Hybrid Post-Quantum Cryptography (ML-DSA Dilithium + Ed25519). |
-| `--no-pqc` | Force-disable PQC mode and fallback to classical Ed25519 signing. |
+| `--pqc` | Enable PQC for a supported subcommand; place after the command name. |
+| `--no-pqc` | Disable PQC for a supported subcommand; place after the command name. |
 
 ---
+
+`--version` and root help are global. `--pqc` / `--no-pqc` are accepted by
+`evaluate`, `run`, `verify`, `certify`, `gate`, and `report`, for example
+`agentv run --path scenario.json --pqc`. They are not root-parser flags.
 
 ## 1. 🚀 Executing Evaluations
 
@@ -44,7 +48,7 @@ agentv evaluate \
 - `--path` *(required)*: Path to scenario file (`.json`, `.yaml`), dataset directory, or catalog alias (e.g. `loan_risk`).
 - `--agent`: Target agent HTTP URL, socket address, or local command.
 - `--protocol`: Agent communication protocol: `http`, `local`, `socket`, `langgraph`, `crewai`, `ag2`.
-- `--run-id`: Unique identifier for the evaluation run. Automatically generated if omitted.
+- `--run-id`: Unique identifier for the evaluation run. Automatically generated if omitted. For a multi-scenario batch, an explicit ID is suffixed `-0001`, `-0002`, etc., to keep each provider run unique.
 - `--attempts`: Number of Pass@K trials per scenario (default: `1`).
 - `--limit`: Maximum number of scenarios to evaluate from a dataset.
 - `--seed`: Deterministic integer seed for reproducible environment initializations.
@@ -63,7 +67,7 @@ Execute an isolated evaluation on a single scenario or URI benchmark target.
 
 ```bash
 agentv run \
-  --path industries/healthcare/scenarios/hipaa_compliance.json \
+  --path industries/healthcare/scenarios/agentv-demo-um-adverse-review-v3-physician-hitl.json \
   --agent http://localhost:8000/agent \
   --attempts 1 \
   --verbose
@@ -155,9 +159,9 @@ agentv auto-translate --input docs/api_guide.md --industry telecom --model llama
 ---
 
 ### `agentv mutate`
-Generate adversarial, edge-case, or perturbed scenario variants from existing baselines across the 9-Vector Ecosystem.
+Generate adversarial, edge-case, or perturbed scenario variants from existing baselines using the installed mutation catalog. The formal vector vocabulary has 14 values; executable delivery depends on each provider descriptor.
 
-The mutation command automatically chains the in-memory **Scenario Linter** (`ScenarioLinter.lint_dict`), outputting the resulting Lint Tier (`GOLD`, `SILVER`, `BRONZE`, `REJECTED`), compliance health score, error counts, and warnings before writing the mutated scenario variant to disk.
+The mutation command chains the in-memory **Scenario Linter** (`ScenarioLinter.lint_dict`) and reports its quality tier, score, errors and warnings before writing the variant. Tiers are `GOLD` at ≥90, `SILVER` at ≥70, `BRONZE` at ≥50, and `UNRANKED` below 50; registry input returns `REGISTRY`. A tier summarizes static quality and does not itself reject execution.
 
 ```bash
 agentv mutate --input scenarios/baseline.json --type injection --output scenarios/adversarial.json
@@ -172,7 +176,7 @@ agentv mutate --input scenarios/baseline.json --type injection --output scenario
 ---
 
 ### `agentv install`
-Install signed industry scenario packages from local archive directories or tarballs.
+Install local industry packs from directories or archives containing `pack.yaml`. Declared file checksums are enforced; this installer does not verify publisher signatures. Checksums detect changes relative to the manifest but do not authenticate its publisher.
 
 ```bash
 agentv install ./packs/healthcare_v2.tar.gz
@@ -364,7 +368,7 @@ agentv leaderboard --dir runs/ --output LEADERBOARD.md
 ---
 
 ### `agentv calibrate`
-Measure judge agreement against ground-truth human annotations using statistical calibration (Cohen's & Fleiss' Kappa).
+Measure MAE, Pearson correlation, and an F1 threshold sweep against human labels matched by `task_id`. See [calibration](/evaluator/calibration/) for label input formats and aggregation limits.
 
 ```bash
 agentv calibrate --run-id run_fintech_2026_01 --golden data/golden_labels.json --plot
@@ -417,14 +421,15 @@ agentv verify-package runs/run_fintech_2026_01.agentv-package.json \
   --public-key .aes/keys/trust_root_pub.pem \
   --require-signature \
   --scenario scenarios/loan_risk.json \
-  --require-scenario
+  --require-scenario \
+  --execution-manifest execution_manifest.json
 ```
 
 #### Options:
 - `package_path` *(positional, required)*: Path to `.agentv-package.json` file.
-- `--trace`, `--raw-trace`: Optional raw trace file path for forensic byte-parity verification against embedded trace data.
+- `--trace`, `--raw-trace`: Required exact raw trace file path for authoritative verification; parsed event objects cannot substitute for these bytes.
 - `--public-key`: Path to PEM public key file or inline PEM string for signature verification.
-- `--require-signature`: Require a valid cryptographic signature anchored to the provided or registered public key.
+- `--require-signature`: Signature validation is enabled by default; require a valid cryptographic signature anchored to the provided or registered public key.
 - `--scenario`: Path to scenario definition JSON to verify scenario binding (`scenario_id`, `scenario_version`, and canonical `scenario_hash`).
 - `--require-scenario`: Require scenario binding validation, failing closed if scenario metadata does not match.
 
@@ -586,3 +591,9 @@ Start the interactive contributor wizard for creating new scenarios, world shims
 ```bash
 agentv contribute
 ```
+
+Offline authoritative verification requires exact raw trace bytes and the actual
+execution manifest/scenario. Console export wrappers can supply embedded contract
+views, but cannot substitute for absent raw trace bytes. `--execution-manifest`
+selects the actual manifest file; `--diagnostic` explicitly chooses non-authoritative
+analysis. Prepare the referenced evidence/key files before running examples.

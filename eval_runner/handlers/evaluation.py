@@ -141,41 +141,66 @@ async def handle_evaluate(args):
         print(f"❌ Error: No scenarios found at path: {args.path}")
         return 1
 
+    limit = getattr(args, "limit", None)
+    if isinstance(limit, int) and not isinstance(limit, bool):
+        if limit <= 0:
+            print("[CLI] --limit must be positive.")
+            return 1
+        scenarios = scenarios[:limit]
+
+    output = getattr(args, "output", None)
+    output_path = Path(output) if isinstance(output, str) and output else None
+    if output_path is not None and not _ensure_path_safe(output_path, "Results output"):
+        return 1
+
     print(f"[CLI] Running {len(scenarios)} scenarios...")
 
     try:
+        batch_results = []
         for i, scenario in enumerate(scenarios):
             attempts = getattr(args, "attempts", 1)
-            if not isinstance(attempts, int):
+            if not isinstance(attempts, int) or isinstance(attempts, bool):
                 attempts = 1
-            for attempt in range(attempts):
-                print(
-                    f"\n[{i + 1}/{len(scenarios)}] Attempt {attempt + 1}/{attempts} - Scenario: {scenario.get('title', 'Untitled')}"  # noqa: E501
-                )
-                # [Iteration 4: Forensic Metadata]
-                try:
-                    args_dict = vars(args)
-                except TypeError:
-                    args_dict = {}
-
-                clean_args = {k: v for k, v in args_dict.items() if not callable(v)}
-                execution_mode = getattr(args, "execution_mode", None)
-                if execution_mode:
-                    # The mode is declared before execution and becomes part of
-                    # the immutable RUN_START provenance record.
-                    scenario = dict(scenario)
-                    scenario["execution_mode"] = execution_mode
-                await engine.run_evaluation(
-                    scenario,
-                    run_id=getattr(args, "run_id", None),
-                    seed=base_seed,
-                    metadata={
-                        "args": clean_args,
-                        "plugin_provenance": plugin_registry.provenance_map,
-                        **agent_metadata,
-                    },
-                )
-
+            if attempts <= 0:
+                raise ValueError("--attempts must be positive")
+            # One runner owns all attempts, deterministic seeds and Pass@K evidence.
+            explicit_id = getattr(args, "run_id", None)
+            run_id = explicit_id if isinstance(explicit_id, str) else None
+            if run_id and len(scenarios) > 1:
+                run_id = f"{run_id}-{i + 1:04d}"
+            print(f"[{i + 1}/{len(scenarios)}] Evaluating {attempts} attempt(s)")
+            try:
+                args_dict = vars(args)
+            except TypeError:
+                args_dict = {}
+            clean_args = {k: v for k, v in args_dict.items() if not callable(v)}
+            execution_mode = getattr(args, "execution_mode", None)
+            if execution_mode in ("live", "hybrid", "simulated"):
+                scenario = dict(scenario)
+                scenario["execution_mode"] = execution_mode
+            results = await engine.run_evaluation(
+                scenario,
+                run_id=run_id,
+                attempts=attempts,
+                seed=base_seed,
+                metadata={
+                    "args": clean_args,
+                    "plugin_provenance": plugin_registry.provenance_map,
+                    **agent_metadata,
+                },
+            )
+            batch_results.append(
+                {
+                    "scenario_id": scenario.get("metadata", {}).get("id") or scenario.get("id"),
+                    "run_id": run_id,
+                    "results": results,
+                }
+            )
+        if output_path is not None:
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            output_path.write_text(
+                json.dumps({"results": batch_results}, indent=2, default=str), encoding="utf-8"
+            )
         return 0
     except Exception:
         logging.getLogger(__name__).debug("Failure in handle_evaluate", exc_info=True)
@@ -192,7 +217,7 @@ async def handle_evaluate(args):
             print(f"   [CLI] Warning: Failed to close adapter sessions: {e}")
 
 
-async def handle_run(args):
+async def handle_run(args, *, runtime_metadata=None):
     """Loads a single scenario and executes the evaluation."""
     # [Audit BUG-04] Robust environment overrides
     run_log_dir = getattr(args, "run_log_dir", None)
@@ -254,6 +279,7 @@ async def handle_run(args):
                 attempts=attempts,
                 seed=base_seed,
                 metadata={
+                    **(runtime_metadata or {}),
                     "args": clean_args,
                     "plugin_provenance": plugin_registry.provenance_map,
                     **agent_metadata,

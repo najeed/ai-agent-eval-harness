@@ -3,82 +3,51 @@ title: Artifact Bundles
 description: Packaging and sharing signed evaluation results for peer review.
 ---
 
-# Sharing Research Results
+# Share verifiable evaluation evidence
 
-For academic and industrial collaboration, AgentV provides a standardized way to package evaluation results into a single, portable, and verifiable bundle. This is powered by the **ArtifactPlugin**.
+Separate the signed verification attestation from the Console export wrapper and
+human-readable publication archive. Each has a different purpose and checksum.
 
-## Portable Evidence Formats
-
-AgentV provides two standardized, non-repudiable formats for distributing research evaluation results:
-
-1. **Self-Contained Verification Package (`.agentv-package.json`)**: A unified single-file JSON format containing the complete scenario, execution manifest, OpenTelemetry trace digests, typed assertion outcomes, and cryptographic signature envelopes. Optimized for automated CI pipelines, regulatory audits, and global model registries.
-2. **Publication Artifact Bundle (`.zip`)**: A comprehensive archive packaging raw behavioral DNA (`run.jsonl`), HTML leaderboards, trajectory plots, and the detached forensic evidence ledger.
-
----
-
-## 1. The Verification Package (`.agentv-package.json`)
-
-The single-file package format encapsulates complete cryptographic provenance in a portable, self-contained payload.
-
-### Exporting a Package
-Download the package directly via the Console REST API:
-```bash
-curl -H "X-Api-Key: $SERVICE_API_KEY" http://localhost:5000/api/v1/evidence/packages/<run_id> -o run_evidence.agentv-package.json
-```
-
-### Verifying a Package Offline
-Independent auditors can verify a package without access to the original runtime environment or databases:
+## Export a run view
 
 ```bash
-# Standard Ed25519 verification against a public key or external trust root
-agentv verify-package ./run_evidence.agentv-package.json \
-  --public-key .aes/keys/trust_root_pub.pem \
-  --require-signature
-
-# Deep artifact and scenario binding verification with raw trace parity check
-agentv verify-package ./run_evidence.agentv-package.json \
-  --public-key .aes/keys/trust_root_pub.pem \
-  --require-signature \
-  --scenario scenarios/baseline.json \
-  --require-scenario \
-  --trace runs/run_01/run.jsonl
+curl -H "X-Api-Key: $SERVICE_API_KEY" "http://localhost:5000/api/v1/evidence/packages/RUN_ID?download=true" -o evidence.agentv-package.json
 ```
 
-### Verification Layers
-- **Fast Signature Check (`verify_package_signature_only`)**: Validates the cryptographic signature against the canonical package digest and external trust root.
-- **Deep Artifact Verification (`verify_package_artifacts`)**: Recomputes pure RFC 8785 JSON Canonicalization Scheme (JCS) digests for the embedded scenario, execution manifest, trace seal, and assertion evidence, asserting exact cryptographic equality.
+The export is a version 2 presentation wrapper containing scenario/manifest views
+and the signed typed VerificationPackage. Its export checksum is not the signed
+package's canonical commitment. It does not embed the exact raw JSONL bytes
+needed for independent authoritative verification.
 
----
+Export the actual committed trace bytes and execution manifest/scenario through
+the run provider's authorized interface, without reconstructing events or
+normalizing line endings. Place those files alongside the package:
 
-## 2. The Publication Archive Bundle (`.zip`)
-
-A **Publication Artifact Bundle** is a signed archive containing the human-readable reports and raw behavioral traces:
-
-### Generating the Bundle
-After certifying your runs, generate the bundle via CLI:
 ```bash
-agentv bundle --run-id <run_id>
+agentv verify-package evidence.agentv-package.json --trace run.jsonl --execution-manifest execution_manifest.json --scenario scenario.json --require-scenario --public-key trusted-public.pem
 ```
 
-### What's Inside?
-- **`manifest.json`**: The core execution manifest linking scenarios, environment hashes, and run IDs.
-- **`run.jsonl`**: The complete behavioral DNA trace of the agent's actions (written with binary byte-stream determinism).
-- **`leaderboard.html`**: The standalone, CSS-embedded visual report for offline viewing.
-- **`audit_manifest.json`**: The **Forensic Evidence Ledger** containing SHA3-256 hashes for all files in the bundle.
-- **`signature.sig`**: The detached cryptographic signature envelope.
+The trust key must come from an external trusted source, not merely the package.
+Signature-only validation and `--diagnostic` analysis cannot establish execution
+or a certified pass. See the [package specification](/spec/agentv_package_spec/)
+and [verification workflow](/auditor/verification/).
 
-### Verifying Shared Archives
+## Publication archives
+
+Use the [publication suite](/evaluator/advanced-publication-suite/) to conduct,
+aggregate and render a campaign. Its bundler requires a loaded ArtifactPlugin:
+
 ```bash
-# Verify an evaluation run directory
-agentv verify --run-id <run_id> --pqc
+python eval_runner/publication_suite/bundle.py results/YOUR_BATCH
 ```
 
-### In-Archive Security & Integrity Checks:
-1. **In-Archive Direct Byte Verification**: Verifies internal file streams directly in memory without disk extraction, neutralizing Zip Slip attacks.
-2. **Path Traversal Guards**: Strictly rejects archives containing path traversal markers (`..`), absolute paths, or platform drive prefixes.
-3. **External Trust Root Anchoring**: Validates the signing identity against an external certificate authority or trusted key registry; unanchored self-attestation is strictly prohibited.
-4. **Trace Consistency**: Ensures the telemetry in `run.jsonl` mathematically resolves to the scores reported in `leaderboard.html`.
+`YOUR_BATCH` must already exist. The bundler selects available aggregate results,
+leaderboard/pilot HTML and manifest files. Inspect the actual archive contents;
+do not assume it contains a raw trace, complete current certificate and every
+sidecar automatically. There is no `agentv bundle` command.
 
-:::tip
-**Data Availability & Open Science**: When publishing research papers, we recommend uploading your `.agentv-package.json` or `publication_artifact_bundle.zip` to repositories like **Harvard Dataverse**, **Zenodo**, or **Hugging Face Hub**. Reviewers can independently verify your reported metrics with a single CLI command: `agentv verify-package <file>`.
-:::
+The archive's evidence manifest/checksums protect its selected contents. To prove
+a certification claim, distribute the signed package, raw bytes, actual scenario
+and execution manifest with the trusted-key verification instructions above.
+`agentv verify --run-id` verifies a provider-owned run, not an arbitrary downloaded
+ZIP. Retention requirements need external WORM storage rather than a local ZIP.

@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 
-from .. import calibrator, leaderboard_generator, reporter, taxonomy
+from .. import leaderboard_generator, reporter, taxonomy
 from ..explainer import explain_run
 from ..trace_utils import reconstruct_results_from_events
 
@@ -69,8 +70,21 @@ async def handle_explain(args):
 
 
 async def handle_calibrate(args):
+    from .. import calibrator
+
+    path = getattr(args, "path", None)
+    golden = getattr(args, "golden", None)
     run_id = getattr(args, "run_id", None)
-    if not run_id:
+    if isinstance(path, (str, Path)) and not (isinstance(run_id, str) and run_id):
+        print(f"\n[Calibrate] Measuring judge agreement for trace: {path}")
+        res = calibrator.run_calibration(
+            str(path),
+            golden_path=str(golden) if golden else None,
+            plot=bool(getattr(args, "plot", False)),
+        )
+        return 0 if res is not None else 1
+
+    if not run_id or not isinstance(run_id, str):
         print("[CRITICAL] Run ID is mandatory for calibration.")
         return 1
     try:
@@ -81,7 +95,11 @@ async def handle_calibrate(args):
         if not events:
             return 1
         return (
-            calibrator.run_calibration_events(events, golden_path=getattr(args, "golden", None))
+            calibrator.run_calibration_events(
+                events,
+                golden_path=getattr(args, "golden", None),
+                plot=bool(getattr(args, "plot", False)),
+            )
             or 0
         )
     except Exception as exc:

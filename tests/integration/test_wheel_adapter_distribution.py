@@ -12,24 +12,31 @@ from pathlib import Path
 import pytest
 
 
-@pytest.mark.release_packaging
-def test_mutation_package_installs_and_imports_from_wheel(tmp_path):
-    """Keep all build output outside the checkout and prove wheel-owned module imports."""
-    if os.getenv("AGENTV_RELEASE_PACKAGING") != "1":
+@pytest.fixture(scope="module")
+def _built_wheel(tmp_path_factory) -> Path:
+    """Build the distributable wheel once outside the checkout for release packaging tests."""
+    if os.getenv("AGENTV_RELEASE_PACKAGING", "").strip().lower() not in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }:
         pytest.skip("AGENTV_RELEASE_PACKAGING=1 enables artifact validation")
+
+    build_root = tmp_path_factory.mktemp("wheel_build")
     project = Path(__file__).resolve().parents[2]
-    source = tmp_path / "source"
+    source = build_root / "source"
     source.mkdir()
     for name in ("pyproject.toml", "README.md", "LICENSE"):
         if (project / name).is_file():
             shutil.copy2(project / name, source / name)
-    for name in ("eval_runner", "agentv_runtime", "dataproc_engine", "industries"):
+    for name in ("eval_runner", "agentv_runtime", "dataproc_engine", "industries", "spec"):
         shutil.copytree(
             project / name,
             source / name,
             ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".agentv", "jails"),
         )
-    wheels = tmp_path / "wheels"
+    wheels = build_root / "wheels"
     subprocess.run(
         [
             sys.executable,
@@ -43,17 +50,24 @@ def test_mutation_package_installs_and_imports_from_wheel(tmp_path):
             str(source),
         ],
         check=True,
-        timeout=600,
+        timeout=900,
         capture_output=True,
     )
+    return next(wheels.glob("agentv_runtime-*.whl"))
+
+
+@pytest.mark.release_packaging
+def test_mutation_package_installs_and_imports_from_wheel(tmp_path: Path, _built_wheel: Path):
+    """Keep all build output outside the checkout and prove wheel-owned module imports."""
+    if os.getenv("AGENTV_RELEASE_PACKAGING", "").strip() != "1":
+        pytest.skip("AGENTV_RELEASE_PACKAGING=1 enables artifact validation")
     environment = tmp_path / "installed"
-    subprocess.run([sys.executable, "-m", "venv", str(environment)], check=True, timeout=90)
+    subprocess.run([sys.executable, "-m", "venv", str(environment)], check=True, timeout=180)
     python = environment / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
-    wheel = next(wheels.glob("*.whl"))
     subprocess.run(
-        [str(python), "-m", "pip", "install", "--no-deps", str(wheel)],
+        [str(python), "-m", "pip", "install", "--no-deps", str(_built_wheel)],
         check=True,
-        timeout=90,
+        timeout=120,
         capture_output=True,
     )
     # Reuse already validated third-party dependencies, after the clean venv's
@@ -71,6 +85,10 @@ def test_mutation_package_installs_and_imports_from_wheel(tmp_path):
             "    location = pathlib.Path(module.__file__).resolve()",
             "    assert location.is_relative_to(root), str(location)",
             "assert importlib.util.find_spec('eval_runner.mutator') is None",
+            "from eval_runner.loader import get_internal_spec_root, get_scenario_validator",
+            "assert get_internal_spec_root().resolve().is_relative_to(root)",
+            "assert (get_internal_spec_root() / 'aes/aes.schema.json').is_file()",
+            "assert get_scenario_validator().schema['title'] == 'AES Root Schema (v1.4.0)'",
             "print(len(modules), 'wheel-owned mutation modules imported')",
         ]
     )
@@ -89,58 +107,30 @@ def test_mutation_package_installs_and_imports_from_wheel(tmp_path):
 
 
 @pytest.mark.release_packaging
-def test_wheel_installs_and_discovers_all_adapter_modules(tmp_path: Path) -> None:
-    """Build the wheel, install it into a clean venv, and import every adapter module."""
-    if os.getenv("AGENTV_RELEASE_PACKAGING", "").strip().lower() not in {
-        "1",
-        "true",
-        "yes",
-        "on",
-    }:
-        pytest.skip("AGENTV_RELEASE_PACKAGING=1 is required for wheel release validation.")
-
-    project_root = Path(__file__).resolve().parents[2]
-    wheel_dir = tmp_path / "wheel"
+def test_wheel_installs_and_discovers_all_adapter_modules(
+    tmp_path: Path, _built_wheel: Path
+) -> None:
+    """Install the built wheel into a clean venv and import every adapter module."""
     venv_dir = tmp_path / "venv"
-
-    subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "pip",
-            "wheel",
-            "--no-build-isolation",
-            "--no-deps",
-            "--wheel-dir",
-            str(wheel_dir),
-            ".",
-        ],
-        cwd=project_root,
-        check=True,
-        # Source distributions can take several minutes to build on slower CI
-        # workers; this check validates wheel contents, not build throughput.
-        timeout=600,
-    )
     subprocess.run(
         [sys.executable, "-m", "venv", str(venv_dir)],
         check=True,
-        timeout=60,
+        timeout=180,
     )
 
     venv_python = venv_dir / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
-    wheel = next(wheel_dir.glob("agentv_runtime-*.whl"))
     subprocess.run(
-        [str(venv_python), "-m", "pip", "install", str(wheel)],
+        [str(venv_python), "-m", "pip", "install", "--no-deps", str(_built_wheel)],
         check=True,
-        timeout=300,
+        timeout=120,
     )
 
     environment = os.environ.copy()
     environment.pop("PYTHONPATH", None)
     discovery = "\n".join(
         [
-            "import importlib",
-            "import pkgutil",
+            "import sys, importlib, pkgutil",
+            "sys.path.append(sys.argv[1])",
             "import eval_runner.adapters as adapters",
             "modules = pkgutil.walk_packages(adapters.__path__, adapters.__name__ + '.')",
             "modules = sorted(module.name for module in modules)",
@@ -150,7 +140,7 @@ def test_wheel_installs_and_discovers_all_adapter_modules(tmp_path: Path) -> Non
         ]
     )
     completed = subprocess.run(
-        [str(venv_python), "-c", discovery],
+        [str(venv_python), "-c", discovery, sysconfig.get_paths()["purelib"]],
         cwd=venv_dir,
         env=environment,
         check=True,

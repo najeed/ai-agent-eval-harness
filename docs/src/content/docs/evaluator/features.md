@@ -22,7 +22,7 @@ The foundation of the harness, designed for framework-agnostic execution and hig
 ## 2. Security & Compliance (Hardened)
 
 Enterprise-grade protection and regulatory audit tools.
-- **Three-Pillar Authentication Architecture**: Persistent zero-config bootstrap key onboarding (`.aes/keys/bootstrap.key`), non-blocking read-only Viewer role fallback, sliding-window IP rate limiting (10 attempts/min on `/api/auth/login`), secure session cookie flags (`HttpOnly`, `SameSite=Lax`), and production fail-fast enforcement.
+- **Three-Pillar Authentication Architecture**: Persistent zero-config bootstrap key onboarding (`.aes/keys/bootstrap.key`), authenticated access to protected scenario/run reads, sliding-window IP rate limiting (10 attempts/min on `/api/auth/login`), secure session cookie flags (`HttpOnly`, `SameSite=Lax`), and production fail-fast enforcement.
 - **Hardened Sandbox (VFS / Jails)**: Isolated execution for agent tools using local process jails and virtualized file systems to prevent host contamination.
 - **Shell Metacharacter Filtering**: Multi-layered defense against command injection in tool parameters.
 - **Credential Stripping**: Automated logic to strip sensitive keys from metadata before trace signing.
@@ -33,10 +33,10 @@ Enterprise-grade protection and regulatory audit tools.
 ## 3. Semantic Bridge & Drift Management
 
 Closing the loop between production behavior and evaluation rigor.
-- **Import Drift**: CLI utility to convert production JSONL traces into actionable evaluation scenarios.
+- **Import Drift**: CLI utility to convert production JSONL traces into editable AES scaffolds; add meaningful assertions before using them as regression cases.
 - **AES (Agent Eval Specification)**: A portable, YAML/JSON-based benchmark format for sharing and versioning complex agentic tasks.
-- **9-Vector Adversarial Mutation Engine**: Generates deterministic adversarial variants across 9 operational vectors (Input, Context, Memory, Retrieval, Tool, State, Authorization, Temporal, Objective) with 35+ registered catalog mutators, strict Draft-07 schema compliance (preserving `failure_policy` string enum and safe `metadata.name` updates), and automated in-memory `ScenarioLinter` quality gating.
-- **Algebraic Mutation Combinators**: Compose complex mutation pipelines using functional primitives (`sequence`, `repeat`, `probability`, `after_event`, `before_commit`, `between_steps`, `concurrent`) with deterministic seed chaining.
+- **Adversarial Mutation Engine**: Uses a 14-value formal MutationVector vocabulary, including `time` (not `temporal`); installed executable providers determine available vectors, catalog size and delivery capabilities. Generates variants with strict Draft-07 schema compliance (preserving `failure_policy` string enum and safe `metadata.name` updates), and automated in-memory `ScenarioLinter` quality gating.
+- **Algebraic Mutation Combinators**: Compose complex mutation pipelines using functional primitives (`sequence`, `repeat`, `probability`, `after_event`, `before_commit`, `between_steps`). Core `concurrent` delivery is reserved and raises UnsupportedMutationError; inspect catalog capability metadata before execution.
 
 ## 4. Ecosystem & Framework Adapters
 
@@ -45,8 +45,8 @@ First-class, zero-touch support for leading AI agent frameworks and LLM transpor
 - **Lazy Adapter Imports**: Adapter modules dynamic load framework dependencies at execution time, ensuring zero startup penalty or top-level import conflicts.
 - **Direct Zero-SDK REST Transports**: Native high-throughput `aiohttp` HTTP transports for OpenAI, Anthropic, Grok, and Ollama endpoints without external client dependencies.
 - **Google GenAI Direct SDK**: Official support for Gemini 2.5 and Gemini 3.7 Flash via the `google-genai` SDK and `gemini://` URI handler.
-- **LangGraph v2 & AG2 / AutoGen**: Seamless integration for chain-of-thought, state-graph, and multi-agent systems.
-- **OpenTelemetry v1.40.0**: High-fidelity observability baseline for all internal signals and events.
+- **LangGraph 1.2.24 & AG2 / AutoGen**: Seamless integration for chain-of-thought, state-graph, and multi-agent systems.
+- **OpenTelemetry 1.45.2**: High-fidelity observability baseline for all internal signals and events.
 - **Ollama**: Local-first evaluation for private or air-gapped environments.
 
 ## 5. Research & Performance Metrics

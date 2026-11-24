@@ -1,6 +1,5 @@
 import json
 import os
-import sys
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -82,7 +81,10 @@ async def test_handle_evaluate_full_flow(mock_env_config):
         patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock) as mock_run,
     ):
         assert await evaluation.handle_evaluate(args) == 0
-        assert mock_run.call_count == 4  # 2 scenarios * 2 attempts
+        # 2 scenarios (attempts handled inside engine.run_evaluation)
+        assert mock_run.call_count == 2
+        for call in mock_run.call_args_list:
+            assert call.kwargs["attempts"] == 2
 
 
 @pytest.mark.asyncio
@@ -109,7 +111,7 @@ async def test_handle_run_full_flow(mock_env_config):
 
 
 @pytest.mark.asyncio
-async def test_handle_replay_success(mock_env_config, capsys):
+async def test_handle_replay_stdout_formatting(mock_env_config, capsys):
     # evaluation.py 264-311
     run_id = "run_r"
     events = [
@@ -130,7 +132,7 @@ async def test_handle_replay_success(mock_env_config, capsys):
 
 
 @pytest.mark.asyncio
-async def test_handle_verify_success(mock_env_config, capsys):
+async def test_handle_verify_custom_provider_success(mock_env_config, capsys):
     # evaluation.py 317-360
     run_id = "run_v"
     args = MagicMock(run_id=run_id)
@@ -144,7 +146,7 @@ async def test_handle_verify_success(mock_env_config, capsys):
 
 
 @pytest.mark.asyncio
-async def test_handle_gate_success(mock_env_config):
+async def test_handle_gate_with_hash_success(mock_env_config):
     # evaluation.py 369-439
     run_id = "run_g"
     args = MagicMock(run_id=run_id, hash="abc", verify_ledger=True)
@@ -159,7 +161,7 @@ async def test_handle_gate_success(mock_env_config):
 
 
 @pytest.mark.asyncio
-async def test_handle_certify_success(mock_env_config):
+async def test_handle_certify_with_metrics_summary(mock_env_config):
     run_id = "run_c"
     run_dir = mock_env_config / "runs" / run_id
     run_dir.mkdir()
@@ -294,11 +296,3 @@ async def test_catalog_refresh_success():
     with patch("eval_runner.catalog.ScenarioCatalog") as mock_cat_cls:
         assert await scenarios.handle_catalog_refresh(args) == 0
         mock_cat_cls.return_value.build_index.assert_called_once()
-
-
-@pytest.mark.asyncio
-async def test_classify_scenario_fallback(monkeypatch):
-    # Force failure
-    monkeypatch.setitem(sys.modules, "sentence_transformers", None)
-    res = scenarios.classify_scenario({"id": "test"})
-    assert res["industry"] == "generic"

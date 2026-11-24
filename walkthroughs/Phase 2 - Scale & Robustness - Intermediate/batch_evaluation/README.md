@@ -4,7 +4,7 @@ Learn how to manage high-volume, multi-protocol evaluations at industrial scale.
 
 ## 🎯 Objectives
 - Run a large-scale evaluation across **HTTP, Socket, and Local** protocols.
-- Configure `concurrency` to speed up tests by running them in parallel.
+- Configure execution paths to evaluate multiple industrial scenarios.
 - Understand the role of `attempts` and `retry` for flaky connections.
 
 ## 🚀 Steps
@@ -15,16 +15,16 @@ Look at `mixed_protocol_manifest.json`. You'll notice it references three differ
 - **`local://walkthroughs/Phase 1 - Foundations - Beginner/adapters/local_agent_shim.py`** (Secure Fleet)
 
 ### Step 2: Run the Stress Test
-To execute fifty trials across these protocols simultaneously:
+To execute trials across these scenarios:
 ```bash
-python walkthroughs/Phase 2 - Scale & Robustness - Intermediate/batch_evaluation/Step_1_Stress_Test.py
+python "walkthroughs/Phase 2 - Scale & Robustness - Intermediate/batch_evaluation/Step_1_Stress_Test.py"
 ```
 
-### Step 3: Monitor Concurrency
-While the "Blitz" is running, notice how the harness spawns multiple evaluation threads. This maximizes your throughput and ensures you don't wait for a slow agent.
+### Step 3: Batch Evaluation Execution
+While the evaluation is running, the harness executes through the scenario dataset with automated retry logic and consolidated reporting.
 
 ## 📊 Key Concepts
-- **Concurrency**: The harness uses an asynchronous worker-pool. You can set this via the `--concurrency` CLI flag or in your manifest.
+- **Batch Evaluation**: The harness evaluates scenario datasets via `agentv evaluate --path <dir>`.
 - **Retry Logic**: Industrial environments are messy. The `attempts` parameter ensures that transient network failures don't poison your results.
 
 ---

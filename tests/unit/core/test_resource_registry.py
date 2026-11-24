@@ -4,7 +4,7 @@ from eval_runner.tool_sandbox import ToolSandbox
 
 
 @pytest.mark.asyncio
-async def test_resource_registry_cleanup(tmp_path):
+async def test_sandbox_artifact_teardown_cleanup(tmp_path):
     # Setup
     scenario = {"id": "test_cleanup", "initial_state": {}}
     sandbox = ToolSandbox(scenario, workspace_root=tmp_path)

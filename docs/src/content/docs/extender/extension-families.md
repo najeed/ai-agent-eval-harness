@@ -3,554 +3,307 @@ title: Public Extension Families
 description: Architecture, abstract base classes, and reference implementations for the complete AgentV public extension families and storage interfaces.
 ---
 
-The **AgentV OS Runtime** provides core **Public Extension Families** under the standardized, top-level namespace `agentv_runtime.interfaces` (and `eval_runner.interfaces`). These abstract base classes (ABCs) decouple enterprise control planes, custom orchestrators, governance systems, and storage meshes from internal engine details, guaranteeing **Zero-Touch Hot-Swap** compatibility.
+The public contracts are defined in `agentv_runtime.interfaces` and re-exported
+through `eval_runner.interfaces`. The inventories below show the current method
+signatures; `abstractmethod` entries must be implemented by a provider. Concrete
+capability methods also carry behavior required by their consumers.
 
----
+## Scope and ownership
 
-## Subsystem Contract Versioning
+`AuthPrincipal` includes principal ID, roles, permissions, metadata and optional
+`context_version`, `context`, `authorized_contexts`. A ScopePolicy resolves the
+provider-owned ScopeToken. Scope tags are normalized and committed by digest;
+preserve that scope across run reads, approvals, checkpoints and certification.
+Caller-selected tenant identifiers cannot override ownership.
 
-Each subsystem contract publishes an authoritative version dunder in `agentv_runtime` and `eval_runner` to guarantee backward compatibility:
+## Signing and evidence persistence
 
-```python
-import agentv_runtime
+SigningBackend supports opaque/default key identifiers, `can_sign()` and
+`requires_private_key_material`. Low-level raw Ed25519 hex is not a sufficient
+artifact signature. Authoritative artifacts require a complete
+[versioned digest envelope](/spec/digest-signature-envelope/) and its purpose and
+external SignaturePolicy. Wrap a deliberately selected RAW provider with
+`DigestEnvelopeSigningBackend`; provider failures must propagate, not select a
+different signing authority.
 
-assert agentv_runtime.__runtime_api_version__ == "2.0"
-assert agentv_runtime.__plugin_api_version__ == "1.0"
-assert agentv_runtime.__config_schema_version__ == "1.0"
-assert agentv_runtime.__aes_schema_version__ == "1.4"
-assert agentv_runtime.__certificate_schema_version__ == "3.0.0"
-assert agentv_runtime.__event_schema_version__ == "1.0"
-```
+ArtifactStore must implement `seal` and `is_sealed`. A provider that cannot
+participate in atomic certification sealing must not claim transactional-seal
+support. Local logical sealing is tamper-evident; physical WORM requires an
+external retention-enforcing implementation.
 
----
+`RunStore` is an alias for `RunStorageProvider`, not a filesystem directory API.
+The provider owns scoped records, exact committed trace bytes, event streams,
+submission reservation/transitions, leases and atomic certificate publication.
+`commit_certification` must publish the certificate and sealed lifecycle together;
+failed operations must not expose a partially committed certificate. Exact trace
+bytes cannot be reconstructed from parsed event objects for authoritative checks.
 
-## 1. ExecutionBackend
+## Approval request data
 
-The `ExecutionBackend` family defines synchronous and asynchronous submission, polling, cancellation, and resumption of evaluation runs across local compute, background worker threads, or distributed execution meshes.
+`ApprovalRequest` is a class, not the older node/tool dataclass. Its constructor
+accepts approval_token, run_id, turn_index, outbound_payload_hash, required_role,
+reviewer_credentials, status, rule_id, checkpoint_id, action_payload, prompt,
+created_at, decision, decision_reason, decided_by, decided_at, metadata, scope,
+scope_digest, manifest_id and idempotency_key. Node/tool attribution can be
+carried in the action or metadata, not nonexistent node_id/tool_name constructor
+parameters. Durable decisions are `APPROVED`/`REJECTED`. Scope, payload and
+checkpoint bindings protect against replay and cross-context resolution.
 
-### Abstract Contract
+## Current method inventory
 
-```python
-from abc import ABC, abstractmethod
-from typing import Any
-
-
-class ExecutionBackend(ABC):
-    """Abstract execution backend contract."""
-
-    @abstractmethod
-    def submit(
-        self,
-        run_id: str,
-        scenario_data: dict[str, Any],
-        config: dict[str, Any] | None = None,
-        background: bool = False,
-        **kwargs: Any,
-    ) -> Any:
-        """Submit a scenario execution run."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def status(self, run_id: str) -> dict[str, Any]:
-        """Query status and execution metadata of a submitted run."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def cancel(self, run_id: str, reason: str | None = None) -> bool:
-        """Cancel an in-flight execution run."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def resume(self, run_id: str, resumption_token: str | None = None) -> dict[str, Any] | None:
-        """Resume an interrupted or human-in-the-loop paused execution run."""
-        raise NotImplementedError
-```
-
-### OSS Reference Implementation: `InProcessExecutionBackend`
-
-Ships out of the box in `eval_runner.reference.InProcessExecutionBackend` (and `agentv_runtime.reference`):
+### ExecutionBackend
 
 ```python
-from agentv_runtime.interfaces import ExecutionBackend
-from agentv_runtime.reference import InProcessExecutionBackend
+@abstractmethod
+def submit(self, run_id: str, scenario_data: dict[str, Any], **kwargs: Any) -> Any: ...
 
-backend: ExecutionBackend = InProcessExecutionBackend()
-res = backend.submit("run_123", scenario_data, background=False)
-status_info = backend.status("run_123")
+@abstractmethod
+def status(self, run_id: str) -> dict[str, Any]: ...
+
+@abstractmethod
+def cancel(self, run_id: str, reason: str | None=None) -> bool: ...
+
+@abstractmethod
+def resume(self, run_id: str, resumption_token: str | None=None, **kwargs: Any) -> Any: ...
 ```
 
----
-
-## 2. CheckpointStore
-
-The `CheckpointStore` family provides durable session persistence, turn snapshotting before Human-in-the-Loop (HITL) approval gates, and state resumption.
-
-### Abstract Contract
+### CheckpointStore
 
 ```python
-from abc import ABC, abstractmethod
-from typing import Any
+@abstractmethod
+def save(self, run_id: str, checkpoint_id: str, state: dict[str, Any], metadata: dict[str, Any] | None=None) -> str: ...
 
+@abstractmethod
+def load(self, run_id: str, checkpoint_id: str | None=None) -> dict[str, Any] | None: ...
 
-class CheckpointStore(ABC):
-    """Abstract checkpoint persistence store contract."""
+@abstractmethod
+def delete(self, run_id: str, checkpoint_id: str | None=None) -> bool: ...
 
-    @abstractmethod
-    def save(
-        self,
-        run_id: str,
-        checkpoint_id: str,
-        state: dict[str, Any],
-        metadata: dict[str, Any] | None = None,
-    ) -> str:
-        """Persist a turn checkpoint state. Returns a durable URI."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def load(self, run_id: str, checkpoint_id: str | None = None) -> dict[str, Any] | None:
-        """Load state for a specific checkpoint or the latest turn."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def delete(self, run_id: str, checkpoint_id: str | None = None) -> bool:
-        """Delete specific checkpoint or all checkpoints for a run."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def list_checkpoints(self, run_id: str) -> list[dict[str, Any]]:
-        """List checkpoint summaries for a given run."""
-        raise NotImplementedError
+@abstractmethod
+def list_checkpoints(self, run_id: str) -> list[dict[str, Any]]: ...
 ```
 
-### OSS Reference Implementation: `SQLiteCheckpointStore`
-
-Ships in `eval_runner.reference.SQLiteCheckpointStore`, featuring lazy SQLite initialization, thread concurrency safety, and durable recovery:
+### SigningBackend
 
 ```python
-from agentv_runtime.interfaces import CheckpointStore
-from agentv_runtime.reference import SQLiteCheckpointStore
+def can_sign(self) -> bool: ...
 
-store: CheckpointStore = SQLiteCheckpointStore(db_path="runs/checkpoints.db")
-chk_uri = store.save("run_101", "chk_001", {"turn": 1, "messages": ["hello"]})
-state = store.load("run_101", checkpoint_id="chk_001")
+@abstractmethod
+def sign_payload(self, payload: bytes, key_identifier: str | Path | Any=None, **kwargs: Any) -> str | dict[str, Any]: ...
+
+@abstractmethod
+def verify_signature(self, payload: bytes, signature: str | dict[str, Any], public_key_identifier: str | Path | Any=None, **kwargs: Any) -> bool: ...
 ```
 
----
-
-## 3. SigningBackend
-
-The `SigningBackend` family abstracts asymmetric cryptographic signing, Verification Certificate (VC v3.0.0) sealing, and signature verification (Ed25519, Post-Quantum ML-DSA-65, Cloud HSMs, KMS).
-
-### Abstract Contract
+### ArtifactStore
 
 ```python
-from abc import ABC, abstractmethod
-from pathlib import Path
-from typing import Any
+@abstractmethod
+def store_artifact(self, run_id: str, artifact_name: str, content: bytes | str, content_type: str | None=None, metadata: dict[str, Any] | None=None, **kwargs: Any) -> str: ...
 
+@abstractmethod
+def get_artifact(self, run_id: str, artifact_name: str) -> bytes | None: ...
 
-class SigningBackend(ABC):
-    """Abstract asymmetric signing and verification backend."""
+@abstractmethod
+def exists(self, run_id: str, artifact_name: str) -> bool: ...
 
-    @abstractmethod
-    def sign_payload(self, payload: bytes, key_identifier: str | Path, **kwargs: Any) -> str:
-        """Sign a raw binary payload. Returns a hex-encoded signature string."""
-        raise NotImplementedError
+@abstractmethod
+def list_artifacts(self, run_id: str) -> list[dict[str, Any]]: ...
 
-    @abstractmethod
-    def verify_signature(
-        self, payload: bytes, signature: str, public_key_identifier: str | Path, **kwargs: Any
-    ) -> bool:
-        """Verify signature over raw binary payload against the public key."""
-        raise NotImplementedError
+@abstractmethod
+def seal(self, run_id: str, metadata: dict[str, Any] | None=None) -> None: ...
+
+@abstractmethod
+def is_sealed(self, run_id: str) -> bool: ...
+
+def supports_transactional_seal(self) -> bool: ...
 ```
 
-### OSS Reference Implementations
-
-1. **`LocalEd25519SigningBackend`**: Classical Ed25519 PEM signing and verification on local disk.
-2. **`PQCSigningBackend`**: Quantum-safe Zero-Exposure Signing (ZES) via SHAKE-256 local hashing and ML-DSA-65 (FIPS 204) delegating to `IdentityService.get_pqc_client()`.
-3. **`NullSigningBackend`**: Null implementation for disabled signing environments.
+### PolicyEvaluator
 
 ```python
-from agentv_runtime.reference import LocalEd25519SigningBackend, PQCSigningBackend
+@abstractmethod
+def evaluate_policy(self, policy_spec: dict[str, Any] | str, input_data: dict[str, Any] | None=None, context: dict[str, Any] | None=None, **kwargs: Any) -> PolicyEvaluationResult: ...
 
-signer = LocalEd25519SigningBackend()
-sig_hex = signer.sign_payload(b'{"eval":"success"}', "keys/system_id/private_key.pem")
-is_valid = signer.verify_signature(b'{"eval":"success"}', sig_hex, "keys/system_id/public_key.pem")
+@abstractmethod
+def validate_policy(self, policy_spec: dict[str, Any]) -> bool: ...
 ```
 
-> [!IMPORTANT]
-> **Fail-Closed Policy**: When `EVAL_REQUIRE_SIGNING=true` or `AUDIT_LEVEL >= 2` and no valid signing key or backend is configured, the runtime immediately raises a `RuntimeError` ("CryptographicSigningError: Signing is mandatory..."), preventing unsealed evaluations.
-
----
-
-## 4. ArtifactStore
-
-The `ArtifactStore` family abstracts blob and forensic artifact persistence (e.g. local run vaults, S3, GCS, Azure Blob).
-
-### Abstract Contract
+### AuthorizationBackend
 
 ```python
-from abc import ABC, abstractmethod
-from typing import Any
+@abstractmethod
+def validate_token(self, token: str) -> AuthPrincipal | None: ...
 
+@abstractmethod
+def check_permission(self, principal: AuthPrincipal, resource: str, action: str='') -> bool: ...
 
-class ArtifactStore(ABC):
-    """Abstract forensic artifact store contract."""
-
-    @abstractmethod
-    def store_artifact(
-        self,
-        run_id: str,
-        artifact_name: str,
-        content: bytes | str,
-        content_type: str | None = None,
-        metadata: dict[str, Any] | None = None,
-    ) -> str:
-        """Store an artifact. Returns the physical file path or URI."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_artifact(self, run_id: str, artifact_name: str) -> bytes | None:
-        """Retrieve binary content of an artifact by name."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def exists(self, run_id: str, artifact_name: str) -> bool:
-        """Check if an artifact exists."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def list_artifacts(self, run_id: str) -> list[dict[str, Any]]:
-        """List metadata for all artifacts recorded for a run."""
-        raise NotImplementedError
+def get_service_credential(self) -> str | None: ...
 ```
 
-### OSS Reference Implementation: `LocalFileArtifactStore`
-
-Ships in `eval_runner.reference.LocalFileArtifactStore`:
+### CatalogStore
 
 ```python
-from agentv_runtime.reference import LocalFileArtifactStore
+@abstractmethod
+def list_scenarios(self, category: str | None=None) -> list[dict[str, Any]]: ...
 
-store = LocalFileArtifactStore(base_dir="runs")
-path = store.store_artifact(
-    "run_101", "trace.jsonl", b'{"event":"start"}', metadata={"type": "trace"}
-)
+@abstractmethod
+def get_scenario(self, scenario_id: str) -> dict[str, Any] | None: ...
+
+@abstractmethod
+def save_scenario(self, scenario_id: str, scenario_data: dict[str, Any]) -> str: ...
+
+@abstractmethod
+def delete_scenario(self, scenario_id: str) -> bool: ...
 ```
 
----
-
-## 5. PolicyEvaluator & PolicyEvaluationResult
-
-The `PolicyEvaluator` family enables real-time governance, tool call parameter constraints, and regulatory boundary validation without raising unhandled exceptions in control flow.
-
-### Abstract Contract & Return Model
+### RunStorageProvider
 
 ```python
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from typing import Any
+@abstractmethod
+def create_run(self, run_id: str, scenario_id: str, agent_id: str | None=None, metadata: dict[str, Any] | None=None, status: str='OPEN', context: dict[str, Any] | None=None) -> dict[str, Any]: ...
 
+@abstractmethod
+def reserve_submission(self, run_id: str, scenario_id: str, agent_id: str | None, metadata: dict[str, Any], context: dict[str, Any], idempotency_key: str) -> dict[str, Any]: ...
 
-@dataclass
-class PolicyEvaluationResult:
-    """Standardized policy evaluation outcome."""
+@abstractmethod
+def get_submission(self, run_id: str, context: dict[str, Any] | None=None) -> dict[str, Any] | None: ...
 
-    allowed: bool
-    policy_id: str = "default_policy"
-    reason: str = ""
-    violations: list[dict[str, Any]] = field(default_factory=list)
+@abstractmethod
+def transition_submission(self, run_id: str, expected_state: str | tuple[str, ...], state: str, context: dict[str, Any]) -> dict[str, Any]: ...
 
+@abstractmethod
+def get_run(self, run_id: str, context: dict[str, Any] | None=None) -> dict[str, Any] | None: ...
 
-class PolicyEvaluator(ABC):
-    """Abstract policy evaluator contract."""
+@abstractmethod
+def get_manifest(self, run_id: str, context: dict[str, Any] | None=None) -> dict[str, Any] | None: ...
 
-    @abstractmethod
-    def evaluate_policy(
-        self,
-        policy_spec: dict[str, Any],
-        input_data: dict[str, Any],
-        context: dict[str, Any] | None = None,
-    ) -> PolicyEvaluationResult:
-        """Evaluate input data and tool arguments against policy rules."""
-        raise NotImplementedError
+@abstractmethod
+def get_events(self, run_id: str, offset: int=0, limit: int=1000, context: dict[str, Any] | None=None) -> list[dict[str, Any]]: ...
 
-    @abstractmethod
-    def validate_policy(self, policy_spec: dict[str, Any]) -> bool:
-        """Validate syntax and schema of a policy specification."""
-        raise NotImplementedError
+@abstractmethod
+def get_trace_bytes(self, run_id: str, context: dict[str, Any] | None=None) -> bytes | None: ...
+
+@abstractmethod
+def update_run_status(self, run_id: str, status: str, details: dict[str, Any] | None=None, context: dict[str, Any] | None=None) -> bool: ...
+
+@abstractmethod
+def append_events(self, run_id: str, events: list[dict[str, Any]], context: dict[str, Any] | None=None) -> int: ...
+
+@abstractmethod
+def save_run_manifest(self, run_id: str, manifest: dict[str, Any], context: dict[str, Any] | None=None) -> str: ...
+
+@abstractmethod
+def delete_run(self, run_id: str, context: dict[str, Any] | None=None) -> bool: ...
+
+@abstractmethod
+def list_runs(self, limit: int=100, offset: int=0, context: dict[str, Any] | None=None) -> list[dict[str, Any]]: ...
+
+@abstractmethod
+def search_runs(self, query: str='', filters: dict[str, Any] | None=None, limit: int=100, offset: int=0, context: dict[str, Any] | None=None) -> list[dict[str, Any]]: ...
+
+@abstractmethod
+def stream_events(self, run_id: str, from_seq: int=0, context: dict[str, Any] | None=None) -> Generator[dict[str, Any], None, None]: ...
+
+def get_lifecycle(self, run_id: str, context: dict[str, Any] | None=None) -> str | None: ...
+
+def acquire_certification_lease(self, run_id: str, *, owner_id: str, fencing_token: str, timeout_seconds: float, context: dict[str, Any] | None=None) -> bool: ...
+
+def verify_certification_lease(self, run_id: str, *, owner_id: str, fencing_token: str, context: dict[str, Any] | None=None) -> bool: ...
+
+def renew_certification_lease(self, run_id: str, *, owner_id: str, fencing_token: str, timeout_seconds: float, context: dict[str, Any] | None=None) -> bool: ...
+
+def release_certification_lease(self, run_id: str, *, owner_id: str, fencing_token: str, context: dict[str, Any] | None=None) -> bool: ...
+
+def is_certification_leased(self, run_id: str, *, context: dict[str, Any] | None=None) -> bool: ...
+
+def commit_certification(self, run_id: str, manifest: dict[str, Any], *, owner_id: str, fencing_token: str, context: dict[str, Any] | None=None) -> bool: ...
 ```
 
-### OSS Reference Implementation: `BasicFieldPolicyEvaluator`
-
-Ships in `eval_runner.reference.BasicFieldPolicyEvaluator`, enforcing numeric thresholds (`max_limit`, `constrained_params`), required fields, and allowed values:
+### LeaderboardStore
 
 ```python
-from agentv_runtime.reference import BasicFieldPolicyEvaluator
+@abstractmethod
+def get_leaderboard(self, filters: dict[str, Any] | None=None) -> list[dict[str, Any]]: ...
 
-evaluator = BasicFieldPolicyEvaluator()
-policy_spec = {"max_limit": 500, "constrained_params": ["transfer_amount"]}
-result = evaluator.evaluate_policy(policy_spec, {"transfer_amount": 750})
-assert not result.allowed
-assert result.violations[0]["field"] == "transfer_amount"
+@abstractmethod
+def record_run_summary(self, run_id_or_summary: str | dict[str, Any], summary: dict[str, Any] | None=None) -> None: ...
 ```
 
----
-
-## 6. AuthorizationBackend & AuthPrincipal
-
-The `AuthorizationBackend` family decouples agent identity, role-based access control (RBAC), and permission checks from specific identity providers.
-
-### Abstract Contract & Principal Model
+### ApprovalStore
 
 ```python
-from abc import ABC, abstractmethod
-from typing import Any
+@abstractmethod
+def create_request(self, request: ApprovalRequest) -> ApprovalRequest: ...
 
+@abstractmethod
+def get_request(self, approval_token: str, scope: ScopeToken | None=None) -> ApprovalRequest | None: ...
 
-class AuthPrincipal:
-    """Security principal definition."""
+def get(self, approval_token: str) -> ApprovalRequest | None: ...
 
-    def __init__(
-        self,
-        principal_id: str,
-        roles: list[str] | None = None,
-        permissions: list[str] | None = None,
-        metadata: dict[str, Any] | None = None,
-    ):
-        self.principal_id = principal_id
-        self.roles = roles or []
-        self.permissions = permissions or []
-        self.metadata = metadata or {}
+@abstractmethod
+def get_request_by_run_id(self, run_id: str, scope: ScopeToken | None=None) -> ApprovalRequest | None: ...
 
+@abstractmethod
+def resolve_request(self, approval_token: str, decision: str, decided_by: str | None=None, decision_reason: str | None=None, scope: ScopeToken | None=None) -> ApprovalRequest: ...
 
-class AuthorizationBackend(ABC):
-    """Abstract authorization backend contract."""
+@abstractmethod
+def list_pending(self, run_id: str | None=None, scope: ScopeToken | None=None) -> list[ApprovalRequest]: ...
 
-    @abstractmethod
-    def validate_token(self, token: str) -> AuthPrincipal | None:
-        """Validates incoming bearer/API token and returns principal if valid."""
-        raise NotImplementedError
+def stream_pending(self, scope: ScopeToken) -> Iterator[ApprovalEvent]: ...
 
-    @abstractmethod
-    def check_permission(self, principal: AuthPrincipal, resource: str, action: str = "") -> bool:
-        """Check if principal has permission on resource:action."""
-        raise NotImplementedError
+@abstractmethod
+def delete_request(self, approval_token: str, scope: ScopeToken | None=None) -> bool: ...
 ```
 
-### OSS Reference Implementation: `SimpleAPIKeyAuthBackend`
-
-Ships in `eval_runner.reference.SimpleAPIKeyAuthBackend`:
+### MutationEngine
 
 ```python
-from agentv_runtime.reference import SimpleAPIKeyAuthBackend
+@abstractmethod
+def mutate_scenario(self, scenario_data: dict[str, Any], mutation_spec: str | dict[str, Any], seed: int | None=None, **kwargs: Any) -> dict[str, Any]: ...
 
-auth = SimpleAPIKeyAuthBackend()
-auth.register_key(
-    key="auditor_key",
-    principal_id="auditor_1",
-    roles=["auditor"],
-    permissions=["scenarios:read", "runs:*"],
-)
-principal = auth.validate_token("auditor_key")
-assert auth.check_permission(principal, "runs:read") is True
-assert auth.check_permission(principal, "scenarios:write") is False
+@abstractmethod
+def apply_in_run(self, context: Any, mutation_spec: str | dict[str, Any] | Any, **kwargs: Any) -> Any: ...
+
+@abstractmethod
+def list_supported_mutators(self) -> list[dict[str, Any]]: ...
+
+@abstractmethod
+def list_mutation_catalog(self, org_id: str | None=None) -> list[MutationDescriptor]: ...
 ```
 
----
-
-## 7. ApprovalStore & ApprovalRequest
-
-The `ApprovalStore` family abstracts durable storage for Human-in-the-Loop (HITL) approval queues, enabling complete decoupling from external workflow orchestrators (e.g. Temporal, AWS Step Functions).
-
-### Abstract Contract & Data Model
+### BoundedStateProvider
 
 ```python
-from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from typing import Any
+@abstractmethod
+def query_bounded_reference(self, scope: str, selector: dict[str, Any] | str, max_items: int | None=None, max_bytes: int | None=None, **kwargs: Any) -> Any: ...
 
+@abstractmethod
+def commit_state_transition(self, scope: str, operation: str, delta: dict[str, Any] | None=None, **kwargs: Any) -> Any: ...
 
-@dataclass
-class ApprovalRequest:
-    """Authoritative HITL approval request record."""
-
-    approval_token: str
-    run_id: str
-    node_id: str
-    tool_name: str
-    rule_id: str | None = None
-    checkpoint_id: str | None = None
-    action_payload: dict[str, Any] | None = None
-    prompt: str | None = None
-    decision: str | None = None
-    decided_by: str | None = None
-    metadata: dict[str, Any] | None = None
-
-
-class ApprovalStore(ABC):
-    """Abstract storage interface for durable human-in-the-loop approval queues."""
-
-    @abstractmethod
-    def create_request(self, request: ApprovalRequest) -> ApprovalRequest:
-        """Persists a new pending approval request record."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_request(self, approval_token: str) -> ApprovalRequest | None:
-        """Retrieves an approval request by its unique approval token."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def resolve_request(
-        self,
-        approval_token: str,
-        decision: str,
-        decided_by: str | None = None,
-        decision_reason: str | None = None,
-    ) -> ApprovalRequest:
-        """Resolves an approval request (APPROVED / REJECTED)."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def list_pending(self, run_id: str | None = None) -> list[ApprovalRequest]:
-        """Lists active PENDING approval requests."""
-        raise NotImplementedError
+def get_all_state(self) -> Any: ...
 ```
 
----
 
-## 8. MutationEngine & MutationDescriptor
-
-The `MutationEngine` family abstracts adversarial scenario perturbation, stress testing, and dynamic in-memory fault injection across 9 orthogonal vector spaces.
-
-### Abstract Contract
+## Reference composition
 
 ```python
-from abc import ABC, abstractmethod
-from typing import Any
-from agentv_runtime.descriptors import MutationDescriptor
+from agentv_runtime.reference import LocalFileRunStore, LocalLeaderboardStore
+from agentv_runtime.contracts import MutationDescriptor
 
-
-class MutationEngine(ABC):
-    """Abstract adversarial scenario mutation and dynamic perturbation engine."""
-
-    @abstractmethod
-    def mutate_scenario(
-        self,
-        scenario_data: dict[str, Any],
-        mutation_spec: str | dict[str, Any],
-        seed: int | None = None,
-        **kwargs: Any,
-    ) -> dict[str, Any]:
-        """Applies a mutation to a scenario definition, producing a mutated variant."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def apply_in_run(
-        self,
-        context: Any,
-        mutation_spec: str | dict[str, Any],
-        **kwargs: Any,
-    ) -> Any:
-        """Applies dynamic in-memory mutation to an active execution context."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def list_supported_mutators(self) -> list[dict[str, Any]]:
-        """Returns catalog of registered mutators, coordinates, and supported tiers."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def list_mutation_catalog(self, org_id: str | None = None) -> list[MutationDescriptor]:
-        """Returns catalog of typed MutationDescriptors filtered by tenant org_id."""
-        raise NotImplementedError
+run_store = LocalFileRunStore(log_dir="runs")
+leaderboard = LocalLeaderboardStore(run_store=run_store)
+rows = leaderboard.get_leaderboard(filters={"min_pass_rate": 50})
 ```
 
-### OSS Reference Implementation: `MutationService`
-Ships in `eval_runner.mutations.mutator.MutationService`, chaining in-memory `ScenarioLinter.lint_dict` validation and enforcing Draft-07 root schema invariants (`additionalProperties: false`).
+Other reference providers include `InProcessExecutionBackend`,
+`SQLiteCheckpointStore`, `LocalFileArtifactStore`, `LocalFileCatalogStore`,
+`BasicFieldPolicyEvaluator`, `SimpleAPIKeyAuthBackend`, and local/null/PQC signing
+primitives. File/SQLite approval stores are exported by `eval_runner.reference`.
+Reference imports can load runtime dependencies; the neutral public contract
+namespace does not imply a dependency-free distribution.
 
----
-
-## 9. BoundedStateProvider
-
-The `BoundedStateProvider` family enforces the **Evidence Boundedness Contract**, mandating query-driven, selector-bounded access to stateful systems and strictly prohibiting unbounded heap dumps.
-
-### Abstract Contract
-
-```python
-from abc import ABC, abstractmethod
-from typing import Any
-
-
-class BoundedStateProvider(ABC):
-    """Evidence Boundedness Contract interface for stateful enterprise providers."""
-
-    @abstractmethod
-    def query_bounded_reference(
-        self,
-        scope: str,
-        selector: dict[str, Any] | str,
-        max_items: int | None = None,
-        max_bytes: int | None = None,
-        **kwargs: Any,
-    ) -> Any:
-        """Evaluates a bounded selector/query and returns an EvidenceReference."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def commit_state_transition(
-        self,
-        scope: str,
-        operation: str,
-        delta: dict[str, Any] | None = None,
-        **kwargs: Any,
-    ) -> dict[str, Any]:
-        """Atomically commits a state transition, returning before/after digests."""
-        raise NotImplementedError
-```
-
----
-
-## 10. Storage Extension Families
-
-The runtime also exposes three specialized store interfaces for metadata, runs, and leaderboards:
-
-### `CatalogStore` & `LocalFileCatalogStore`
-Abstract scenario discovery, search, and storage.
-```python
-from agentv_runtime.interfaces import CatalogStore
-from agentv_runtime.reference import LocalFileCatalogStore
-
-catalog: CatalogStore = LocalFileCatalogStore(base_dir=".")
-scenarios = catalog.list_scenarios(category="finance")
-```
-
-### `RunStore` & `LocalFileRunStore`
-Abstract run vault persistence, manifest reading, and deletion.
-```python
-from agentv_runtime.interfaces import RunStore
-from agentv_runtime.reference import LocalFileRunStore
-
-run_store: RunStore = LocalFileRunStore(log_dir="runs")
-run_info = run_store.get_run("run-101")
-```
-
-### `LeaderboardStore` & `LocalLeaderboardStore`
-Abstract leaderboard metric aggregation and historical tracking.
-```python
-from agentv_runtime.interfaces import LeaderboardStore
-from agentv_runtime.reference import LocalLeaderboardStore
-
-lb_store: LeaderboardStore = LocalLeaderboardStore(runs_dir="runs")
-leaderboard_rows = lb_store.get_leaderboard(filters={"min_pass_rate": 50})
-```
-
----
-
-## Immutability & Zero-Touch Hot-Swap Guarantee
-
-The `agentv_runtime.interfaces` namespace is sealed under semantic versioning:
-1. **Public Stability**: Abstract methods and dataclass models will not undergo breaking signature changes within the `v2.x` release lifecycle.
-2. **Seamless Upgrades**: Control Planes importing `agentv_runtime.interfaces` can pull new runtime revisions without codebase modifications or monkey-patching.
+`BoundedStateProvider.get_all_state()` deliberately rejects unbounded state
+materialization. Use declared bounded selectors and limits; implementations must
+not dump the entire state before trimming the result. Mutation catalog presence
+does not prove executable delivery; `concurrent` remains unsupported in Core.

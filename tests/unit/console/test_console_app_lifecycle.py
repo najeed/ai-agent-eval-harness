@@ -14,6 +14,24 @@ from eval_runner.console.app import (
 )
 
 
+def _select_release_fixture(root, manifest):
+    """Route tests mock signature verification but still require explicit selection."""
+    record = root / ".active-releases" / manifest["publisher"] / f"{manifest['extension_id']}.json"
+    record.parent.mkdir(parents=True, exist_ok=True)
+    record.write_text(
+        json.dumps(
+            {
+                **{
+                    name: manifest[name]
+                    for name in ("extension_id", "version", "publisher", "remote_entry", "sri_hash")
+                },
+                "status": "active",
+            }
+        ),
+        encoding="utf-8",
+    )
+
+
 @pytest.fixture
 def app():
     """Create a test instance of the Flask app."""
@@ -310,6 +328,7 @@ def test_extension_spa_registry_requires_enabled_verified_manifest_and_rejects_s
     }
 
     (release / "entry.manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+    _select_release_fixture(tmp_path, manifest)
     monkeypatch.setattr(config, "EXTENSION_ARTIFACT_DIR", tmp_path)
     empty_store = tmp_path / "no-installed-releases"
     empty_store.mkdir()
@@ -436,6 +455,7 @@ def test_extension_spa_deep_links_matrix(tmp_path, monkeypatch):
         "signature": "sig-a",
     }
     (ext_a / "entry.manifest.json").write_text(json.dumps(manifest_a), encoding="utf-8")
+    _select_release_fixture(extensions_dir, manifest_a)
 
     # 2. Extension B: Partner Analytics (multi-segment tree)
     ext_b = extensions_dir / "partner-analytics" / "2.1.0"
@@ -464,6 +484,7 @@ def test_extension_spa_deep_links_matrix(tmp_path, monkeypatch):
         "signature": "sig-b",
     }
     (ext_b / "entry.manifest.json").write_text(json.dumps(manifest_b), encoding="utf-8")
+    _select_release_fixture(extensions_dir, manifest_b)
 
     # 3. Extension C: Unverified / Tampered extension
     ext_c = extensions_dir / "unverified-ext" / "0.1.0"
@@ -481,6 +502,7 @@ def test_extension_spa_deep_links_matrix(tmp_path, monkeypatch):
         "signature": "invalid-sig",
     }
     (ext_c / "entry.manifest.json").write_text(json.dumps(manifest_c), encoding="utf-8")
+    _select_release_fixture(extensions_dir, manifest_c)
 
     def mock_verify_extension(extension_id, **_kwargs):
         if extension_id in {"enterprise-ops", "partner-analytics"}:
@@ -910,6 +932,7 @@ class TestConsoleAppExhaustiveCoverage:
             json.dumps({"extension_id": "dup-ext", "version": "1.0.0", "publisher": "pub1"}),
             encoding="utf-8",
         )
+        _select_release_fixture(ext_root, json.loads(dup_manifest.read_text(encoding="utf-8")))
         active_dir2 = ext_root / ".active-releases" / "pub2"
         active_dir2.mkdir(parents=True)
         dup_rec2 = active_dir2 / "dup-ext2.json"

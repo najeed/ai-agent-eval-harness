@@ -125,7 +125,7 @@ def test_registry_manager_discovery_scenarios(tmp_path, monkeypatch, caplog):
     assert resolved["env_override_key"] == "env_override_val"
 
 
-def test_get_sanitized_registry():
+def test_registry_manager_get_sanitized_registry_recursive():
     """Verify redacting of sensitive keys recursively."""
     config._SHIM_REGISTRY_CACHE = {
         "shims": {
@@ -143,7 +143,7 @@ def test_get_sanitized_registry():
     assert sanitized["shims"]["test_shim"]["nested_list"][1] == "regular_item"
 
 
-def test_registry_manager_reload():
+def test_registry_manager_reload_cache_invalidation():
     """Verify cache reload logic."""
     config._SHIM_REGISTRY_CACHE = {"temporary": "cache"}
     res = config.RegistryManager.reload()

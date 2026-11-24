@@ -157,7 +157,9 @@ agentv verify-package runs/run_fintech_2026_01.agentv-package.json \
   --public-key .aes/keys/trust_root_pub.pem \
   --require-signature \
   --scenario scenarios/loan_risk.json \
-  --require-scenario
+  --require-scenario \
+  --trace run.jsonl \
+  --execution-manifest execution_manifest.json
 ```
 
 ---
@@ -191,8 +193,8 @@ agentv run --path scenarios/loan_risk.json --protocol ag2
 # LangGraph
 agentv run --path scenarios/loan_risk.json --protocol langgraph --agent http://localhost:8000/execute_task
 
-# CrewAI
-agentv run --path scenarios/loan_risk.json --protocol crewai --agent http://localhost:8000/execute_task
+# CrewAI custom HTTP wrapper (native CrewAI uses metadata.crew_path)
+agentv run --path scenarios/loan_risk.json --protocol http --agent http://localhost:8000/execute_task
 
 # Frontier Model Direct Adapters
 agentv run --scenario scenarios/loan_risk.json --protocol gemini --agent "gemini://gemini-3.7-flash"

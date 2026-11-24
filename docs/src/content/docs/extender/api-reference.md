@@ -3,335 +3,128 @@ title: Extender API Reference
 description: Authoritative reference for the AgentV Console REST API and internal core libraries.
 ---
 
-The Extender API is designed for system integrators, technology partners, dashboard developers, and platform engineers who want to build on or interact with the AgentV harness. It includes the Console REST API and the core `eval_runner` Python libraries.
+Launch the Flask API with `agentv console` (default `http://localhost:5000`).
+Management routes use `/api`; possession of a run ID grants no access to another
+scope. See [security](/auditor/security/) for the authentication boundary.
 
-## 🌉 Console REST API
+## Authentication and scope
 
-When running `agentv console`, the harness launches a Flask-based REST API (default: `http://localhost:5000/api`). Access is governed by the [Security Protocol](/auditor/security/).
+`POST /api/auth/login` accepts `{"apiKey": "YOUR_KEY"}` and establishes a signed
+Flask session. Cookies are HttpOnly, SameSite=Lax and Secure in production; they
+are signed, not encrypted. Failed logins are rate-limited. Use `X-Api-Key` for
+headless access, or a bearer credential accepted by the configured auth provider.
+Protected scenario/run reads also require authentication; an anonymous Viewer
+label in the UI does not grant API permissions.
 
-### 🔐 Authentication & Permissions
+The authenticated provider supplies context/authorized contexts. ScopePolicy
+resolves the active ScopeToken; routes use that scope for provider reads and
+mutations. Body/query tenant fields cannot grant ownership.
 
-The API uses **Identity-Based PBAC (Permission-Based Access Control)**. 
+`POST /api/auth/handoff` issues a short-lived audience/plugin-bound identity token.
+It carries normalized principal/context claims, not scenario execution state.
+SSE uses the same-origin session and Last-Event-ID; do not put credentials into
+stream URLs.
 
-#### `POST /api/auth/login`
-Authenticates a user via an API Key.
-- **Body**: `{"apiKey": "AEH-..."}`
-- **Security & Rate Limiting**: Enforces a sliding-window IP rate limit of 10 attempts per minute per remote IP. Returns HTTP 429 (`Too Many Requests`) if exceeded.
-- **Session Security**: Sets an encrypted session cookie flagged with `HttpOnly`, `SameSite=Lax`, and `Secure` (in production).
-- **Graceful Fallback**: If unauthenticated, the console enables a dismissable modal falling back to a read-only `Viewer` role for non-blocking exploration.
+## Scenario and execution routes
 
-#### 🛠️ Programmatic Authorization (Headless)
-For CI/CD and programmatic orchestration, bypass session state by providing the `X-Api-Key` or `Authorization: Bearer <key>` header with every request.
-- **Header**: `X-Api-Key: {SERVICE_API_KEY}`
-- **Note**: The harness prioritizes `SERVICE_API_KEY` for programmatic headers, falling back to `DASHBOARD_API_KEY` if not configured.
+| Method and route | Request or behavior |
+| --- | --- |
+| `GET /api/scenarios` | Catalog search and filters |
+| `POST /api/scenarios` | AES scenario, or `scenario` plus `expected_revision_hash`; conflicts return 409 |
+| `POST /api/scenarios/readiness` | JSON scenario path/ID and execution configuration; returns readiness checks and `preflight_fingerprint` |
+| `POST /api/scenarios/<id>/transition` | `target_status` plus `reason` for sensitive transitions |
+| `POST /api/v1/evaluate` | `path`, execution configuration and matching preflight fingerprint where required |
+| `GET /api/runs` | Active scoped provider run listing |
+| `GET /api/v1/runs/<id>` | Provider-owned execution record and status |
+| `GET /api/v1/runs/<id>/stream` | SSE, with Last-Event-ID catch-up |
+| `POST /api/v1/runs/<id>/cancel` | Cancel an authorized active run |
+| `POST /api/v1/runs/<id>/resume` | Resume through the execution backend and approval checks |
 
-#### `POST /api/auth/handoff`
-Generates a short-lived (900s), audience- and plugin-bound JWT for secure
-frontend-to-plugin communication. In development, `GET` remains available for
-compatibility. The token includes only normalized claims from the verified
-principal: `sub`, `email`, `roles`, `permissions`, `org_id`, `tenant_id`,
-`workspace_id`, and `active_environment` when present. Extensions must enforce
-PBAC and tenant ownership server-side; client context is presentation-only.
+The lifecycle transition body uses state values, not verb aliases:
 
-For SSE, same-origin `EventSource` uses the HttpOnly Console session cookie.
-Do not encode credentials or tenant context in stream URLs; reconnect using
-`Last-Event-ID` replay instead.
-
----
-
-### 📋 System & Navigation
-
-#### `GET /api/info`
-Returns system status, including:
-- Engine version and configuration metadata.
-- Count of active plugins, adapters, and environment shims.
-- Configured agent endpoints (Gemini, Claude, Ollama).
-- Active project directories (masked for security).
-
-#### `GET /api/nav`
-Returns the dynamic navigation registry. Extenders can inject items here via the `on_register_console_routes` hook.
-
-#### `GET /api/ping`
-Public diagnostic health check. Returns system availability status.
-
----
-
-### 📂 Scenario Management
-
-#### `GET /api/scenarios`
-Faceted search across the industrial scenario catalog.
-- **Query Params**: `q` (search string), `industry`, `difficulty`, `limit`, `page`.
-
-#### `POST /api/scenarios`
-Saves or updates a scenario JSON file in the `industries/` directory.
-- **Body**: Complete AES V1.4 scenario JSON.
-- **Security**: Validates against the project jail and sanitizes industry paths.
-
-#### `POST /api/scenarios/<scenario_id>/transition`
-Enforces formal lifecycle state transitions for audited scenarios.
-- **Path Param**: `scenario_id` (string).
-- **Body**:
-  - `transition` (string, **required**): Target transition name (`validate`, `ready`, `publish`, `deprecate`).
-  - `reason` (string, **required**): Mandatory audit explanation justifying the lifecycle state change.
-- **Legal State Machine Transitions**:
-  - `Draft` $\rightarrow$ `Validated` $\rightarrow$ `Ready` $\rightarrow$ `Published` $\rightarrow$ `Deprecated`.
-- **Response**: `{"status": "ok", "scenario_id": "...", "lifecycle_state": "Published"}`.
-
-#### `GET /api/scenarios/readiness`
-Four-state fail-closed execution readiness adjudication.
-- **Query Param**: `scenario_id` (string, optional).
-- **Adjudicated States**:
-  - `BLOCKED`: Unauthenticated target, unreachable endpoint, or invalid scenario DAG.
-  - `READY_TO_EXECUTE`: Configuration verified; ready for initial execution.
-  - `READY_TO_CERTIFY`: Execution completed with clean trace logs; ready for cryptographic certification.
-  - `CERTIFIABLE`: Passed all mandatory policy assertions, oracles, and evidence checks.
-
----
-
-### ⚡ Execution & Monitoring (Industrial v1)
-
-#### `POST /api/v1/evaluate`
-Triggers an asynchronous evaluation run using the industrial namespace.
-- **Method**: `POST`
-- **Body**:
-    - `path` (string, **required**): Scenario ID alias (e.g., `loan_risk`) OR a project-relative path (e.g., `industries/finance/scenarios/loan_approval_risk_check.json`).
-    - *Note*: `path` acts as an alias. It first resolves against the **Scenario ID** in the catalog index. If no match is found, it expects a project-relative path. Use `agentv list` to verify IDs.
-    - `max_turns` (int, optional): Maximum conversation depth (Default: 10).
-- **Response**: `{"status": "started", "run_id": "eval_20240412_..."}`
-- **Note**: Initiates a background thread. Results are persisted and streamed by the bound `RunStorageProvider` within the run's immutable scope.
-
-#### `POST /api/v1/mutate`
-Programmatic scenario mutation for variance testing across the 3D Mutation Taxonomy.
-- **Body**: `type` (mutation vector/operation), `path` (file path), or `raw_json` (raw object).
-
-#### `GET /api/v1/metrics`
-Discovery service for all registered evaluation metrics.
-
-#### `GET /api/v1/taxonomy`
-Retrieves the Industrial Failure Taxonomy (AEH v1.5).
-
-#### `POST /api/v1/spec-to-eval`
-Converts Markdown PRDs into validated scenario JSON stubs.
-- **Body**: `markdown` (text) or `input_path` (file).
-
-#### `GET /api/v1/doctor`
-Environmental health audit and project readiness check.
-
-#### `GET /api/v1/explain/<run_id>`
-Forensic Root Cause Analysis (RCA) as a service.
-
-#### `GET /api/v1/runs/<run_id>`
-Industrial Polling Primitive.
-- **Response**: Returns run status (`COMPLETED`, `RUNNING`), vault source, and file metadata.
-- **Note**: Checks the vault first, falling back to the master log if the vault directory is missing.
-
-#### `GET /api/runs`
-Legacy faceted listing of all traces (supports master log and vault discovery).
-
-#### `GET /api/v1/evidence/packages/<run_id>`
-Downloads the single-file immutable `.agentv-package.json` package bundle containing the complete scenario, execution manifest, trace hashes, and assertion verdicts.
-
----
-
-### 🛡️ Public Trust Protocol (v1)
-
-These endpoints live at the top-level `/v1/` namespace to clearly distinguish **Public Audit Services** (unprotected, read-only) from **Private Management APIs** (protected under `/api/`).
-
-#### `POST /api/v1/certify`
-Industrial Certification Service. Executes an atomic two-phase prepare-verify-promote-seal transaction lifecycle.
-- **Body**:
-  - `run_id` (string, **required**): Unique identifier of the completed evaluation run.
-  - `identity` (string, optional): Signing principal identity (defaults to authenticated caller or local trust root).
-  - `policy_ref` (string, optional): Regulatory policy reference ID.
-  - `ttl` (int, optional): Certificate time-to-live in seconds.
-- **Cryptographic Trust Boundary**:
-  - Caller-supplied overrides on `status` and `score` are strictly prohibited.
-  - The verdict (`CERTIFIED`, `FAILED`) and compliance score are extracted server-authoritatively from terminal execution events (`run_end`, `session_decision`, `evaluation_result`).
-- **Atomic Two-Phase Commit**:
-  - Persists intermediate certification manifest (`_persist`).
-  - Verifies signature, scenario binding, and oracle passing outcomes (`_verify`).
-  - Promotes certificate to public vault (`_promote`).
-  - Applies irreversible trace seal as final step (`_seal`). In case of verification error, automatically rolls back state (`_rollback`).
-
-#### `GET /v1/certificates/<run_id>`
-Retrieves the [Verification Certificate](/auditor/trust-protocol/) (VC v3) for a specific run. Unprotected for external deployment gates.
-
-#### `GET /v1/verify/<run_id>`
-Public Verification API for SHA3-256 and cryptographic proof check. Performs a live integrity check comparing the `run.jsonl` trace against the issued manifest using pure RFC 8785 JSON Canonicalization Scheme (JCS).
-
-#### `GET /v1/identity/<identity_id>/public_key`
-Resolves the public key for a forensic identity to support multi-party signature verification.
-
----
-
-### 🔌 Extensibility Hooks (Python)
-
-Platform extenders can inject custom logic directly into the Console by implementing specific hooks in their plugins.
-
-#### `on_register_console_routes(app, nav_registry)`
-Called during Flask app initialization.
-- `app`: The Flask application instance (for adding `@app.route`).
-- `nav_registry`: The list of sidebar navigation items (for adding custom UI links).
-
----
-
-## 📦 Core Library API (`eval_runner`)
-
-### `engine.run_evaluation`
-The primary entry point for orchestrating evaluations.
-
-```python
-async def run_evaluation(
-    scenario: dict, 
-    attempts: int = 1, 
-    metadata: Optional[dict] = None
-) -> Union[dict, list]
+```json
+{"target_status": "Published", "reason": "Reviewed the validated release"}
 ```
 
-### `eval_runner.llm_resilience`
-Centralized LLM Error Classifier and full-jitter exponential backoff retry wrapper.
+Legal transitions are Draft→Validated/Deprecated,
+Validated→Ready/Draft/Deprecated, Ready→Published/Deprecated, and
+Published→Deprecated. Deprecated is terminal. Publication, regression to Draft,
+and deprecation require a nonempty audit reason.
+
+Evaluation dispatch uses `ExecutionBackend.submit(background=True)`, not a fixed
+thread implementation. Production or `EVAL_REQUIRE_PREFLIGHT=true` requires the
+matching preflight fingerprint. The normal response is HTTP 200 with `run_id`,
+`manifest_id`, scenario revision and manifest data. The provider reserves and
+tracks submission before dispatch. No filesystem or master-log fallback supplies
+evidence to these read APIs.
+
+## Trust and evidence
+
+| Method and route | Behavior |
+| --- | --- |
+| `POST /api/v1/certify` | Certify an eligible run using the server-configured signer |
+| `GET /api/v1/certificates/<id>` | Protected complete certificate view |
+| `GET /api/v1/certificates/<id>/public` | Public projection, subject to actual certificate validity |
+| `GET /api/v1/verify/<id>` | Public verification view |
+| `GET /api/v1/identity/<id>/public_key` | Public key resolution |
+| `GET /api/v1/runs/<id>/verify` | Provider-native run verification |
+| `GET /api/v1/evidence/packages/<id>` | Console export wrapper; `?download=true` returns an attachment |
+| `POST /api/v1/evidence/verify` | Authoritative package verification with server-owned trust |
+| `POST /api/v1/evidence/verify-diagnostic` | Explicit non-authoritative analysis |
+
+Certification accepts `run_id`, optional `policy_ref` and `ttl` in **days**.
+Signing identity comes from `AES_CERTIFICATION_IDENTITY`; a caller identity does
+not select a private key. Status/score are derived from evidence rather than
+caller overrides. Execution completion does not automatically issue a certificate.
+
+Authoritative evidence verification requires a `package`, base64
+`raw_trace_bytes`, actual `execution_manifest` and `scenario_data`. It rejects
+caller-supplied `public_key_pem`, reconstructed `raw_trace_events` and disabling
+signature checks. Missing/invalid evidence returns an unverified response (422),
+not an authoritative success. See [verification](/auditor/verification/) for
+signature-only versus complete authority checks.
+
+## Discovery and authoring
+
+`GET /api/info`, `/api/nav`, `/api/v1/metrics`, `/api/v1/taxonomy`,
+`/api/v1/doctor`, and `/api/v1/explain/<run_id>` expose the corresponding scoped
+runtime views. `POST /api/v1/spec-to-eval` accepts Markdown content or an input
+path. `GET /api/v1/mutations` uses organization scope from authenticated context;
+`?org_id=` cannot select a tenant. `POST /api/v1/mutate` accepts `type` plus
+`scenario_id`, `input_path`, or `raw_json` and returns a generated variant with
+`delivery_status: "NOT_EXECUTED"`. Generation is not proof of executed faults.
+
+## Python APIs
 
 ```python
-from eval_runner.llm_resilience import (
-    execute_with_resilience,
-    LLMRateLimitError,
-    LLMQuotaExceededError,
-    LLMAuthenticationError,
-    LLMTransientError,
-    LLMInvalidRequestError,
-    LLMModelNotFoundError,
-)
+from agentv_runtime.canonical import canonical_json_dumps, canonical_json_encode
+from agentv_runtime.config import ConfigResolver
+from agentv_runtime.contracts import MutationCoordinate, MutationDescriptor
+from eval_runner.engine import run_evaluation
+from eval_runner.mutations.mutator import sequence, repeat, probability, after_event
 
-# Resilient asynchronous LLM call with jittered backoff
-response = await execute_with_resilience(
-    coro_fn=lambda: client.chat(prompt),
-    provider="gemini",
-    max_retries=3,
-    initial_delay=1.0,
-    max_delay=60.0,
-)
+resolved = ConfigResolver.resolve(overrides={"timeout_seconds": 180})
+payload_bytes = canonical_json_encode({"b": 1, "a": 2})
 ```
 
-### `eval_runner.mutation_algebra`
-3D Mutation Taxonomy contracts and composable combinators.
+Execution signature:
 
 ```python
-from eval_runner.mutation_algebra import (
-    MutationCoordinate,
-    MutationVector,
-    MutationOperation,
-    MutationTier,
-    sequence,
-    repeat,
-    probability,
-    after_event,
-)
-
-# Compose algebraic mutation pipeline
-composite_mutator = sequence(
-    [
-        mutator_state_tamper,
-        after_event("user_prompt", mutator_adversarial_injection),
-        probability(0.5, mutator_schema_drift),
-    ]
-)
+async def run_evaluation(scenario, run_id=None, attempts=1, seed=None, metadata=None, max_turns=None):
+    ...
 ```
 
-### `AgentAdapterRegistry`
-Manage communication protocols (HTTP, SSE, Local, Socket, etc.) with dynamic lazy imports.
-- **Protocols**: `http`, `sse` (Streaming), `local` (CLI), `socket` (Raw TCP), `gemini`, `openai`, `claude`, `grok`, `ollama`.
-- **Standardized Signature**: Adapters must accept `(payload, endpoint=None)`.
-```python
-from eval_runner.engine import AgentAdapterRegistry
+Use keywords when calling it. Single-attempt execution retains the first-result
+compatibility return; multi-attempt execution returns attempt results.
 
-AgentAdapterRegistry.register("my-protocol", my_custom_adapter_func)
-```
+Compose installed mutators as `sequence(mutator_a, mutator_b)`,
+`probability(mutator_a, p=0.5)` and `after_event(mutator_b, "tool_result")`.
+`concurrent` is reserved and raises an unsupported-delivery error.
 
-### `MetricRegistry`
-The central registry for all evaluation markers.
-```python
-from eval_runner.metrics import MetricRegistry
-
-metric_func = MetricRegistry.get("tool_call_correctness")
-score = metric_func(expected_list, actual_list)
-```
-
-### `loader.load_scenario`
-Authoritative scenario loader supporting local files and **Benchmark URIs** (`gaia://`, `assistantbench://`).
-
-Benchmark URIs identify an existing JSON, JSONL, or Parquet dataset, or an explicit
-`hf://owner/dataset?split=validation&config=...&revision=...` source. The optional
-`datasets` package enables HuggingFace input; remote loading is disabled in airgap mode.
-Questions and reference answers are required. Missing files raise `FileNotFoundError`;
-malformed or empty datasets raise `ValueError`. No synthetic substitute is returned.
-
----
-
-## 🏛️ Public Runtime Extension Interface (`agentv_runtime`)
-
-The `agentv_runtime.interfaces` and `agentv_runtime.reference` packages expose the authoritative abstract base classes and OSS reference implementations:
-
-```python
-import agentv_runtime
-from agentv_runtime.canonical import canonical_json_dumps, canonical_json_bytes
-from agentv_runtime.interfaces import (
-    ArtifactStore,
-    AuthorizationBackend,
-    AuthPrincipal,
-    CatalogStore,
-    CheckpointStore,
-    ExecutionBackend,
-    LeaderboardStore,
-    PolicyEvaluator,
-    PolicyEvaluationResult,
-    RunStore,
-    SigningBackend,
-)
-from agentv_runtime.reference import (
-    BasicFieldPolicyEvaluator,
-    InProcessExecutionBackend,
-    LocalEd25519SigningBackend,
-    LocalFileArtifactStore,
-    LocalFileCatalogStore,
-    LocalFileLeaderboardStore,
-    LocalFileRunStore,
-    LocalLeaderboardStore,
-    NullSigningBackend,
-    PQCSigningBackend,
-    SimpleAPIKeyAuthBackend,
-    SQLiteCheckpointStore,
-)
-
-# RFC 8785 JSON Canonicalization Scheme (JCS)
-canonical_bytes = canonical_json_bytes({"b": 1, "a": [2, 3]})
-
-# Authoritative Contract Version Dunders
-assert agentv_runtime.__runtime_api_version__ == "2.0"
-assert agentv_runtime.__plugin_api_version__ == "1.0"
-assert agentv_runtime.__config_schema_version__ == "1.0"
-assert agentv_runtime.__aes_schema_version__ == "1.4"
-assert agentv_runtime.__certificate_schema_version__ == "3.0.0"
-assert agentv_runtime.__event_schema_version__ == "1.0"
-```
-
-See the [Public Extension Families Guide](/extender/extension-families/) for complete implementation specifications.
-
----
-
-## ⚙️ Configuration Resolution (`ConfigResolver`)
-
-AgentV resolves execution configuration across a deterministic 4-tier hierarchy:
-1. **OSS Baseline Defaults**: Default directories and execution profiles.
-2. **Configuration Files**: `.aes/config/*.d`, `config.json`, or YAML profiles.
-3. **Environment Overrides**: Variables prefixed with `AGENTV_` / `AEH_`.
-4. **Explicit Runtime Overrides**: Parameters supplied programmatically to `ConfigResolver.resolve()`.
-
-```python
-from eval_runner.config_resolver import ConfigResolver, ResolvedRuntimeConfig
-
-resolved_cfg: ResolvedRuntimeConfig = ConfigResolver.resolve(
-    explicit_overrides={"timeout_seconds": 180, "audit_level": 2}
-)
-print("Config Hash (SHA3-256):", resolved_cfg.config_hash)
-```
-
+Configuration precedence is defaults, files, supported environment overrides,
+then explicit `overrides`, subject to configured mandates. Environment keys are
+explicitly supported names such as `RUN_TIMEOUT_SECONDS` and `AUDIT_LEVEL`, not
+arbitrary AGENTV_/AEH_ prefixes. Use detailed resolution diagnostics to detect
+unknown keys. See [extension families](/extender/extension-families/) for complete
+storage/signing/approval contracts, and [LLM providers](/builder/providers/) for
+retry/error interfaces.

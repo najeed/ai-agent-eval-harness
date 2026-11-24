@@ -66,7 +66,7 @@ When an OpenAPI service reports internal tool executions via `execution_receipt`
 Specify the `--agent` endpoint and `--protocol` in your evaluation command:
 
 ```bash
-agentv run --path scenarios/loan_scenario.json --protocol http --agent openapi://http://localhost:8080/api/v1/agent
+agentv run --path scenarios/loan_scenario.json --protocol openapi --agent http://localhost:8080/api/v1/agent
 ```
 
 ### 2. OAS Discovery (Handshake)

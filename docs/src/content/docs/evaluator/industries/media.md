@@ -5,12 +5,19 @@ description: Consumption metrics and cultural trends for recommendation and anal
 
 The Media & Entertainment sector provides high-fidelity data on content consumption and cultural trends, enabling the evaluation of recommendation engines and trend analyzer bots.
 
-## 🎬 Status: **HARDENED**
+## 🎬 Status: **Provider-dependent coverage**
 
 - **Architecture**: IMDb & Cultural Trend Integration.
-- **Verification**: 100% Parity with IMDb global ratings and metadata.
+- **Verification**: Validate the selected source and output records for this run; no universal live-source parity guarantee is implied.
 
 ## 📡 Data Sources
+
+The sources below describe reference datasets and task models. Actual connectivity
+depends on the implemented provider, credentials and supplied input files.
+Simulation is disabled by default; enable `--allow-simulation` deliberately and
+retain `simulation`/`execution_mode` provenance. A listed source is not proof
+that its live API was used or that all records match it.
+
 
 | Source | Description |
 | :--- | :--- |

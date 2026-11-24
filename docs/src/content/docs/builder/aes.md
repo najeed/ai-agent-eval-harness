@@ -20,10 +20,12 @@ AES is an industrial-grade specification used to define benchmarks that are fram
 Stricter requirements to ensure environment reproducibility and forensic traceability.
 - **`id`**: (Required) Global unique forensic identifier (slug-style).
 - **`name`**: (Required) Human-readable scenario title.
-- **`industry`**: (Required) Target sector or vertical (e.g., `Finance`, `Healthcare`).
-- **`capabilities`**: (Required) Skills required to solve the scenario (e.g., `web_navigation`, `sql_generation`).
+- **`industry`**: (Optional) Target sector or vertical (e.g., `Finance`, `Healthcare`).
+- **`capabilities`**: (Optional) Skills required to solve the scenario (e.g., `web_navigation`, `sql_generation`).
 - **`standards_registry`**: (Optional) Regulatory mapping (e.g., `ISO_20022`, `NIST`).
-- **`aes_version`**: (Required at root) Must be set to `1.4`.
+- **`compliance_level`**: (Required in metadata) `Standard`, `Gold` or `Regulatory_Audit`.
+- **`aes_version`**: (Required at root) Numeric `1.4`.
+- **`evaluation`**: (Required at root) An object, even if empty.
 
 ### DAG Workflow (`workflow`)
 AES v1.4 replaces linear tasks with a **Workflow DAG**, allowing for complex, multi-stage evaluations.

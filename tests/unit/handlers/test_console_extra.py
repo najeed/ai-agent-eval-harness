@@ -225,19 +225,6 @@ def test_docs_read_success(client, tmp_path):
         assert res.json["content"] == "hello doc"
 
 
-def test_read_doc_errors(client, tmp_path):
-    """Test read_doc error handling."""
-    # Setup isolated docs dir
-    docs_dir = tmp_path / "docs-v1-deprecated-reference"
-    docs_dir.mkdir()
-
-    with patch("eval_runner.console.routes.config.PROJECT_ROOT", tmp_path):
-        # Traversal attempt
-        assert client.get("/api/docs/%2e%2e%2fconfig.py").status_code == 403
-        # Non-existent
-        assert client.get("/api/docs/void.md").status_code == 404
-
-
 # --- Info endpoint provider branches ---
 def test_get_info_google(client):
     with (

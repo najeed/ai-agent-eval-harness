@@ -144,6 +144,61 @@ def test_message_certification_verifies_with_public_trust_without_issuer_secrets
     assert result["certified"], result["failures"]
 
 
+@pytest.mark.parametrize("missing_evaluator", [False, True])
+def test_explicit_trust_root_controls_evaluator_lookup(
+    finalization_source, monkeypatch, tmp_path, missing_evaluator
+):
+    import shutil
+
+    from eval_runner import config
+
+    provider, scenario = finalization_source
+    raw = provider.get_trace_bytes("run-a")
+    certificate = TraceVerifier.sign_trace_bytes(
+        raw, run_id="run-a", run_store=provider, execution_mode="live"
+    )
+    public = tmp_path / "independent-public-trust"
+    shutil.copytree(config.TRUST_ROOT, public, ignore=shutil.ignore_patterns("private_key.pem"))
+    if missing_evaluator:
+        (public / "system_id" / "public_key.pem").unlink()
+        # The default location still has a valid key: explicit trust must not fall back.
+    else:
+        monkeypatch.setattr(config, "TRUST_ROOT", tmp_path / "empty-default-trust")
+    result = VerificationAuthority.verify_certification_artifact(
+        certificate["verification_package"],
+        raw_trace_bytes=raw,
+        canonical_manifest=ExecutionManifest.from_dict(certificate["execution_manifest"]),
+        scenario_data=scenario,
+        trust_root=public,
+    )
+    assert result["verified"] is (not missing_evaluator), result["failures"]
+
+
+def test_trusted_requester_is_signed_and_idempotent(finalization_source):
+    from eval_runner.services.certification import execute_industrial_certification
+
+    provider, scenario = finalization_source
+    requester = {"principal_id": "operator", "account_id": "account-1"}
+    result = execute_industrial_certification(
+        "run-a", run_store=provider, scenario_data=scenario, requester=requester
+    )
+    package = result["manifest"]["verification_package"]
+    assert package["metadata"]["certification_requester"] == requester
+    repeated = execute_industrial_certification(
+        "run-a", run_store=provider, requester={"account_id": "another-account"}
+    )
+    assert repeated["manifest"] == result["manifest"]
+    tampered = deepcopy(package)
+    tampered["metadata"]["certification_requester"]["account_id"] = "forged"
+    checked = VerificationAuthority.verify_certification_artifact(
+        tampered,
+        raw_trace_bytes=provider.get_trace_bytes("run-a"),
+        canonical_manifest=ExecutionManifest.from_dict(result["manifest"]["execution_manifest"]),
+        scenario_data=scenario,
+    )
+    assert checked["verified"] is False
+
+
 def test_capture_receipt_failures_exhaustive():
     import hashlib
 

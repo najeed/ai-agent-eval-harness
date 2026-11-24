@@ -82,95 +82,62 @@ Core v1.4 replaces legacy file-based key loaders with the **Identity Registry** 
 To enable robust, customizable enterprise key routing and in-flight auditing, AgentV routes all trace signing and verification operations through a dynamic **Verifier Pipeline** inside `eval_runner/verifier.py`:
 
 1.  **`TraceVerificationInterceptor`**: An abstract interface representing custom signing and verification interceptor classes.
-2.  **`VerificationService` (`verification_service`)**: A thread-safe registry containing active trace interceptors. If a registered interceptor's `can_sign()` or `can_verify()` method returns `True`, operations are routed through that interceptor; otherwise, the pipeline falls back to standard core routines.
+2.  **`VerificationService` (`verification_service`)**: A thread-safe registry containing active trace interceptors. Signing uses `can_sign(format)` and `sign(manifest, next_signer)`; signature verification follows the verifier/backend authority contracts.
 3.  **KMS / HSM Gating**: Allows enterprise plugins to delegate signing to an external hardware security module (HSM) or secure KMS vault without ever exposing raw private key bytes to the local filesystem or running memory.
-4.  **Tamper-evident audit-chain sealing**: Interceptors can bind execution proofs in-flight to `audit_chain.jsonl` as part of the sign sequence. In OSS this detects later modification during verification; it is not physical WORM retention. Deployments requiring immutable retention must use an external WORM/retention-enforcing ArtifactStore.
+4. **Optional event signatures**: FlightRecorder can attach `_sig` to events
+under its signing configuration before appending through the bound
+RunStorageProvider. It has no previous-event hash field and no core
+`audit_chain.jsonl` producer. Whole-trace digests, provider seals and certificate
+commitments are separate end-of-run integrity mechanisms. Immutable retention
+requires an external WORM/retention-enforcing ArtifactStore.
 
 ---
 
-## 5a. Verification Certificate (VC) v3 JSON Schema
+## 5a. Current certificate signatures
 
-The Verification Certificate (`run_manifest.json`) is the core non-repudiability artifact. Its schema conforms to the following structured definition:
+Use [the certificate schema](/spec/vc/vc.schema.json) for the certificate fields
+and [digest signature envelope v1](/spec/digest-signature-envelope/) for current
+artifact signatures. The certificate binds the execution manifest, scenario,
+trace, evidence graph, finalization and decision. A provenance signature is a
+structured `profile` / `envelope` / `signature` response, not a raw hex artifact
+signature. The exact unsigned projection and external SignaturePolicy govern
+verification; the envelope signature is padded base64 Ed25519.
 
-```json
-{
-  "run_id": "test_run_123",
-  "trace_file": "run.jsonl",
-  "trace_hash": "4a7f98e8a93a...",
-  "vc_version": "3.0.0",
-  "governance_ttl": 90,
-  "metadata": {
-    "git_hash": "a1b2c3d4...",
-    "seal_hash": "e5f6a7b8...",
-    "provisioning_hash": "d9e8f7...",
-    "timestamp": "2026-07-01T12:00:00Z"
-  },
-  "evidence_ledger": {
-    "reports/latest_summary.html": "9a8b7c6d...",
-    "plots/trajectory.png": "f1e2d3c4..."
-  },
-  "provenance_chain": [
-    {
-      "identity": "system_id",
-      "signature": "3c8a9f2b1d0...",
-      "timestamp": 1712904000.456,
-      "algorithm": "Ed25519"
-    }
-  ]
-}
-```
+Trace digests commit to the provider's exact bytes. Diagnostic legacy/raw
+primitives do not authorize a current certification claim. A complete authority
+check also reconciles scenario/manifest/oracles/finalization and sealed state.
 
-*   **`trace_hash`**: Streaming SHA3-256 hash of the `run.jsonl` trace file.
-*   **`evidence_ledger`**: Mapping of sidecar artifact paths to their SHA3-256 integrity hashes.
-*   **`metadata.seal_hash`**: The hash computed over the trace history immediately prior to appending the certification event.
-*   **`provenance_chain`**: A list of signatures binding the manifest digest to classical or post-quantum identity keys.
+## 5b. Execution terminal boundary and certificate publication
 
----
+`run_end` is the final execution event. Certification verifies exact committed
+trace bytes and atomically publishes the certificate with provider sealed state;
+it does not append a certification event to that completed execution trace.
+Do not recompute commitments from newline-normalized text or reconstructed event
+objects. Use the provider's exact `get_trace_bytes()` output.
 
-## 5b. Seal Hash Protocol & OS-Independent Trace Verification
-
-### The Seal Hash Anchor
-To mathematically bind the certification to the specific execution sequence:
-1. Prior to appending the `verification_certificate_issued` event, the engine reads the current trace history.
-2. It computes a SHA3-256 hash of this history (`seal_hash`).
-3. This `seal_hash` is written inside the Verification Certificate metadata.
-4. If any historical event in the trace is modified after certification, the recalculated `seal_hash` will mismatch, invalidating the certificate.
-
-### Binary Trace Integrity
-To prevent cross-platform signature failures caused by line-ending conversion (e.g. Windows `\r\n` vs Linux `\n`), AgentV enforces **binary mode trace writes**:
-*   All trace events are encoded as UTF-8 bytes and appended directly to the physical file without OS-level newline translations.
-*   SHA3-256 verification hashes the raw byte stream on disk, ensuring identical hash checksums on Windows, Linux, and macOS.
-
----
-
-## 5c. Custom Signing Interceptor Development
-
-Developers can customize key routing and audit logging by registering a subclass of `TraceVerificationInterceptor`:
+## 5c. Custom signing middleware
 
 ```python
 from eval_runner.verifier import TraceVerificationInterceptor, verification_service
 
 
-class MyEnterpriseKMSInterceptor(TraceVerificationInterceptor):
-    def can_sign(self, identity_id: str) -> bool:
-        return identity_id.startswith("kms-")
+class AuditMetadataInterceptor(TraceVerificationInterceptor):
+    def can_sign(self, format: str) -> bool:
+        return format == "standard"
 
-    def sign(self, data: bytes, identity_id: str) -> dict:
-        # Resolve key and sign remotely via KMS API
-        signature = call_kms_sign_api(data, identity_id)
-        return {
-            "identity": identity_id,
-            "signature": signature.hex(),
-            "algorithm": "kms-hsm-hybrid",
-        }
+    def sign(self, manifest: dict, next_signer) -> dict:
+        enriched = {**manifest, "metadata": {**manifest.get("metadata", {}), "reviewed": True}}
+        return next_signer(enriched)
 
-    def can_verify(self, identity_id: str) -> bool:
-        return identity_id.startswith("kms-")
 
-    def verify(self, data: bytes, signature_hex: str, identity_id: str) -> bool:
-        # Call KMS public key verification endpoint
-        return call_kms_verify_api(data, signature_hex, identity_id)
+verification_service.register_interceptor(AuditMetadataInterceptor())
+```
 
+This interface supports signing middleware only: `can_sign(format)` and
+`sign(manifest, next_signer)`. Verification is not dispatched through invented
+`can_verify`/`verify` interceptor methods. Implement the SigningBackend boundary
+for an external signer, using the purpose-bound digest-envelope adapter for
+authoritative artifacts. Remote failure must not silently select another signer.
 
 # Register the interceptor in the global Verifier pipeline
 verification_service.register_interceptor(MyEnterpriseKMSInterceptor())

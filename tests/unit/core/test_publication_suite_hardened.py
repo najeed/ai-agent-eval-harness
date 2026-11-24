@@ -1,4 +1,3 @@
-import os
 from unittest.mock import patch
 
 import pytest
@@ -7,7 +6,7 @@ from eval_runner.publication_suite.publication_suite import main
 
 
 @pytest.fixture
-def mock_filesystem(tmp_path):
+def mock_filesystem(tmp_path, monkeypatch):
     scenarios = tmp_path / "scenarios"
     scenarios.mkdir()
     (scenarios / "test.json").write_text("{}")
@@ -22,8 +21,8 @@ def mock_filesystem(tmp_path):
     inventory = tmp_path / "inventory.yaml"
     inventory.write_text("agents:\n  - name: 'A'\n    protocol: 'http'\n    agent: 'url'")
 
-    # Change CWD to tmp_path to make relative paths work in the script
-    os.chdir(tmp_path)
+    # Change CWD to tmp_path cleanly using monkeypatch to avoid leaking CWD to worker
+    monkeypatch.chdir(tmp_path)
     return tmp_path
 
 

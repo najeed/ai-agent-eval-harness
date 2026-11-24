@@ -114,3 +114,40 @@ async def test_handle_trend_empty_provider(run_store, capsys):
     with patch("eval_runner.runtime_services.resolve_run_store", return_value=empty):
         assert await handle_trend(Args()) == 0
     assert "No matching runs" in capsys.readouterr().out
+
+
+@pytest.mark.asyncio
+async def test_handle_trend_regression_exit_and_error_paths(capsys):
+    from datetime import UTC, datetime, timedelta
+
+    from eval_runner.handlers.analysis import handle_trend
+
+    now = datetime.now(UTC)
+    # 5 runs dropping from 1.0 to 0.0 triggers regression
+    runs = [{"run_id": f"r{i}"} for i in range(5)]
+    manifests = {f"r{i}": {"agent_name": "bot"} for i in range(5)}
+    events = {
+        f"r{i}": [
+            {"event": "run_start", "timestamp": (now + timedelta(minutes=i)).isoformat()},
+            {"event": "evaluation", "task_id": "t", "success": i < 2},
+        ]
+        for i in range(5)
+    }
+    store = FakeRunStore(runs, manifests, events)
+
+    class RegArgs:
+        agent_name = "bot"
+        window = 5
+        threshold = -0.05
+        exit_on_regression = True
+
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=store):
+        assert await handle_trend(RegArgs()) == 1
+    out = capsys.readouterr().out
+    assert "REGRESSION DETECTED" in out
+
+    with patch(
+        "eval_runner.runtime_services.resolve_run_store", side_effect=RuntimeError("store down")
+    ):
+        assert await handle_trend(RegArgs()) == 1
+    assert "Trend analysis FAILED: store down" in capsys.readouterr().out

@@ -152,7 +152,8 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 
 [tool.setuptools.packages.find]
-include = ["eval_runner*", "dataproc_engine*", "industries*", "agentv_runtime*"]
+namespaces = true
+include = ["eval_runner*", "dataproc_engine*", "industries*", "agentv_runtime*", "spec*"]
 
 [tool.setuptools.package-data]
 "*" = ["*.json", "*.jsonl", "*.csv", "*.md", "*.yaml", "*.yml"]
@@ -167,7 +168,7 @@ coverage = "eval_runner.coverage_plugin:CoveragePlugin"
 testpaths = ["tests", "dataproc_engine/tests"]
 # xdist workers race when sharing a pytest cache on Windows/OneDrive.  The
 # cache is only an optimization, so disable it for deterministic parallel CI.
-addopts = "--tb=short --showlocals -ra --dist loadfile -p no:cacheprovider -p no:logfire"
+addopts = "--tb=short --showlocals -rad -p no:cacheprovider -p no:logfire"
 python_files = ["test_*.py"]
 pythonpath = ["."]
 asyncio_mode = "auto"

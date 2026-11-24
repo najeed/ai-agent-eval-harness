@@ -16,7 +16,7 @@ AgentV anchors academic work in four critical dimensions to ensure that evaluati
 <CardGrid stagger>
     <Card title="Determinism" icon="random">
         **Freezing Stochasticity**  
-        Leverage [Deterministic Seeds](/scholar/methodology/determinism/) (Base + Run Index) to ensure that stochastic agent behaviors are reproducible across re-runs.
+        Record [attempt seeds](/scholar/methodology/determinism/) (base + attempt index), provider/model versions and environment state. Equal seeds do not guarantee identical remote model behavior or cross-machine replay.
     </Card>
     <Card title="Forensics" icon="magnifier">
         **Behavioral DNA**  
@@ -42,7 +42,7 @@ A typical research workflow in AgentV follows a path of rigorous isolation and s
 Standardize your baseline by loading foundational datasets like [GAIA](/scholar/benchmarks/gaia/) or [AssistantBench](/scholar/benchmarks/assistantbench/) using native URI schemes (`gaia://`, `assistantbench://`).
 
 ### 2. High-Fidelity Data Generation
-For vertical-specific research, use the [Dataproc Engine](/scholar/dataproc/) to generate industrially-accurate datasets across 16 sectors (Finance, Healthcare, Energy, etc.) with built-in PII protection.
+For vertical-specific research, use the [Dataproc Engine](/scholar/dataproc/) to generate industrially-accurate datasets across 16 sectors (Finance, Healthcare, Energy, etc.) with explicit source provenance. Simulated fallback requires `--allow-simulation`; review sensitive data before sharing outputs.
 
 ### 3. Statistical Campaigning
 Run large-scale evaluation campaigns using the **Conductor**. Apply **95% Confidence Intervals** and **Pass@k** metrics to provide publishable performance guarantees.

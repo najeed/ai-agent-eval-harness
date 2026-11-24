@@ -172,7 +172,7 @@ def test_main_generic_exception():
 
 
 @pytest.mark.asyncio
-async def test_handle_spec_to_eval_exceptions(capsys):
+async def test_handle_spec_to_eval_missing_input_file(capsys):
     """Test 'spec-to-eval' with missing file. Forensic: Verify early return."""
     args = MagicMock(input="missing_spec_coverage.md", output="out.json")
     # No need to patch save_scenario_json because os.path.exists will be False

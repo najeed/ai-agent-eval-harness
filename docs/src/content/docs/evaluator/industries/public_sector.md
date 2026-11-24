@@ -5,10 +5,10 @@ description: Demographics, environment, labor, and housing metrics for societal 
 
 The Public Sector category consolidates high-fidelity societal and economic indicators, providing the foundational context for evaluating agents in governance, social services, and environmental resilience.
 
-## 🏛️ Status: **HARDENED**
+## 🏛️ Status: **Provider-dependent coverage**
 
 - **Architecture**: Multi-Source Integration (World Bank, UN, US Census).
-- **Verification**: 100% Parity with global and national sources.
+- **Verification**: Validate the selected source and output records for this run; no universal live-source parity guarantee is implied.
 
 ---
 
@@ -54,3 +54,6 @@ Key functions identified for this sector include:
 - **Human Services**: Benefits administration and case management.
 
 [Explore all 1,800+ Core Functions](/builder/core-functions/)
+
+Source coverage depends on the selected provider and input; simulated fallback
+requires explicit opt-in and preserved provenance.

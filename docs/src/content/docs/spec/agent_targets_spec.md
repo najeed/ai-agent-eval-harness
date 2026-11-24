@@ -3,58 +3,44 @@ title: "Agent Targets Specification"
 description: "Authoritative specification for agent target definitions, connection protocols, and authentication schemes."
 ---
 
-The **Agent Targets Specification** (`agent-targets.schema.json`) defines connection parameters, authentication methods, rate limits, and protocol bindings for target AI models and agent services under evaluation.
+The persisted target registry follows
+[agent-targets.schema.json](/spec/agent-targets/agent-targets.schema.json).
+It is separate from CLI model URIs and native framework bindings.
 
----
+## Registry shape
 
-## 1. Agent Target Schema (`agent-targets.schema.json`)
+The root requires `schema_version: "1.0.0"` and `targets`, an object keyed by
+target ID. Each target requires `id`, `name`, `protocol`, `endpoint`, `created_at`
+and `updated_at`. Unknown fields are rejected.
 
 ```json
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Agent Targets Definition",
-  "type": "object",
-  "required": ["targets"],
-  "properties": {
-    "targets": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["id", "name", "protocol", "endpoint"],
-        "properties": {
-          "id": { "type": "string" },
-          "name": { "type": "string" },
-          "protocol": {
-            "type": "string",
-            "enum": ["http", "local", "socket", "langgraph", "crewai", "ag2", "gemini", "claude", "openai", "ollama"]
-          },
-          "endpoint": { "type": "string" },
-          "model": { "type": "string" },
-          "auth": {
-            "type": "object",
-            "properties": {
-              "type": { "type": "string", "enum": ["bearer", "api_key", "basic", "none"] },
-              "token_env": { "type": "string" },
-              "header_name": { "type": "string" }
-            }
-          },
-          "timeout_seconds": { "type": "number", "default": 30 },
-          "max_retries": { "type": "integer", "default": 3 }
-        }
-      }
+  "schema_version": "1.0.0",
+  "targets": {
+    "billing-agent": {
+      "id": "billing-agent",
+      "name": "Billing HTTP service",
+      "protocol": "http",
+      "endpoint": "http://localhost:8000/execute_task",
+      "max_turns": 10,
+      "timeout_seconds": 30,
+      "created_at": "2026-11-24T00:00:00Z",
+      "updated_at": "2026-11-24T00:00:00Z"
     }
   }
 }
 ```
 
----
+`endpoint` must be HTTP(S); there is no implicit default target. Optional fields
+are `model`, `max_turns` (1–100) and `timeout_seconds` (5–600, integer).
+The schema enumerates accepted protocol labels; a stored label does not install
+an adapter or provision a remote service.
 
-## 2. Standard 2026 Frontier Target Profiles
+Secrets and `auth` objects are not accepted or persisted in target profiles.
+Configure credentials through the runtime's environment/provider integration.
+The REST layer also rejects credential-like field names. Do not store bearer
+tokens in a target URL.
 
-| Target ID | Name | Protocol | Endpoint / URI | Auth Token Env |
-| :--- | :--- | :--- | :--- | :--- |
-| `gemini-3.7-flash` | Google Gemini 3.7 Flash | `gemini` | `gemini://gemini-3.7-flash` | `GEMINI_API_KEY` |
-| `claude-opus-5` | Anthropic Claude Opus 5 | `claude` | `claude://claude-opus-5` | `ANTHROPIC_API_KEY` |
-| `claude-3.7-sonnet`| Anthropic Claude 3.7 Sonnet | `claude` | `claude://claude-3-7-sonnet-20250219` | `ANTHROPIC_API_KEY` |
-| `gpt-5.6` | OpenAI GPT-5.6 | `openai` | `openai://gpt-5.6` | `OPENAI_API_KEY` |
-| `deepseek-r1-70b` | Ollama DeepSeek R1 70B | `ollama` | `ollama://deepseek-r1:70b` | None (Local) |
+For direct provider URIs such as `openai://MODEL`, or an in-process
+`module:attribute` binding, use the appropriate CLI adapter configuration instead
+of inserting those values into this HTTP target registry.

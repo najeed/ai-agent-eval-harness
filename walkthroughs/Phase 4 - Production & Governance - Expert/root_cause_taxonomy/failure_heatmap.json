@@ -6,10 +6,10 @@
     "statistics": {
         "total_failures": 10,
         "distribution": {
-            "Reasoning": 4,
-            "Tool_Use": 3,
-            "Domain_Knowledge": 0,
-            "Safety_Violation": 3
+            "Reasoning": 2,
+            "Tool_Use": 2,
+            "Domain_Knowledge": 4,
+            "Safety_Violation": 2
         }
     },
     "critical_sectors": [

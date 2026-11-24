@@ -34,16 +34,17 @@ The harness uses custom URI schemes to route tasks to specific providers.
 - **`ollama://`**: For local model execution (e.g., `deepseek-r1:70b`, `llama-3.3`).
 
 ### Usage in Scenarios
-Specific models can be targeted in the scenario definition:
+
+Use this metadata fragment inside a valid AES scenario:
 
 ```json
-{
-  "agent_url": "openai://gpt-5.6",
-  "temperature": 0.0
-}
+{"agent": {"protocol": "openai", "endpoint": "openai://gpt-5.6"}}
 ```
 
----
+It belongs in `metadata`, not at the root. Root `agent_url` and `temperature`
+are not valid AES fields. Select `--protocol openai` explicitly when overriding
+the target from the CLI. Provider-specific model/temperature settings and judge
+configuration are separate from the AES root schema.
 
 ## 🛡️ Centralized LLM Resilience Wrapper
 
@@ -58,7 +59,7 @@ All provider invocations are routed through the centralized resilience harness (
 - **`LLMModelNotFoundError`**: Unknown model name or unavailable deployment (HTTP 404).
 
 ### Full-Jitter Exponential Backoff
-When transient or rate-limit errors occur, the resilience harness applies Decorrelated Full Jitter:
+Hard quota exhaustion, authentication and invalid-request failures abort without retry. When transient or rate-limit errors occur, the resilience harness applies Decorrelated Full Jitter:
 $$\text{delay} = \text{random}(0, \min(\text{max\_delay}, \text{initial\_delay} \times 2^{\text{attempt}}))$$
 
 ### Configuration Limits
@@ -66,10 +67,10 @@ The resilience runner respects the following environment configuration parameter
 
 | Parameter | Environment Variable | Default | Purpose |
 | :--- | :--- | :--- | :--- |
-| `LLM_TIMEOUT` | `AGENTV_LLM_TIMEOUT` | `60.0s` | Individual HTTP request timeout budget. |
-| `LLM_MAX_RETRIES` | `AGENTV_LLM_MAX_RETRIES` | `3` | Maximum retry attempts for transient/quota errors. |
-| `LLM_INITIAL_DELAY`| `AGENTV_LLM_INITIAL_DELAY`| `1.0s` | Base exponential backoff delay. |
-| `LLM_MAX_DELAY` | `AGENTV_LLM_MAX_DELAY` | `60.0s` | Maximum ceiling for backoff delays. |
+| `DEFAULT_ADAPTER_TIMEOUT` | `DEFAULT_ADAPTER_TIMEOUT` | `30s` | Adapter timeout; provider-specific timeouts can differ. |
+| `LLM_MAX_RETRIES` | `AGENTV_LLM_MAX_RETRIES` | `4` | Retry budget for transient/rate-limit errors. |
+| `LLM_INITIAL_RETRY_DELAY`| `AGENTV_LLM_INITIAL_DELAY`| `1.0s` | Base exponential backoff delay. |
+| `LLM_MAX_RETRY_DELAY` | `AGENTV_LLM_MAX_DELAY` | `30.0s` | Maximum ceiling for backoff delays. |
 
 ---
 
@@ -80,9 +81,16 @@ The `luna_judge_score` metric can be configured to use any registered provider a
 ### `judge_config` Schema
 | Field | Default | Description |
 | :--- | :--- | :--- |
-| `judge_provider` | `gemini` | The model provider (e.g., `openai`, `gemini`, `ollama`). |
-| `judge_model` | `gemini-3.7-flash` | Specific model ID. |
+| `judge_provider` | `ollama` | The model provider (e.g., `openai`, `gemini`, `ollama`). |
+| `judge_model` | unset (`JUDGE_MODEL`) | Specific model ID. |
 | `judge_rubric` | `generic` | The named rubric to use for scoring. |
+
+### Scoring shortcuts and required judges
+
+`luna_judge_score` returns 1 when expected_outcome is absent or the answer exactly
+matches it. `required: true` rethrows provider initialization failure, but errors
+during generation/parsing can still reach fallback scoring. It does not guarantee
+that every result came from an LLM. Record the actual scoring path for calibration.
 
 ### Built-in Rubrics
 - **`clinical_safety`**: Healthcare-specific HIPAA and safety audit.

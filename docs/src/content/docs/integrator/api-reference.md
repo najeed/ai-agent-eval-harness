@@ -3,182 +3,72 @@ title: Integrator API Reference
 description: High-fidelity REST protocol for the AgentV Roadmap (v1.6.0+).
 ---
 
-The Integrator API provides programmatic access to the AgentV engine, enabling seamless integration with CI/CD pipelines, custom dashboards, and automated forensic workflows.
+The Console API is mounted under `/api`. Authenticate with a verified session or
+credentials accepted by the configured provider (for static service keys, use
+`X-Api-Key`). Protected reads also require authentication and resource permission.
 
-## 🔐 Authentication
+## Active scope
 
-All Integrator API requests must include the `X-Api-Key` header.
+Principal entitlements are provider-owned. `AuthPrincipal` can carry
+`context_version`, `context` and `authorized_contexts`; the active ScopePolicy
+resolves a ScopeToken. Scope tags and their digest bind run/approval ownership.
+Client body/query tenant labels cannot authorize a different scope.
 
-```bash
-X-Api-Key: {SERVICE_API_KEY}
-```
+## Mutations
 
----
+`GET /api/v1/mutations` returns installed descriptors plus delivery capabilities.
+Organization filtering comes from the authenticated active context; `?org_id=`
+does not choose the catalog tenant.
 
-## 🚀 Priority Operational Endpoints (/api/v1)
+`POST /api/v1/mutate` accepts `type`, optional `seed`, and one of `scenario_id`,
+`input_path`, or `raw_json`, plus supported vector-specific options. Its result
+is scenario generation (`delivery_status: "NOT_EXECUTED"`) with a lint report.
+Executing a variant and proving fault delivery are separate steps.
 
-### `GET /api/v1/mutations`
-**Priority: P0**
-Returns the unified 9-Vector Mutation Catalog (35+ registered mutators across `input`, `context`, `memory`, `retrieval`, `tool`, `state`, `authorization`, `temporal`, `objective`). Supports tenant filtering via `?org_id=`.
+## Preflight and launch
 
-- **Response**:
-  ```json
-  {
-    "status": "success",
-    "mutations": [
-      {
-        "id": "typo",
-        "vector": "input",
-        "name": "Typographical Noise",
-        "description": "Injects character slips and keyboard distance typos into task input.",
-        "parameters": { "severity": { "type": "number", "default": 0.1 } }
-      }
-    ],
-    "total": 35
-  }
-  ```
+`POST /api/scenarios/readiness` accepts the scenario path/ID and execution
+configuration. It returns `ready`, `is_executable`, `is_verifiable`,
+`readiness_state`, checks and a `preflight_fingerprint` bound to the configuration.
+Use the same configuration and fingerprint with `POST /api/v1/evaluate`.
+Production and `EVAL_REQUIRE_PREFLIGHT=true` enforce that binding.
 
-### `POST /api/v1/mutate`
-**Priority: P0**
-Programmatic scenario mutation with chained in-memory static linting (`ScenarioLinter.lint_dict`).
+Launch returns `run_id` and manifest identifiers. Poll
+`GET /api/v1/runs/<run_id>` or subscribe to
+`GET /api/v1/runs/<run_id>/stream`. SSE reconnects with `Last-Event-ID`; use session
+credentials rather than embedding tokens in the stream URL.
 
-- **Body**:
-  - `type` (string, required): Mutation type from the 9-vector catalog (e.g., `typo`, `injection`, `temporal_skew`).
-  - `seed` (integer, optional): Deterministic integer seed for reproducible perturbation.
-  - `scenario_id` (string, optional): ID of scenario in catalog.
-  - `input_path` (string, optional): Safe workspace path to scenario JSON.
-  - `raw_json` (object, optional): In-memory scenario JSON dictionary.
-  - Vector-specific options (e.g. `profile`, `target_node_ids`, `placement` for `injection`).
-- **Response**:
-  ```json
-  {
-    "status": "success",
-    "operation": "scenario_generation",
-    "delivery_status": "NOT_EXECUTED",
-    "mutated": { "aes_version": "1.4", "id": "loan_approval_mutated_typo", ... },
-    "lint_report": {
-      "valid": true,
-      "score": 96.5,
-      "tier": "GOLD",
-      "errors": [],
-      "warnings": []
-    }
-  }
-  ```
+## Export and verification
 
-### `GET /api/v1/evidence/packages/<run_id>`
-**Priority: P0**
-Serves or exports an immutable, single-file `.agentv-package.json` verification package conforming to NIST AI 100-1 auditability standards.
-- **Query Params**:
-  - `download=true`: Returns attachment response with `Content-Disposition: attachment; filename={run_id}.agentv-package.json`.
-- **Response**: Bundles resolved scenario, execution manifest, run events, assertion results, evidence ledger, and detached cryptographic signatures.
+`GET /api/v1/evidence/packages/<run_id>?download=true` exports the console wrapper.
+It includes the scenario/manifest views and signed typed verification package;
+it does not replace the provider's exact raw trace bytes.
 
-### `POST /api/v1/evidence/verify`
-**Priority: P0**
-Independently verifies an offline `.agentv-package.json` verification package against external trust roots without requiring disk access to the original evaluation runner.
-- **Body**:
-  - `package` (object): Verification package JSON object.
-  - `raw_trace_bytes` (string, optional base64): Raw trace bytes for byte-level verification.
-  - `public_key_pem` (string, optional): Authoritative public key PEM for trust root anchoring.
-  - `require_signature` (boolean, default: `true`).
-  - `require_scenario` (boolean, default: `true`).
-- **Response**:
-  ```json
-  {
-    "verified": true,
-    "status": "CERTIFIED",
-    "checks": {
-      "trace_hash_valid": true,
-      "signature_valid": true,
-      "manifest_binding_valid": true,
-      "scenario_hash_valid": true
-    }
-  }
-  ```
+`POST /api/v1/evidence/verify` requires:
 
-### `GET /api/v1/metrics`
-**Priority: P0**
-Lists all registered evaluation metrics available for dynamic hydration.
+- `package`: signed package or supported export wrapper;
+- `raw_trace_bytes`: base64 of the actual committed JSONL bytes;
+- `execution_manifest`: the actual execution manifest;
+- `scenario_data`: the executed scenario contract.
 
-### `GET /api/v1/taxonomy`
-**Priority: P0**
-Returns the failure taxonomy for categorical diagnostics.
+Trust keys/policy are resolved server-side. The authoritative endpoint rejects
+caller `public_key_pem`, reconstructed `raw_trace_events`, and
+`require_signature: false`. Signature/oracle/manifest/scenario/finalization
+checks must all succeed for an authoritative verdict. Invalid inputs are not
+silently downgraded to authoritative success.
 
-### `POST /api/v1/spec-to-eval`
-**Priority: P1**
-Converts structured Markdown PRDs into validated scenario JSON stubs.
+Use `POST /api/v1/evidence/verify-diagnostic` for explicit diagnostic analysis.
+Its result cannot certify a run. `GET /api/v1/runs/<run_id>/verify` additionally
+checks provider-owned sealed lifecycle state. See
+[cryptographic verification](/auditor/verification/) for complete examples.
 
-- **Body**:
-  - `markdown` (string): Raw Markdown content.
-  - `input_path` (string): Path to a Markdown file.
-- **Support**: Accepts **Raw Content**.
+## Other endpoints
 
-### `GET /api/v1/doctor`
-**Priority: P1**
-Environmental health audit. Checks project readiness, plugin loading, and catalog integrity.
-
-### `GET /api/v1/explain/<run_id>`
-**Priority: P2**
-Forensic Root Cause Analysis (RCA). Returns the primary failure trigger and causal chain.
-
----
-
-## 🛠️ Troubleshooting: Spec-to-Eval
-
-The `spec-to-eval` service uses a combination of hierarchical section splitting and LLM tasks synthesis. If parsing fails, verify the following Markdown requirements:
-
-### 1. Structure Requirements
-- **Title**: Must start with an H1 header (`# PRD: ...`).
-- **Sections**: Use H2 headers (`## Tasks`) to demarcate logic blocks.
-
-### 2. Common Parsing Pitfalls
-- **Missing Tasks**: If no `## Tasks` or `## Test Cases` section is found, the engine will attempt LLM synthesis. Ensure this section contains either a bulleted list or H3 sub-headers.
-- **Malformed Metadata**: Ensure `**Industry:**` and `**Use Case:**` segments are correctly labeled in the Overview.
-- **Topology Failures**: Agent topology requires the pattern `**AgentName:** writes to [X], reads from [Y]`.
-
-### 3. LLM Fallback Triggers
-If the heuristic parser cannot identify structured nodes, it triggers **Gemini-powered Synthesis**. Ensure `GOOGLE_API_KEY` is configured in your environment for high-fidelity fallback.
-
-### `GET /api/v1/runs/<run_id>/verify`
-**Priority: P0**
-Server-authoritative cryptographic verification endpoint. Evaluates Merkle root integrity, trace hashes, and Ed25519/ML-DSA digital signatures directly from disk.
-- **Response**:
-  - `verification_status` (`VERIFIED` | `FAILED_VERIFICATION` | `UNVERIFIED` | `NOT_FOUND`)
-  - `is_valid` (boolean)
-  - `algorithm` (e.g. `Ed25519`, `ML-DSA-65`)
-  - `is_pqc` (boolean)
-  - `failure_reason` (string, optional)
-
-### `GET /api/v1/runs/<run_id>/stream`
-**Priority: P0**
-Real-time SSE event streaming for live execution traces.
-- **Headers / Query Params**:
-  - `Last-Event-ID` or `?last_event_id=N`: Replays historical trace events from sequence `N + 1` before tailing live events.
-- **Payload Structure**:
-  - `id: <sequence>`
-  - `data: {"event": "execution_graph_node" | "execution_graph_edge" | "run_start" | ..., ...}`
-
-### `POST /api/scenarios/readiness`
-**Priority: P0**
-Preflight readiness gate evaluating scenario structure and environment attestation.
-- **Response**:
-  - `ready` (boolean)
-  - `is_executable` (boolean - workflow valid)
-  - `is_verifiable` (boolean - signed with persistent cryptographic sealer)
-  - `preflight_fingerprint` (SHA3-256 hash over scenario, model, and parameters)
-  - `checks` (array of individual probe statuses: `PASSED`, `WARNING`, `FAILED`)
-
----
-
-## 📂 Core Management APIs
-
-### `GET /api/scenarios`
-Faceted search across the global scenario catalog.
-
-### `POST /api/scenarios`
-Persist canonical AES scenarios with optimistic concurrency.
-- **Body**: Includes `expected_revision_hash` to reject concurrent overwrite conflicts (HTTP 409 Conflict).
-
-### `GET /api/info`
-Consolidated system health, engine versioning, and telemetry.
-
+`GET /api/v1/metrics`, `/api/v1/taxonomy`, `/api/v1/doctor`, and
+`/api/v1/explain/<run_id>` expose discovery and diagnostic services.
+`POST /api/v1/spec-to-eval` accepts `markdown` content or `input_path`.
+`GET /api/scenarios`, `POST /api/scenarios` and `GET /api/info` support catalog
+and management workflows. Scenario updates accept `expected_revision_hash` and
+reject conflicting writes with 409. Consult the
+[Extender API](/extender/api-reference/) for lifecycle transitions and certificate
+routes.

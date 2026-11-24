@@ -1,0 +1,58 @@
+{
+  "aes_version": 1.4,
+  "metadata": {
+    "name": "Generated Derivatives Trading Scenario 1 (Typo)",
+    "compliance_level": "Standard",
+    "capabilities": [],
+    "standards_registry": [],
+    "id": "gen-finance-derivatives-trading-1_mutated_typo",
+    "applied_mutations": [
+      {
+        "mutation_id": "mut_4450c4a1",
+        "type": "typo",
+        "stage": "SCENARIO_EDITED",
+        "execution_delivered": false,
+        "capability": {
+          "kind": "scenario_edit",
+          "delivery_evidence_required": false,
+          "execution_delivery_claim": false
+        },
+        "coordinate": {
+          "vector": "input",
+          "operation": "corrupt",
+          "tier": "T0_linguistic"
+        },
+        "timestamp": "2026-11-23T23:05:15.489418+00:00",
+        "details": {}
+      }
+    ],
+    "attribution": "AgentV Adversarial Mutator (typo)"
+  },
+  "description": "Automatically generated test case for derivatives trading in finance industry.",
+  "industry": "finance",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task_1",
+        "task_description": "User wants to eprfrom derivaitvess trding. Handle hte request ccoreectly.",
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Successfully handled derivatives trading.",
+            "mode": "exact"
+          }
+        ]
+      }
+    ],
+    "edges": []
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
+      ]
+    }
+  }
+}

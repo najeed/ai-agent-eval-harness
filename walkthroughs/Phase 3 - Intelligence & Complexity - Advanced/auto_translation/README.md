@@ -15,7 +15,7 @@ Look at `sample_prd.md`. It's a technical specification for an industrial reacto
 ### Step 2: Run the Translation Script
 This script will call the `auto-translate` command to parse the PRD and generate a valid AES JSON file.
 ```bash
-python walkthroughs/Phase 3 - Intelligence & Complexity - Advanced/auto_translation/Step_1_Translate_to_AES.py
+python "walkthroughs/Phase 3 - Intelligence & Complexity - Advanced/auto_translation/Step_1_Translate_to_AES.py"
 ```
 
 ### Step 3: Validate the AES JSON

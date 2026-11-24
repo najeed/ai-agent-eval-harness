@@ -15,7 +15,7 @@ In industrial environments, not everyone can trigger a multi-million token evalu
 ### Step 2: Audit Your Keys
 Run the permission verification script to see what your current mock key allows:
 ```bash
-python walkthroughs/Phase 4 - Production & Governance - Expert/permission_management/verify_permissions.py
+python "walkthroughs/Phase 4 - Production & Governance - Expert/permission_management/verify_permissions.py"
 ```
 
 ### Step 3: Escalate Access

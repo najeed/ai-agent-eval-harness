@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 from pathlib import Path
@@ -86,74 +85,20 @@ def _published_extension_spa_prefixes(
     Runtime contract, publisher, and artifact verification before its declared
     SPA paths may resolve to the Console shell.
     """
-    from agentv_runtime.extension_contract import RuntimeExtension
-
-    from .extension_publisher import verify_extension
+    from .extension_publisher import verified_active_extensions
     from .routes.trust import _public_key_pem_bytes
 
     root = Path(config.EXTENSION_ARTIFACT_DIR)
     if not root.is_dir():
         return []
-    enabled_raw = os.getenv("AGENTV_ENABLED_EXTENSION_IDS", "").strip()
-    enabled_ids = {item.strip() for item in enabled_raw.split(",") if item.strip()}
+    manifests = verified_active_extensions(
+        artifact_root=root,
+        public_key_pem=_public_key_pem_bytes,
+    )
+    if verified_manifests is not None:
+        verified_manifests.extend(manifests)
     prefixes: set[str] = set()
-    active_dir = root / ".active-releases"
-    has_active_registry = active_dir.is_dir() and any(active_dir.glob("*/*.json"))
-
-    candidates: list[tuple[Path, str | None]] = []
-    if has_active_registry:
-        for active_rec_file in sorted(active_dir.glob("*/*.json")):
-            try:
-                active_data = json.loads(active_rec_file.read_text(encoding="utf-8"))
-                ext_id = active_data.get("extension_id")
-                ver = active_data.get("version")
-                pub = active_data.get("publisher")
-                if ext_id and ver:
-                    manifest_path = root / ext_id / ver / "entry.manifest.json"
-                    candidates.append((manifest_path, pub))
-            except (OSError, json.JSONDecodeError):
-                continue
-    else:
-        candidates = [(p, None) for p in root.glob("*/*/entry.manifest.json")]
-
-    seen_extension_ids: set[str] = set()
-    for manifest_file, expected_publisher in candidates:
-        if not manifest_file.is_file():
-            continue
-        try:
-            raw_manifest = json.loads(manifest_file.read_text(encoding="utf-8"))
-            manifest = RuntimeExtension.from_dict(raw_manifest)
-        except (OSError, json.JSONDecodeError, ValueError) as exc:
-            print(f"   [Console] Ignoring invalid extension sidecar {manifest_file}: {exc}")
-            continue
-        if (
-            manifest.extension_id != manifest_file.parent.parent.name
-            or manifest.version != manifest_file.parent.name
-            or manifest.validate()
-        ):
-            print(f"   [Console] Ignoring contract-invalid extension sidecar {manifest_file}")
-            continue
-        if expected_publisher and manifest.publisher != expected_publisher:
-            print(f"   [Console] Ignoring publisher mismatch on {manifest_file}")
-            continue
-        if manifest.extension_id in seen_extension_ids:
-            print(f"   [Console] Duplicate extension ID {manifest.extension_id!r} ignored")
-            continue
-        if enabled_raw and manifest.extension_id not in enabled_ids:
-            print(f"   [Console] Extension {manifest.extension_id!r} is not enabled")
-            continue
-        verification = verify_extension(
-            extension_id=manifest.extension_id,
-            version=manifest.version,
-            public_key_pem=_public_key_pem_bytes,
-            artifact_root=root,
-        )
-        if not verification["valid"]:
-            print(f"   [Console] Ignoring unverified extension sidecar {manifest_file}")
-            continue
-        seen_extension_ids.add(manifest.extension_id)
-        if verified_manifests is not None:
-            verified_manifests.append(manifest)
+    for manifest in manifests:
         for route in manifest.routes:
             prefix = _safe_extension_route_prefix(route.path, reserved_roots)
             if prefix is None:

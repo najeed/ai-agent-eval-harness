@@ -127,3 +127,21 @@ def test_idempotent_convergence_reconciles_without_state_delta():
     assert rec["reconciled"] is True
     assert rec["state_hash_before"] == rec["state_hash_after"]
     assert rec["expected_change_checks"][0]["matched"] is True
+
+
+def test_empty_path_in_expected_state_changes_is_ignored():
+    """Entries without a path are skipped rather than crashing PathResolver."""
+    rec = build_reconciliation_record(
+        node_id="n1",
+        execution_mode="live",
+        state_before={},
+        state_after={"a": 1},
+        expected_state_changes=[
+            {"value": 99},
+            {"path": "", "value": 88},
+            {"path": "a", "value": 1},
+        ],
+    )
+    assert rec["reconciled"] is True
+    assert len(rec["expected_change_checks"]) == 1
+    assert rec["expected_change_checks"][0]["path"] == "a"

@@ -377,3 +377,93 @@ def test_identity_malformed_environment_key_is_observable(tmp_path, monkeypatch,
     diagnostic = next(r for r in caplog.records if "environment variable" in r.message)
     assert diagnostic.exc_info[0] is ValueError
     assert "invalid-pem" not in caplog.text
+
+
+def test_resolve_signature_policy_validation_errors(tmp_path):
+    import json
+
+    from agentv_runtime.signatures import SignatureContractError
+
+    with pytest.raises(SignatureContractError, match="outside the external trust root"):
+        IdentityService.get_signature_policy("../escape", trust_root=tmp_path)
+
+    id_dir = tmp_path / "signer_a"
+    id_dir.mkdir()
+    # Create valid public key
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+
+    priv = ed25519.Ed25519PrivateKey.generate()
+    pub_pem = priv.public_key().public_bytes(
+        serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo
+    )
+    (id_dir / "public_key.pem").write_bytes(pub_pem)
+
+    policy_file = id_dir / "signature_policy.json"
+    policy_file.write_text(json.dumps({"version": 2}), encoding="utf-8")
+    with pytest.raises(SignatureContractError, match="Malformed external signature policy"):
+        IdentityService.get_signature_policy("signer_a", trust_root=tmp_path)
+
+    policy_file.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "key_id": "k1",
+                "permitted_profiles": ["unknown.profile"],
+                "permitted_purposes": ["agentv.certificate"],
+                "revoked": False,
+            }
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(SignatureContractError, match="Unknown or ambiguous"):
+        IdentityService.get_signature_policy("signer_a", trust_root=tmp_path)
+
+    policy_file.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "key_id": "k1",
+                "permitted_profiles": ["agentv.signature.digest-envelope.v1"],
+                "permitted_purposes": ["agentv.certificate"],
+                "revoked": False,
+                "not_before": "2026-01-01T00:00:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(SignatureContractError, match="require a timezone"):
+        IdentityService.get_signature_policy("signer_a", trust_root=tmp_path)
+
+    policy_file.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "key_id": "k1",
+                "permitted_profiles": ["agentv.signature.digest-envelope.v1"],
+                "permitted_purposes": ["agentv.certificate"],
+                "revoked": False,
+                "not_before": "2026-01-01T00:00:00+00:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+    valid_policy = IdentityService.get_signature_policy("signer_a", trust_root=tmp_path)
+    assert valid_policy.not_before is not None
+
+
+def test_get_default_signer_env_branches(monkeypatch, tmp_path):
+    from unittest.mock import patch
+
+    from eval_runner.identity import get_default_signer
+    from eval_runner.runtime_services import NullSigningBackend
+
+    monkeypatch.delenv("FLIGHT_RECORDER_KEY_PATH", raising=False)
+    assert isinstance(get_default_signer(), NullSigningBackend)
+
+    monkeypatch.setenv("FLIGHT_RECORDER_KEY_PATH", str(tmp_path / "k.pem"))
+    with patch(
+        "eval_runner.runtime_services.resolve_signing_backend", return_value="resolved"
+    ) as m:
+        assert get_default_signer() == "resolved"
+        m.assert_called_once()

@@ -48,9 +48,9 @@ We strictly adhere to a **Zero-Touch Core** architectural mandate. Pull Requests
 The Zero-Touch Core is designed to be extended without core PRs.
 - **Lifecycle Hooks**: Subscribe to `before_evaluation`, `after_evaluation`, `on_step_start`, `on_step_end`, `on_tool_request`, `on_before_commit`, `on_approval_created`, or dynamic event bus hooks (`on_turn_start`, `on_turn_end`).
 - **Interception**: Use `on_tool_request` to enforce safety or HITL proxies. Return `False` to block a tool call.
-- **CLI Commands**: Use `on_register_commands` to register namespaced CLI subcommands (under `agentv plugin <name>`).
+- **CLI Commands**: Register a callable through `agentv_runtime.cli_extensions`; the CLI calls it with argparse subparsers. `on_register_commands` is not invoked by this path. Authors must choose distinct command names (see the [CLI extension guide](/extender/cli-extensions/)).
 - **Event Bus**: Use `EventEmitter.subscribe(callback)` for passive monitoring.
-- **Entry Points**: Register your plugins in your `pyproject.toml` under `eval_runner.plugins`.
+- **Entry Points**: Register your plugins in your `pyproject.toml` under `agentv_runtime.plugins`.
 - **Timeouts**: All plugin hooks are subject to a 5-second timeout to prevent hang conditions.
 
 ---
@@ -70,4 +70,3 @@ Focus on technical excellence. Submissions that do not meet the architectural st
 ---
 
 **Questions?** Reach out via GitHub Discussions or open an Issue.
-

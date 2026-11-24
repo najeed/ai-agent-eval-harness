@@ -34,14 +34,14 @@ agentv evaluate \
 
 # SSE Streaming Agent
 agentv evaluate \
-  --path industries/finance/scenarios/loan_scenario.json \
+  --path industries/finance/scenarios/loan_approval_risk_check.json \
   --agent sse://localhost:5005/stream
 ```
 
 ### 🧩 `run` — Single Scenario
 Use this for rapid iteration during prompt engineering or scenario design.
 ```bash
-agentv run --scenario industries/finance/scenarios/loan_v1.json -v
+agentv run --scenario industries/finance/scenarios/loan_approval_risk_check.json -v
 ```
 
 ### ⏸️ `hitl-resume` — Human-in-the-Loop Resumption
@@ -91,7 +91,7 @@ shared filesystem layout.
 ## 🔍 Drift & Triage
 
 ### Import Drift
-Convert production traces into actionable evaluation scenarios for regression testing.
+Convert production histories into editable AES scaffolds under `scenarios/`; refine the task and assertions before using them for regression testing.
 ```bash
 agentv import-drift --input logs.jsonl --industry healthcare
 ```

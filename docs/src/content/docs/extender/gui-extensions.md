@@ -3,187 +3,85 @@ title: Visual Console GUI Extensibility & Micro-Frontends
 description: Learn how to build and integrate custom GUI micro-frontends, navigation routes, and sidebar badges into the AgentV Visual Console without modifying core source code.
 ---
 
-AgentV v2.0.0 features **Zero-Trust Sandboxed Remote Micro-Frontends** and **Dynamic Navigation Manifest Ingestion** for the canonical Visual Console mounted at `/` (with backward-compatible `/v2` routing). 
+The Visual Console loads signed ESM releases without rebuilding the host.
+Extensions execute as React components in the host; this is a publisher trust
+boundary, not an iframe sandbox. Production rejects unsigned and community
+modules and mounts only backend-verified official publishers.
 
-This architecture allows Python plugins, third-party libraries, and enterprise control planes to inject custom tabs, sidebar entries, and interactive React micro-frontend views directly into the console **with zero build-time recompilation of the Open Core**, protected by cryptographic Subresource Integrity (`SHA-384`) digests and strict sandbox isolation.
+## Build a host React peer
 
----
+Export a React component and keep `react`/`react-dom` external so imports resolve
+to the host singleton. Keep imported relative chunks inside the entry directory.
+Use the authenticated host API supplied to mounted pages for requests and context
+switching rather than deriving permissions from client-controlled labels.
 
-## 🏛️ Architectural Overview
+The host page contract includes `context`, `switchContext`, `authorizedFetch` and
+the declared route. Server endpoints must independently enforce permissions and
+the provider-owned active scope. Navigation fields such as badges and icons are
+presentation only.
 
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                     Python Backend (Plugin Layer)                      │
-│                                                                        │
-│  1. Plugin defines on_register_console_routes(app, nav_registry)       │
-│  2. Registers custom Flask API blueprints                              │
-│  3. Appends NavItem metadata (with integrity hash) to nav_registry     │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    │ GET /api/nav (JSON Manifest)
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│               Visual Console (Open Core React Frontend)                │
-│                                                                        │
-│  1. Ingests Manifest on mount via TanStack Query                       │
-│  2. Verifies Subresource Integrity (SHA-384 WebCrypto digest)          │
-│  3. Renders Badges ("LIVE", "APM", "CUSTOM"), Tiers, & Icons           │
-│  4. Mounts verified remote bundle inside isolated sandbox / blob URL   │
-│  5. Fault-isolated inside RemoteErrorBoundary                          │
-└────────────────────────────────────────────────────────────────────────┘
-```
+## Declare a release
 
+Save a declaration such as `extension-declaration.json` alongside your build:
 
----
-
-## 📋 Navigation Manifest Schema
-
-When your plugin appends navigation metadata to `nav_registry`, it conforms to the following schema:
-
-```typescript
-export interface NavItem {
-  id?: string;                  // Unique identifier (e.g. "fleet_monitor")
-  name: string;                 // Display label in the sidebar
-  path: string;                 // Route path (e.g. "/fleet") or external URL ("https://...")
-  icon?: string;                // Lucide icon name (e.g. "Cpu", "Layers", "Radio", "Terminal")
-  group?: 'Work' | 'Govern' | 'Admin' | string; // Target nav group (Work, Govern, Admin)
-  badge?: string;               // Optional badge chip (e.g. "LIVE", "HOT-RELOAD", "FLEET", "CUSTOM")
-  tier?: 'core' | 'enterprise'; // Visual tier accent (amber accent for 'enterprise')
-  remoteEntry?: string;         // ESM bundle URL for dynamic micro-frontend mounting
-  required_role?: string[];     // Optional RBAC restrictions checked against server session claims
+```json
+{
+  "extension_id": "fleet-monitor",
+  "display_name": "Fleet Monitor",
+  "version": "1.0.0",
+  "api_version": "1.0.0",
+  "compatibility_version": "2.0.0",
+  "compatible_runtime_versions": ["2.0.0"],
+  "capabilities": ["routes", "navigation", "runs:read"],
+  "required_permissions": ["runs:read"],
+  "routes": [{"path": "/fleet", "label": "Fleet Monitor", "required_permissions": ["runs:read"]}],
+  "navigation": [{"path": "/fleet", "title": "Fleet Monitor", "group": "Govern"}],
+  "nav_group": "extensions",
+  "host_apis": ["runtime.runs.list"],
+  "react_peer": true,
+  "lifecycle": {}
 }
 ```
 
-### Supported Icon Identifiers
-The console's dynamic icon resolver automatically maps standard icon string keys to Lucide icons:
-- `home`, `filetext`, `play`, `activity`, `barchart`, `shield`, `shieldcheck`, `settings`, `bookopen`, `server`, `bell`, `heartpulse`, `layers`, `cpu`, `radio`, `terminal`, `zap`, `compass`, `sparkles`
-- Any unknown or unspecified icon gracefully defaults to `chevronright`.
+This is a frontend release declaration, not the more limited generic JSON Schema.
+The publisher supplies `remote_entry`, `sri_hash`, `verified_chunks`, `publisher`
+and `signature`, bound to the actual entry/chunk bytes.
 
----
+## Publish and activate
 
-## 🛠️ Step-by-Step Guide: Building a GUI Extension
+Configure a publisher identity and trusted public key before publishing. The
+example identity must be authorized as an official publisher by the deployment
+to load in production; publishing alone does not confer that status.
 
-### Step 1: Register Console Routes in Python Plugin
-
-In your Python plugin class (inheriting from `BaseEvalPlugin`), implement `on_register_console_routes`:
-
-```python
-from eval_runner.plugins import BaseEvalPlugin
-from flask import Blueprint, jsonify, send_from_directory
-from pathlib import Path
-
-plugin_bp = Blueprint("my_plugin", __name__)
-
-
-@plugin_bp.route("/api/my-plugin/status")
-def plugin_status():
-    return jsonify({"status": "healthy", "nodes": 42})
-
-
-@plugin_bp.route("/static/my-plugin/<path:filename>")
-def serve_mfe_bundle(filename):
-    static_dir = Path(__file__).parent / "dist"
-    return send_from_directory(static_dir, filename)
-
-
-class MyFleetExtensionPlugin(BaseEvalPlugin):
-    def on_register_console_routes(self, app, nav_registry):
-        # 1. Register backend API blueprint
-        app.register_blueprint(plugin_bp)
-
-        # 2. Inject navigation item into sidebar
-        nav_registry.append(
-            {
-                "id": "fleet_management",
-                "name": "Fleet APM",
-                "path": "/fleet",
-                "icon": "Cpu",
-                "group": "Govern",
-                "badge": "LIVE",
-                "tier": "enterprise",
-                "remoteEntry": "/static/my-plugin/fleet-bundle.js",
-                "required_role": ["System Admin", "MultiAgentOps Eng."],
-            }
-        )
+```bash
+agentv extension publish --entry dist/fleet.js --extension-id fleet-monitor --publisher PUBLISHER_ID --extension-version 1.0.0 --manifest extension-declaration.json --activate
+agentv extension verify --extension-id fleet-monitor --extension-version 1.0.0
 ```
 
----
+The publisher signs and atomically installs the release under the configured
+artifact root (`AGENTV_EXTENSION_ARTIFACT_DIR`, default `.agentv/extensions`).
+It writes the sidecar and integrity map used by pre-execution validation.
+Production requires `react_peer: true`; declare all relative chunks and do not
+bundle a second React runtime.
 
-### Step 2: Build the Micro-Frontend React Component
-
-Create a standalone Vite/Rollup project for your custom tab.
-
-#### Component Code (`src/FleetView.tsx`):
-```tsx
-import React, { useState, useEffect } from 'react';
-
-export default function FleetView() {
-  const [data, setData] = useState<{ status: string; nodes: number } | null>(null);
-
-  useEffect(() => {
-    fetch('/api/my-plugin/status')
-      .then(res => res.json())
-      .then(setData)
-      .catch(console.error);
-  }, []);
-
-  return (
-    <div className="p-8 space-y-6">
-      <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-        <div>
-          <h1 className="text-xl font-bold text-white tracking-tight">Agent Fleet Telemetry</h1>
-          <p className="text-xs text-slate-400">Real-time distributed agent cluster telemetry.</p>
-        </div>
-        <span className="px-2.5 py-1 text-xs font-bold rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-          ● {data?.status || 'Connecting...'}
-        </span>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Active Nodes</span>
-          <p className="text-2xl font-mono font-bold text-indigo-400">{data?.nodes ?? '-'}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
+```bash
+agentv extension activate --extension-id fleet-monitor --extension-version 1.0.0
+agentv extension rollback --extension-id fleet-monitor --extension-version 1.0.0
+agentv extension unpublish --extension-id fleet-monitor --extension-version 1.0.0
 ```
 
-#### Vite Configuration (`vite.config.ts`):
-Configure Vite to bundle as a standalone standard ESM module:
-```ts
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+Rollback selects a retained verified version. Repair requires bytes matching a
+retained signed release and an entry path; it cannot bless arbitrary new bytes.
+Use `agentv extension repair --help` for its required arguments.
 
-export default defineConfig({
-  plugins: [react()],
-  build: {
-    lib: {
-      entry: './src/FleetView.tsx',
-      formats: ['es'],
-      fileName: () => 'fleet-bundle.js',
-    },
-    rollupOptions: {
-      // Externalize react/react-dom to share single runtime instance
-      external: ['react', 'react-dom'],
-      output: {
-        globals: {
-          react: 'React',
-          'react-dom': 'ReactDOM',
-        },
-      },
-    },
-  },
-});
-```
+## Loader policy
 
----
+The host fetches entry bytes and validates SRI, reads the signed sidecar, checks
+API/route/permission declarations and publisher trust, then verifies relative
+chunks. It imports verified in-memory blobs to avoid a second unverified fetch.
+Cross-origin releases require pinned integrity and the same publisher checks.
+Self-declared trust tiers never override backend classification.
 
-## 🔒 Zero-Trust Security & Fault Isolation
-
-1. **Origin Verification & Safe Remote Loading**: The `RemoteComponentLoader` enforces strict trusted origin boundaries (`localhost`, `127.0.0.1`, current origin) and blocks untrusted third-party hosts before dynamic `import()` execution.
-2. **Server-Authoritative RBAC**: Navigation items gated with `required_role` are evaluated against server-provided identity claims (`GET /api/auth/me`), eliminating client-side spoofing.
-3. **Error Boundary Containment**: Remote components are automatically wrapped inside `RemoteErrorBoundary`. If a plugin throws a rendering or network error, only that tab displays a diagnostic card—the host console and sidebar remain completely operational.
-4. **Graceful Offline Fallback**: If `/api/nav` is unreachable or the backend is offline, the Visual Console falls back cleanly to the built-in core navigation structure.
-
+An error boundary contains rendering failures, but does not isolate a module's
+JavaScript privileges. `ExtensionRuntimeContextApi` is the supported host
+communication surface; `postMessage` is not an iframe integration protocol here.

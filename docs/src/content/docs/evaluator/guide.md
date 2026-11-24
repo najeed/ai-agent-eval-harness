@@ -22,8 +22,8 @@ graph LR
 
 1. **Scenario & Preflight**: Scenario definitions are validated against AES schemas, and a SHA3-256 `preflight_fingerprint` ensures readiness.
 2. **Sandboxed Execution**: Agents interact with isolated **World Shims** (mock databases, REST APIs, Git repositories, email clients) while the engine captures OpenTelemetry-aligned event streams.
-3. **Verification Engine**: The runtime executes deterministic assertions (`state_verification`, `tool_call_correctness`, `numerical_tolerance`, `json_schema`, `regex`, and semantic LLM judges).
-4. **Trust & Certification**: The engine hashes execution traces, computes the seal hash anchor, and issues a cryptographically signed Verification Certificate (`run_manifest.json`).
+3. **Verification Engine**: The runtime executes deterministic assertions (registered metrics such as `state_verification` and `tool_call_correctness`, plus separate expected-outcome assertions and semantic judges).
+4. **Trust & Certification**: Execution records evidence and finalization. A separate certification operation verifies eligible live evidence and atomically publishes a signed certificate with sealed provider state.
 5. **Reports & Evidence**: Generation of truthful executive PDF reports and self-contained immutable Verification Packages (`.agentv-package.json`).
 
 ---
@@ -91,12 +91,12 @@ AgentV evaluates agent trajectories across multiple rigorous metric categories:
 
 | Metric Name | Category | Evaluation Method |
 | :--- | :--- | :--- |
-| `tool_call_correctness` | Tooling | Exact set-match and argument validation of actual vs expected tool calls. |
+| `tool_call_correctness` | Tooling | Set comparison of actual and expected tool names; arguments are not checked by this metric. Use explicit assertions for argument validation. |
 | `state_verification` | State | Deep-equality check of virtual environment state using dot-notation JSON paths. |
-| `numerical_tolerance` | Numerical | Mathematical verification ensuring values fall within specified absolute or relative bounds. |
-| `json_schema` | Structured | Strict JSON Schema validation against structured agent JSON outputs. |
-| `regex` | Textual | Pattern matching validating required structural phrases, codes, or formats. |
-| `policy_compliance` | Governance | Rule engine verifying strict adherence to declared industry policies. |
+| `calculation_accuracy` | Numerical metric | Compares expected and observed numeric content. |
+| Structured assertions | Separate contract | Use supported assertion contracts; `json_schema` is not a built-in metric name. |
+| `expected_outcome.mode=regex` | Assertion mode | Pattern matching under the separate expected-outcome contract. |
+| `policy_compliance` | Governance | Returns failure when history recursively contains `status: "policy_violation"`. PolicyEvaluator enforcement and policy configuration are separate. |
 | `delegation_loop_risk` | Efficiency | Loop-detector identifying infinite reasoning cycles or ping-pong replanning. |
 | `luna_judge_score` | Semantic | Asynchronous LLM judge scoring based on custom rubrics (`clinical_safety`, `fiduciary_accuracy`). |
 

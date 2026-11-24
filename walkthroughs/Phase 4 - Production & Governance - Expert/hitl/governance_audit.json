@@ -1,6 +1,8 @@
 {
-    "timestamp": "2026-04-03",
-    "governor": "Current User",
-    "decision": "REJECTED",
-    "reason": ""
+    "timestamp": "2026-11-24",
+    "governor": "HumanGovernor",
+    "approval_token": "app_token_hotpatch_001",
+    "decision": "APPROVED",
+    "reason": "Test reason",
+    "store_status": "APPROVED"
 }

@@ -28,20 +28,24 @@ v MAJOR . MINOR . PATCH
 
 The following subsystems form the **Sealed Public Contract Surface** of AgentV. Any backward-incompatible change to these surfaces requires a **MAJOR** version bump.
 
-### 2.1. Extension Families (`agentv_runtime.interfaces`)
-The Abstract Base Classes (ABCs) that define external integration boundaries across all 10 core extension families:
-- `ExecutionBackend`: `submit()`, `status()`, `cancel()`, `resume()`
-- `CheckpointStore`: `save()`, `load()`, `delete()`, `list_checkpoints()`
-- `SigningBackend`: `sign_payload()`, `verify_signature()`
-- `ArtifactStore`: `store_artifact()`, `get_artifact()`, `exists()`, `list_artifacts()`
-- `PolicyEvaluator`: `evaluate_policy()`, `validate_policy()`
-- `AuthorizationBackend`: `validate_token()`, `check_permission()`
-- `CatalogStore`: `list_scenarios()`, `get_scenario()`, `save_scenario()`, `delete_scenario()`
-- `RunStore`: `get_run()`, `list_runs()`, `save_run_manifest()`, `delete_run()`
-- `LeaderboardStore`: `get_leaderboard()`, `record_run_summary()`
-- `ApprovalStore`: `request_approval()`, `get_approval()`, `resolve_approval()`, `list_pending()`
-- `MutationEngine`: `mutate()`, `describe()`
-- `BoundedStateProvider`: `get_state()`, `snapshot_state()`
+### 2.1. Extension families
+
+The twelve current provider families are listed below. `RunStore` aliases
+`RunStorageProvider`. Exact signatures, scope, signing responses and atomicity
+requirements are documented in the [public extension contracts](/extender/extension-families/).
+
+- `ExecutionBackend`: `submit()`, `status()`, `cancel()`, `resume()`.
+- `CheckpointStore`: `save()`, `load()`, `delete()`, `list_checkpoints()`.
+- `SigningBackend`: `can_sign()`, `sign_payload()`, `verify_signature()`.
+- `ArtifactStore`: `store_artifact()`, `get_artifact()`, `exists()`, `list_artifacts()`, `seal()`, `is_sealed()`, `supports_transactional_seal()`.
+- `PolicyEvaluator`: `evaluate_policy()`, `validate_policy()`.
+- `AuthorizationBackend`: `validate_token()`, `check_permission()`, `get_service_credential()`.
+- `CatalogStore`: `list_scenarios()`, `get_scenario()`, `save_scenario()`, `delete_scenario()`.
+- `RunStorageProvider`: `create_run()`, `reserve_submission()`, `get_submission()`, `transition_submission()`, `get_run()`, `get_manifest()`, `get_events()`, `get_trace_bytes()`, `update_run_status()`, `append_events()`, `save_run_manifest()`, `delete_run()`, `list_runs()`, `search_runs()`, `stream_events()`, `get_lifecycle()`, `acquire_certification_lease()`, `verify_certification_lease()`, `renew_certification_lease()`, `release_certification_lease()`, `is_certification_leased()`, `commit_certification()`.
+- `LeaderboardStore`: `get_leaderboard()`, `record_run_summary()`.
+- `MutationEngine`: `mutate_scenario()`, `apply_in_run()`, `list_supported_mutators()`, `list_mutation_catalog()`.
+- `BoundedStateProvider`: `query_bounded_reference()`, `commit_state_transition()`, `get_all_state()`.
+- `ApprovalStore`: `create_request()`, `get_request()`, `get()`, `get_request_by_run_id()`, `resolve_request()`, `list_pending()`, `stream_pending()`, `delete_request()`.
 
 ### 2.2. Subsystem Contract Version Dunders
 Published in `agentv_runtime` and `eval_runner`:
@@ -61,7 +65,7 @@ Published in `agentv_runtime` and `eval_runner`:
 - Universal immutable schema registry validation for all `.json` and `.yaml` scenario manifests.
 
 ### 2.5. Plugin Discovery & Two-Tier Hook Architecture
-- `PluginManager` dynamic and persistent registration mechanisms via Python entry points (`agentv.plugins`).
+- `PluginManager` dynamic and persistent registration mechanisms via Python entry points (`agentv_runtime.plugins`).
 - `BaseEvalPlugin` 17 native abstract lifecycle & interceptor hooks:
   - Lifecycle: `before_evaluation`, `after_evaluation`, `on_step_start`, `on_step_end`, `on_tool_request`, `on_before_commit`, `on_rollback`, `on_approval_request`, `on_approval_created`, `on_approval_resolved`, `on_artifact_created`.
   - Discovery & Registration: `on_register_commands`, `on_discover_adapters`, `on_register_simulators`, `on_discover_metrics`, `on_diagnose_failure`.

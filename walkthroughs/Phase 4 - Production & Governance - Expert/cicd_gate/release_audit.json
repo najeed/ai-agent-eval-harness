@@ -1,1 +1,11 @@
-{"timestamp": "2026-04-03", "status": "REJECTED", "violation": "spearman_rho_low"}
+{
+    "timestamp": "2026-11-24",
+    "candidate": "v2.4.1-ULTRA",
+    "status": "REJECTED",
+    "violation": "spearman_rho_low",
+    "metrics": {
+        "spearman_rho": 0.64,
+        "mean_score": 0.92
+    },
+    "threshold": 0.7
+}

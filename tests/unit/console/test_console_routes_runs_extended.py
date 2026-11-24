@@ -121,7 +121,7 @@ def test_certificate_reads_provider_manifest(client, provider):
     assert response.get_json()["verification_package"]["id"] == "package-1"
 
 
-def test_explain_reads_provider_events(client, provider):
+def test_explain_reads_provider_events_http_endpoint(client, provider):
     _seed_run(provider, "explain", events=[{"event": "run_start", "_seq": 1}])
 
     with patch("eval_runner.console.routes.runs.explain_events", return_value={"rca": "ok"}):

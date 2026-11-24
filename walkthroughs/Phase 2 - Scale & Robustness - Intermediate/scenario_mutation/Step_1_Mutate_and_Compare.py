@@ -1,5 +1,6 @@
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 
@@ -11,11 +12,9 @@ def main():
 
     # Locate project root
     root = Path(__file__).parent.parent.parent.parent
-    base_scenario = root / "scenarios" / "finance" / "ledger_verification.json"
-    mutated_dir = root / "walkthroughs" / "intermediate" / "scenario_mutation" / "mutated_files"
-    delta_file = (
-        root / "walkthroughs" / "intermediate" / "scenario_mutation" / "mutation_delta.json"
-    )
+    base_scenario = root / "scenarios" / "finance" / "gen_finance_derivatives_trading_1.json"
+    mutated_dir = Path(__file__).parent / "mutated_files"
+    delta_file = Path(__file__).parent / "mutation_delta.json"
 
     print("\nStep 1: Running the Baseline.")
     print(f"Executing '{base_scenario.name}'—a scenario we know is solved perfectly.")
@@ -36,14 +35,14 @@ def main():
     try:
         subprocess.run(
             [
-                "python",
+                sys.executable,
                 "-m",
                 "eval_runner.cli",
                 "mutate",
                 "--path",
                 str(base_scenario),
                 "--type",
-                "typos",
+                "typo",
                 "--output",
                 str(mutated_file),
             ],

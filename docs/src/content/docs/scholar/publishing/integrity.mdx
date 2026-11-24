@@ -3,63 +3,54 @@ title: The Trust Protocol
 description: Non-repudiable forensic signing for agentic evaluation results.
 ---
 
-# Forensic Result Integrity
+# Evidence integrity for research
 
-For academic and industrial publications, it is not enough to report a score. You must provide a **proof of integrity**. AgentV implements the **Trust Protocol**, a cryptographic framework based on the **Verification Certificate (VC) v3** standard.
+Publish enough evidence to distinguish execution, evaluation and certification.
+A completed conversation, a score or an exported ZIP alone is not a certified
+passing result.
 
-## Asymmetric & Hybrid Forensic Signing
+## Execute and certify
 
-Every evaluation trace in AgentV can be cryptographically sealed using asymmetric cryptography (ED25519) and optional Post-Quantum Cryptography (ML-DSA):
+Run an explicitly configured agent against the actual scenario with the intended
+execution mode and required independent observations. Undeclared execution mode
+defaults to simulated. A live/hybrid label alone does not prove live state;
+certification reconciles actual provenance and required oracle outcomes.
 
-- **Evaluator Identity & Trust Roots**: The `IdentityService` manages research identities and key pairs. In certified evaluation environments, signing keys are bound to authorized organizational identities.
-- **RFC 8785 JCS Canonicalization**: Event streams and metadata payloads are normalized using pure RFC 8785 JSON Canonicalization Scheme (JCS), ensuring identical hash calculation regardless of runtime or OS platform.
-- **Whole-Envelope Detached Sealing**: Trace seals bind the entire trust envelope (`signer_identity`, `key_id`, `algorithm`, `trace_digest`, `event_count`, `sealed_at`, `metadata`) prior to signing.
-- **Fail-Closed Persistence**: Under certification mode, any event write failure immediately aborts the run, transitions status to `CERTIFICATION_FAILED`, and permanently blocks certificate generation.
-- **Artifact Binding**: The Trust Protocol binds the canonical scenario definition (`scenario_hash`), execution manifest, and all sidecar artifacts (HTML reports, trajectory plots) into an unbroken evidence chain.
-
----
-
-## Certification Workflow
-
-### 1. Execute & Certify
-After a successful evaluation run, use the `certify` command to generate the authoritative signature:
-```bash
-agentv certify --run-id <run_id>
-```
-*Note*: The evaluation verdict (`CERTIFIED`, `FAILED`) and score are derived server-authoritatively from terminal execution events; caller overrides are strictly prohibited.
-
-### 2. The Verification Certificate (VC v3.0.0)
-The output is a `run_manifest.json` file containing:
-- **`signature`**: The Ed25519 / ML-DSA detached signature over the canonical trust envelope.
-- **`evidence_ledger`**: A SHA3-256 manifest of every artifact generated during the run.
-- **`scenario_binding`**: Bound `scenario_id`, `scenario_version`, and canonical `scenario_hash`.
-- **`system_id` & `key_id`**: The cryptographic identity and key identifier of the certifying evaluator.
-
----
-
-## Verification & Independent Gating
-
-Peer reviewers can verify your results using the `agentv verify` or `agentv verify-package` command:
+For an eligible completed run with a configured signer:
 
 ```bash
-# Verify run directory within local vault
-agentv verify --run-id <run_id> --pqc
-
-# Verify standalone single-file research package with public key and scenario binding
-agentv verify-package ./run_evidence.agentv-package.json \
-  --public-key .aes/keys/trust_root_pub.pem \
-  --require-signature \
-  --scenario scenarios/baseline.json \
-  --require-scenario
+agentv certify --run-id RUN_ID
+agentv verify --run-id RUN_ID
+agentv gate --run-id RUN_ID --verify-ledger
 ```
 
-The engine will return **`SIGNATURE_MATCH`** only if:
-1. **Trace Non-Repudiation**: The behavioral DNA trace byte stream matches the signed digest.
-2. **Artifact Integrity**: Every report artifact in the `evidence_ledger` matches its test-time SHA3-256 hash.
-3. **Scenario Exactness**: The bound `scenario_hash` recomputed via RFC 8785 matches the executed scenario.
-4. **External Trust Root Validation**: The signature validates against an external certificate authority or trusted registry; unanchored self-attestation is strictly rejected as `UNVERIFIED`.
+The provider atomically commits the certificate and sealed lifecycle. The verdict
+and score come from the observed evidence, not caller overrides. Valid negative
+attestations must not be presented as passing certification.
 
-:::tip
-**Trace Provenance**: Verification Certificates are linked to the raw `run.jsonl` trace via a content hash. Any modification to the trace file will invalidate the certificate.
-:::
-> **Use in Papers**: Include your **Public Key Fingerprint** and root certificate URI in your research paper's "Data Availability" statement. This allows auditors to search global agent registers (where applicable) and verify your findings independently.
+## Current signatures
+
+Certificate, typed verification package and evaluator finalization signatures use
+[`agentv.signature.digest-envelope.v1`](/spec/digest-signature-envelope/).
+The exact unsigned projection, canonical envelope, purpose, external signer/key
+policy and strict base64 signature encoding are part of verification. Old raw
+hex signatures are not the current artifact contract. The package hash, trace
+digest and envelope payload digest are separate commitments.
+
+## Independent verification
+
+Distribute the signed package, exact committed `run.jsonl`, actual execution
+manifest, executed scenario and externally trusted public key:
+
+```bash
+agentv verify-package evidence.agentv-package.json --trace run.jsonl --execution-manifest execution_manifest.json --scenario scenario.json --require-scenario --public-key trusted-public.pem
+```
+
+Success requires the package signature, raw trace, manifest/scenario, evidence
+graph, complete oracle inventory and signed finalization to agree. Provider-native
+run verification additionally checks sealed lifecycle state. Signature-only or
+unsigned diagnostic success is not a complete authority verdict. Report the
+actual verification status rather than an obsolete `SIGNATURE_MATCH` label.
+
+Keep signer fingerprints, dataset/model revisions, seeds and environment details
+with your research materials so another reviewer can interpret the claim's scope.

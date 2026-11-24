@@ -13,7 +13,7 @@ from eval_runner.reference import (
 )
 
 
-def test_agentv_runtime_metadata_and_exports():
+def test_extension_families_runtime_metadata_and_exports():
     import agentv_runtime.interfaces
     import agentv_runtime.reference
     import agentv_runtime.session_components

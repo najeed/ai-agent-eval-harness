@@ -16,7 +16,7 @@ In industrial AI verification, you rarely test one agent. You test a fleet. **Mo
 ### Step 2: Generate the Leaderboard
 Run the leaderboard generation script to simulate the aggregation of results from a Model Wars run:
 ```bash
-python walkthroughs/Phase 4 - Production & Governance - Expert/publication_wars/generate_leaderboard.py
+python "walkthroughs/Phase 4 - Production & Governance - Expert/publication_wars/generate_leaderboard.py"
 ```
 
 ### Step 3: Analysis

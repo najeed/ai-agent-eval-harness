@@ -30,7 +30,7 @@ def test_wilson_score_interval(plugin):
     assert margin_zero < 0.1
 
 
-def test_calculate_pass_at_k(plugin):
+def test_publication_plugin_calculate_pass_at_k(plugin):
     """Verifies Pass@k estimation for various distributions."""
     # Case: 5 runs, 3 passes. Calculate pass@1, 3, 5
     pass_flags = [True, True, True, False, False]

@@ -1,6 +1,7 @@
 import json
-import time
 from pathlib import Path
+
+from eval_runner.metrics.core import calculate_consensus_scoring
 
 
 def main():
@@ -23,34 +24,32 @@ def main():
     print(f"\nExecuting the **{protocol['protocol_name']}** (v{protocol['version']}).")
     print("Current Council: Luna-1, Luna-2, Luna-3.")
 
-    input("\n[Press ENTER] to starting the deliberation...")
+    input("\n[Press ENTER] to start the deliberation...")
 
-    # Simulating the multi-judge evaluation process
-    print("\n   [Luna-1] Evaluated: Pass (Reasoning Depth: 9/10)")
-    time.sleep(1)
-    print("   [Luna-2] Evaluated: Fail (Constraint Gap: 4/10)")
-    time.sleep(1)
-    print("   [Luna-3] Evaluated: Pass (Compliance: 10/10)")
+    # Multi-judge evaluations
+    judge_evals = [
+        "The model accurately identified the thermal leak and recommended containment.",
+        "The model identified the leak but missed secondary compliance verification.",
+        "The model accurately identified the thermal leak in full compliance with safety protocol.",
+    ]
 
-    # Calculate the Weighted Majority
-    print("\nStep 2: Resolving the Conflict.")
-    print("Conflict detected: [Luna-1: Pass] vs [Luna-2: Fail].")
+    print("\n   [Luna-1] Evaluated: 'Accurately identified leak, recommended containment'")
+    print("   [Luna-2] Evaluated: 'Identified leak but missed secondary verification'")
+    print("   [Luna-3] Evaluated: 'Accurately identified leak in full compliance'")
 
-    input("\n[Press ENTER] to consult the weighted IJA rules...")
+    # Calculate live consensus using the engine metric
+    print("\nStep 2: Resolving the Conflict via Engine Metrics...")
+    consensus = calculate_consensus_scoring(judge_evals)
 
-    # Logic: Luna-2 has weight 1.5, Luna-1 and Luna-3 have 1.0.
-    # Total Pass = Luna-1(1.0) + Luna-3(1.0) = 2.0
-    # Total Fail = Luna-2(1.5) = 1.5
-    # Majority = Pass (2.0 > 1.5)
+    threshold = 0.50
+    passed = consensus >= threshold
 
     print("\n📊 Consensus Audit Report:")
-    print("1. **Raw Vote**: [Pass, Fail, Pass]")
-    print("2. **Weighted Vote**: [Pass: 2.0, Fail: 1.5]")
-    print("3. **Outcome**: SUCCESS (Pass)")
+    print(f"1. **Agreement Score (Jaccard Pairwise)**: {consensus:.2f}")
+    print(f"2. **IJA Threshold**: {threshold:.2f}")
+    print(f"3. **Outcome**: {'SUCCESS (Consensus Reached)' if passed else 'FAILED (Discord)'}")
 
     print("\n🎉 Success! You have reached a consensus among the giants.")
-    print("\n============================================")
-    print("Proceed to: 17_Human_In_The_Loop (The Human Governor)")
     print("============================================")
 
 

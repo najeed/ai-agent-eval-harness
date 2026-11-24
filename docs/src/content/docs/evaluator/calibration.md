@@ -3,71 +3,57 @@ title: LLM Judge Calibration
 description: Measure and improve the alignment between automated LLM judges and human-labeled ground truth scoring.
 ---
 
-This guide explains how to measure and improve the alignment between automated LLM judges and human-labeled ground truth scoring.
+Calibration compares recorded evaluation values with human labels matched by
+`task_id`. It measures agreement on the supplied sample; it does not establish
+that a judge is correct for every task or prevent all fallback scoring.
 
-## Why Calibrate?
-LLM-as-a-judge is powerful but can be prone to "self-correction bias" or "vagueness." Calibration ensures that a `0.8` semantic score accurately reflects the level of correctness required by auditors and industry stakeholders.
+## Supply human labels
 
-## The Calibration Workflow
-
-### 1. Labeling Ground Truth
-Ensure your scenarios include a `human_score` field in the criteria metadata. This represents the "Gold Standard" from a subject matter expert.
+Create `data/golden_labels.json` containing a task-ID-to-number map. Use the
+exact task IDs in the run's `evaluation` events, not display titles:
 
 ```json
 {
-  "metric": "luna_judge_score",
-  "threshold": 0.8,
-  "human_score": 0.9,
-  "required": true,
-  "judge_config": {
-    "judge_rubric": "clinical_safety"
-  }
+  "task-a": 0.9,
+  "task-b": 0.2
 }
 ```
 
-:::tip
-**Use the `required: true` flag** during calibration. This prevents the benchmark from falling back to Jaccard similarity if your judge provider is misconfigured, ensuring that your calibration metrics always reflect actual LLM performance.
-:::
-
----
-
-### 2. Execution
-Run your evaluation as normal. The harness will record the judge's score alongside the human score in the flight recorder (`run.jsonl`).
+Then calibrate an existing provider-owned run:
 
 ```bash
-agentv evaluate --path scenarios/clinical_safety.json --run-id <id>
+agentv calibrate --run-id YOUR_RUN_ID --golden data/golden_labels.json
+agentv calibrate --run-id YOUR_RUN_ID --golden data/golden_labels.json --plot
 ```
 
----
+The CLI reads events through the active RunStorageProvider. Alternatively, input
+events can mark human `evaluation` values with `metadata.human=true`, or put a
+numeric `metadata.human_label` on a `run_start`/`task_start` event with the matching
+task ID. External golden labels override recorded human labels. A criterion's
+`human_score` is not an input to this utility.
 
-### 3. Running the Calibrator
-Use the `calibrate` command to generate an alignment report.
+## Interpret the report
 
-```bash
-# Calibrate directly against recorded run traces
-agentv calibrate --run-id <id>
+- **MAE**: Mean absolute distance between paired numeric scores.
+- **Pearson correlation**: Linear association, reported as zero for fewer than
+  two pairs or a zero denominator. Correlation alone does not establish agreement.
+- **F1 threshold sweep**: Judge thresholds from 0 to 1 in steps of 0.05, compared
+  with human success at 0.5. The report suggests the best threshold on this sample;
+  validate it on held-out labels before adopting it.
 
-# Or calibrate against an external golden dataset with agreement plots
-agentv calibrate --run-id <id> --golden data/golden_labels.json --plot
-```
+The utility keeps the last non-human evaluation value and last human evaluation
+value for each task ID. It does not separately aggregate multiple metrics or
+attempts for that ID; prepare a suitable event set when analyzing repeated
+measurements. No aligned pairs means calibration aborts. Cohen/Fleiss Kappa are
+not computed. `--plot` writes `calibration_plot.png` in the current directory when
+matplotlib and numpy are available; otherwise the utility reports plotting skipped.
 
-## Interpreting Alignment Metrics
+## Judge configuration and fallback
 
-### Pearson Correlation
-- **0.9 - 1.0**: 🟢 Excellent. The judge and human are in lock-step.
-- **0.7 - 0.9**: 🟡 Good. The judge captures the general trend but may slightly over/under estimate.
-- **< 0.7**: 🔴 Poor. The judge is not reliably capturing the human nuance. Review your **Rubric** or **Temperature**.
-
-### Mean Absolute Error (MAE)
-This measures the average distance between the judge and human score. An MAE of `0.05` means the judge is typically within 5% of the human score.
-
-## Improving Alignment
-
-### 1. Select the Right Rubric
-Switch from `generic` to an industry-specific rubric (e.g., `fiduciary_accuracy`) to give the LLM more context on what "correctness" means in your domain.
-
-### 2. Adjust Temperature
-For judges, a `judge_temperature` of `0.0` is recommended for maximum reproducibility.
-
-### 3. Refine the Prompt
-You can register custom rubrics via a plugin using the `RubricRegistry` in the extension API.
+The default judge provider is `ollama`; `JUDGE_MODEL` is unset. Configure a model
+and suitable rubric explicitly. `luna_judge_score` returns 1 when the expected
+outcome is absent or already exactly matches the answer. `required: true` rethrows
+provider initialization failures, but generation/parsing errors can still reach
+fallback scoring. It is not a guarantee that every score came from model inference.
+Record the scoring path when interpreting calibration results. See
+[provider configuration](/builder/providers/).

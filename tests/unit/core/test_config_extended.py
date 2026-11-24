@@ -79,3 +79,68 @@ def test_get_forensic_policy_env_overrides(monkeypatch):
     assert policy["extensions"] == ".dat,.bin"
     assert policy["mandatory_patterns"] == "must_have_.*"
     assert policy["max_artifact_size"] == 1024
+
+
+def test_registry_manager_empty_missing_and_resolve_detailed_branches(tmp_path, monkeypatch):
+    import json
+
+    missing_internal = tmp_path / "missing_internal.json"
+    missing_cfg_dir = tmp_path / "missing_cfg"
+    monkeypatch.setattr(config, "SHIM_RESOURCES_INTERNAL_PATH", missing_internal)
+    monkeypatch.setattr(config, "AES_CONFIG_DIR", missing_cfg_dir)
+    monkeypatch.delenv("AES_SHIM_RESOURCES_JSON", raising=False)
+    config._SHIM_REGISTRY_CACHE = None
+
+    # 1. Missing internal & config dir in both get_resolved_registry and resolve_detailed
+    reg = config.RegistryManager.get_resolved_registry()
+    assert reg == {"shims": {}, "forensics": {}}
+    report_missing = config.RegistryManager.resolve_detailed()
+    assert report_missing.errors == []
+
+    # 2. Empty dict internal & empty config file in get_resolved_registry
+    empty_internal = tmp_path / "empty_internal.json"
+    empty_internal.write_text("{}", encoding="utf-8")
+    cfg_dir = tmp_path / "cfg"
+    (cfg_dir / "shims.d").mkdir(parents=True)
+    (cfg_dir / "shims.d" / "empty.json").write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(config, "SHIM_RESOURCES_INTERNAL_PATH", empty_internal)
+    monkeypatch.setattr(config, "AES_CONFIG_DIR", cfg_dir)
+    config._SHIM_REGISTRY_CACHE = None
+    reg2 = config.RegistryManager.get_resolved_registry()
+    assert reg2 == {"shims": {}, "forensics": {}}
+
+    # 3. resolve_detailed: non-dict internal, corrupt internal, YAML routing without mappings,
+    #    non-dict discovery file, and non-dict AES_SHIM_RESOURCES_JSON
+    bad_internal = tmp_path / "list_internal.json"
+    bad_internal.write_text("[]", encoding="utf-8")
+    (cfg_dir / "routing").mkdir(parents=True)
+    (cfg_dir / "routing" / "routes.yaml").write_text("api: /v1\n", encoding="utf-8")
+    (cfg_dir / "shims.d" / "list.json").write_text("[]", encoding="utf-8")
+    monkeypatch.setattr(config, "SHIM_RESOURCES_INTERNAL_PATH", bad_internal)
+    monkeypatch.setenv("AES_SHIM_RESOURCES_JSON", "[]")
+    report_err = config.RegistryManager.resolve_detailed()
+    assert any(e.error_type == "malformed_file" for e in report_err.errors)
+    assert any(e.error_type == "invalid_env_override" for e in report_err.errors)
+    assert report_err.entries["routing.mappings.api"].effective_value == "/v1"
+
+    corrupt_internal = tmp_path / "corrupt_internal.json"
+    corrupt_internal.write_text("{bad", encoding="utf-8")
+    monkeypatch.setattr(config, "SHIM_RESOURCES_INTERNAL_PATH", corrupt_internal)
+    report_parse = config.RegistryManager.resolve_detailed()
+    assert any(e.error_type == "parse_error" for e in report_parse.errors)
+
+    null_internal = tmp_path / "null_internal.json"
+    null_internal.write_text("null", encoding="utf-8")
+    (cfg_dir / "shims.d" / "null.json").write_text("null", encoding="utf-8")
+    monkeypatch.setattr(config, "SHIM_RESOURCES_INTERNAL_PATH", null_internal)
+    monkeypatch.setenv("AES_SHIM_RESOURCES_JSON", json.dumps({"routing": {"mappings": "scalar"}}))
+    report_null = config.RegistryManager.resolve_detailed()
+    assert report_null.entries["routing.mappings.api"].effective_value == "/v1"
+
+    valid_internal = tmp_path / "valid_internal.json"
+    valid_internal.write_text(json.dumps({"shims": {"api": {"timeout": 5}}}), encoding="utf-8")
+    monkeypatch.setattr(config, "SHIM_RESOURCES_INTERNAL_PATH", valid_internal)
+    monkeypatch.setattr(config, "AES_CONFIG_DIR", missing_cfg_dir)
+    monkeypatch.delenv("AES_SHIM_RESOURCES_JSON", raising=False)
+    report_ok = config.RegistryManager.resolve_detailed()
+    assert report_ok.entries["shims.api.timeout"].effective_value == 5

@@ -53,4 +53,4 @@ Failures are stratified into hierarchical categories:
 ### 🎯 Patient Zero Identification
 The `TriageEngine` correlates these Enum-based failure codes with the **Behavioral DNA** telemetry. This allows the system to identify the **Patient Zero**—the exact step, turn, and tool-call responsible for the cascade. 
 
-📖 See the full specification: [Failure Taxonomy](taxonomy.md)
+📖 See the full specification: [Failure Taxonomy](/evaluator/taxonomy/)

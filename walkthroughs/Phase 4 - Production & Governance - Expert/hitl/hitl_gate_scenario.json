@@ -24,14 +24,20 @@
       }
     ],
     "edges": [
-      [
-        "scan_exploit",
-        "propose_patch"
-      ],
-      [
-        "propose_patch",
-        "execute_patch"
-      ]
+      {
+        "from": "scan_exploit",
+        "to": "propose_patch"
+      },
+      {
+        "from": "propose_patch",
+        "to": "execute_patch"
+      }
     ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1
+    }
   }
 }

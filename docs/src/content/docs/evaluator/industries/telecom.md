@@ -5,12 +5,19 @@ description: High-fidelity technical and regulatory metrics for telecommunicatio
 
 The Telecom sector provides the foundation for connectivity and digital accessibility analysis, tracking broadband deployment and global network performance.
 
-## 📶 Status: **HARDENED**
+## 📶 Status: **Provider-dependent coverage**
 
 - **Architecture**: FCC & Ookla Parity Layer.
-- **Verification**: 100% Parity with Speedtest Global Index.
+- **Verification**: Validate the selected source and output records for this run; no universal live-source parity guarantee is implied.
 
 ## 📡 Data Sources
+
+The sources below describe reference datasets and task models. Actual connectivity
+depends on the implemented provider, credentials and supplied input files.
+Simulation is disabled by default; enable `--allow-simulation` deliberately and
+retain `simulation`/`execution_mode` provenance. A listed source is not proof
+that its live API was used or that all records match it.
+
 
 | Source | Description |
 | :--- | :--- |

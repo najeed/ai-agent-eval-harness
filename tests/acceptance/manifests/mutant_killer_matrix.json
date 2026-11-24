@@ -3040,12 +3040,37 @@
       "test_file": "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
       "test_name": "test_run_lifecycle_edge_branches"
     },
+    "eval_runner/session.py::_handle_hitl::2969::APPROVED->PENDING": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_resumption_token_metadata_and_decision_variants",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_handle_hitl_resumption_token_metadata_and_decision_variants"
+    },
+    "eval_runner/session.py::_handle_hitl::2969::and->or": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_resumption_token_metadata_and_decision_variants",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_handle_hitl_resumption_token_metadata_and_decision_variants"
+    },
     "eval_runner/session.py::_handle_hitl::2970::APPROVED->PENDING": {
       "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_resumption_token_metadata_and_decision_variants",
       "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
       "test_name": "test_handle_hitl_resumption_token_metadata_and_decision_variants"
     },
     "eval_runner/session.py::_handle_hitl::2970::and->or": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_resumption_token_metadata_and_decision_variants",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_handle_hitl_resumption_token_metadata_and_decision_variants"
+    },
+    "eval_runner/session.py::_handle_hitl::2971::not->": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_resumption_token_metadata_and_decision_variants",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_handle_hitl_resumption_token_metadata_and_decision_variants"
+    },
+    "eval_runner/session.py::_handle_hitl::2971::or->and": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_resumption_token_metadata_and_decision_variants",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_handle_hitl_resumption_token_metadata_and_decision_variants"
+    },
+    "eval_runner/session.py::_handle_hitl::2972::APPROVED->PENDING": {
       "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_resumption_token_metadata_and_decision_variants",
       "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
       "test_name": "test_handle_hitl_resumption_token_metadata_and_decision_variants"
@@ -3065,15 +3090,35 @@
       "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
       "test_name": "test_handle_hitl_resumption_token_metadata_and_decision_variants"
     },
+    "eval_runner/session.py::_handle_hitl::2984::and->or": {
+      "nodeid": "tests/unit/core/test_hitl_resumption_timing_contract.py::test_hitl_resumption_wait_uses_decision_time_only_when_available_and_ordered[999-3000.0]",
+      "test_file": "tests/unit/core/test_hitl_resumption_timing_contract.py",
+      "test_name": "test_hitl_resumption_wait_uses_decision_time_only_when_available_and_ordered"
+    },
     "eval_runner/session.py::_handle_hitl::2985::and->or": {
       "nodeid": "tests/unit/core/test_hitl_resumption_timing_contract.py::test_hitl_resumption_wait_uses_decision_time_only_when_available_and_ordered[999-3000.0]",
       "test_file": "tests/unit/core/test_hitl_resumption_timing_contract.py",
       "test_name": "test_hitl_resumption_wait_uses_decision_time_only_when_available_and_ordered"
     },
+    "eval_runner/session.py::_handle_hitl::3016::and->or": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_durable_approval_suspends_with_optional_checkpoint_handle[None]",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_durable_approval_suspends_with_optional_checkpoint_handle"
+    },
     "eval_runner/session.py::_handle_hitl::3017::and->or": {
       "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_durable_approval_suspends_with_optional_checkpoint_handle[None]",
       "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
       "test_name": "test_durable_approval_suspends_with_optional_checkpoint_handle"
+    },
+    "eval_runner/session.py::_handle_hitl::3021::and->or": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_ci_mode_and_env_suspension_guards",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_handle_hitl_ci_mode_and_env_suspension_guards"
+    },
+    "eval_runner/session.py::_handle_hitl::3021::not->": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_resumption_token_metadata_and_decision_variants",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_handle_hitl_resumption_token_metadata_and_decision_variants"
     },
     "eval_runner/session.py::_handle_hitl::3022::and->or": {
       "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_ci_mode_and_env_suspension_guards",
@@ -3085,10 +3130,25 @@
       "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
       "test_name": "test_handle_hitl_resumption_token_metadata_and_decision_variants"
     },
+    "eval_runner/session.py::_handle_hitl::3022::or->and": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_ci_mode_and_env_suspension_guards",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_handle_hitl_ci_mode_and_env_suspension_guards"
+    },
     "eval_runner/session.py::_handle_hitl::3023::or->and": {
       "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_ci_mode_and_env_suspension_guards",
       "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
       "test_name": "test_handle_hitl_ci_mode_and_env_suspension_guards"
+    },
+    "eval_runner/session.py::_handle_hitl::3039::and->or": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_non_durable_test_mode_and_tty_guards",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_handle_hitl_non_durable_test_mode_and_tty_guards"
+    },
+    "eval_runner/session.py::_handle_hitl::3039::not->": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_tty_interactive_and_env_guards",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_handle_hitl_tty_interactive_and_env_guards"
     },
     "eval_runner/session.py::_handle_hitl::3040::and->or": {
       "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_non_durable_test_mode_and_tty_guards",
@@ -3110,7 +3170,17 @@
       "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
       "test_name": "test_handle_hitl_tty_interactive_and_env_guards"
     },
+    "eval_runner/session.py::_handle_hitl::3041::or->and": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_tty_interactive_and_env_guards",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_handle_hitl_tty_interactive_and_env_guards"
+    },
     "eval_runner/session.py::_handle_hitl::3042::or->and": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_tty_interactive_and_env_guards",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_handle_hitl_tty_interactive_and_env_guards"
+    },
+    "eval_runner/session.py::_handle_hitl::3077::or->and": {
       "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_tty_interactive_and_env_guards",
       "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
       "test_name": "test_handle_hitl_tty_interactive_and_env_guards"
@@ -3119,6 +3189,11 @@
       "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_tty_interactive_and_env_guards",
       "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
       "test_name": "test_handle_hitl_tty_interactive_and_env_guards"
+    },
+    "eval_runner/session.py::_handle_hitl::3079::not->": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_non_durable_test_mode_and_tty_guards",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_handle_hitl_non_durable_test_mode_and_tty_guards"
     },
     "eval_runner/session.py::_handle_hitl::3079::or->and": {
       "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_tty_interactive_and_env_guards",
@@ -3135,10 +3210,25 @@
       "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
       "test_name": "test_handle_hitl_non_durable_test_mode_and_tty_guards"
     },
+    "eval_runner/session.py::_handle_hitl::3087::not->": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_durable_approval_suspends_with_optional_checkpoint_handle[None]",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_durable_approval_suspends_with_optional_checkpoint_handle"
+    },
     "eval_runner/session.py::_handle_hitl::3088::not->": {
       "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_durable_approval_suspends_with_optional_checkpoint_handle[None]",
       "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
       "test_name": "test_durable_approval_suspends_with_optional_checkpoint_handle"
+    },
+    "eval_runner/session.py::_handle_hitl::3100::and->or": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_correlation_id_inheritance",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_handle_hitl_correlation_id_inheritance"
+    },
+    "eval_runner/session.py::_handle_hitl::3100::not->": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_correlation_id_inheritance",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_handle_hitl_correlation_id_inheritance"
     },
     "eval_runner/session.py::_handle_hitl::3101::and->or": {
       "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_correlation_id_inheritance",
@@ -3150,8 +3240,18 @@
       "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
       "test_name": "test_handle_hitl_correlation_id_inheritance"
     },
+    "eval_runner/session.py::_handle_hitl::3140::PAUSED_FOR_APPROVAL->RUNNING": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_durable_approval_suspends_with_optional_checkpoint_handle[None]",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_durable_approval_suspends_with_optional_checkpoint_handle"
+    },
     "eval_runner/session.py::_handle_hitl::3141::PAUSED_FOR_APPROVAL->RUNNING": {
       "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_durable_approval_suspends_with_optional_checkpoint_handle[None]",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_durable_approval_suspends_with_optional_checkpoint_handle"
+    },
+    "eval_runner/session.py::_handle_hitl::3153::and->or": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_durable_approval_suspends_with_optional_checkpoint_handle[]",
       "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
       "test_name": "test_durable_approval_suspends_with_optional_checkpoint_handle"
     },
@@ -3160,12 +3260,27 @@
       "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
       "test_name": "test_durable_approval_suspends_with_optional_checkpoint_handle"
     },
+    "eval_runner/session.py::_handle_hitl::3201::APPROVED->PENDING": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_non_durable_test_mode_and_tty_guards",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_handle_hitl_non_durable_test_mode_and_tty_guards"
+    },
     "eval_runner/session.py::_handle_hitl::3202::APPROVED->PENDING": {
       "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_handle_hitl_non_durable_test_mode_and_tty_guards",
       "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
       "test_name": "test_handle_hitl_non_durable_test_mode_and_tty_guards"
     },
+    "eval_runner/session.py::_raise_if_pending_durable_approval::2894::not->": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_raise_if_pending_durable_approval_empty_checkpoint_id",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_raise_if_pending_durable_approval_empty_checkpoint_id"
+    },
     "eval_runner/session.py::_raise_if_pending_durable_approval::2895::not->": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_raise_if_pending_durable_approval_empty_checkpoint_id",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_raise_if_pending_durable_approval_empty_checkpoint_id"
+    },
+    "eval_runner/session.py::_raise_if_pending_durable_approval::2908::and->or": {
       "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_raise_if_pending_durable_approval_empty_checkpoint_id",
       "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
       "test_name": "test_raise_if_pending_durable_approval_empty_checkpoint_id"
@@ -3175,17 +3290,42 @@
       "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
       "test_name": "test_raise_if_pending_durable_approval_empty_checkpoint_id"
     },
+    "eval_runner/session.py::_raise_if_pending_durable_approval::2924::PAUSED_FOR_APPROVAL->RUNNING": {
+      "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_raise_if_pending_durable_approval_empty_checkpoint_id",
+      "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
+      "test_name": "test_raise_if_pending_durable_approval_empty_checkpoint_id"
+    },
     "eval_runner/session.py::_raise_if_pending_durable_approval::2925::PAUSED_FOR_APPROVAL->RUNNING": {
       "nodeid": "tests/unit/core/test_hitl_checkpoint_handle_contract.py::test_raise_if_pending_durable_approval_empty_checkpoint_id",
       "test_file": "tests/unit/core/test_hitl_checkpoint_handle_contract.py",
       "test_name": "test_raise_if_pending_durable_approval_empty_checkpoint_id"
+    },
+    "eval_runner/session.py::restore_from_checkpoint::639::not->": {
+      "nodeid": "tests/unit/core/test_hitl_durable_suspension_and_resume.py::test_save_and_restore_from_checkpoint_contract",
+      "test_file": "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
+      "test_name": "test_save_and_restore_from_checkpoint_contract"
     },
     "eval_runner/session.py::restore_from_checkpoint::640::not->": {
       "nodeid": "tests/unit/core/test_hitl_durable_suspension_and_resume.py::test_save_and_restore_from_checkpoint_contract",
       "test_file": "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
       "test_name": "test_save_and_restore_from_checkpoint_contract"
     },
+    "eval_runner/session.py::restore_from_checkpoint::642::or->and": {
+      "nodeid": "tests/unit/core/test_hitl_durable_suspension_and_resume.py::test_save_and_restore_from_checkpoint_contract",
+      "test_file": "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
+      "test_name": "test_save_and_restore_from_checkpoint_contract"
+    },
     "eval_runner/session.py::restore_from_checkpoint::643::or->and": {
+      "nodeid": "tests/unit/core/test_hitl_durable_suspension_and_resume.py::test_save_and_restore_from_checkpoint_contract",
+      "test_file": "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
+      "test_name": "test_save_and_restore_from_checkpoint_contract"
+    },
+    "eval_runner/session.py::restore_from_checkpoint::661::and->or": {
+      "nodeid": "tests/unit/core/test_hitl_durable_suspension_and_resume.py::test_save_and_restore_from_checkpoint_contract",
+      "test_file": "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
+      "test_name": "test_save_and_restore_from_checkpoint_contract"
+    },
+    "eval_runner/session.py::restore_from_checkpoint::661::in->not in": {
       "nodeid": "tests/unit/core/test_hitl_durable_suspension_and_resume.py::test_save_and_restore_from_checkpoint_contract",
       "test_file": "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
       "test_name": "test_save_and_restore_from_checkpoint_contract"
@@ -3200,12 +3340,32 @@
       "test_file": "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
       "test_name": "test_save_and_restore_from_checkpoint_contract"
     },
+    "eval_runner/session.py::restore_from_checkpoint::663::and->or": {
+      "nodeid": "tests/unit/core/test_hitl_durable_suspension_and_resume.py::test_save_and_restore_from_checkpoint_contract",
+      "test_file": "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
+      "test_name": "test_save_and_restore_from_checkpoint_contract"
+    },
+    "eval_runner/session.py::restore_from_checkpoint::663::in->not in": {
+      "nodeid": "tests/unit/core/test_hitl_durable_suspension_and_resume.py::test_save_and_restore_from_checkpoint_contract",
+      "test_file": "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
+      "test_name": "test_save_and_restore_from_checkpoint_contract"
+    },
     "eval_runner/session.py::restore_from_checkpoint::664::and->or": {
       "nodeid": "tests/unit/core/test_hitl_durable_suspension_and_resume.py::test_save_and_restore_from_checkpoint_contract",
       "test_file": "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
       "test_name": "test_save_and_restore_from_checkpoint_contract"
     },
     "eval_runner/session.py::restore_from_checkpoint::664::in->not in": {
+      "nodeid": "tests/unit/core/test_hitl_durable_suspension_and_resume.py::test_save_and_restore_from_checkpoint_contract",
+      "test_file": "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
+      "test_name": "test_save_and_restore_from_checkpoint_contract"
+    },
+    "eval_runner/session.py::restore_from_checkpoint::665::and->or": {
+      "nodeid": "tests/unit/core/test_hitl_durable_suspension_and_resume.py::test_save_and_restore_from_checkpoint_contract",
+      "test_file": "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
+      "test_name": "test_save_and_restore_from_checkpoint_contract"
+    },
+    "eval_runner/session.py::restore_from_checkpoint::665::in->not in": {
       "nodeid": "tests/unit/core/test_hitl_durable_suspension_and_resume.py::test_save_and_restore_from_checkpoint_contract",
       "test_file": "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
       "test_name": "test_save_and_restore_from_checkpoint_contract"
@@ -3220,7 +3380,17 @@
       "test_file": "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
       "test_name": "test_save_and_restore_from_checkpoint_contract"
     },
+    "eval_runner/session.py::restore_from_checkpoint::668::not->": {
+      "nodeid": "tests/unit/core/test_hitl_durable_suspension_and_resume.py::test_save_and_restore_from_checkpoint_contract",
+      "test_file": "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
+      "test_name": "test_save_and_restore_from_checkpoint_contract"
+    },
     "eval_runner/session.py::restore_from_checkpoint::669::not->": {
+      "nodeid": "tests/unit/core/test_hitl_durable_suspension_and_resume.py::test_save_and_restore_from_checkpoint_contract",
+      "test_file": "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
+      "test_name": "test_save_and_restore_from_checkpoint_contract"
+    },
+    "eval_runner/session.py::restore_from_checkpoint::674::in->not in": {
       "nodeid": "tests/unit/core/test_hitl_durable_suspension_and_resume.py::test_save_and_restore_from_checkpoint_contract",
       "test_file": "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
       "test_name": "test_save_and_restore_from_checkpoint_contract"
@@ -3316,7 +3486,7 @@
       "test_name": "test_policy_evidence_target_is_a_nonempty_string_before_dispatch"
     },
     "eval_runner/session_components/state_parity.py::_resolve_target::455::not->": {
-      "nodeid": "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_policy_evidence_target_is_a_nonempty_string_before_dispatch[]",
+      "nodeid": "tests/unit/core/test_ci_mutation_boundary_contracts.py::test_policy_evidence_target_is_a_nonempty_string_before_dispatch[42]",
       "test_file": "tests/unit/core/test_ci_mutation_boundary_contracts.py",
       "test_name": "test_policy_evidence_target_is_a_nonempty_string_before_dispatch"
     },
@@ -3631,7 +3801,7 @@
       "test_name": "test_policy_denial_without_detailed_violations_still_blocks_the_write"
     },
     "eval_runner/tool_sandbox.py::_execute_core::558::in->not in": {
-      "nodeid": "tests/unit/core/test_sandbox_policy_commit_contract.py::test_policy_denial_without_detailed_violations_still_blocks_the_write[violations1]",
+      "nodeid": "tests/unit/core/test_sandbox_policy_commit_contract.py::test_policy_denial_without_detailed_violations_still_blocks_the_write[violations2]",
       "test_file": "tests/unit/core/test_sandbox_policy_commit_contract.py",
       "test_name": "test_policy_denial_without_detailed_violations_still_blocks_the_write"
     },
@@ -4220,6 +4390,11 @@
       "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
       "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
     },
+    "eval_runner/verifier.py::verify_certification_artifact::3792::not->": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
     "eval_runner/verifier.py::verify_certification_artifact::3817::and->or": {
       "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
       "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
@@ -4230,7 +4405,17 @@
       "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
       "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
     },
+    "eval_runner/verifier.py::verify_certification_artifact::3825::and->or": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
     "eval_runner/verifier.py::verify_certification_artifact::3827::and->or": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3830::and->or": {
       "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
       "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
       "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
@@ -4240,7 +4425,22 @@
       "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
       "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
     },
+    "eval_runner/verifier.py::verify_certification_artifact::3835::and->or": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3840::and->or": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
     "eval_runner/verifier.py::verify_certification_artifact::3861::or->and": {
+      "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_coverage_booster",
+      "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
+      "test_name": "test_verify_certification_artifact_coverage_booster"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3869::or->and": {
       "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_coverage_booster",
       "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
       "test_name": "test_verify_certification_artifact_coverage_booster"
@@ -4270,7 +4470,22 @@
       "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
       "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
     },
+    "eval_runner/verifier.py::verify_certification_artifact::3888::and->or": {
+      "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_terminal_sequence_and_carrier_missing",
+      "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
+      "test_name": "test_verify_certification_artifact_terminal_sequence_and_carrier_missing"
+    },
     "eval_runner/verifier.py::verify_certification_artifact::3889::or->and": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3891::and->or": {
+      "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_terminal_sequence_and_carrier_missing",
+      "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
+      "test_name": "test_verify_certification_artifact_terminal_sequence_and_carrier_missing"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3891::finalization_hash->__mutation_missing_commitment__": {
       "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
       "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
       "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
@@ -4285,6 +4500,16 @@
       "test_file": "tests/unit/core/test_signing_finalization_contract.py",
       "test_name": "test_certification_finalization_carrier_contract"
     },
+    "eval_runner/verifier.py::verify_certification_artifact::3894::finalization_hash->__mutation_missing_commitment__": {
+      "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_terminal_sequence_and_carrier_missing",
+      "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
+      "test_name": "test_verify_certification_artifact_terminal_sequence_and_carrier_missing"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3894::or->and": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
     "eval_runner/verifier.py::verify_certification_artifact::3895::or->and": {
       "nodeid": "tests/unit/core/test_signing_finalization_contract.py::test_certification_finalization_carrier_contract[run_end-False-True]",
       "test_file": "tests/unit/core/test_signing_finalization_contract.py",
@@ -4294,6 +4519,11 @@
       "nodeid": "tests/unit/core/test_legacy_certificate_profile_contract.py::test_legacy_signed_package_profile_is_explicitly_non_authoritative",
       "test_file": "tests/unit/core/test_legacy_certificate_profile_contract.py",
       "test_name": "test_legacy_signed_package_profile_is_explicitly_non_authoritative"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3897::or->and": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
     },
     "eval_runner/verifier.py::verify_certification_artifact::3898::and->or": {
       "nodeid": "tests/unit/core/test_legacy_certificate_profile_contract.py::test_legacy_signed_package_profile_is_explicitly_non_authoritative",
@@ -4305,12 +4535,52 @@
       "test_file": "tests/unit/core/test_signing_finalization_contract.py",
       "test_name": "test_certification_finalization_carrier_contract"
     },
+    "eval_runner/verifier.py::verify_certification_artifact::3900::and->or": {
+      "nodeid": "tests/unit/core/test_legacy_certificate_profile_contract.py::test_legacy_signed_package_profile_is_explicitly_non_authoritative",
+      "test_file": "tests/unit/core/test_legacy_certificate_profile_contract.py",
+      "test_name": "test_legacy_signed_package_profile_is_explicitly_non_authoritative"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3900::finalization_hash->__mutation_missing_commitment__": {
+      "nodeid": "tests/unit/core/test_signing_finalization_contract.py::test_certification_finalization_carrier_contract[run_end-False-True]",
+      "test_file": "tests/unit/core/test_signing_finalization_contract.py",
+      "test_name": "test_certification_finalization_carrier_contract"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3903::or->and": {
+      "nodeid": "tests/unit/core/test_signing_finalization_contract.py::test_certification_finalization_carrier_contract[run_end-False-True]",
+      "test_file": "tests/unit/core/test_signing_finalization_contract.py",
+      "test_name": "test_certification_finalization_carrier_contract"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3905::and->or": {
+      "nodeid": "tests/unit/core/test_legacy_certificate_profile_contract.py::test_legacy_signed_package_profile_is_explicitly_non_authoritative",
+      "test_file": "tests/unit/core/test_legacy_certificate_profile_contract.py",
+      "test_name": "test_legacy_signed_package_profile_is_explicitly_non_authoritative"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3906::and->or": {
+      "nodeid": "tests/unit/core/test_legacy_certificate_profile_contract.py::test_legacy_signed_package_profile_is_explicitly_non_authoritative",
+      "test_file": "tests/unit/core/test_legacy_certificate_profile_contract.py",
+      "test_name": "test_legacy_signed_package_profile_is_explicitly_non_authoritative"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3906::finalization_hash->__mutation_missing_commitment__": {
+      "nodeid": "tests/unit/core/test_signing_finalization_contract.py::test_certification_finalization_carrier_contract[run_end-True-True]",
+      "test_file": "tests/unit/core/test_signing_finalization_contract.py",
+      "test_name": "test_certification_finalization_carrier_contract"
+    },
     "eval_runner/verifier.py::verify_certification_artifact::3914::not in->in": {
       "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
       "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
       "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
     },
     "eval_runner/verifier.py::verify_certification_artifact::3919::not in->in": {
+      "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_terminal_sequence_and_carrier_missing",
+      "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
+      "test_name": "test_verify_certification_artifact_terminal_sequence_and_carrier_missing"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3922::not in->in": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3927::not in->in": {
       "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_terminal_sequence_and_carrier_missing",
       "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
       "test_name": "test_verify_certification_artifact_terminal_sequence_and_carrier_missing"
@@ -4330,10 +4600,20 @@
       "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
       "test_name": "test_verify_certification_artifact_coverage_booster"
     },
+    "eval_runner/verifier.py::verify_certification_artifact::3942::not->": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
     "eval_runner/verifier.py::verify_certification_artifact::3943::execution_mode->__mutation_missing_commitment__": {
       "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
       "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
       "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3943::or->and": {
+      "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_run_end_carrier_alone_succeeds",
+      "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
+      "test_name": "test_verify_certification_artifact_run_end_carrier_alone_succeeds"
     },
     "eval_runner/verifier.py::verify_certification_artifact::3944::and->or": {
       "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[]",
@@ -4356,9 +4636,9 @@
       "test_name": "test_verify_certification_artifact_coverage_booster"
     },
     "eval_runner/verifier.py::verify_certification_artifact::3944::or->and": {
-      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[]",
-      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
-      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+      "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_coverage_booster",
+      "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
+      "test_name": "test_verify_certification_artifact_coverage_booster"
     },
     "eval_runner/verifier.py::verify_certification_artifact::3946::execution_mode->__mutation_missing_commitment__": {
       "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_coverage_booster",
@@ -4375,7 +4655,47 @@
       "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
       "test_name": "test_verify_certification_artifact_coverage_booster"
     },
+    "eval_runner/verifier.py::verify_certification_artifact::3952::and->or": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
     "eval_runner/verifier.py::verify_certification_artifact::3952::execution_mode->__mutation_missing_commitment__": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3952::not in->in": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3952::not->": {
+      "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_coverage_booster",
+      "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
+      "test_name": "test_verify_certification_artifact_coverage_booster"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3952::or->and": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3954::execution_mode->__mutation_missing_commitment__": {
+      "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_coverage_booster",
+      "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
+      "test_name": "test_verify_certification_artifact_coverage_booster"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3956::execution_mode->__mutation_missing_commitment__": {
+      "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_coverage_booster",
+      "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
+      "test_name": "test_verify_certification_artifact_coverage_booster"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3959::execution_mode->__mutation_missing_commitment__": {
+      "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_coverage_booster",
+      "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
+      "test_name": "test_verify_certification_artifact_coverage_booster"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3960::execution_mode->__mutation_missing_commitment__": {
       "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_coverage_booster",
       "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
       "test_name": "test_verify_certification_artifact_coverage_booster"
@@ -4401,6 +4721,31 @@
       "test_name": "test_verify_certification_artifact_coverage_booster"
     },
     "eval_runner/verifier.py::verify_certification_artifact::3970::execution_mode->__mutation_missing_commitment__": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3973::not in->in": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3977::any->all": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3977::not->": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3978::and->or": {
+      "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_coverage_booster",
+      "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
+      "test_name": "test_verify_certification_artifact_coverage_booster"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3978::execution_mode->__mutation_missing_commitment__": {
       "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
       "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
       "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
@@ -4445,17 +4790,72 @@
       "test_file": "tests/unit/core/test_execution_mode_binding_contract.py",
       "test_name": "test_signed_execution_mode_claim_must_match_actual_manifest"
     },
+    "eval_runner/verifier.py::verify_certification_artifact::3995::not->": {
+      "nodeid": "tests/unit/core/test_legacy_certificate_profile_contract.py::test_legacy_signed_package_profile_is_explicitly_non_authoritative",
+      "test_file": "tests/unit/core/test_legacy_certificate_profile_contract.py",
+      "test_name": "test_legacy_signed_package_profile_is_explicitly_non_authoritative"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3997::execution_mode->__mutation_missing_commitment__": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::3998::and->or": {
+      "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_coverage_booster",
+      "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
+      "test_name": "test_verify_certification_artifact_coverage_booster"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::4000::and->or": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::4000::execution_mode->__mutation_missing_commitment__": {
+      "nodeid": "tests/unit/core/test_execution_mode_binding_contract.py::test_signed_execution_mode_claim_must_match_actual_manifest[False-hybrid-hybrid-hybrid-False-False]",
+      "test_file": "tests/unit/core/test_execution_mode_binding_contract.py",
+      "test_name": "test_signed_execution_mode_claim_must_match_actual_manifest"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::4000::in->not in": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
     "eval_runner/verifier.py::verify_certification_artifact::4000::provisional->__mutation_missing_commitment__": {
       "nodeid": "tests/unit/core/test_execution_mode_binding_contract.py::test_signed_execution_mode_claim_must_match_actual_manifest[False-live-live-live-True-False]",
       "test_file": "tests/unit/core/test_execution_mode_binding_contract.py",
       "test_name": "test_signed_execution_mode_claim_must_match_actual_manifest"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::4001::not->": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
     },
     "eval_runner/verifier.py::verify_certification_artifact::4002::not->": {
       "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
       "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
       "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
     },
+    "eval_runner/verifier.py::verify_certification_artifact::4002::or->and": {
+      "nodeid": "tests/unit/core/test_execution_mode_binding_contract.py::test_signed_execution_mode_claim_must_match_actual_manifest[False-hybrid-hybrid-hybrid-False-False]",
+      "test_file": "tests/unit/core/test_execution_mode_binding_contract.py",
+      "test_name": "test_signed_execution_mode_claim_must_match_actual_manifest"
+    },
     "eval_runner/verifier.py::verify_certification_artifact::4007::not->": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::4008::provisional->__mutation_missing_commitment__": {
+      "nodeid": "tests/unit/core/test_execution_mode_binding_contract.py::test_signed_execution_mode_claim_must_match_actual_manifest[False-live-live-live-True-False]",
+      "test_file": "tests/unit/core/test_execution_mode_binding_contract.py",
+      "test_name": "test_signed_execution_mode_claim_must_match_actual_manifest"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::4010::not->": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::4015::not->": {
       "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
       "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
       "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
@@ -4475,12 +4875,37 @@
       "test_file": "tests/unit/core/test_execution_mode_binding_contract.py",
       "test_name": "test_detached_verifier_rejects_simulated_tool_provenance_in_live_run"
     },
+    "eval_runner/verifier.py::verify_certification_artifact::4026::or->and": {
+      "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_coverage_booster",
+      "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
+      "test_name": "test_verify_certification_artifact_coverage_booster"
+    },
     "eval_runner/verifier.py::verify_certification_artifact::4030::and->or": {
       "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
       "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
       "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
     },
+    "eval_runner/verifier.py::verify_certification_artifact::4030::in->not in": {
+      "nodeid": "tests/unit/core/test_execution_mode_binding_contract.py::test_detached_verifier_rejects_simulated_tool_provenance_in_live_run",
+      "test_file": "tests/unit/core/test_execution_mode_binding_contract.py",
+      "test_name": "test_detached_verifier_rejects_simulated_tool_provenance_in_live_run"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::4032::in->not in": {
+      "nodeid": "tests/unit/core/test_execution_mode_binding_contract.py::test_detached_verifier_rejects_simulated_tool_provenance_in_live_run",
+      "test_file": "tests/unit/core/test_execution_mode_binding_contract.py",
+      "test_name": "test_detached_verifier_rejects_simulated_tool_provenance_in_live_run"
+    },
     "eval_runner/verifier.py::verify_certification_artifact::4037::provisional->__mutation_missing_commitment__": {
+      "nodeid": "tests/unit/core/test_provisional_package_verdict_contract.py::test_detached_package_cannot_drop_issuer_provisional_restriction[True-False-False]",
+      "test_file": "tests/unit/core/test_provisional_package_verdict_contract.py",
+      "test_name": "test_detached_package_cannot_drop_issuer_provisional_restriction"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::4038::and->or": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::4045::provisional->__mutation_missing_commitment__": {
       "nodeid": "tests/unit/core/test_provisional_package_verdict_contract.py::test_detached_package_cannot_drop_issuer_provisional_restriction[True-False-False]",
       "test_file": "tests/unit/core/test_provisional_package_verdict_contract.py",
       "test_name": "test_detached_package_cannot_drop_issuer_provisional_restriction"
@@ -4495,6 +4920,16 @@
       "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
       "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
     },
+    "eval_runner/verifier.py::verify_certification_artifact::4086::and->or": {
+      "nodeid": "tests/unit/core/test_verifier_coverage_booster.py::test_verify_certification_artifact_coverage_booster",
+      "test_file": "tests/unit/core/test_verifier_coverage_booster.py",
+      "test_name": "test_verify_certification_artifact_coverage_booster"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::4086::not->": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_detached_verifier_rejects_signed_non_live_or_undeclared_execution[hybrid]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_detached_verifier_rejects_signed_non_live_or_undeclared_execution"
+    },
     "eval_runner/verifier.py::verify_certification_artifact::4109::not in->in": {
       "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_authoritative_package_verification_uses_bytes_without_caller_events[oracle_evidence]",
       "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
@@ -4505,7 +4940,22 @@
       "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
       "test_name": "test_authoritative_negative_package_is_attested_and_never_certified"
     },
+    "eval_runner/verifier.py::verify_certification_artifact::4117::not in->in": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_authoritative_package_verification_uses_bytes_without_caller_events[oracle_evidence]",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_authoritative_package_verification_uses_bytes_without_caller_events"
+    },
     "eval_runner/verifier.py::verify_certification_artifact::4118::not->": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_authoritative_negative_package_is_attested_and_never_certified",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_authoritative_negative_package_is_attested_and_never_certified"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::4124::not->": {
+      "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_authoritative_negative_package_is_attested_and_never_certified",
+      "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
+      "test_name": "test_authoritative_negative_package_is_attested_and_never_certified"
+    },
+    "eval_runner/verifier.py::verify_certification_artifact::4126::not->": {
       "nodeid": "tests/unit/core/test_certification_service_and_trust_boundary.py::test_authoritative_negative_package_is_attested_and_never_certified",
       "test_file": "tests/unit/core/test_certification_service_and_trust_boundary.py",
       "test_name": "test_authoritative_negative_package_is_attested_and_never_certified"
@@ -4586,7 +5036,7 @@
       "test_name": "test_legacy_manifest_projection_does_not_override_declared_binding"
     },
     "eval_runner/verifier.py::verify_package::3009::and->or": {
-      "nodeid": "tests/unit/core/test_diagnostic_manifest_binding_contract.py::test_legacy_manifest_projection_does_not_override_declared_binding[False-verify_package-matching-True]",
+      "nodeid": "tests/unit/core/test_diagnostic_manifest_binding_contract.py::test_legacy_manifest_projection_does_not_override_declared_binding[False-verify_package-altered-False]",
       "test_file": "tests/unit/core/test_diagnostic_manifest_binding_contract.py",
       "test_name": "test_legacy_manifest_projection_does_not_override_declared_binding"
     },
@@ -4946,7 +5396,7 @@
       "test_name": "test_legacy_manifest_projection_does_not_override_declared_binding"
     },
     "eval_runner/verifier.py::verify_package_artifacts::2303::and->or": {
-      "nodeid": "tests/unit/core/test_diagnostic_manifest_binding_contract.py::test_legacy_manifest_projection_does_not_override_declared_binding[False-verify_package_artifacts-matching-True]",
+      "nodeid": "tests/unit/core/test_diagnostic_manifest_binding_contract.py::test_legacy_manifest_projection_does_not_override_declared_binding[False-verify_package_artifacts-altered-False]",
       "test_file": "tests/unit/core/test_diagnostic_manifest_binding_contract.py",
       "test_name": "test_legacy_manifest_projection_does_not_override_declared_binding"
     },
@@ -6384,7 +6834,7 @@
       "test_name": "test_certificate_integrity_accepts_declared_scenario_hash_locations"
     }
   },
-  "total_mutants": 1152,
+  "total_mutants": 1242,
   "total_scopes": 124,
   "version": 1
 }

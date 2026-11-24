@@ -10,7 +10,7 @@ def main():
 
     # Locate project root
     root = Path(__file__).parent.parent.parent.parent
-    scenario_path = root / "scenarios" / "telecom" / "connectivity_check.json"
+    scenario_path = root / "scenarios" / "cross_industry" / "disputed_claim.json"
     temp_target = (
         root
         / "walkthroughs"

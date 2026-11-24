@@ -12,6 +12,8 @@ Acceptance Criteria:
 from __future__ import annotations
 
 import json
+import os
+import subprocess
 from unittest.mock import patch
 
 import pytest
@@ -87,6 +89,203 @@ def _make_manifest(ext_id: str, ver: str, pub: str, path: str, nav_title: str) -
             }
         ],
     }
+
+
+def test_first_inactive_publication_requires_explicit_legacy_activation(extension_env):
+    """No registry is an empty selection, including on a fresh Console startup."""
+    publish_extension(
+        entry=extension_env["entry_v1"],
+        extension_id="com.enterprise.ops",
+        publisher="enterprise_publisher",
+        version="1.0.16",
+        private_key_pem=_private_key_pem_bytes,
+        manifest_declaration=_make_manifest(
+            "com.enterprise.ops", "1.0.16", "enterprise_publisher", "/ops/v1", "Ops"
+        ),
+    )
+    assert _published_extension_spa_prefixes(reserved_roots={"api"}) == []
+    with (
+        patch("eval_runner.plugins.manager.load_plugins"),
+        patch("eval_runner.catalog.ScenarioCatalog.get_instance"),
+    ):
+        restarted = create_app()
+    assert restarted.config["EXTENSION_SPA_PREFIXES"] == []
+    assert restarted.test_client().get("/ops/v1").status_code == 404
+    activate_extension(
+        extension_id="com.enterprise.ops", version="1.0.16", publisher="enterprise_publisher"
+    )
+    assert _published_extension_spa_prefixes(reserved_roots={"api"}) == ["/ops/v1"]
+
+
+def test_last_active_withdrawal_does_not_select_retained_inactive_release(extension_env):
+    for version, entry, path, active in [
+        ("1.0.16", "entry_v1", "/ops/v1", True),
+        ("1.0.17", "entry_v2", "/ops/v2", False),
+    ]:
+        publish_extension(
+            entry=extension_env[entry],
+            extension_id="com.enterprise.ops",
+            publisher="enterprise_publisher",
+            version=version,
+            private_key_pem=_private_key_pem_bytes,
+            manifest_declaration=_make_manifest(
+                "com.enterprise.ops", version, "enterprise_publisher", path, "Ops"
+            ),
+            activate=active,
+        )
+    unpublish_extension(extension_id="com.enterprise.ops", version="1.0.16")
+    assert (extension_env["ext_dir"] / "com.enterprise.ops/1.0.17/entry.manifest.json").is_file()
+    assert _published_extension_spa_prefixes(reserved_roots={"api"}) == []
+    with (
+        patch("eval_runner.plugins.manager.load_plugins"),
+        patch("eval_runner.catalog.ScenarioCatalog.get_instance"),
+    ):
+        restarted = create_app()
+    assert restarted.config["EXTENSION_SPA_PREFIXES"] == []
+    assert restarted.test_client().get("/ops/v2").status_code == 404
+
+
+@pytest.mark.parametrize("corruption", ["non_object", "publisher", "version_path", "status", "sri"])
+def test_corrupt_active_selection_never_falls_back_to_retained_manifest(extension_env, corruption):
+    publish_extension(
+        entry=extension_env["entry_v1"],
+        extension_id="com.enterprise.ops",
+        publisher="enterprise_publisher",
+        version="1.0.16",
+        private_key_pem=_private_key_pem_bytes,
+        manifest_declaration=_make_manifest(
+            "com.enterprise.ops", "1.0.16", "enterprise_publisher", "/ops/v1", "Ops"
+        ),
+        activate=True,
+    )
+    record_path = (
+        extension_env["ext_dir"] / ".active-releases/enterprise_publisher/com.enterprise.ops.json"
+    )
+    record = json.loads(record_path.read_text(encoding="utf-8"))
+    if corruption == "non_object":
+        record = []
+    else:
+        key, value = {
+            "publisher": ("publisher", "other-publisher"),
+            "version_path": ("version", "../1.0.16"),
+            "status": ("status", "withdrawn"),
+            "sri": ("sri_hash", "sha3-256-wrong"),
+        }[corruption]
+        record[key] = value
+    record_path.write_text(json.dumps(record), encoding="utf-8")
+    assert _published_extension_spa_prefixes(reserved_roots={"api"}) == []
+
+
+@pytest.mark.parametrize(
+    "extension_id,version",
+    [("../outside", "1.0.0"), ("safe", "."), ("safe", "../outside"), ("C:outside", "1.0.0")],
+)
+def test_withdrawal_rejects_unsafe_targets(extension_env, extension_id, version):
+    outside = extension_env["root"] / "outside/1.0.0"
+    outside.mkdir(parents=True)
+    sentinel = outside / "keep.txt"
+    sentinel.write_text("keep", encoding="utf-8")
+    with pytest.raises(ValueError, match="single safe identifier"):
+        unpublish_extension(extension_id=extension_id, version=version)
+    assert sentinel.read_text(encoding="utf-8") == "keep"
+
+
+def test_withdrawal_rejects_quarantine_link_outside_artifact_store(extension_env):
+    publish_extension(
+        entry=extension_env["entry_v1"],
+        extension_id="com.enterprise.ops",
+        publisher="enterprise_publisher",
+        version="1.0.16",
+        private_key_pem=_private_key_pem_bytes,
+    )
+    outside = extension_env["root"] / "outside-quarantine"
+    outside.mkdir()
+    link = extension_env["ext_dir"] / ".quarantine"
+    if os.name == "nt":
+        result = subprocess.run(
+            [
+                "powershell.exe",
+                "-NoProfile",
+                "-NonInteractive",
+                "-Command",
+                "New-Item -ItemType Junction -Path $env:TEST_QUARANTINE_LINK "
+                "-Target $env:TEST_QUARANTINE_TARGET | Out-Null",
+            ],
+            env={
+                **os.environ,
+                "TEST_QUARANTINE_LINK": str(link),
+                "TEST_QUARANTINE_TARGET": str(outside),
+            },
+            capture_output=True,
+            timeout=30,
+        )
+        assert result.returncode == 0
+    else:
+        link.symlink_to(outside, target_is_directory=True)
+    try:
+        with pytest.raises(ValueError, match="quarantine must remain"):
+            unpublish_extension(extension_id="com.enterprise.ops", version="1.0.16")
+        assert (extension_env["ext_dir"] / "com.enterprise.ops/1.0.16/entry.js").is_file()
+        assert list(outside.iterdir()) == []
+    finally:
+        if os.name == "nt":
+            link.rmdir()  # Remove the junction itself, never recurse into its target.
+        else:
+            link.unlink()
+
+
+def test_withdrawal_does_not_allow_version_reuse_with_changed_bytes(extension_env):
+    release = {
+        "extension_id": "com.enterprise.ops",
+        "publisher": "enterprise_publisher",
+        "version": "1.0.16",
+    }
+    publish_extension(
+        entry=extension_env["entry_v1"], private_key_pem=_private_key_pem_bytes, **release
+    )
+    record = extension_env["ext_dir"] / ".release-records/com.enterprise.ops/1.0.16.manifest.json"
+    before = record.read_bytes()
+    unpublish_extension(extension_id=release["extension_id"], version=release["version"])
+    with pytest.raises(ValueError, match="already published with different bytes"):
+        publish_extension(
+            entry=extension_env["entry_v2"], private_key_pem=_private_key_pem_bytes, **release
+        )
+    assert record.read_bytes() == before
+    assert not (extension_env["ext_dir"] / "com.enterprise.ops/1.0.16").exists()
+    # Exact retained bytes remain recoverable; only replacement is prohibited.
+    publish_extension(
+        entry=extension_env["entry_v1"], private_key_pem=_private_key_pem_bytes, **release
+    )
+    assert record.read_bytes() == before
+
+
+@pytest.mark.parametrize("corrupt_record", [False, True])
+def test_retained_record_cannot_be_redefined_with_identical_entry(extension_env, corrupt_record):
+    release = {
+        "extension_id": "com.enterprise.ops",
+        "publisher": "enterprise_publisher",
+        "version": "1.0.16",
+    }
+    publish_extension(
+        entry=extension_env["entry_v1"], private_key_pem=_private_key_pem_bytes, **release
+    )
+    record = extension_env["ext_dir"] / ".release-records/com.enterprise.ops/1.0.16.manifest.json"
+    unpublish_extension(extension_id=release["extension_id"], version=release["version"])
+    declaration = json.loads(record.read_text(encoding="utf-8"))
+    declaration.pop("signature")
+    declaration["nav_group"] = "changed-group"
+    if corrupt_record:
+        record.write_text("invalid-json", encoding="utf-8")
+    before = record.read_bytes()
+    with pytest.raises(ValueError, match="unreadable|already published with different bytes"):
+        publish_extension(
+            entry=extension_env["entry_v1"],
+            manifest_declaration=declaration,
+            private_key_pem=_private_key_pem_bytes,
+            **release,
+        )
+    assert record.read_bytes() == before
+    assert not (extension_env["ext_dir"] / release["extension_id"] / release["version"]).exists()
 
 
 def test_publish_and_activate_lifecycle_registers_only_active_version(extension_env):

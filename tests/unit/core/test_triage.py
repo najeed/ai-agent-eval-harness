@@ -88,7 +88,7 @@ def test_identify_root_cause_fallback():
     assert TriageEngine.identify_root_cause_index(history) == 0
 
 
-def test_identify_root_cause_metric_failure():
+def test_identify_root_cause_index_metric_failure():
     from eval_runner.triage import TriageEngine
 
     history = [
@@ -152,7 +152,7 @@ if __name__ == "__main__":
     test_identify_root_cause_policy()
     test_identify_root_cause_tool_error()
     test_identify_root_cause_fallback()
-    test_identify_root_cause_metric_failure()
+    test_identify_root_cause_index_metric_failure()
     test_triage_apply_triage_error_handling()
     test_triage_apply_triage_execution_failure_triage_paradox()
     print("ALL TESTS PASSED MANUALLY")

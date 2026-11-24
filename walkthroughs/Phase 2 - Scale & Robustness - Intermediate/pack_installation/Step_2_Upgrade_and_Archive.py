@@ -1,4 +1,5 @@
 import subprocess
+import sys
 from pathlib import Path
 
 
@@ -22,11 +23,11 @@ def main():
     input("\n[Press ENTER] to trigger the atomic upgrade...")
 
     # Run the upgrade command
-    print("\n   [CLI] Running: agentv install-pack telecom@2.0.0")
+    print("\n   [CLI] Running: agentv install telecom@2.0.0")
     try:
         # We'll use the CLI module directly for the walkthrough
         subprocess.run(
-            ["python", "-m", "eval_runner.cli", "install-pack", "telecom@2.0.0"], check=True
+            [sys.executable, "-m", "eval_runner.cli", "install", "telecom@2.0.0"], check=True
         )
     except Exception as e:
         print(f"   [Cargo] Installation failed: {e}")

@@ -183,7 +183,7 @@ async def test_langgraph_mocks():
 
 
 @pytest.mark.asyncio
-async def test_http_adapter_core(mock_aiohttp_session):
+async def test_http_adapter_core_normalization(mock_aiohttp_session):
     mock_aiohttp_session.post.return_value = MockAsyncContextManager(json_data={"k": "v"})
     out = await http_adapter({}, "http://url")
     assert out["k"] == "v"
@@ -253,7 +253,7 @@ async def test_http_adapter_error_and_native_action(mock_aiohttp_session):
 
 
 @pytest.mark.asyncio
-async def test_local_subprocess_adapter():
+async def test_local_subprocess_adapter_mocked_streams():
     # 1. Create the main process mock
     mock_proc = MagicMock()
     mock_proc.returncode = 0

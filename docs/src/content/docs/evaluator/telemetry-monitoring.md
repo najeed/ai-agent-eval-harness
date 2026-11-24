@@ -3,48 +3,32 @@ title: Resource Telemetry & Monitoring
 description: Tracking hardware metrics and resource gradients in real-time.
 ---
 
-AgentV 1.5.0 introduces native **Resource Telemetry**, allowing you to monitor the hardware footprint of your agents during evaluation. This is critical for detecting "silent" infrastructure failures like resource leaks, memory bloat, and disk quota precursors.
+SessionManager samples resource telemetry at explicit execution call sites when
+psutil is available. This describes the harness process, not the complete
+resource footprint of an external agent.
 
-## 1. Monitored Metrics
+| Field | Measurement |
+| --- | --- |
+| `timestamp` | Capture time as Unix epoch seconds |
+| `cpu_percent` | `psutil.Process(os.getpid()).cpu_percent()` for the harness PID |
+| `rss_mb` | Harness resident memory in MiB |
+| `vms_mb` | Harness virtual memory in MiB |
+| `disk_usage_percent` | Usage percentage of the filesystem containing the current working directory |
 
-The `SessionManager` captures the following hardware metrics at every agent turn and tool execution:
+Child processes and remote agents are not aggregated. Disk usage is for the
+filesystem, not the amount consumed by one workspace. Sampling is tied to
+session call sites rather than a guaranteed periodic interval; short operations
+can occur between samples, and unavailable psutil/capture failures can leave gaps.
 
-- **CPU Usage (%)**: The normalized CPU load of the hosting process and its children.
-- **Memory (RSS MB)**: The resident set size (actual physical memory) consumed.
-- **Virtual Memory (VMS MB)**: The total memory address space requested.
-- **Disk Usage (%)**: The percentage of the workspace disk currently consumed.
+## Configuration and analysis
 
----
+Core capture does not consume a `forensics.telemetry` config.yaml block with
+`interval_ms`, `capture_on_tool_call` or `leak_threshold_mb_per_turn`. Implement
+custom sampling or resource-gradient diagnostics in a plugin if needed, and
+document its settings separately. A rising memory trend is an observation, not
+automatic proof of a leak or of a remote model's resource usage.
 
-## 2. Resource Gradients (Enterprise Feature)
-
-While Core AgentV captures raw metrics, the high-fidelity **Gradient** tracking (analyzing the rate of change) is available via Enterprise-tier plugins.
-
-### Identifying a Memory Leak
-- **Normal**: Memory fluctuates as tools are loaded and unloaded.
-- **Anomalous**: A sustained, positive linear gradient (e.g., +5MB per turn) across more than 3 turns, even during idle periods.
-
-When a leak is detected, the Enterprise analyzer flags the session with a `LOGIC_STATE_STALL` or `INFRA_OOM` trigger in the [Causal Chain](/auditor/causal-chains/).
-
----
-
-## 3. Configuration
-
-Telemetry is enabled by default in the Industrial Edition. You can configure the capture interval and threshold in your `config.yaml`:
-
-```yaml
-forensics:
-  telemetry:
-    enabled: true
-    interval_ms: 500
-    capture_on_tool_call: true
-    leak_threshold_mb_per_turn: 2.0
-```
-
----
-
-## 4. Viewing Telemetry Data
-
-Hardware metrics are stored in the `resource_telemetry` field of the [Forensic Ledger](/spec/forensic-ledger-schema/).
-
-In the **Visual Console**, you can view these metrics as a sparkline graph overlaying the agent's trajectory, allowing you to correlate logic spikes with hardware pressure in real-time.
+Samples are recorded under `resource_telemetry` in the
+[forensic ledger](/spec/forensic-ledger-schema/). Trusted metric hydration exposes
+them as `forensic_telemetry`; access and copying are described in the
+[trust contract](/spec/forensics/trust-hierarchy/).

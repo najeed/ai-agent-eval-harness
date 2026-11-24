@@ -21,7 +21,7 @@ This tells the harness to only activate the CRM and Cloud simulators for this sp
 ### Step 2: Verify the Environment
 Run the verification script to see how the shim configuration changes the agent's available tools:
 ```bash
-python walkthroughs/Phase 2 - Scale & Robustness - Intermediate/configuring_simulators/verify_shims.py
+python "walkthroughs/Phase 2 - Scale & Robustness - Intermediate/configuring_simulators/verify_shims.py"
 ```
 
 ### Step 3: Switch Worlds

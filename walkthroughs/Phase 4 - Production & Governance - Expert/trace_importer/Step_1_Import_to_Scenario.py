@@ -41,10 +41,9 @@ def main():
 
     # Run the import-drift command
     print(
-        "\n   [CLI] Running: agentv import-drift --log "
+        "\n   [CLI] Running: agentv import-drift --input "
         + str(log_path)
-        + " --output "
-        + str(output_path)
+        + " --industry telecom"
     )
 
     try:
@@ -55,10 +54,10 @@ def main():
                 "-m",
                 "eval_runner.cli",
                 "import-drift",
-                "--log",
+                "--input",
                 str(log_path),
-                "--output",
-                str(output_path),
+                "--industry",
+                "telecom",
             ],
             check=True,
         )

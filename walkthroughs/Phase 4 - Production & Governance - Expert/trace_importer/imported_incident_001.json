@@ -2,7 +2,8 @@
     "aes_version": 1.4,
     "metadata": {
         "name": "Imported Incident 001",
-        "id": "prod_001"
+        "id": "prod_001",
+        "compliance_level": "Standard"
     },
     "workflow": {
         "nodes": [
@@ -12,5 +13,11 @@
             }
         ],
         "edges": []
+    },
+    "evaluation": {
+        "consensus": {
+            "strategy": "Majority_Vote",
+            "min_judges": 1
+        }
     }
 }

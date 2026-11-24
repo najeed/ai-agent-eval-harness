@@ -41,7 +41,7 @@ tests/
 *   **Decoupled Architecture**:
     *   `schemas/acceptance_case.schema.json`: Strict JSON Schema defining valid acceptance cases.
     *   `result.py`: Zero-framework contract types (`AcceptanceResult`, `AssertionOutcome`, `AcceptanceReport`).
-    *   `manifests/acceptance_matrix.yaml`: Definitive suite matrix mapping acceptance IDs (e.g., `AT-COR-001`, `AT-SEC-001`, `AT-EVI-001`, `AT-CLI-001`) to scenario targets.
+    *   `manifests/release.yaml`: Definitive suite matrix mapping acceptance IDs (e.g., `AT-COR-001`, `AT-SEC-001`, `AT-EVI-001`, `AT-CLI-001`) to scenario targets.
     *   `support/acceptance_runner.py`: Subprocess execution harness with configurable timeout (`AGENTV_ACCEPTANCE_TIMEOUT`, default 180s) to withstand heavy parallel loads.
 *   **Execution Commands**:
     ```bash
@@ -49,7 +49,7 @@ tests/
     pytest -m acceptance -v
 
     # Run the zero-tolerance CI/CD release gate:
-    python tools/ci/acceptance_gate.py --strict --output reports/acceptance_release_report.json
+    python tools/ci/acceptance_gate.py --manifest tests/acceptance/manifests/release.yaml --report-dir reports/acceptance/latest --json
     ```
 
 ### 1. Contract Tests (`tests/contracts/`)
@@ -80,12 +80,12 @@ tests/
 *   **Threshold**: Enforces a strict **100.00% definitive mutation kill rate** across all evaluated critical runtime modules.
 *   **Command**: `python tools/ci/run_mutation_tests.py --full`
 
-#### High-Performance Concurrency & Windows Dev Drive (`V:`) Architecture
+#### Optional Windows Dev Drive profile (machine-specific example)
 
 When running test suites across multiple concurrent workers (e.g. `pytest -n auto` or `run_mutation_tests.py`), filesystem filter driver contention (`fltmgr.sys`), OneDrive sync activity, and synchronous antivirus scanning (`MsMpEng.exe`) can introduce latency. Windows 11 **Dev Drive** (ReFS) with Defender Performance Mode accelerates I/O-intensive workloads by converting synchronous antivirus hooks into asynchronous background scans.
 
 ##### 1. Zero-Code Workspace Directory Junctions
-Untracked ephemeral directories in `ai-agent-eval-harness` are linked to the Dev Drive (`V:`) via NTFS Directory Junctions (`New-Item -ItemType Junction`), matching the existing `.venv` junction topology without altering any repository source files:
+On a machine with a provisioned `V:` Dev Drive, optional junctions can move ephemeral directories to that drive. These are example paths, not required repository topology:
 * `.tmp -> V:\workspaces\ai-agent-eval-harness\tmp`
 * `.pytest-tmp -> V:\workspaces\ai-agent-eval-harness\pytest-tmp`
 * `.pytest_cache -> V:\workspaces\ai-agent-eval-harness\pytest_cache`
@@ -93,7 +93,7 @@ Untracked ephemeral directories in `ai-agent-eval-harness` are linked to the Dev
 * `.hypothesis -> V:\workspaces\ai-agent-eval-harness\hypothesis`
 
 ##### 2. Standard Session Initialization Profile
-Initialize PowerShell sessions with these environment variables before running any Runtime test suites:
+Use this optional profile only after provisioning its directories on your own machine. A `V:` drive and these environment overrides are not prerequisites. For an ordinary checkout, use your active virtual environment and `python -m pytest tests/unit/`. Keep temporary helper scripts in gitignored `scratch/`.
 
 ```powershell
 # === AgentV Runtime Virtual Environment & ReFS Dev Drive (V:) Initialization ===
@@ -196,7 +196,7 @@ Global registries (such as `AgentAdapterRegistry`) must be fully cleared between
 def test_custom_adapter_discovery(monkeypatch):
     # Ensure clean start state
     AgentAdapterRegistry.reset()
-    assert not AgentAdapterRegistry._plugins_discovered
+    assert not AgentAdapterRegistry._discovered
     
     # Act / patch registry state...
 ```
@@ -221,7 +221,7 @@ def temp_run_dir(tmp_path):
 ### 4. Deterministic Seeding Protocol
 For multi-attempt or stochastic evaluations, implement a deterministic seeding formula:
 $$\text{Final Seed} = \text{Base Seed} + \text{Run Index}$$
-This guarantees that while each run index is unique, the entire evaluation suite remains 100% reproducible.
+This reproduces seed inputs. Remote model behavior, scheduling and external state can still differ; seed offsets do not prove independence between trials.
 
 ### 5. Metric Context Hydration
 When implementing seed-aware metrics, propagate the current run's seed via `session_metadata` so that the `LLM Judge` or stochastic validation components can access it.
@@ -245,7 +245,7 @@ def test_fallback_when_dependency_missing():
     orig_import = builtins.__import__
 
     def mock_import(name, *args, **kwargs):
-        if "cyclecore-pq" in name:
+        if name == "cyclecore_pq" or name.startswith("cyclecore_pq."):
             raise ImportError("Dependency not installed")
         return orig_import(name, *args, **kwargs)
 

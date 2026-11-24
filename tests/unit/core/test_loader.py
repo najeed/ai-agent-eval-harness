@@ -162,3 +162,93 @@ def test_load_dataset_directory(tmp_path):
     ids = [r["id"] for r in results]
     assert "s1" in ids
     assert "s2" in ids
+
+
+def test_load_scenario_hoists_root_fields_and_keeps_absolute_dataset(tmp_path):
+    scen_file = tmp_path / "hoist.json"
+    scen_file.write_text(
+        json.dumps(
+            {
+                "aes_version": 1.4,
+                "id": "hoisted-id",
+                "title": "Hoisted Title",
+                "name": "Hoisted Name",
+                "industry": "finance",
+                "description": "desc",
+                "metadata": {"compliance_level": "Standard"},
+                "workflow": {"nodes": [], "edges": []},
+                "evaluation": {"metrics": []},
+            }
+        ),
+        encoding="utf-8",
+    )
+    from jsonschema import ValidationError
+
+    loaded = loader.load_scenario(scen_file)
+    assert loaded["metadata"]["id"] == "hoisted-id"
+    assert loaded["metadata"]["name"] == "Hoisted Name"
+
+    title_only = tmp_path / "title_only.json"
+    title_only.write_text(
+        json.dumps(
+            {
+                "aes_version": 1.4,
+                "title": "Title Only",
+                "metadata": {"id": "t-only", "compliance_level": "Standard"},
+                "workflow": {"nodes": [], "edges": []},
+                "evaluation": {"metrics": []},
+            }
+        ),
+        encoding="utf-8",
+    )
+    loaded_title = loader.load_scenario(title_only)
+    assert loaded_title["metadata"]["name"] == "Title Only"
+
+    keep_file = tmp_path / "keep.json"
+    keep_file.write_text(
+        json.dumps(
+            {
+                "aes_version": 1.4,
+                "id": "root-id",
+                "title": "Root Title",
+                "name": "Root Name",
+                "metadata": {"id": "keep-id", "name": "Keep Name", "compliance_level": "Standard"},
+                "workflow": {"nodes": [], "edges": []},
+                "evaluation": {"metrics": []},
+            }
+        ),
+        encoding="utf-8",
+    )
+    kept = loader.load_scenario(keep_file)
+    assert kept["metadata"]["id"] == "keep-id"
+    assert kept["metadata"]["name"] == "Keep Name"
+
+    abs_ds = tmp_path / "abs_ds.json"
+    abs_ds.write_text(
+        json.dumps(
+            {
+                "aes_version": 1.4,
+                "dataset": {"path": "/abs/data.json"},
+                "metadata": {"compliance_level": "Standard", "name": "Abs"},
+                "workflow": {"nodes": [], "edges": []},
+                "evaluation": {"metrics": []},
+            }
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValidationError):
+        loader.load_scenario(abs_ds)
+
+    bad_meta = tmp_path / "bad_meta.json"
+    bad_meta.write_text(
+        json.dumps(
+            {
+                "aes_version": 1.4,
+                "metadata": "not-a-dict",
+                "workflow": {"nodes": [], "edges": []},
+            }
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValidationError):
+        loader.load_scenario(bad_meta)

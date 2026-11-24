@@ -90,13 +90,13 @@ graph TD
 
 6. **Scenario Catalog & Static Analysis (`eval_runner/catalog.py`, `eval_runner/linter.py`)**:
    - **`ScenarioCatalog`**: Recency-sorted, optimistic-concurrency scenario indexing with revision hash conflict prevention (`409 Conflict`).
-   - **`ScenarioLinter`**: Static compliance evaluation scoring scenarios across 4 tiers (`GOLD`, `SILVER`, `BRONZE`, `REJECTED`) with in-memory `lint_dict()` chaining.
+   - **`ScenarioLinter`**: In-memory `lint_dict()` reports static quality as `GOLD` at ≥90, `SILVER` at ≥70, `BRONZE` at ≥50, or `UNRANKED` below 50; registry input returns `REGISTRY`. A tier does not itself reject execution.
 
 7. **Trust, Certification & Verification Layer (`eval_runner/verifier.py`, `eval_runner/services/certification.py`, `eval_runner/identity.py`)**:
    - **`TraceVerifier` & `VerificationAuthority`**: Content-addressable streaming hashing (`hashlib.sha3_256`), Split Package Verification API (`verify_package_signature_only`, `verify_package_artifacts`), canonical scenario hash binding, and Evidence Graph direct provenance enforcement.
    - **`CertificationService`**: Authoritative evaluation outcome extraction ensuring terminal execution failures take absolute precedence over caller overrides or heuristic counters.
    - **`IdentityService`**: Dual-mode cryptographic signing (Classical Ed25519 and Post-Quantum ML-DSA-65) with strict trust root jail protection.
-   - Detached Verification Certificate v3 (`run_manifest.json`), Verification Packages (`.agentv-package.json`), and cryptographically tamper-evident audit-chain sealing (`audit_chain.jsonl`). `LocalFileArtifactStore` is classified as `TAMPER_EVIDENT_LOGICAL_SEAL`. Immutable WORM retention requires a hardware-enforced or cloud-native Object Lock store; setting `REQUIRE_IMMUTABLE_WORM=true` enforces fail-closed rejection of logical seals before certification.
+   - Detached Verification Certificate v3 (`run_manifest.json`), Verification Packages (`.agentv-package.json`), and provider-owned cryptographic trace commitments. `LocalFileArtifactStore` is classified as `TAMPER_EVIDENT_LOGICAL_SEAL`. Immutable WORM retention requires a hardware-enforced or cloud-native Object Lock store; setting `REQUIRE_IMMUTABLE_WORM=true` enforces fail-closed rejection of logical seals before certification.
 
 ---
 
@@ -112,27 +112,27 @@ AgentV implements an extensible, zero-trust **Interceptor Pipeline Pattern** all
 - **`TraceVerificationInterceptor`**: Intercepts sign and verify operations.
 - **`VerificationService` (`verification_service`)**: Routes signing to local keys or external enterprise KMS/HSM hardware vaults.
 
-### 3. 9-Vector Mutation & Adversarial Perturbation Pipeline
-- **9-Vector Mutation Ecosystem**: Indexes perturbations across all 9 target vectors (`input`, `context`, `memory`, `retrieval`, `tool`, `state`, `authorization`, `temporal`, `objective`). See the full [Mutation Algebra Specification](/spec/mutation-algebra/).
-- **35+ Registered Mutators**: Typed `MutationDescriptor` specifications with parameters, operational risk tiers, and deterministic seeding (`seed`).
+### 3. Mutation & Adversarial Perturbation Pipeline
+- **Mutation coordinate vocabulary**: The formal MutationVector vocabulary has 14 values: `input`, `context`, `memory`, `retrieval`, `tool`, `state`, `identity`, `authorization`, `policy`, `time`, `concurrency`, `dependency`, `multi_agent`, `objective`. Executable support depends on the installed provider catalog. See the full [Mutation Algebra Specification](/spec/mutation-algebra/).
+- **Provider-discovered mutators**: Typed `MutationDescriptor` specifications with parameters, operational risk tiers, and deterministic seeding (`seed`).
 - **Draft-07 Schema Compliance**: Preserves `failure_policy` string enum and safely updates `metadata.name` without root schema pollution.
 - **In-Memory ScenarioLinter Chaining**: Mutated scenarios are evaluated in-memory before disk persistence or UI diff preview, reporting compliance tier and validation scores.
 - **`MutationService` (`eval_runner.mutations.mutator.mutation_service`)**: Concurrency-safe, tenant-filtered (`org_id`) engine executing pre-run scenario mutations and dynamic perturbations.
 
 ---
 
-## 3. 🛡️ Process Orchestration & Stability Guard
+## 3. Console process guard
 
-To ensure evaluation determinism in concurrent CI/CD environments:
-- **PID-Based Locking**: Active orchestration runs maintain `.aes/server.pid`.
-- **Ghost Process Remediation**: The engine uses `psutil` to detect and clean up orphaned background processes from aborted runs before starting a new session.
-- **Cross-Platform Compatibility**: Robust file-locking and signal handling ensuring identical behavior across Windows, Linux, and macOS.
+Console startup uses `.aes/server.pid` and checks whether a previous live PID's
+name contains `python` before terminating it. It does not check command-line or
+project ownership and is not a singleton lock for all evaluations. Exit cleanup
+removes its own PID file. See [the guard reference](/builder/stability-guard/).
 
----
+## 4. Application network controls
 
-## 4. 🔒 Airgapped Execution & Network Sovereignty
-
-In classified, regulated, or airgapped environments (`AIRGAPPED_MODE=true`):
-- **Destination IP Pinning & Anti-Rebinding**: `eval_runner/adapters/common.py` resolves target hostnames upfront to validated IP addresses and pins connections, rejecting loopback, link-local, private IP escape, and DNS rebinding attacks.
-- **Redirect Trace Re-Validation**: Any HTTP redirect chain undergoes re-inspection against airgap policies before following redirect targets.
-- **Visual Console CSP Hardening**: The Visual Console Flask server dynamically strips external script origins (`https://cdn.jsdelivr.net`) from Content Security Policy headers, ensuring zero third-party assets are loaded in isolated networks.
+Adapters validate HTTP(S) syntax and apply configured airgap checks.
+AIRGAPPED_MODE permits local/private/internal destinations and gates selected
+outbound paths; it is not a universal SSRF policy or connection-level DNS pinning.
+Readiness and external state-authority probes have separate allowlist/redirect
+controls. Deploy authoritative egress isolation at the network/container layer.
+See [security](/auditor/security/) for the actual boundaries.

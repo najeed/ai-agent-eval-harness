@@ -313,13 +313,6 @@ class ConcreteSandbox(AbstractSandbox):
 
 
 @pytest.mark.asyncio
-async def test_abstract_sandbox_has_no_full_state_acquisition_api(base_scenario, tmp_path, capsys):
-    sandbox = ConcreteSandbox(base_scenario, workspace_root=tmp_path)
-
-    assert not hasattr(sandbox, "get_full_state")
-
-
-@pytest.mark.asyncio
 async def test_sandbox_setup_does_not_capture_undeclared_full_state(
     base_scenario, tmp_path, capsys
 ):

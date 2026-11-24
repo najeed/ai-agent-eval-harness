@@ -5,64 +5,42 @@ description: Your first deterministic evaluation in under 120 seconds.
 
 import { Steps } from '@astrojs/starlight/components';
 
-# Zero-Key Quickstart
+# Run the bundled demo
 
-Welcome to AgentV. This guide gets you from a fresh installation to your first **Forensic Evaluation** in under two minutes. No API keys, cloud accounts, or complex configurations are required for this initial walkthrough.
-
-## 🏁 The 120-Second Sprint
+The demo runs without provider API keys from a repository checkout. It starts the
+local sample HTTP agent, evaluates a bundled telecom scenario, writes reports,
+and stops the sample service.
 
 <Steps>
 
-1.  **Environment Setup**  
-    Create a clean virtual environment and install the harness in editable mode.
-    ```bash
-    python -m venv venv
-    venv\Scripts\activate
-    # Install core runtime with development tooling:
-    pip install -r requirements-dev.txt
+1. **Install from the repository root**
+   ```powershell
+   python -m venv .venv
+   .\.venv\Scripts\Activate.ps1
+   pip install -e .
+   ```
+   On macOS/Linux, activate with `source .venv/bin/activate`.
 
-    # Or install with all ecosystem providers and frameworks:
-    # pip install -e ".[all]"
-    ```
+2. **Run the demo**
+   ```bash
+   agentv quickstart
+   ```
+   Keep `sample_agent/agent_app.py` and
+   `industries/telecom/scenarios/technical_support/13814_home_internet_slow_speed.json`
+   available in the checkout. The command executes this scenario; it does not
+   download or scaffold a corpus.
 
-2.  **Initialize the Industrial Corpus**  
-    Scaffold the necessary local directories and download a lightweight, deterministic evaluation suite.
-    ```bash
-    agentv quickstart
-    ```
-
-3.  **Execute a Deterministic Run**  
-    Run a pre-configured scenario using the **Zero-Temperature Mock Adapter**. This verifies your local routing and event bus without incurring LLM costs.
-    ```bash
-    agentv run --path industries/finance/scenarios/loan_approval.json
-    ```
-
-4.  **Visual Triage**  
-    Launch the **Integrated Console** to inspect the behavioral DNA of your run.
-    ```bash
-    agentv console
-    ```
-    Open [http://localhost:5000](http://localhost:5000) in your browser to see the trajectory, state deltas, and the forensic ledger.
+3. **Inspect results**
+   ```bash
+   agentv console
+   ```
+   Open [the local console](http://localhost:5000). Authenticate using a configured
+   key or the first-run bootstrap instructions printed by the console before
+   requesting protected run/scenario data.
 
 </Steps>
 
----
-
-## 🔍 What Just Happened?
-
-When you ran `run`, the AgentV engine executed several industrial-grade protocols:
-
-- **Isolated Routing**: The engine consulted `.aes/config/routing/manifest.json` to map the scenario's requirements to a local simulator.
-- **Event-Driven Observation**: Every tool call and reasoning step was emitted to the [Global Event Bus](/builder/architecture/), allowing the dashboard to mirror the execution in real-time.
-- **Forensic Ledger Creation**: A SHA3-256 hash was generated for the trace, binding the results to your local **Identity Registry**.
-
-## 🚀 Next Steps
-
-- [**The Scholar Path**](/scholar/): Learn about Deterministic Seeds and Academic Benchmarks.
-- [**The Architect Path**](/builder/architecture/): Deep-dive into Singleton Process Guards and Dynamic CLI Dispatch.
-- [**The Auditor Path**](/auditor/trust-protocol/): Implement the v3.0.0 Trust Protocol for CI/CD gating.
-
-
-:::tip
-**Pro Tip**: Now that your environment is verified, you can swap the mock adapter for a live model by setting your `OPENAI_API_KEY` or `GEMINI_API_KEY` and updating your [Routing Registry](/spec/routing_v1/).
-:::
+The demo records execution evidence through the run provider. It is a simulated
+baseline, not an authoritative certificate. For your own agent, follow the
+[agent contract](/integrator/agent-contract/); certification requires eligible
+live evidence and a separate [certification workflow](/auditor/verification/).

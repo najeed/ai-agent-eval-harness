@@ -3,37 +3,23 @@ title: AssistantBench
 description: Evaluating enterprise reasoning with the AssistantBench benchmark.
 ---
 
-# AssistantBench: Enterprise Intelligence
+# AssistantBench datasets
 
-**AssistantBench** is a benchmark designed to evaluate the capability of AI assistants to perform complex, multi-step tasks in an enterprise context. Unlike general-purpose benchmarks, AssistantBench emphasizes real-world tool use, data reconciliation, and industrial reasoning accuracy.
+The AssistantBench loader projects a user-selected question/answer dataset into
+AES scenarios. Accepted question fields are `task`, `question` or `Question`;
+answer fields include `answer`, `answers` or `Final answer`.
 
-## Native Support in AgentV
-
-AgentV provides full support for the AssistantBench ecosystem, focusing on the **v1 Open Source Baseline**.
-
-### Key Evaluation Pillars
-- **Industrial Reconciliation**: The ability of the agent to identify discrepancies between two data sources (e.g., a CRM and an Invoice).
-- **Tool-Chain Robustness**: Evaluating if the agent can correctly chain together a sequence of 3+ distinct tools to achieve a business goal.
-- **Enterprise Policy Adherence**: Testing if the agent follows safety and security protocols (PII masking) during task execution.
-
----
-
-## Execution Guide
-
-### Using the AssistantBench Loader
-
-Run evaluations using the native AssistantBench URI scheme:
 ```bash
-agentv run --path assistantbench://v1 --agent http://localhost:5001/execute_task
+agentv run --path assistantbench://datasets/assistantbench.jsonl --protocol http --agent http://localhost:5001/execute_task
 ```
 
-### Analyzing Results
+Acquire the real dataset and create the referenced file before execution.
+`assistantbench://v1` and similar version labels do not resolve bundled data.
+Missing files, empty datasets and malformed records fail explicitly. Local
+JSON/JSONL/Parquet and explicit Hugging Face sources use the shared
+[dataset-loading contract](/scholar/benchmarks/).
 
-AssistantBench results in AgentV are enriched with **Behavioral DNA** telemetry. This allows researchers to distinguish between:
-1. **Planning Failures**: The agent failed to identify the correct tool sequence.
-2. **Execution Failures**: The agent identified the right tools but misused them or failed to parse the output.
-3. **Reasoning Failures**: The tools worked correctly, but the agent's final synthesis was factually incorrect.
-
-:::tip
-**Use the Visual Debugger**: When analyzing AssistantBench failures, use the `agentv console` to inspect the **State Delta** at each step. This reveals exactly where the agent's "understanding" of the industrial environment diverged from the reality.
-:::
+The source tasks determine the benchmark's content. Tool-chain, enterprise-policy
+or reconciliation evidence requires the corresponding declared tools, assertions
+and independent observations; the loader does not add those capabilities to
+arbitrary input rows.

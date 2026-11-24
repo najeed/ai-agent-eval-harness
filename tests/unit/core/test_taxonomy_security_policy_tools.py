@@ -14,7 +14,7 @@ from eval_runner.taxonomy import (
 importlib.reload(taxonomy)
 
 
-def test_fallback_diagnosis_logic():
+def test_diagnostic_result_fallback_diagnosis_logic():
     """Verify fallback diagnosis index positioning with and without agent role."""
     diag = DiagnosticResult(FailureCategory.INFRA_TIMEOUT, FailureCategory.UNKNOWN_FAILURE)
 

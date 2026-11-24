@@ -50,7 +50,7 @@ def main():
         print(f"⚠️  DRIFT DETECTED: {len(diffs)} inconsistencies found.")
         for diff in diffs:
             print(f" - {diff}")
-        print("\n[Action Required] Reset staging mirror to '1.2.3' and lock concurrency to 50.")
+        print("\n[Action Required] Reset staging mirror to '2.0.0' and lock concurrency to 50.")
     else:
         print("✅ MIRROR CONSISTENT: Parity factor is 100%.")
 

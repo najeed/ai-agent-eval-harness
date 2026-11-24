@@ -3,61 +3,44 @@ title: "Extension Manifest & SRI Specification"
 description: "Authoritative specification for sandboxed micro-frontend extensions, dynamic navigation manifests, and Subresource Integrity digests."
 ---
 
-The **Extension Manifest Specification** (`extension-manifest.schema.json`) governs how third-party and enterprise plugins inject custom navigation items, REST routes, and isolated React micro-frontends into the AgentV Visual Console.
+Extension integration has three related contracts: navigation presentation,
+the generic Python `RuntimeExtension`, and the signed frontend release sidecar.
+Use [the generic schema](/spec/extensions/extension-manifest.schema.json) and
+`agentv_runtime.extension_contract` for the Python declaration, and
+`ui/visual-console/src/types/extension-contract.ts` for the frontend contract.
+They are not interchangeable schemas.
 
----
+## Generic declaration
 
-## 1. Extension Manifest Schema (`extension-manifest.schema.json`)
+Required generic fields are `extension_id`, `display_name`, `version` and
+`api_version`. Optional fields include compatibility versions, capabilities,
+required permissions, routes, navigation group, `remote_entry`, `sri_hash`,
+publisher, signature and lifecycle declarations. Unknown generic fields are
+rejected by the machine schema. In that schema `sri_hash` is a 64-character hex
+SHA3-256 digest; the frontend release format uses prefixed SRI encodings.
 
-```json
-{
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AgentV Extension Manifest",
-  "type": "object",
-  "required": ["manifest_version", "id", "name", "version", "entrypoint", "integrity"],
-  "properties": {
-    "manifest_version": { "type": "string", "enum": ["1.0.0", "2.0.0"] },
-    "id": { "type": "string", "pattern": "^[a-z0-9_-]+$" },
-    "name": { "type": "string" },
-    "version": { "type": "string" },
-    "description": { "type": "string" },
-    "entrypoint": { "type": "string" },
-    "integrity": {
-      "type": "string",
-      "pattern": "^(sha3-256|sha3-384|sha3-512|sha384|sha256)-[A-Za-z0-9+/=]+$"
-    },
-    "routes": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["path", "label"],
-        "properties": {
-          "path": { "type": "string" },
-          "label": { "type": "string" },
-          "icon": { "type": "string" },
-          "group": { "type": "string" },
-          "badge": { "type": "string" },
-          "required_role": { "type": "array", "items": { "type": "string" } }
-        }
-      }
-    },
-    "permissions": {
-      "type": "array",
-      "items": { "type": "string" }
-    }
-  }
-}
-```
+## Frontend release
 
----
+A production remote release must supply a signed `.manifest.json` sidecar before
+its code executes. It binds `remote_entry`, SRI, publisher identity, version,
+API compatibility, routes/permissions and the integrity map of relative chunks.
+Production also requires `react_peer: true` and the host React singleton.
+Use the [publish workflow](/extender/gui-extensions/) to generate and sign the
+release fields rather than inventing digests or signatures.
 
-## 2. Subresource Integrity (SRI) Verification
+## Execution and trust
 
-The Visual Console's `RemoteComponentLoader` verifies the remote ESM bundle before execution:
+The loader verifies entry/chunk bytes, manifest bindings and the publisher
+against the server trust root. SRI proves bytes, not publisher authority.
+Cross-origin loading can be permitted with pinned SRI and verified publisher
+metadata. The backend determines the trust tier; self-declared `tier` values do
+not grant trust.
 
-1. **Digest Fetching**: The loader fetches the raw script text from `entrypoint`.
-2. **Cryptographic Validation**:
-   - The browser computes the digest using WebCrypto or FIPS 202 SHA-3.
-   - If the computed digest does not match the manifest's `integrity` string, loading is aborted immediately with a `SecurityError`.
-3. **Sandboxed Isolation**:
-   - Verified components mount inside an isolated iframe sandbox with `allow-scripts` and communicate with the host console via origin-checked `postMessage` envelopes.
+Verified React modules mount in the host application. They do **not** execute in
+isolated iframes. Production permits backend-verified official extensions and
+rejects community and unsigned modules because an execution isolation boundary
+is not implemented. Development can expose restricted unsigned-local modules.
+
+Mounted extensions receive `ExtensionRuntimeContextApi` with authenticated
+context, `switchContext` and `authorizedFetch`. Enforce resource permissions and
+scope ownership on the server; UI context is not an authorization authority.

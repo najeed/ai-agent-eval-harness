@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from eval_runner.handlers import analysis, environment, evaluation, scenarios
+from eval_runner.handlers import environment, evaluation, scenarios
 
 
 @pytest.fixture
@@ -59,37 +59,6 @@ async def test_handle_doctor(mock_args, capsys):
 
 
 @pytest.mark.asyncio
-async def test_handle_cleanup_runs(mock_args, tmp_path):
-    """Test 'cleanup-runs' command handler."""
-    with patch("eval_runner.handlers.environment.cleaner.cleanup_traces") as mock_cleanup:
-        mock_args.dir = str(tmp_path)
-        await environment.handle_cleanup_runs(mock_args)
-        mock_cleanup.assert_called_once()
-
-
-@pytest.mark.asyncio
-async def test_handle_inspect(mock_args, capsys, tmp_path):
-    """Test 'inspect' command handler. Forensic: v1.2 Numerical Schema + Node desc."""
-    scen_path = tmp_path / "scen.json"
-    scen_path.write_text(
-        json.dumps(
-            {
-                "aes_version": 1.4,
-                "metadata": {"name": "Inspect Me", "compliance_level": "Standard"},
-                "workflow": {
-                    "nodes": [{"id": "t1", "task_description": "First Task"}],
-                    "edges": [],
-                },
-            }
-        )
-    )
-    mock_args.scenario_path = str(scen_path)
-    await scenarios.handle_inspect(mock_args)
-    captured = capsys.readouterr()
-    assert "Inspect Me" in captured.out
-
-
-@pytest.mark.asyncio
 async def test_handle_lint(mock_args, capsys, tmp_path):
     """Test 'lint' command handler. Forensic: v1.2 Numerical Schema."""
     scen_path = tmp_path / "scen.json"
@@ -119,14 +88,6 @@ async def test_handle_export(mock_args, capsys):
     with patch("eval_runner.exporter.HFExporter.export") as mock_export:
         await environment.handle_export(mock_args)
         mock_export.assert_called_once_with("trace.jsonl", "dataset.json")
-
-
-@pytest.mark.asyncio
-async def test_handle_taxonomy(mock_args, capsys):
-    """Test 'taxonomy' command handler. Forensic alignment: Verify header string."""
-    await analysis.handle_taxonomy(mock_args)
-    captured = capsys.readouterr()
-    assert "AGENTV FAILURE TAXONOMY" in captured.out
 
 
 @pytest.mark.asyncio

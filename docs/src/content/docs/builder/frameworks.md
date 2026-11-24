@@ -10,7 +10,7 @@ AgentV is framework-agnostic. You can evaluate agents built with any library (La
 For the highest level of integration, use native adapters. These typically require a [Plugin](/extender/plugins/) and allow the harness to communicate directly with the framework's internal message bus.
 
 ### Supported Adapters
-- **`langgraph://`**: Official LangGraph v2 Protocol support.
+- **`langgraph://`**: LangGraph adapter; the repository extra pins LangGraph 1.2.24.
 - **`crewai://`**: Support for CrewAI agent swarms.
 - **`ag2://`**: Support for AG2 (formerly AutoGen) agents.
 - **`langchain://`**: Direct LangChain chain/runnable protocol execution.
@@ -21,16 +21,21 @@ For the highest level of integration, use native adapters. These typically requi
 pip install -e ".[framework-langchain]"
 pip install -e ".[framework-langgraph]"
 pip install -e ".[framework-ag2]"
-pip install -e ".[framework-crewai]"
 
-# Or install all framework substrates at once:
+# Or install the populated framework extras together:
 pip install -e ".[frameworks]"
 ```
 :::
 
+The `framework-crewai` extra is currently empty: its CrewAI requirement is
+commented out in pyproject.toml. Neither that extra nor `frameworks` installs
+CrewAI. Provision a compatible CrewAI environment separately when using its
+adapter. These version statements describe repository manifests, not upstream
+package or model availability.
+
 **Usage:**
 ```bash
-agentv run --scenario scenarios/retail.json --agent langgraph://my_retail_node
+agentv run --scenario scenarios/retail.json --protocol langgraph --agent my_module.graph:app
 ```
 
 ### ⚙️ Behavioral Configuration Mesh
@@ -85,7 +90,7 @@ graph = builder.compile()
 
 @app.post("/execute_task")
 async def execute(request: dict):
-  input_text = request.get("input", "")
+  input_text = request.get("task_description", "")
   result = graph.invoke(
       {"messages": [{"role": "user", "content": input_text}]}
   )
@@ -107,7 +112,7 @@ user_proxy = UserProxyAgent("user_proxy", code_execution_config=False)
 
 @app.post("/execute_task")
 async def execute(request: dict):
-  input_text = request.get("input", "")
+  input_text = request.get("task_description", "")
   user_proxy.initiate_chat(assistant, message=input_text, max_turns=1)
   last_msg = user_proxy.last_message()
   return {"content": last_msg.get("content", "") if last_msg else ""}
@@ -129,7 +134,7 @@ analyst = Agent(
 
 @app.post("/execute_task")
 async def execute(request: dict):
-  input_text = request.get("input", "")
+  input_text = request.get("task_description", "")
   task = Task(
       description=input_text,
       agent=analyst,

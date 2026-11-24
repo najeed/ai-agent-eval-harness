@@ -39,7 +39,7 @@ class MockResponse:
 
 
 @pytest.mark.asyncio
-async def test_claude_adapter_system_prompt_and_task():
+async def test_claude_adapter_message_content_mapping():
     plugin = ClaudeAdapterPlugin()
     payload = {"api_key": "test", "task": "do thing", "system_prompt": "be helper"}
 
@@ -65,7 +65,7 @@ async def test_claude_adapter_error_handling():
 
 
 @pytest.mark.asyncio
-async def test_gemini_adapter_vertex_detection():
+async def test_gemini_adapter_vertex_detection_direct():
     plugin = GeminiAdapterPlugin()
     # Mock the SDK client
     with patch("google.genai.Client") as mock_client_cls:
@@ -110,7 +110,7 @@ async def test_grok_adapter_missing_key():
 
 
 @pytest.mark.asyncio
-async def test_ollama_adapter_translation():
+async def test_ollama_adapter_query_retry_count():
     plugin = OllamaAdapterPlugin()
     payload = {"task": "tell joke"}
     with patch.object(plugin, "call_with_retry", new_callable=AsyncMock) as retry:

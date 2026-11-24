@@ -3,270 +3,129 @@ title: Agent Interaction Contract & Envelope Protocol
 description: Authoritative specification for communication contracts between the AgentV evaluation engine and agent implementations.
 ---
 
-The **Agent Interaction Contract** defines the bidirectional communication interface between the AgentV evaluation runtime and the AI agent under evaluation.
+AgentV separates the remote application's wire payload from the evaluation
+context retained inside the harness. Your endpoint receives only the configured
+application request; it must not depend on undocumented harness metadata.
 
-```mermaid
-sequenceDiagram
-    autonumber
-    participant Harness as AgentV Harness
-    participant Sandbox as Tool Sandbox (World Shims)
-    participant Agent as Target Agent Endpoint
+## HTTP request
 
-    Harness->>Agent: POST /execute_task (Task Description, Turn Context, History, OTel Context)
-    alt Agent Requests Tool Execution
-        Agent-->>Harness: 200 OK {"action": "call_tool" | "call_multiple_tools", "tool_calls": [...]}
-        Harness->>Sandbox: Execute sandboxed tool calls & record state mutations
-        Sandbox-->>Harness: Return tool outputs & environmental diffs
-        Harness->>Agent: POST /execute_task (Turn N+1 with tool results in conversation_history)
-    else Agent Concludes Task
-        Agent-->>Harness: 200 OK {"action": "final_answer", "summary": "...", "metadata": {...}}
-        Harness->>Harness: Run Verifier & Issue Cryptographic Certificate
-    else Agent Requires Human Intervention
-        Agent-->>Harness: 200 OK {"action": "hitl_pause", "reason": "...", "approval_token": "..."}
-    end
-```
-
----
-
-## 📡 1. HTTP/REST Protocol Specification
-
-By default, the harness connects to an agent exposing a standard HTTP endpoint:
-
-```http
-POST /execute_task HTTP/1.1
-Host: agent-service.internal:8000
-Content-Type: application/json
-traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
-tracestate: agentv=session_123
-```
-
-### Request Payload Schema
+Use `--protocol http --agent http://localhost:8000/execute_task`. The default POST
+body is:
 
 ```json
-{
-  "run_id": "run_fintech_2026_01",
-  "task_description": "Verify applicant KYC documents, calculate debt-to-income ratio, and approve or decline loan.",
-  "turn": 1,
-  "max_turns": 10,
-  "scenario_id": "loan_approval_risk_check",
-  "conversation_history": [
-    {
-      "role": "user",
-      "content": "Verify applicant KYC documents, calculate debt-to-income ratio, and approve or decline loan."
-    }
-  ],
-  "available_tools": [
-    {
-      "name": "fetch_applicant_kyc",
-      "description": "Retrieves verified identity and tax records for an applicant ID.",
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "applicant_id": { "type": "string" }
-        },
-        "required": ["applicant_id"]
-      }
-    },
-    {
-      "name": "submit_underwriting_decision",
-      "description": "Submits final underwriting decision to core ledger.",
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "applicant_id": { "type": "string" },
-          "decision": { "type": "string", "enum": ["APPROVED", "DECLINED", "MANUAL_REVIEW"] },
-          "dti_ratio": { "type": "number" }
-        },
-        "required": ["applicant_id", "decision", "dti_ratio"]
-      }
-    }
-  ],
-  "span_context": {
-    "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
-    "span_id": "00f067aa0ba902b7",
-    "trace_flags": 1
-  }
-}
+{"task_description": "Verify applicant KYC documents."}
 ```
 
----
+The default wire body does not include run IDs, turn counters, history, available
+tools, or span metadata. `AgentAdapterRegistry` retains history, input payload,
+metadata and tracing context separately in `AdapterInvocationContext`; native
+provider/framework adapters can opt into that context. HTTP headers and body
+fields are separate protocol concerns.
 
-## 🛠️ 2. Agent Action Response Envelope
+For an application-specific request shape, configure `metadata.payload_template`.
+For example, this metadata fragment maps the current task to an `input` field:
 
-The agent must return an **Action Envelope** object. Four standard actions are supported:
+```json
+{"payload_template": {"input": "{task_description}"}}
+```
 
-### 1. `call_tool` (Single Tool Invocation)
+Templates support `{task_description}`, `{input_payload}`, `{node_id}` and
+`{run_id}` substitutions. Supply identity values explicitly where your integration
+requires them; the default `TurnContext` does not promise every optional template
+identity. An exact `{input_payload}` value preserves the input object's type.
+The OpenAPI adapter also supports operation-specific input payloads.
+
+## Action responses
+
+Single tool requests must use `tool_name`. Accepted parameter fields are
+`tool_params`, `parameters`, or `params`, in that order. Prefer `tool_params`:
+
 ```json
 {
   "action": "call_tool",
   "tool_name": "fetch_applicant_kyc",
-  "tool_args": {
-    "applicant_id": "APP-98214"
-  },
-  "summary": "Fetching KYC verification documents for applicant APP-98214."
+  "tool_params": {"applicant_id": "APP-98214"}
 }
 ```
 
-### 2. `call_multiple_tools` (Parallel Parameterized Tool Calls)
+For multiple calls, use `tool_calls` with `tool`/`params` (or
+`tool_name`/`tool_params`). Dependency ordering can constrain parallel execution:
+
 ```json
 {
   "action": "call_multiple_tools",
   "tool_calls": [
-    {
-      "tool": "fetch_applicant_kyc",
-      "params": { "applicant_id": "APP-98214" }
-    },
-    {
-      "tool": "check_credit_score",
-      "params": { "ssn_last4": "8841" }
-    }
-  ],
-  "summary": "Fetching KYC records and credit bureau score in parallel."
-}
-```
-
-### 3. `final_answer` (Session Completion)
-```json
-{
-  "action": "final_answer",
-  "summary": "Underwriting completed. Applicant credit score is 745 and DTI is 28.5%. Loan decision APPROVED under policy FIN-POL-402.",
-  "metadata": {
-    "decision": "APPROVED",
-    "dti": 0.285,
-    "confidence": 0.98
-  }
-}
-```
-
-### 4. `hitl_pause` (Human-in-the-Loop Intervention)
-```json
-{
-  "action": "hitl_pause",
-  "reason": "Loan amount exceeds $500,000 automated threshold; requesting manual credit officer sign-off.",
-  "approval_token": "req_hitl_882910"
-}
-```
-
----
-
-## 🔁 3. Receiving Tool Results in Subsequent Turns
-
-When the agent requests tool execution, the **AgentV harness executes the sandboxed tools** and appends the outputs to `conversation_history` on turn $N+1$:
-
-```json
-{
-  "run_id": "run_fintech_2026_01",
-  "task_description": "Continue loan assessment.",
-  "turn": 2,
-  "conversation_history": [
-    {
-      "role": "user",
-      "content": "Verify applicant KYC documents, calculate debt-to-income ratio, and approve or decline loan."
-    },
-    {
-      "role": "assistant",
-      "action": "call_tool",
-      "tool_name": "fetch_applicant_kyc",
-      "tool_args": { "applicant_id": "APP-98214" }
-    },
-    {
-      "role": "tool",
-      "name": "fetch_applicant_kyc",
-      "content": "{\"status\": \"VERIFIED\", \"monthly_income\": 12500, \"monthly_debt\": 3500}"
-    }
+    {"tool": "fetch_applicant_kyc", "params": {"applicant_id": "APP-98214"}},
+    {"tool": "check_credit_score", "params": {"applicant_id": "APP-98214"}}
   ]
 }
 ```
 
-:::note[Authoritative Execution & Sandbox Isolation]
-For tools declared in the scenario, the agent **must never fabricate tool outputs** or claim to execute tools locally. The harness is the sole authoritative gateway to simulated environments and world shims.
-:::
-
----
-
-## 📦 4. External Tool Telemetry Receipts (Hybrid & Autonomous Agents)
-
-For autonomous agent architectures (e.g., LangGraph, CrewAI, AutoGen/AG2) that execute internal or self-hosted tools outside the AgentV sandbox, the harness provides native ingestion of **External Tool Telemetry Receipts** via the response envelope:
-
-### Envelope Specification with `execution_receipt`:
-```json
-{
-  "action": "final_answer",
-  "summary": "Completed financial risk calculation using external credit scoring tool.",
-  "execution_receipt": {
-    "steps": [
-      {
-        "tool": "calculate_risk_index",
-        "arguments": { "applicant_id": "APP-98214", "model_version": "v2.1" },
-        "result": { "risk_index": 0.14, "risk_tier": "LOW" },
-        "result_summary": "Calculated low risk tier index 0.14"
-      }
-    ]
-  },
-  "metadata": {
-    "decision": "APPROVED"
-  }
-}
-```
-
-### Ingestion & Provenance Classification:
-1. **Typed Event Emission**: Ingested steps emit `EXTERNAL_TOOL_CALL` and `EXTERNAL_TOOL_RESULT` events over the session event bus.
-2. **Cryptographic Receipt Digest**: A deterministic SHA3-256 hash is computed over RFC 8785 canonical JSON bytes of the receipt data (`receipt_hash: "sha3_256:..."`).
-3. **Explicit Provenance Attributes**:
-   - `source`: `"external_agent_telemetry"`
-   - `provenance`: `"reported"`
-4. **Forensic Integrity Guard**: External receipts are recorded in the trace and tracked in `CertificationService` under `external_tool_calls_observed`. They are **strictly never relabeled** as AgentV sandbox-authoritative, maintaining absolute evidentiary distinction between sandbox-verified state mutations and remote agent self-reported operations.
-
----
-
-## 🧬 5. OpenTelemetry Context & Behavioral DNA
-
-The harness automatically injects W3C Distributed Tracing headers (`traceparent`, `tracestate`) and span metadata into every turn invocation.
-
-### Recommended Telemetry Markers:
-Agents can include structured operational telemetry in `metadata.telemetry`:
+Complete a conversation with:
 
 ```json
-{
-  "action": "call_tool",
-  "tool_name": "submit_underwriting_decision",
-  "tool_args": {
-    "applicant_id": "APP-98214",
-    "decision": "APPROVED",
-    "dti_ratio": 0.28
-  },
-  "metadata": {
-    "telemetry": {
-      "phase": "Decision Execution",
-      "subtask": "Underwriting Ledger Commit",
-      "action": "POST /v1/underwriting/commits",
-      "reasoning_step": 4,
-      "token_usage": {
-        "prompt_tokens": 1420,
-        "completion_tokens": 85
-      }
-    }
-  }
-}
+{"action": "final_answer", "summary": "Underwriting assessment completed."}
 ```
 
----
+`completed` also terminates the turn loop. `processing` continues it; `error`
+reports failure. A final answer starts evaluation of the declared assertions;
+it does not automatically issue a certificate.
 
-## 🔌 6. Non-HTTP Protocol Alternatives
+An agent may request human review with:
 
-### Local Subprocess (`local://`)
-The harness executes the agent command as a local child process communicating over standard input/output streams:
-- `stdin`: Single-line JSON request envelope per turn.
-- `stdout`: Single-line JSON action response envelope.
-- `stderr`: Streamed to engine debug logs.
+```json
+{"action": "hitl_pause", "prompt": "Review this transfer before proceeding."}
+```
+
+For a durable pause, use the runtime-issued approval token and checkpoint from
+the persisted approval request. Do not treat an arbitrary agent-supplied token
+as authorization. Resume with:
 
 ```bash
-agentv run --scenario scenarios/loan.json --protocol local --agent "python -m my_agent.cli"
+agentv hitl-resume --run-id RUN_ID --approval-token TOKEN --decision APPROVED
 ```
 
-### Persistent TCP/Unix Socket (`socket://`)
-The harness connects via persistent TCP socket, transmitting newline-delimited JSON packets. This mode eliminates HTTP connection setup latency for high-throughput batch benchmarks.
+See [interaction lifecycle](/integrator/interaction-lifecycle/) for scope and
+resumption requirements.
+
+## Tool feedback and history
+
+The session records agent responses as `role: "agent"` with the action envelope
+inside `content`, and tool outputs as `role: "environment"`. A message does not
+necessarily contain an `identity` field. Tool results update the next task
+message. HTTP integrations needing a full conversation must explicitly define
+their application contract; `conversation_history` is not automatically added
+to the wire body. Native adapters translate retained context to their framework.
+
+Scenario tools execute through the harness sandbox. Self-reported external tool
+results are a different evidence class and cannot establish sandbox-authoritative
+or independently observed state.
+
+## External execution receipts
+
+Autonomous agents can return `execution_receipt.steps` containing `tool`,
+`arguments`, `result`, and optional `result_summary`. The session records
+`external_tool_call` / `external_tool_result` with
+`source="external_agent_telemetry"`, `provenance="reported"`, and a canonical
+SHA3-256 `receipt_hash`. These observations remain self-reported; certification
+requires the declared independent state/oracle evidence where applicable.
+
+## Local subprocess and sockets
+
+The local adapter starts a subprocess for each invocation, writes one JSON
+request to stdin, closes stdin, and reads one JSON response from stdout. Keep
+diagnostics on stderr:
 
 ```bash
-agentv run --path scenarios/ --protocol socket --agent "socket://127.0.0.1:9099"
+agentv run --path industries/finance/scenarios/loan_approval_risk_check.json --protocol local --agent "python my_agent.py"
 ```
+
+The socket adapter opens a connection per invocation and exchanges bounded JSON
+messages. Accepted addresses include `tcp:host:port`, `host:port`, bracketed IPv6,
+and `unix:/path/to/socket`:
+
+```bash
+agentv run --path industries/finance/scenarios/loan_approval_risk_check.json --protocol socket --agent tcp:127.0.0.1:9099
+```
+
+Use `evaluate` for ordinary scenario directories and `run` for a file/catalog ID.

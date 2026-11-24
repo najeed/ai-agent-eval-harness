@@ -20,6 +20,7 @@ from . import config
 
 def extract_text(file_path: Path) -> str:
     """Extracts raw text from a variety of document formats."""
+    file_path = Path(file_path)
     ext = file_path.suffix.lower()
 
     if ext in [".txt", ".md", ".csv", ".json"]:

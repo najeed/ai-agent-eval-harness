@@ -64,7 +64,7 @@ All failures are classified using the `FailureCategory` standard. These codes ar
 
 ## 🔒 PII Detection & Security Compliance
 
-AgentV includes a high-fidelity PII scanner designed for industrial compliance (GDPR, HIPAA, PCI DSS). The engine uses a multi-pattern registry to detect sensitive data before it is persisted to the [Forensic Ledger](/spec/forensic-ledger-schema/).
+AgentV includes a high-fidelity PII scanner designed for industrial compliance (GDPR, HIPAA, PCI DSS). PIIAnalyzer scans supplied histories using a pattern registry. It is a diagnostic analyzer, not a universal pre-persistence filter. Apply data minimization and storage controls to sensitive evidence.
 
 ### Pattern Registry
 | Type | Standards | Description |
@@ -77,14 +77,14 @@ AgentV includes a high-fidelity PII scanner designed for industrial compliance (
 | **Crypto** | FinCEN | Bitcoin (bc1) and Ethereum (0x) wallet addresses. |
 
 :::note[Important]
-When PII is detected, the engine emits a `SECURITY_PII_LEAK` event. In Enterprise environments, these values are automatically redacted in the visual console while being retained as encrypted hashes in the forensic audit trail.
+A diagnostic match can classify `security_pii_leak`. Selected secret patterns are redacted on telemetry paths, but this does not guarantee all PII is removed or encrypted before storage. Mandatory evidence preserves exact committed objects; any enterprise redaction/encryption requires its actual provider controls.
 :::
 
 ---
 
 ## 🔬 Baseline Analyzers (Core)
 
-The Core harness registers two analyzers by default:
+The Core harness registers three analyzers by default: ProtocolAnalyzer, LoopAnalyzer and PIIAnalyzer. Ordinary registered analyzers run after baseline checks; priority registrations run before them. The first match wins.
 
 ### 1. ProtocolAnalyzer
 Maintains **Protocol Affinity** by verifying that the agent stays within the interaction limits defined in the tool registry. It detects state-divergence when the environment snapshot doesn't match the expected structural effect of an action.
@@ -96,7 +96,7 @@ Detects **Cyclical Reasoning** and **Logical Stalls**.
 - **Cycle Detection**: Uses a logic-aware window (default: 10 turns) to identify if an agent is stuck in an A -> B -> A loop.
 
 ### 3. PIIAnalyzer
-Ensures **Data Sovereignty** and **Regulatory Compliance** by scanning all agent outputs for sensitive data. It uses the authoritative industrial pattern registry (GDPR, HIPAA, PCI DSS) to detect leaks before they are persisted to logs or dashboards.
+Ensures **Data Sovereignty** and **Regulatory Compliance** by scanning all agent outputs for sensitive data. It diagnoses sensitive patterns in supplied histories; it does not guarantee interception or encryption of every log/dashboard persistence path.
 
 ---
 

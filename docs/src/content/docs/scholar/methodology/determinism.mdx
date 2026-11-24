@@ -3,79 +3,44 @@ title: Industrial Determinism
 description: Freezing stochasticity with deterministic seeds for reproducible research.
 ---
 
-import { Steps } from '@astrojs/starlight/components';
+# Seeds and reproducibility
 
-# Deterministic Evaluation
+DefaultRunner seeds Python's `random` for attempt k using:
 
-Reproducibility is the cornerstone of scientific research. AI agents are inherently stochastic due to model temperature and randomized data sampling. AgentV provides a rigid framework to "freeze" this randomness, ensuring that every evaluation run can be perfectly replicated.
-
-## The Seed Mechanism
-
-AgentV uses a deterministic seeding strategy that applies to Python's `random`, `numpy`, and the `LLM Judge` temperature (where supported).
-
-### Base Seeds
-
-When you start an evaluation campaign with a base seed (e.g., `--seed 12345`), the harness initializes the global state. This base seed is the root of the "Randomness Tree" for that entire batch.
-
-### Run Index Offsets & Deterministic Seed Derivation
-
-In multi-run batches (e.g., executing a scenario K times to calculate Pass@K), using the identical seed for every attempt would eliminate statistical variance. Instead, AgentV applies a mathematically predictable, reproducible seed derivation formula:
-
-```txt
-S_k = S_base + (k - 1)
+```text
+attempt_seed = base_seed + (k - 1)
 ```
 
-Where:
-- `S_base` is the configured base seed (`--seed <int>`).
-- `k` in `[1, K]` is the 1-indexed attempt number.
+Here k is one-based. For base seed 42, three attempts use 42, 43 and 44. Use
+`--seed` and `--attempts` on `agentv run` or `agentv evaluate` to select these
+inputs. The offset is a reproducible input convention; it does not prove
+statistical independence between attempts.
 
-For 0-indexed run offsets ($i = k - 1$):
-- **Attempt 1 ($i=0$)**: Seed `S_base` (e.g. `12345`)
-- **Attempt 2 ($i=1$)**: Seed `S_base + 1` (e.g. `12346`)
-- **Attempt 3 ($i=2$)**: Seed `S_base + 2` (e.g. `12347`)
+## Scope of the seed
 
-This guarantees that while each attempt explores a distinct stochastic trajectory, the *entire batch* is 100% reproducible when initialized with the same base seed.
+Provider/model seed support is conditional. DefaultRunner does not universally
+seed NumPy, freeze a judge's temperature, set subprocess hash randomization or
+control remote model scheduling. Publication conductor separately starts
+subprocesses with `PYTHONHASHSEED` and task-index-derived seeds; document which
+entry point produced the experiment.
 
----
+Equal seeds cannot guarantee equal model responses, external service state,
+network behavior or cross-machine execution. A low temperature can reduce some
+variation, but is not proof of deterministic inference.
 
-## Replicating Failures
+## Revisit a failure
 
-A critical requirement for research-grade evaluation is the ability to revisit a specific failure trace with the exact same conditions.
+Preserve the actual scenario revision, base/attempt seed, target and model
+configuration, plugin/provider versions, tool definitions, environment state and
+exact trace bytes. Re-run with the same inputs, then compare the new observations
+with the original evidence. Differences may reveal service or environment drift;
+an identical reasoning trajectory is not promised.
 
-<Steps>
+```bash
+agentv run --path industries/telecom/scenarios/technical_support/13814_home_internet_slow_speed.json --agent http://localhost:5001/execute_task --seed 42
+```
 
-1.  **Identify the Failure**: Locate the specific failed run in your `manifest.json`.
-    ```json
-    {
-      "run_id": "run_042",
-      "scenario": "loan_risk",
-      "seed": 12387,
-      "status": "FAIL"
-    }
-    ```
-
-2.  **Re-run with Exact Seed**: Use the specific seed from the manifest to replicate the exact failure.
-    ```bash
-    agentv run --path industries/finance --agent http://localhost:5001/execute_task --seed 12387
-    ```
-
-3.  **Analyze Trajectory**: The agent will follow the same reasoning path, allowing you to observe the state drift or planning error in real-time.
-
-</Steps>
-
----
-
-## Research Best Practices
-
-:::tip
-**Always Document Base Seeds**: When publishing papers, include the base seed and the version of AgentV in your methodology section. This allows other researchers to verify your findings against the same scenario corpus.
-:::
-
-### Environmental DNA (E-DNA)
-
-Deterministic seeds only handle stochasticity. To handle **environment drift**, AgentV captures **Environmental DNA** snapshots. This includes:
-- **Registry State**: The exact configuration of world shims and simulators.
-- **Provider Versions**: The version of extraction engines used (e.g., Dataproc v1.5).
-- **Tool Fingerprints**: SHA3-256 hashes of all available tool definitions.
-
-By combining **Deterministic Seeds** with **Environmental DNA**, AgentV achieves "Industrial Parity"—the guarantee that a test run on your local machine will behave exactly like a test run in a secure research lab.
+Treat environment fingerprints and provider manifests as evidence about recorded
+inputs, not a snapshot that automatically restores every external dependency.
+For publication, report versions, settings, repeated-run variation and the
+conditions needed to provision the environment alongside the seed.

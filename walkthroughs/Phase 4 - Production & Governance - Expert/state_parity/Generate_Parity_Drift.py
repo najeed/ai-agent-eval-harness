@@ -10,8 +10,8 @@ def main():
 
     # Golden State (Reference)
     golden_state = {
-        "env_version": "1.2.3",
-        "python_runtime": "3.9.12",
+        "env_version": "2.0.0",
+        "python_runtime": "3.12.8",
         "api_endpoint": "https://api.aethelgard.io/v1",
         "max_concurrency": 50,
         "secure_mode": True,
@@ -20,7 +20,7 @@ def main():
     # Drifting State (Modified)
     drifting_state = golden_state.copy()
     drifting_state["max_concurrency"] = 60  # The hidden drift factor
-    drifting_state["env_version"] = "1.2.3-BETA"  # Version mismatch
+    drifting_state["env_version"] = "2.0.0-BETA"  # Version mismatch
 
     output_path = Path(__file__).parent / "registry_drift_sample.json"
     repo_data = {"golden": golden_state, "staging": drifting_state, "status": "DRIFT_PENDING"}

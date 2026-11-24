@@ -1,4 +1,5 @@
 import subprocess
+import sys
 
 
 def main():
@@ -13,11 +14,11 @@ def main():
 
     input("\n[Press ENTER] to install the 'telecom' pack...")
 
-    # Run the install-pack command
-    print("\n   [CLI] Running: agentv install-pack telecom")
+    # Run the install command
+    print("\n   [CLI] Running: agentv install telecom")
     try:
         # We'll use the CLI module directly for the walkthrough
-        subprocess.run(["python", "-m", "eval_runner.cli", "install-pack", "telecom"], check=True)
+        subprocess.run([sys.executable, "-m", "eval_runner.cli", "install", "telecom"], check=True)
     except Exception as e:
         print(f"   [Cargo] Installation failed: {e}")
 

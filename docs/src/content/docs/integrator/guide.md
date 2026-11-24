@@ -3,102 +3,58 @@ title: Agent Integration Guide
 description: Step-by-step instructions for connecting your AI agents to the AgentV harness.
 ---
 
-Integrating an agent with AgentV follows a "Zero-Touch" philosophy, supporting everything from local Python scripts to enterprise-grade HTTP services.
+Expose an HTTP POST endpoint that accepts the configured application request and
+returns an AgentV action response. The default request is:
 
-## 🚀 Quick Start (HTTP)
-
-The fastest way to integrate is via a standard HTTP POST endpoint.
-
-### 1. The Agent Interface
-Your agent should expose a POST endpoint (e.g., `/execute`) that accepts and returns JSON.
-
-**Request Protocol:**
 ```json
-{
-  "task_description": "Help me with my bill.",
-  "turn": 1,
-  "conversation_history": [],
-  "run_id": "eval_20260701_1234"
-}
+{"task_description": "Help me with my bill."}
 ```
 
-**Completion Protocol:**
+A completion response is:
+
 ```json
-{
-  "action": "final_answer",
-  "summary": "I can help with that. What is your account number?"
-}
+{"action": "final_answer", "summary": "The billing issue has been resolved."}
 ```
 
-### 2. Configuration
-Point the harness to your agent's URL in your `.env` file:
+For tools, use `action: "call_tool"`, `tool_name` and `tool_params`. Full history,
+run IDs and tool schemas are not automatically included in the remote request.
+Use the [agent contract](/integrator/agent-contract/) to configure custom payloads.
 
-```ini
-AGENT_API_URL=http://localhost:5001/execute
-```
+## Evaluate an HTTP service
 
-### 3. Execution
-Run a benchmark using the default HTTP protocol:
+Start your service first, then run:
 
 ```bash
-agentv run --path scenarios/loan_approval.json
+agentv run --path industries/finance/scenarios/loan_approval_risk_check.json --protocol http --agent http://localhost:5001/execute_task
 ```
 
----
+Use `evaluate` for a directory. Provider protocols such as `openai`, `claude`,
+`gemini`, `grok` and `ollama` accept their documented model targets. Select
+`--protocol` explicitly; supplying an agent URI alone does not select an adapter.
 
-## 🛠 Supported Agent Protocols
+## Framework bindings
 
-AgentV supports a wide range of communication patterns. Use the `--protocol` and `--agent` flags to select your target.
+| Adapter | Native target | Remote target |
+| --- | --- | --- |
+| `langgraph` | Import path such as `my_module.graph:app` or `metadata.graph_path` | HTTP(S) LangGraph Server, with the required assistant configuration |
+| `langchain` | `metadata.chain_path` for a Runnable | LangServe deployment |
+| `ag2` | `metadata.agent_path` for an AG2 agent/factory | HTTP(S) A2A Agent Card service |
+| `crewai` | `metadata.crew_path` for a Crew/factory | Use `http`/`openapi` for a custom remote wrapper |
 
-| Protocol | Description | CLI Example |
-| :--- | :--- | :--- |
-| **HTTP** | Standard web API interaction. | `--protocol http --agent http://localhost:5001/execute` |
-| **Local** | Spawns a local process (stdin/stdout). | `--protocol local --agent "python my_agent.py"` |
-| **Socket** | TCP or Unix socket communication. | `--protocol socket --agent "tcp:127.0.0.1:9000"` |
-| **OpenAI** | Official OpenAI API / Assistants. | `--protocol openai --agent openai://gpt-5.6` |
-| **Claude** | Anthropic Claude API. | `--protocol claude --agent claude://claude-opus-5` |
-| **Gemini** | Google Gemini API (includes Vertex AI). | `--protocol gemini --agent gemini://gemini-3.7-flash` |
-| **Ollama** | Local model execution. | `--protocol ollama --agent ollama://deepseek-r1:70b` |
+Install the relevant framework dependencies before using a native binding. The
+`framework-crewai` extra is currently empty; install a compatible CrewAI release
+explicitly in an environment supported by that framework.
 
----
+## Inspect and certify
 
-## 🏗 Framework Adapters
-
-AgentV includes native adapters for the leading agentic frameworks.
-
-### AG2 (formerly AutoGen)
 ```bash
-pip install ag2
-agentv run --path scenarios/loan_approval.json --protocol ag2 --agent ag2://localhost:8000
-```
-
-### LangChain / LangGraph
-```bash
-pip install langchain langgraph
-agentv run --path scenarios/loan_approval.json --protocol langgraph --agent langgraph://localhost:8000/graph
-```
-
-### CrewAI
-```bash
-pip install crewai
-agentv run --path scenarios/loan_approval.json --protocol crewai
-```
-
----
-
-## 🧪 Verification & Debugging
-
-### Trace Replay
-If your agent makes a "wrong turn," use the `replay` command to step through the interaction logs.
-```bash
-agentv replay --run-id <id>
-```
-
-### Visual Debugger
-Launch the `console` to see real-time Mermaid trajectories of your agent's decision-making process.
-```bash
+agentv replay --run-id RUN_ID
 agentv console
 ```
-:::tip
-In the Visual Debugger, use the **"Isolate Root Cause"** feature to jump directly to the turn where your agent diverged from the ground truth.
-:::
+
+Authenticate before accessing protected console APIs. Execution and certification
+are separate: undeclared execution mode defaults to simulated. Authoritative
+certification needs declared eligible execution and independent evidence, a
+configured signer and trusted verification inputs. Follow the
+[verification workflow](/auditor/verification/) before using results as an
+assurance claim.

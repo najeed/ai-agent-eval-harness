@@ -17,11 +17,11 @@ This guide provides a step-by-step process for adding a new industry to AgentV.
 
 1.  Inside the `scenarios` folder, you may want to create sub-folders for different use cases (e.g., `crop_management` in the `agriculture` industry).
 2.  Create your first scenario `.json` file. The name should be numbered and descriptive (e.g., `01_mortgage_application_check.json`).
-3.  Populate the JSON file using the structure defined in the [Evaluation Guide](guide.md). Use existing scenarios as a reference.
+3.  Populate the JSON file using the structure defined in the [Evaluation Guide](/evaluator/guide/). Use existing scenarios as a reference.
 
 ## Step 3: Document Core Functions
 
-1.  Add your new industry, its use cases, and core functions to the [Core Functions Guide](../builder/core-functions.md). These constructs relate to the `industry`, `use_case`, and `core_function` fields in your JSON files.
+1.  Add your new industry, its use cases, and core functions to the [Core Functions Guide](/builder/core-functions/). These constructs relate to the `industry`, `use_case`, and `core_function` fields in your JSON files.
 2.  Define the core functions to document their scope for future evaluators.
 
 ## Step 4: Include Synthetic Datasets
@@ -35,11 +35,13 @@ Place your industry-specific database or transaction CSV/JSON files directly ins
 All scenarios are validated at load time against the AES schema. Your scenario **must** include these required fields:
 
 **Scenario level:**
-- `metadata`: Contains `id`, `name`, `capabilities`, and `aes_version` (set to `"1.4"`).
+- `metadata`: Requires `id`, `name`, and `compliance_level` (`Standard`, `Gold`, or `Regulatory_Audit`); `capabilities` is optional.
+- `aes_version`: Required at the root as numeric `1.4`.
+- `evaluation`: Required root object, even when empty.
 - `workflow`: Contains `nodes` and `edges`.
 
 **Task Node level** (each item in `workflow.nodes`):
-- `id`, `task_description`, `success_criteria`
+- `id` and `task_description` are schema-required; declare meaningful `success_criteria` and/or `expected_outcome` assertions for evaluable coverage.
 - (Optional) `expected_outcome`
 
 Run schema validation locally:

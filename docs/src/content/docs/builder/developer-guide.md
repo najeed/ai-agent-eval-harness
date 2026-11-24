@@ -8,9 +8,9 @@ This guide is for engineers building on or extending the AgentV harness.
 ## 📂 Repository Architecture
 
 - **`eval_runner/`**: The core Python execution package. Includes the CLI dispatcher, orchestration engine, loaders, metrics, and simulators.
-- **`agentv_runtime/`**: Pure, zero-dependency canonical runtime contracts, RFC 8785 JSON Canonicalization Scheme (JCS), and offline packaging primitives.
+- **`agentv_runtime/`**: Public canonical runtime contracts, RFC 8785 JSON Canonicalization Scheme (JCS), and offline packaging primitives. This is an API boundary, not a dependency-free package: its public imports include cryptography, and reference implementations re-export eval_runner.
 - **`dataproc_engine/`**: High-throughput telemetry stream processing and analytics pipeline.
-- **`ui/visual-console/`**: High-density React 18 + TypeScript Visual Console for interactive scenario authoring, trajectory inspection, and debugger graphs.
+- **`ui/visual-console/`**: High-density React ^19.2.8 + TypeScript Visual Console for interactive scenario authoring, trajectory inspection, and debugger graphs.
 - **`vscode-extension/`**: Visual Studio Code extension providing AES schema validation and scenario authoring assistance.
 - **`industries/`**: Industrial scenario library and golden evaluation benchmarks across finance, healthcare, telecom, and security.
 - **`.aes/`**: Authoritative configuration mesh (Shims, Adapters, Forensics, and Key Vault).
@@ -39,9 +39,10 @@ The engine is built on a decoupled, event-driven architecture to support enterpr
 *   **Asynchronous Isolation**: `ToolSandboxService` leverages `contextvars.ContextVar` to secure coroutine-local state, ensuring concurrent evaluations remain safely isolated.
 *   **Testing Helpers**: Pipeline services provide temporary override context managers (`override_interceptor` / `override_provider`). These temporarily activate a mock or custom interceptor/provider and guarantee clean, atomic state restoration on exit:
     ```python
-    # Overriding sandbox executions for testing:
-    with tool_sandbox_service.override_interceptor(my_mock_interceptor):
-        result = sandbox.execute("git", {"args": ["status"]})
+    # In an async test or caller:
+    async def exercise_sandbox():
+        async with tool_sandbox_service.override_interceptor(my_mock_interceptor):
+            return await sandbox.execute("git_commit", {"message": "example"})
 
     # Overriding mutations temporarily:
     with mutation_service.override_provider(my_custom_mutator):
@@ -60,17 +61,27 @@ Plugins are the primary extension point for the harness.
 | `before_evaluation` | Global setup, span tagging, and configuration validation. |
 | `after_evaluation` | Post-run teardown, artifact export, and metric publishing. |
 | `on_step_start` / `on_step_end` | Workflow DAG node activation and verdict capture. |
-| `on_tool_request` | **Interception**: Return `True` to allow, `False` to block, or a dict to mutate tool parameters. |
+| `on_tool_request` | **Interception**: Return `True` to allow, `False` to block, or `{"arguments": {...}}` to replace tool parameters. |
 | `on_before_commit` / `on_rollback`| State transition validation gate and compensating rollback execution. |
+| `on_approval_preflight` | Reject an approval-capable node before external agent invocation. |
 | `on_approval_request` | Pre-evaluation filter for human review requests (return `True` to allow or modified dict). |
 | `on_approval_created` / `on_approval_resolved`| Durable Human-in-the-Loop approval lifecycle events. |
 | `on_artifact_created`| Forensic evidence artifact commit listener (SOC 2 CC6.8). |
-| `on_register_commands`| Register custom namespaced CLI commands under `agentv`. |
+| `on_register_commands`| Declared compatibility hook; CLI registration uses `agentv_runtime.cli_extensions` entry points directly. |
 | `on_discover_adapters`| Register custom agent communication adapters with the registry. |
 | `on_register_simulators`| Inject custom environment World Shims into the simulator cache. |
 | `on_discover_metrics`| Dynamically register custom metric functions. |
 | `on_diagnose_failure`| Register custom failure analyzers with the forensic taxonomy engine. |
 | `on_register_console_routes`| Inject custom REST routes and navigation tabs into the [Visual Console](/evaluator/user-manual/). |
+
+Dynamic interceptor hooks also include `on_approval_resolution(context, approval_data)`
+(decision filtering), `on_tool_result(context, tool_name, result)` (result filtering
+before delivery), and `on_tool_delivered(context, tool_name, result)` (notification
+after the delivery/history boundary). These are invoked by name and are not
+declared BaseEvalPlugin methods. A result interceptor can reject with `False` or
+replace a result with `{"result": ...}`. Event-bridge callbacks can share names;
+accept the relevant positional arguments and event keyword payloads when
+implementing both paths. See [hooks](/extender/hooks/).
 
 *(Note: Additionally, all `CoreEvents` emitted over the session event bus automatically bridge to `on_<event_name.lower()>(self, context, **event_data)` hooks on loaded plugins).*
 
@@ -106,8 +117,8 @@ The core engine evaluates metrics using dynamic dispatch. It inspects your metri
 ## 🛡️ Sandbox & Workspace Lifecycle
 
 The `ToolSandbox` ensures that each evaluation run has a clean, isolated environment.
-- **`setup()`**: Initializes a fresh directory under `workspaces/`.
-- **`teardown()`**: Performs cleanup unless `cleanup_workspace` is set to `false` in scenario metadata for forensic retrieval.
+- **`setup()`**: Creates `workspace/<run_id>` by default.
+- **`teardown()`**: Deletes the workspace only when `cleanup_workspace` is explicitly true (metadata override or root field).
 
 ---
 
@@ -116,11 +127,13 @@ The `ToolSandbox` ensures that each evaluation run has a clean, isolated environ
 The harness uses an **Ed25519 / PQC (ML-DSA-65) asymmetric signing protocol** and **SHA3-256 canonical hashing** for non-repudiable audit trails.
 - **Key Storage**: Keys are stored in `.aes/keys/`.
 - **Execution Manifests**: Every run generates an authoritative, immutable [`ExecutionManifest`](/extender/api-reference/) binding scenario hash (`sha3_256`), runtime configuration, environment parameters, and agent configuration.
-- **Manifests & Certificates**: Every completed run generates a signed `audit_manifest.json` and a VC v3.0.0 verification certificate.
+- **Manifests & Certificates**: Execution records the manifest/finalization; eligible runs require a separate `agentv certify` operation to issue a certificate. Undeclared execution mode defaults to simulated.
 - **Gating**: Use `agentv gate` in the CI/CD pipeline to enforce signature verification and safety floor adherence.
 
-### Tamper-evident Audit Trail Sealing
-For enterprise verification, AgentV writes cryptographic hashes to `audit_chain.jsonl` in the run trace directory. The OSS filesystem store is tamper-evident and logically sealed; use an external retention-enforcing ArtifactStore for WORM guarantees.
-*   **Sign-on-turn**: Every tool call and state change appended to the execution trace is immediately signed and chained to the previous turn's SHA3-256 hash.
-*   **Interceptors**: Interceptors registered under `TraceVerificationInterceptor` can securely decorate this chain (e.g. logging to external Ledger nodes or cloud vaults) in real-time.
+### Tamper-evident audit trail sealing
 
+The bound RunStorageProvider commits trace bytes. Event `_sig` fields depend on
+the recorder's signer configuration; the recorder does not create a universal
+previous-event hash chain or `audit_chain.jsonl` file. Certification binds the
+exact trace and evidence commitments with current digest-envelope signatures.
+Local logical seals detect tampering; physical WORM requires external retention.

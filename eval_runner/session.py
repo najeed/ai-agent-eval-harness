@@ -144,14 +144,13 @@ class SessionManager:
         # context must exist before that binding so normal runner construction
         # cannot read an uninitialized instance attribute.
         self.metadata = dict(metadata or {})
-        if self.run_store is not None:
-            from .flight_recorder import FlightRecorderPlugin
+        from .flight_recorder import FlightRecorderPlugin
 
-            FlightRecorderPlugin.bind_active_recorder(
-                self.run_id,
-                self.run_store,
-                self.metadata.get("runtime_context"),
-            )
+        FlightRecorderPlugin.bind_active_recorder(
+            self.run_id,
+            self.run_store,
+            self.metadata.get("runtime_context"),
+        )
         self.resumption_checkpoint = resumption_checkpoint
         if (
             not resumption_token

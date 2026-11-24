@@ -6,7 +6,14 @@ from pathlib import Path
 import aiohttp
 
 
-async def record_interaction(agent_url: str, *, run_store=None, context: dict | None = None):
+async def record_interaction(
+    agent_url: str,
+    *,
+    run_store=None,
+    context: dict | None = None,
+    metadata: dict | None = None,
+    run_id: str | None = None,
+):
     """Simple loop to record interactions with an agent."""
     print("\n[Trace Recorder] AgentV - Trace Recorder")
     print(f"Target Agent: {agent_url}\n")
@@ -18,8 +25,9 @@ async def record_interaction(agent_url: str, *, run_store=None, context: dict | 
 
         run_store = compose_local_run_store(runs_root)
 
-    run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
-    run_store.create_run(run_id, scenario_id="recorded_session", context=context)
+    run_id = run_id or datetime.now().strftime("%Y%m%d_%H%M%S")
+    extra = {"metadata": metadata} if metadata is not None else {}
+    run_store.create_run(run_id, scenario_id="recorded_session", context=context, **extra)
     events = []
 
     # 1. Emit run_start

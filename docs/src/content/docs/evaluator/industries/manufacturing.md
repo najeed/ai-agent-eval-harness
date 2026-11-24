@@ -5,12 +5,19 @@ description: Industrial production and supply chain data for global trade benchm
 
 The Manufacturing sector focuses on industrial indicators and supply chain disruption simulators, providing high-fidelity data for agents in logistics and production.
 
-## 🏭 Status: **HARDENED**
+## 🏭 Status: **Provider-dependent coverage**
 
 - **Architecture**: Industrial Statistics Agency (IndStat) Core.
-- **Verification**: 100% Parity with World Bank and US Census ASM data.
+- **Verification**: Validate the selected source and output records for this run; no universal live-source parity guarantee is implied.
 
 ## 📡 Data Sources
+
+The sources below describe reference datasets and task models. Actual connectivity
+depends on the implemented provider, credentials and supplied input files.
+Simulation is disabled by default; enable `--allow-simulation` deliberately and
+retain `simulation`/`execution_mode` provenance. A listed source is not proof
+that its live API was used or that all records match it.
+
 
 | Source | Description |
 | :--- | :--- |

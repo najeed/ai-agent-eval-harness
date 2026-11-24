@@ -24,7 +24,7 @@ Evaluate Claude frontier models directly against AgentV benchmarks using the bui
 ```bash
 # Evaluate Claude Opus 5 on financial scenarios
 agentv run \
-  --path industries/finance/scenarios/ \
+  --path industries/finance/scenarios/loan_approval_risk_check.json \
   --protocol claude \
   --agent "claude://claude-opus-5" \
   --agent-name "Claude-Opus-5-Baseline" \
@@ -56,8 +56,11 @@ client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 async def execute_task(request: Request):
     payload = await request.json()
     task_desc = payload["task_description"]
-    history = payload.get("conversation_history", [])
-    available_tools = payload.get("available_tools", [])
+    # Default HTTP requests contain only task_description.
+    # Populate history only if your explicit application payload contract supplies it.
+    history = []
+    # Declare the tools your service supports; the harness does not send a tool catalog.
+    available_tools = []
 
     # Map available tools to Anthropic tool schemas
     tools = [
@@ -93,7 +96,7 @@ async def execute_task(request: Request):
             return {
                 "action": "call_tool",
                 "tool_name": block.name,
-                "tool_args": block.input,
+                "tool_params": block.input,
                 "summary": f"Requesting tool: {block.name}",
             }
 
@@ -101,3 +104,7 @@ async def execute_task(request: Request):
     text_content = "".join([b.text for b in response.content if b.type == "text"])
     return {"action": "final_answer", "summary": text_content}
 ```
+
+These HTTP wrappers receive the default `task_description` request. Full history,
+run identity and tool schemas require an explicitly configured application
+payload contract; see the [agent contract](/integrator/agent-contract/).

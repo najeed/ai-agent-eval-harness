@@ -5,12 +5,19 @@ description: Transactional and behavioral metrics for personalization and invent
 
 The E-Commerce sector focuses on high-fidelity transactional and user behavioral data, enabling deep evaluation of agents specializing in personalization, dynamic pricing, and inventory management.
 
-## 🛒 Status: **HARDENED**
+## 🛒 Status: **Provider-dependent coverage**
 
 - **Architecture**: Olist & UCI Transactional Layer.
-- **Verification**: 100% Parity with the Olist Public Dataset.
+- **Verification**: Validate the selected source and output records for this run; no universal live-source parity guarantee is implied.
 
 ## 📡 Data Sources
+
+The sources below describe reference datasets and task models. Actual connectivity
+depends on the implemented provider, credentials and supplied input files.
+Simulation is disabled by default; enable `--allow-simulation` deliberately and
+retain `simulation`/`execution_mode` provenance. A listed source is not proof
+that its live API was used or that all records match it.
+
 
 | Source | Description |
 | :--- | :--- |

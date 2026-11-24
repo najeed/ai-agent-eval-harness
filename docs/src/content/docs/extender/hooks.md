@@ -44,8 +44,17 @@ Interceptors can observe, mutate, or reject operations before state transitions 
 - **Return Contract**:
   - Return `True` to allow tool execution.
   - Return `False` to reject and fail the tool call.
-  - Return a mutated `dict` to rewrite tool arguments dynamically.
+  - Return `{"arguments": {...}}` to replace tool arguments. A bare parameter dictionary is not consumed as replacement arguments; `tool_name` redirects and `short_circuit_result` supplies an explicit result.
 - **Use Case**: Enforce parameter boundaries, redact secrets, prevent unauthorized shell executions, or implement rate limits.
+
+### Tool result and delivery boundaries
+`on_tool_result(self, context, tool_name, result)` is a dynamic interceptor after
+tool execution and before history/delivery. Return `False` to reject or
+`{"result": replacement}` to replace the result. `on_tool_delivered(self, context,
+tool_name, result)` is a dynamic notification after delivery is recorded. Neither
+is declared on BaseEvalPlugin. The event bridge also invokes `on_tool_result`
+with keyword event payloads; implementations used by both paths must accept both
+forms. Event emission and interceptor return values have separate semantics.
 
 ### `on_before_commit(self, context, state_diff=None)`
 - **Trigger**: Invoked before a state transition or VFS workspace modification is committed.
@@ -61,6 +70,14 @@ Interceptors can observe, mutate, or reject operations before state transitions 
 ---
 
 ## 3. 👥 Human-in-the-Loop (HITL) & Approval Hooks
+
+### `on_approval_preflight(self, context, node_data=None)`
+- **Trigger**: Before external invocation for an approval-capable workflow node.
+- **Return**: `True` to proceed, `False` to reject, or a dictionary consumed by the preflight interceptor path. This is a declared BaseEvalPlugin method.
+
+### `on_approval_resolution(self, context, approval_data)`
+- **Trigger**: Decision interception before accepting the approval response.
+- **Declaration**: Dynamic hook name, not a BaseEvalPlugin method; separate from durable `on_approval_resolved` notification.
 
 ### `on_approval_request(self, context, approval_data=None)`
 - **Trigger**: Invoked when an agent requests a high-risk operation requiring human operator approval.
@@ -91,8 +108,11 @@ Interceptors can observe, mutate, or reject operations before state transitions 
 ## 5. 🔍 Component Discovery & Registration Hooks
 
 ### `on_register_commands(self, registry)`
-- **Trigger**: Invoked during CLI initialization.
-- **Use Case**: Register custom subcommands under `agentv`.
+This method exists on BaseEvalPlugin, but the CLI initialization path does not
+invoke it. Register CLI commands using a callable in the
+`agentv_runtime.cli_extensions` entry-point group. It receives argparse
+subparsers directly; authors choose distinct command names and handlers.
+See [CLI extensions](/extender/cli-extensions/).
 
 ### `on_discover_adapters(self, registry)`
 - **Trigger**: Invoked when initializing communication protocol adapters.
@@ -134,6 +154,10 @@ In addition to native abstract hooks, the runtime session automatically bridges 
 - `on_tool_result(self, context, tool, result, **data)`: Triggered on tool execution result.
 - `on_external_tool_call(self, context, tool, arguments, source, **data)`: Triggered on remote agent tool ingestion.
 - `on_external_tool_result(self, context, tool, result, receipt_hash, **data)`: Triggered on remote tool result ingestion.
-- `on_hitl_pause(self, context, task_id, prompt, approval_id, **data)`: Triggered on human intervention pause.
+- `on_hitl_pause(self, context, task_id, prompt, **data)`: Triggered on human intervention pause.
 - `on_hitl_resume(self, context, task_id, approved, **data)`: Triggered on resumption from human approval.
 - `on_run_end(self, context, status, passed, score, **data)`: Triggered on final run completion.
+
+Durable pause metadata uses `approval_token`, `checkpoint_id` and status; approval
+events serialize ApprovalRequest. Creation precedes HITL_PAUSE, and durable
+decisions are APPROVED/REJECTED. See the [interaction lifecycle](/integrator/interaction-lifecycle/).

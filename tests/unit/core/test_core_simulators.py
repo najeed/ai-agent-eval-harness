@@ -869,3 +869,142 @@ async def test_database_quiesce_failure_preserves_error_and_releases_pool(caplog
     assert sum(record.exc_info is not None for record in caplog.records) >= 2
     simulator._engine = None
     await simulator.cleanup()
+
+
+@pytest.mark.asyncio
+async def test_simulators_remaining_edge_branches(tmp_path):
+    from unittest.mock import AsyncMock
+
+    # 1. GitSimulator: duplicate staged file & empty commit_sha on push
+    git_sim = simulators.GitSimulator()
+    fake_repo = MagicMock()
+    fake_repo.commit.return_value = MagicMock(hexsha="")
+    git_sim._repo = fake_repo
+    assert (await git_sim.handle_git_add({"files": ["a.py", "a.py"]}))["status"] == "success"
+    assert (await git_sim.handle_git_push({"branch": "main"}))["status"] == "error"
+
+    # 2. ApiSimulator: get_snapshot with requests key
+    api_sim = simulators.ApiSimulator()
+    api_sim.state["requests"] = [{"path": "/ping"}]
+    snap = await api_sim.get_snapshot()
+    assert snap["requests"] == [{"path": "/ping"}]
+
+    # 2b. BaseSimulator middleware bypass, ShimResultProxy.get_secure_metadata,
+    #     SubprocessJailProvider.cleanup(unknown), DatabaseSimulator.commit_state_transition,
+    #     get_simulator_registry without trigger
+    from types import SimpleNamespace
+
+    proxy = simulators.ShimResultProxy({"status": "ok"}, {"sig": "abc"})
+    assert proxy.get_secure_metadata() == {"sig": "abc"}
+
+    jail = simulators.SubprocessJailProvider()
+    await jail.cleanup("nonexistent-run")
+
+    class _FailingMiddleware(simulators.SimulatorMiddleware):
+        async def process_action(self, simulator, action, params, next_handler):
+            raise RuntimeError("mw boom")
+
+    api_sim.register_middleware(_FailingMiddleware())
+    assert (await api_sim.execute("unknown_action", {}))["status"] == "error"
+    assert simulators.get_simulator_registry(plugin_manager=SimpleNamespace())
+
+    # 3. DatabaseSimulator: returns_rows=False, quiesce(None), wal busy, dispose failure, commit
+    db_sim = simulators.DatabaseSimulator()
+    commit_ref = db_sim.commit_state_transition("db", "insert", {"x": 1})
+    assert commit_ref.source_id == "db://db"
+    await db_sim.quiesce()
+    assert db_sim.state["quiesced"] is True
+
+    mock_conn = MagicMock()
+    mock_conn.execute.return_value = MagicMock(returns_rows=False)
+    mock_ctx = MagicMock(
+        __enter__=MagicMock(return_value=mock_conn), __exit__=MagicMock(return_value=False)
+    )
+    mock_engine = MagicMock()
+    mock_engine.connect.return_value = mock_ctx
+    db_sim._engine = mock_engine
+    ref = db_sim.query_bounded_reference("db", "CREATE TABLE t(x INT)")
+    assert ref.result_count == 0
+
+    mock_wal_res = MagicMock()
+    mock_wal_res.fetchone.return_value = (1, 0, 0)
+    mock_conn.execute.return_value = mock_wal_res
+    mock_engine.dispose.side_effect = RuntimeError("dispose during fail")
+    with pytest.raises(RuntimeError, match="busy"):
+        await db_sim.quiesce()
+    mock_engine.dispose.side_effect = None
+
+    mock_wal_res.fetchone.return_value = (0, 0, 0)
+    mock_engine.dispose.side_effect = RuntimeError("dispose boom")
+    with pytest.raises(RuntimeError, match="dispose boom"):
+        await db_sim.quiesce()
+    db_sim._engine = None
+
+    # 4. EmailSimulator: folder='all', sender, status, query
+    email_sim = simulators.EmailSimulator()
+    email_res = email_sim.handle_email_list(
+        {"folder": "all", "sender": "boss", "status": "", "query": "status"}
+    )
+    assert len(email_res["messages"]) == 1
+    assert email_sim.handle_email_list({"status": "unread"})["messages"] == []
+
+    # 5. JiraSimulator: update assignee & summary without status; list with query
+    jira_sim = simulators.JiraSimulator()
+    created = jira_sim.handle_jira_create({"summary": "Fix bug", "project": "ENG"})
+    upd = jira_sim.handle_jira_update(
+        {"id": created["id"], "assignee": "alice", "summary": "Fix bug v2"}
+    )
+    assert upd["status"] == "success"
+    assert len(jira_sim.handle_jira_list({"query": "v2"})["issues"]) == 1
+
+    # 6. TerminalSimulator: cd with absolute path inside jail
+    term_sim = simulators.TerminalSimulator()
+    term_sim.terminal_jail = str(tmp_path)
+    sub = tmp_path / "sub"
+    sub.mkdir()
+    assert (await term_sim.execute("terminal_execute", {"cmd": f"cd {sub}"}))["status"] == "success"
+
+    # 3b. DatabaseSimulator: query_bounded_reference with returns_rows=True
+    class _Row:
+        _mapping = {"id": 1}
+
+    mock_res_rows = MagicMock(returns_rows=True)
+    mock_res_rows.fetchmany.return_value = [_Row()]
+    mock_conn.execute.return_value = mock_res_rows
+    db_sim._engine = mock_engine
+    ref_rows = db_sim.query_bounded_reference("db", "SELECT 1")
+    assert ref_rows.result_count == 1
+    db_sim._engine = None
+
+    # 7. BrowserSimulator: cleanup when context.close raises
+    browser_sim = simulators.BrowserSimulator()
+    browser_sim._context = MagicMock(close=AsyncMock(side_effect=RuntimeError("close fail")))
+    await browser_sim.cleanup()
+
+    # 8. KnowledgeBaseSimulator: list/str keywords & negative limit
+    kb_sim = simulators.KnowledgeBaseSimulator()
+    assert kb_sim.handle_kb_search({"keywords": ["onboarding"]})["total"] == 1
+    assert kb_sim.handle_kb_search({"keywords": "onboarding"})["total"] == 1
+    assert kb_sim.handle_kb_search({"limit": -1})["status"] == "error"
+
+    # 9. VectorDBSimulator: upsert single/invalid, query edge errors & filtering
+    vec_sim = simulators.VectorDBSimulator()
+    assert (
+        vec_sim.handle_vector_upsert({"id": "v1", "values": [1.0, 0.0], "text": "hello"})[
+            "upserted_count"
+        ]
+        == 1
+    )
+    vec_sim.state["vectors"].append({"id": "v_bare", "values": [1.0, 0.0]})
+    assert len(vec_sim.handle_vector_query({"vector": [1.0, 0.0]})["matches"]) == 2
+    assert vec_sim.handle_vector_upsert({})["status"] == "error"
+    assert vec_sim.handle_vector_query({"vector": []})["status"] == "error"
+    assert vec_sim.handle_vector_query({"vector": [1.0, 0.0], "min_score": 2.0})["matches"] == []
+    assert vec_sim.handle_vector_query({"query": "nomatch"})["matches"] == []
+
+    vec_sim.state["vectors"] = [{"id": "bad_norm", "values": [0.0, 0.0]}]
+    assert vec_sim.handle_vector_query({"vector": [1.0, 0.0]})["status"] == "error"
+    vec_sim.state["vectors"] = [{"id": "bad_meta", "metadata": "not-dict"}]
+    assert vec_sim.handle_vector_query({"query": "bad"})["status"] == "error"
+    vec_sim.state["vectors"] = ["not-a-dict"]
+    assert vec_sim.handle_vector_query({"query": "bad"})["status"] == "error"

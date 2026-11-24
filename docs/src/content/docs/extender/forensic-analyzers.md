@@ -19,11 +19,15 @@ class DatabaseIntegrityAnalyzer(BaseForensicAnalyzer):
         return FailureCategory.LOGIC_STATE_MISMATCH
 ```
 
-### Participation in the Weighted Model
-In AES v1.4, the triage engine uses a **Weighted Evidence Model**. When your analyzer returns a `FailureCategory`, it is automatically registered as a forensic trigger in the [Causal Chain](/spec/forensic-ledger-schema/). Enterprise-tier analyzers can return enriched metadata objects (containing confidence and severity) for superior ranking.
+### Participation in ordered diagnosis
+Return a FailureCategory or `None`. Priority analyzers run before baseline checks;
+ordinary analyzers run afterward in registration order. The first match returns
+immediately. CausalChain can record the matched analyzer's evidence, but the
+engine does not globally rank all matches or accept arbitrary enriched metadata
+as a replacement for FailureCategory. See [triage](/extender/triage-engine/).
 
 ### `analyze(history, task_result=None)`
-- **history**: A list of turn dictionaries. Each turn contains an `identity` (e.g., `agent_id`, `system_id`) and a `role` (`user`, `agent`).
+- **history**: Turn dictionaries with `role` and `content`; core roles include `user`, `agent` and `environment`. `identity` is optional attribution and is not present on every core history entry.
 - **task_result**: A dictionary containing the [Forensic Ledger](/spec/forensic-ledger-schema/) (snapshots, telemetry, registries).
 - **Return**: A `FailureCategory` if a match is found, otherwise `None`.
 
@@ -45,7 +49,7 @@ class MyForensicPlugin(BaseEvalPlugin):
 ```
 
 :::note
-Analyzers are executed in the order they are registered. Core analyzers run first, followed by plugin-registered analyzers.
+Ordinary analyzers run in registration order after baseline checks. Use `taxonomy.register_analyzer(analyzer, priority=True)` to run before those checks; the first matching category wins.
 :::
 
 ---
@@ -68,8 +72,8 @@ class StateActionAnalyzer(BaseForensicAnalyzer):
             return None
 
         snapshots = task_result.get("state_snapshots", [])
-        # Anchoring logic: Prioritize 'identity' over legacy 'role'
-        agent_msgs = [m for m in history if m.get("identity") == "agent_id"]
+        # Core histories do not require an identity field.
+        agent_msgs = [m for m in history if m.get("role") == "agent"]
 
         for msg in agent_msgs:
             if "deleted" in str(msg.get("content", "")).lower():

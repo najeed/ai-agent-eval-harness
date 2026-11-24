@@ -907,7 +907,6 @@ class DatabaseSimulator(BaseSimulator, BoundedStateProvider):
         if self._engine is not None:
             from sqlalchemy import text
 
-            checkpoint_failed = False
             try:
                 with self._engine.connect() as conn:
                     checkpoint = conn.execute(text("PRAGMA wal_checkpoint(TRUNCATE)"))
@@ -915,16 +914,17 @@ class DatabaseSimulator(BaseSimulator, BoundedStateProvider):
                         raise RuntimeError("Database checkpoint is busy")
                     conn.commit()
             except Exception:
-                checkpoint_failed = True
                 logger.debug("DatabaseSimulator WAL checkpoint failed", exc_info=True)
-                raise
-            finally:
                 try:
                     self._engine.dispose()
                 except Exception:
                     logger.debug("DatabaseSimulator pool disposal failed", exc_info=True)
-                    if not checkpoint_failed:
-                        raise
+                raise
+            try:
+                self._engine.dispose()
+            except Exception:
+                logger.debug("DatabaseSimulator pool disposal failed", exc_info=True)
+                raise
         self.state["quiesced"] = True
         await super().quiesce()
 

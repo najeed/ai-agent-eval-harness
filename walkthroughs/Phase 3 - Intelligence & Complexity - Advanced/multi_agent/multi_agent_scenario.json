@@ -13,19 +13,25 @@
         "id": "node_researcher",
         "role": "Researcher",
         "task_description": "Search the provided databases for any mentions of a 'Sector-7' thermal leak. Provide only the raw sensor data.",
-        "expected_outcome": {
-          "type": "contains",
-          "value": "thermal_leak_detected: true"
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "thermal_leak_detected: true",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "node_writer",
         "role": "Writer",
         "task_description": "Take the raw sensor data from the Researcher and transform it into a formal incident report. The report must include a 'Security Severity' level.",
-        "expected_outcome": {
-          "type": "contains",
-          "value": "Security Severity: High"
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Security Severity: High",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "node_auditor",
@@ -55,7 +61,7 @@
   },
   "evaluation": {
     "consensus": {
-      "strategy": "Sequential_Approval",
+      "strategy": "Majority_Vote",
       "min_judges": 1
     }
   }

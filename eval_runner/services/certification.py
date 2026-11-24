@@ -382,6 +382,7 @@ class CertificationService:
         run_store: Any = None,
         context: Mapping[str, Any] | None = None,
         _certification_lock: PerRunCertificationLock | None = None,
+        requester: Mapping[str, str] | None = None,
     ) -> dict[str, Any]:
         """Atomically sign and seal provider-owned run evidence."""
         del artifact_store, status, score
@@ -472,6 +473,7 @@ class CertificationService:
                         run_store=run_store,
                         context=scoped_context,
                         _certification_lock=certification_lock,
+                        requester=requester,
                     )
             except Exception:
                 # Validation occurs under the lease too.  Restore an
@@ -889,6 +891,8 @@ class CertificationService:
             "evaluator_identity": finalization.evaluator_identity,
             "required_oracle_ids": list(finalization.required_oracle_ids),
         }
+        if requester is not None:
+            metadata["certification_requester"] = dict(requester)
         state_failures = state_claim_failures(
             effective_scenario,
             events,

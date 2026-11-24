@@ -8,10 +8,10 @@ Welcome to the AgentV Calibration walkthrough! This guide will teach you how to 
 - Use **Auto-Thresholding** to optimize your pass/fail criteria.
 
 ## 📂 Artifacts in this Walkthrough
-1. **[Step_1_Evaluation_Trace.jsonl](./calibration/Step_1_Evaluation_Trace.jsonl)**: A raw evaluation trace containing judge scores for 5 finance tasks.
-2. **[Step_2_Human_Ground_Truth.json](./calibration/Step_2_Human_Ground_Truth.json)**: The "Golden Label" manifest representing the human standard.
-3. **[Step_3_Run_Calibration.py](./calibration/Step_3_Run_Calibration.py)**: The interactive execution script.
-4. **[Step_4_Mutated_Bad_Judge.jsonl](./calibration/Step_4_Mutated_Bad_Judge.jsonl)**: A sample of an 'Inaccurate Judge' to see how the system flags it.
+1. **[Step_1_Evaluation_Trace.jsonl](./Step_1_Evaluation_Trace.jsonl)**: A raw evaluation trace containing judge scores for 5 finance tasks.
+2. **[Step_2_Human_Ground_Truth.json](./Step_2_Human_Ground_Truth.json)**: The "Golden Label" manifest representing the human standard.
+3. **[Step_3_Run_Calibration.py](./Step_3_Run_Calibration.py)**: The interactive execution script.
+4. **[Step_4_Mutated_Bad_Judge.jsonl](./Step_4_Mutated_Bad_Judge.jsonl)**: A sample of an 'Inaccurate Judge' to see how the system flags it.
 
 ## 🚀 Get Started
 
@@ -39,9 +39,9 @@ Open **Step 1**. Note how the `GPT-5.6` judge has assigned scores between `0.30`
 Open **Step 2**. This is a mapping where humans have explicitly labeled each task as either `1.0` (Complete Success) or `0.0` (Complete Failure).
 
 ### 3. Run the Walkthrough
-Execute the follow command from your terminal:
+Execute the following command from your terminal:
 ```bash
-python walkthroughs/calibration/Step_3_Run_Calibration.py
+python "walkthroughs/Phase 3 - Intelligence & Complexity - Advanced/accuracy/Step_3_Run_Calibration.py"
 ```
 
 ### 4. Observe the 'Bad Judge'
@@ -57,7 +57,7 @@ The walkthrough script also runs **Step 4**. Note how the metrics change when a 
 > **Recommended Threshold**: This is the "Magic Number". If the calibrator suggests `0.65`, you should update your scenario's `threshold` parameter to match!
 
 ---
-*AgentV (v1.6.0) - Guided Experience Layer*
+*AgentV (v2.0.0) - Guided Experience Layer*
 
 
 

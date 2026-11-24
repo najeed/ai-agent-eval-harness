@@ -3,7 +3,7 @@ title: Interactive Visual Console & Verification OS
 description: Enterprise-grade single-page application for deterministic agent assurance, live telemetry, and cryptographic evidence verification.
 ---
 
-The **Visual Console** (launched via `agentv console` or `eval-runner console`) is the enterprise single-page application (SPA) for managing the complete agent assurance lifecycle:
+The **Visual Console** (launched via `agentv console`) is the enterprise single-page application (SPA) for managing the complete agent assurance lifecycle:
 **Compose → Validate → Run → Verify → Investigate → Issue Evidence**.
 
 ```bash
@@ -18,10 +18,10 @@ The interface organizes all evaluation workflows into distinct operational views
 
 ```mermaid
 graph TD
-    A["Global App Shell<br/>(APM Telemetry, Command Palette, RBAC Switcher)"]
-    A --> B1["Scenarios<br/>(/scenarios, /scenarios/compose, /suites)"]
-    A --> B2["Runs & Debugging<br/>(/reports, /debugger, /triage, /leaderboard)"]
-    A --> B3["Evidence & Governance<br/>(/trust, /compliance, /publish)"]
+    A["Global App Shell<br/>(Telemetry, Command Palette, Authorized Contexts)"]
+    A --> B1["Scenarios<br/>(/scenarios, /scenarios/compose, /mutator)"]
+    A --> B2["Runs & Debugging<br/>(/reports, /debugger, /triage)"]
+    A --> B3["Evidence & Trust<br/>(/evidence, /trust)"]
     
     B1 --> C1["Monaco Canonical Editor & DAG Canvas"]
     B2 --> C2["Live Debugger & Dagre Topology Overlay"]
@@ -119,16 +119,16 @@ The **Scenario Composer** (`/scenarios/compose` or `/editor`) offers dual-mode s
 
 ---
 
-### 🌪️ Adversarial Mutator & Linter Assessment (`/scenarios/mutator`)
+### 🌪️ Adversarial Mutator & Linter Assessment (`/mutator`)
 
-The **Adversarial Mutator** provides an interactive visual studio for generating and inspecting adversarial stress-tests across the complete 9-Vector Ecosystem:
+The **Adversarial Mutator** provides an interactive visual studio for generating and inspecting adversarial stress-tests from the installed mutation catalog:
 
-- **Dynamic 9-Vector Catalog Discovery**:
-  - Queries the backend at `GET /api/v1/mutations` to populate executable mutator descriptors dynamically across all 9 vectors (Input, Context, Memory, Retrieval, Tool, State, Authorization, Temporal, Objective).
+- **Dynamic Mutation Catalog Discovery**:
+  - Queries the backend at `GET /api/v1/mutations` to populate executable mutator descriptors with provider-declared vector and delivery capabilities. The formal vocabulary has 14 vectors; `time` is the coordinate name, and vocabulary membership does not guarantee execution support.
   - If the endpoint is unreachable, displays an explicit fail-closed error banner rather than a silent hardcoded fallback.
 - **In-Memory Scenario Linter Integration**:
   - Chains `ScenarioLinter.lint_dict` and renders a real-time **Lint Tier & Health Assessment** banner above the Monaco Diff Viewer.
-  - Displays the scenario tier (`GOLD`, `SILVER`, `BRONZE`, `REJECTED`), numerical compliance score (0–100), and specific schema errors or warnings.
+  - Displays the scenario tier, score (0–100), and schema errors or warnings. Tiers are `GOLD` at ≥90, `SILVER` at ≥70, `BRONZE` at ≥50, and `UNRANKED` below 50; registry input returns `REGISTRY`. A tier alone does not reject execution.
 - **Deterministic Mutant Lineage**:
   - Computes canonical derived IDs (`${base_id}_mutated_${mutation_type}`) bound into `metadata.name` and parent scenario references.
   - Automatically navigates to `/scenarios?q=${targetId}` upon saving to verify catalog placement.
@@ -137,7 +137,7 @@ The **Adversarial Mutator** provides an interactive visual studio for generating
 
 ## 3. ⚡ Evaluation Runner & Preflight Assurance
 
-The **Evaluation Runner** (`/runs/new` or home screen) manages test execution against frontier models and custom agent endpoints.
+The **Evaluation Runner** (`/`; `/runner` redirects here) manages test execution against frontier models and custom agent endpoints.
 
 ### Preflight Fingerprinting & Dual-Tier Readiness:
 
@@ -173,7 +173,7 @@ The **Scenario Library** (`/scenarios`) enables exploration across thousands of 
 
 ---
 
-## 5. 📑 Runs, Truthful PDF Reports & Metrics Leaderboard
+## 5. 📑 Runs, Evidence & PDF Reports
 
 ### Runs, Run Detail & Evidence Inspector (`/reports`, `/runs/<run_id>`):
 - **Filtering & Navigation**: Filter by status (`passed`, `failed`, `running`, `unverified`, `error`).
@@ -185,10 +185,10 @@ The **Scenario Library** (`/scenarios`) enables exploration across thousands of 
   - The PDF generation engine (`eval_runner/console/pdf_service.py` via ReportLab) derives execution metrics, timestamps, and pass/fail states from provider-owned run records, manifests, and events.
   - Zero manufactured or hardcoded placeholder strings; unverified runs explicitly reflect `UNVERIFIED` badges.
 
-### Metrics Leaderboard (`/leaderboard`):
-- Comparative evaluation rankings across different agent models and prompt versions.
-- Inclusive ranking with certification badges (`CERTIFIED` vs `UNVERIFIED`).
-- Pass-rate filtering, threshold controls, and JSON export.
+The core router does not provide `/leaderboard` or `/runs/new`. Use the CLI
+leaderboard command for provider-backed ranking output, or an explicitly
+installed extension for additional UI pages. `/scenarios/compose` remains the
+scenario composer route.
 
 ---
 
@@ -204,25 +204,17 @@ The **Trust Center** (`/trust`) provides cryptographic transparency for non-repu
 
 ---
 
-## 7. 🔌 Micro-Frontend Extension Architecture & Zero-Trust Isolation
+## 7. Extension integrity and authentication
 
-The Visual Console decouples core runtime functionality from modular UI extensions via a dynamic, sandboxed architecture:
+The host discovers declared navigation through `/api/nav`, verifies remote entry
+and chunk SRI, validates signed sidecar bindings and resolves publisher trust on
+the server. Verified modules render as React components in the host; they are
+not isolated iframes. Production mounts only backend-verified official publishers
+and rejects unsigned/community execution. See the
+[extension workflow](/extender/gui-extensions/) for publishing and activation.
 
-```mermaid
-graph LR
-    API["GET /api/nav"] --> Discovery["Dynamic Route Matching"]
-    Discovery --> Loader["RemoteComponentLoader<br/>(SRI Verification)"]
-    Loader --> Iframe["Sandboxed Boundary<br/>(postMessage Protocol / ESM)"]
-```
-
-- **Dynamic Module Discovery**: Navigation routes and pluggable extension modules are discovered dynamically via `GET /api/nav`.
-- **Subresource Integrity (SRI) Enforcement**:
-  - Remote modules must declare valid SRI digests.
-  - Supported algorithms: FIPS 202 SHA-3 (`sha3-256-`, `sha3-384-`, `sha3-512-`) and standard W3C fallback (`sha384-`, `sha256-`).
-- **Sandboxed Execution**: Remote extension bundles render inside zero-trust isolated iframes communicating via structured `postMessage` envelopes.
-- **Dynamic RBAC Context Switcher**:
-  - Built-in development role simulator allowing instant switching between `Viewer`, `Operator`, `Auditor`, and `Admin` permissions to validate UI authorization boundaries.
-- **Zero-Config Bootstrap Authentication**:
-  - On fresh local runs where no `DASHBOARD_API_KEY` or `SERVICE_API_KEY` is configured, an admin key is auto-generated into `.aes/keys/bootstrap.key` and displayed in the terminal banner.
-- **Non-Blocking Viewer Experience**:
-  - Unauthenticated users automatically enter in read-only `Viewer` mode, browsing benchmarks and past runs freely without blocking modal dialogs. Writing or promoting runs triggers the authenticated `LoginModal` with first-run key guidance.
+The authenticated runtime context API supplies context switching and authorized
+fetches. Context choices are constrained by provider-owned entitlements; changing
+a displayed role does not grant permissions. Protected scenario/run reads require
+authentication. In local first-run onboarding, use the bootstrap key instructions
+printed by the Console; in production configure stable credentials and trust.

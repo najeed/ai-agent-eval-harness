@@ -279,7 +279,7 @@ class RegistryManager:
                 with open(SHIM_RESOURCES_INTERNAL_PATH, encoding="utf-8") as f:
                     content = json.load(f)
                     if isinstance(content, dict):
-                        RegistryManager._deep_merge(raw_merged, content)
+                        raw_merged = RegistryManager._deep_merge(raw_merged, content)
                         record_contributions(
                             "",
                             content,
@@ -348,7 +348,7 @@ class RegistryManager:
                                     c_val = {"mappings": c_val}
                                 ext = {affinity_key: c_val}
 
-                            RegistryManager._deep_merge(raw_merged, ext)
+                            raw_merged = RegistryManager._deep_merge(raw_merged, ext)
                             record_contributions(
                                 "",
                                 ext,
@@ -379,7 +379,7 @@ class RegistryManager:
             try:
                 env_override = json.loads(env_json)
                 if isinstance(env_override, dict):
-                    RegistryManager._deep_merge(raw_merged, env_override)
+                    raw_merged = RegistryManager._deep_merge(raw_merged, env_override)
                     record_contributions(
                         "",
                         env_override,
@@ -409,20 +409,16 @@ class RegistryManager:
         # Mark applied contributors & construct key entries
         entries: dict[str, ConfigKeyDiagnostic] = {}
         for canonical_key, contrib_list in contributors_by_key.items():
-            if contrib_list:
-                contrib_list[-1].applied = True
+            contrib_list[-1].applied = True
 
-            parts = canonical_key.split(".")
             val: Any = raw_merged
-            found = True
-            for part in parts:
-                if isinstance(val, dict) and part in val:
-                    val = val[part]
-                else:
-                    found = False
+            for part in canonical_key.split("."):
+                if not isinstance(val, dict) or part not in val:
+                    effective_val = contrib_list[-1].value
                     break
-
-            effective_val = val if found else (contrib_list[-1].value if contrib_list else None)
+                val = val[part]
+            else:
+                effective_val = val
             redacted_eff = redact_sensitive_value(canonical_key, effective_val)
             sensitivity, is_sec = classify_sensitivity(canonical_key)
 

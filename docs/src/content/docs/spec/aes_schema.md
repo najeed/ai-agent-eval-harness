@@ -3,163 +3,90 @@ title: "Agent Evaluation Specification (AES v1.4)"
 description: "Authoritative specification for the AES v1.4 schema contract, workflow DAG, evaluation criteria, and environment sandbox plumbing."
 ---
 
-The **Agent Evaluation Specification (AES v1.4)** is the authoritative, framework-agnostic schema contract defining evaluation scenarios in AgentV. It standardizes task definitions, workflow directed acyclic graphs (DAGs), multi-turn agent interactions, typed assertion oracles, and environment simulator sandboxes.
+AES scenarios are validated against [the root schema](/spec/aes/aes.schema.json)
+and its metadata, workflow and evaluation definitions. Use these files as the
+field authority rather than a separate handwritten schema copy.
 
----
+## Required structure
 
-## 1. Schema Architecture & Validation Constraints
-
-Every AES v1.4 scenario is defined as a JSON or YAML document adhering strictly to [`spec/aes/aes.schema.json`](/spec/aes/aes.schema.json).
-
-### Strict Schema Rules:
-- **`additionalProperties: false`**: Root-level properties outside the formal specification are strictly prohibited and fail schema validation.
-- **Deterministic Canonical Serialization**: When hashed or signed, scenarios are normalized via pure RFC 8785 JSON Canonicalization Scheme (JCS) (`agentv_runtime.canonical`).
-- **Semantic Version Pinning**: The `aes_version` field must equal `1.4`.
+The root requires numeric `aes_version: 1.4`, `metadata`, `workflow`, and
+`evaluation`. Unknown root fields are rejected. Metadata requires `name`, `id`
+and `compliance_level`; supported levels are `Standard`, `Gold`, and
+`Regulatory_Audit`. `capabilities`, `industry` and `standards_registry` are
+optional metadata. Standard identifiers must come from the schema enum, such as
+`NIST_AI_RMF`, `ISO_20022` or `HIPAA`.
 
 ```json
 {
   "aes_version": 1.4,
   "metadata": {
-    "id": "fintech-loan-approval-001",
-    "name": "Commercial Loan Approval & Risk Assessment",
-    "industry": "Finance",
-    "use_case": "Underwriting",
-    "capabilities": ["financial_analysis", "credit_pull", "compliance_reporting"],
-    "standards_registry": ["ISO_20022", "NIST_AI_100_1"]
+    "id": "loan-assessment-example",
+    "name": "Loan assessment example",
+    "compliance_level": "Standard",
+    "capabilities": ["tool_use"],
+    "standards_registry": ["NIST_AI_RMF"]
   },
   "workflow": {
-    "nodes": [
-      {
-        "id": "step_1_credit_pull",
-        "task_description": "Retrieve credit bureau report for applicant ID #98231.",
-        "success_criteria": [
-          {"metric": "tool_call_correctness", "threshold": 1.0},
-          {"metric": "exact_match", "expected": "BUREAU_SUCCESS", "threshold": 1.0}
-        ]
-      }
-    ],
+    "nodes": [{
+      "id": "assess",
+      "task_description": "Return STATUS: APPROVED after checking the supplied policy.",
+      "success_criteria": [{"metric": "generic_accuracy", "threshold": 1.0}],
+      "expected_outcome": [{"target": "message", "expected": "STATUS: APPROVED", "mode": "exact"}]
+    }],
     "edges": []
   },
-  "evaluation": {
-    "panel": [
-      {"judge": "luna_judge", "weight": 0.6},
-      {"judge": "oracle_exact", "weight": 0.4}
-    ],
-    "consensus_threshold": 0.85
-  }
+  "evaluation": {}
 }
 ```
 
----
+## Nodes, assertions and evaluation
 
-## 2. Root Property Specification
+Workflow requires `nodes` and `edges`. The schema requires `id` and
+`task_description` on each node. Declare meaningful `success_criteria` and
+`expected_outcome` assertions for evaluable evidence; schema validity alone does
+not establish adequate coverage or certifiability.
 
-| Property | Type | Requirement | Description |
-| :--- | :--- | :--- | :--- |
-| **`aes_version`** | `number` | **Required** | The specification version. Must be `1.4`. |
-| **`metadata`** | `object` | **Required** | Metadata, taxonomy coordinates, regulatory standards, and compliance tags. |
-| **`workflow`** | `object` | **Required** | The Workflow DAG specifying tasks, transitions, dependencies, and assertions. |
-| **`evaluation`** | `object` | **Required** | Evaluation parameters, consensus panels, scoring weights, and oracle thresholds. |
-| **`tools`** | `object` | *Optional* | Permitted tools, expected parameter schemas, and mock responses. |
-| **`initial_state`** | `object` | *Optional* | Genesis world state seeded into the Virtual File System (VFS) or shims. |
-| **`environmental_snapshot`** | `object` | *Optional* | Pinned infrastructure registry snapshot and dependency digests. |
-| **`enabled_shims`** | `array` | *Optional* | Explicit whitelist of world simulators to activate (e.g., `["database", "stripe", "jira"]`). |
-| **`failure_policy`** | `string` | *Optional* | DAG execution policy: `fail_fast`, `continue_independent`, `compensate_then_fail`, `best_effort`. |
-| **`cleanup_workspace`** | `boolean` | *Optional* | `true` (default) purges workspace on teardown; `false` preserves disk state for forensic review. |
-| **`description`** | `string` | *Optional* | Human-readable synopsis for scenario catalogs and visual leaderboards. |
-| **`industry`** | `string` | *Optional* | Vertical industry classification (e.g., `Finance`, `Healthcare`, `Energy`). |
-| **`use_case`** | `string` | *Optional* | Specific business domain task (e.g., `Fraud Detection`, `Claims Adjudication`). |
+`success_criteria` entries require a registered metric name and a threshold.
+Discover installed metrics with `agentv list-metrics`. Built-in names include
+`generic_accuracy`, `tool_call_correctness`, `policy_compliance`,
+`state_verification`, and `luna_judge_score`. An unknown metric produces an invalid
+evaluation, not a passing result.
 
----
+`expected_outcome` is an array. The workflow schema accepts `exact`, `regex`, and
+`numerical_tolerance` modes. These assertion modes are separate from metric
+registry names; do not use `regex`, `exact_match`, `json_schema`, or
+`tool_call_parameter` as built-in metric names. State assertions should declare
+the target/property and bounded state projection needed to observe their result.
 
-## 3. Metadata Specification (`metadata`)
+The evaluation definition supports a `consensus` object with `strategy`,
+`min_judges`, optional `judge_panel`, and `ija_threshold` at evaluation level.
+Strategies are `Majority_Vote`, `Weighted_Average`, and `Absolute_Unanimity`.
 
-The `metadata` block provides immutable identity and regulatory governance mapping:
+## Routing and environment
 
-- **`id`** *(string, required)*: Unique slug identifier matching `^[a-z0-9\-_]+$`.
-- **`name`** *(string, optional)*: Human-readable scenario title.
-- **`capabilities`** *(list[string], required)*: Minimum agent capabilities required to execute the scenario (e.g. `sql_query`, `api_rest`, `pdf_analysis`).
-- **`standards_registry`** *(list[string], optional)*: Aligned regulatory frameworks (`NIST_AI_100_1`, `EU_AI_ACT_ART_15`, `ISO_20022`, `HIPAA`, `GDPR`).
-- **`compliance_level`** *(string, optional)*: Tier classification: `Standard`, `High_Assurance`, `Mission_Critical`.
-- **`author`** *(string, optional)*: Benchmark author identity or organization.
+Put required capabilities in `metadata.capabilities`. Configure an agent through
+`metadata.agent.protocol` / `metadata.agent.endpoint`, capability routing, or
+explicit CLI/runtime configuration. Root `agent_url` and `temperature` are not
+AES fields.
 
----
+Optional root fields include `tools`, `initial_state`, `environmental_snapshot`,
+`enabled_shims`, `failure_policy`, `cleanup_workspace`, `description`, `industry`,
+and `use_case`. `failure_policy` is one of `fail_fast`, `continue_independent`,
+`compensate_then_fail`, or `best_effort`.
 
-## 4. Workflow DAG Specification (`workflow`)
+Shim activation follows the [discovery policy](/evaluator/discovery/). Sandbox
+workspaces default to `workspace/<run_id>` and are retained unless cleanup is
+explicitly enabled. Keys/configuration, sandbox state and provider-owned evidence
+have separate lifecycles. The run provider owns exact committed trace bytes,
+execution manifests, lifecycle state and certificate publication.
 
-AES v1.4 replaces linear tasks with an expressive Directed Acyclic Graph (DAG):
-
-### Nodes (`workflow.nodes`)
-Each node represents an atomic step in the agent evaluation lifecycle:
-- **`id`** *(string, required)*: Unique node identifier within the scenario DAG.
-- **`task_description`** *(string, required)*: Natural language instruction presented to the agent.
-- **`timeout_seconds`** *(int, optional)*: Per-task wall-clock execution limit (default: global timeout).
-- **`max_attempts`** *(int, optional)*: Maximum retry turns allowed before declaring a logic stall.
-- **`success_criteria`** *(list[object], required)*: Typed assertions that must be satisfied to traverse the node.
-
-### Typed Assertions (`success_criteria`)
-AgentV provides four native assertion operators:
-1. **`exact`**: Strict byte-for-byte or normalized string equality.
-2. **`regex`**: Regular expression pattern matching over agent output or tool parameters.
-3. **`numerical_tolerance`**: Float comparisons within an absolute tolerance ($\pm \epsilon$).
-4. **`json_schema`**: Validates agent structured output against a target Draft-07 JSON Schema.
-
-```json
-{
-  "metric": "tool_call_parameter",
-  "assertion_type": "exact",
-  "tool_name": "execute_transfer",
-  "parameter": "amount",
-  "expected": 50000.0,
-  "threshold": 1.0
-}
-```
-
-### Edges (`workflow.edges`)
-Declare topological transitions and conditional branching:
-- **`from`** *(string, required)*: Source node ID.
-- **`to`** *(string, required)*: Destination node ID.
-- **`condition`** *(string, optional)*: Evaluated Python expression (e.g., `step_1.status == 'success'`).
-
----
-
-## 5. Storage Boundaries & Sandbox Plumbing
-
-AES scenarios operate across four strictly isolated storage domains:
-
-```mermaid
-graph LR
-    subgraph Persistent Store
-        AES[".aes/"] --> Keys["Keys & Certs (.aes/keys/)"]
-        AES --> Config["Config Mesh (.aes/config/)"]
-    end
-    
-    subgraph Sandbox Jail
-        Jail["/workspace (vfs:/)"] --> VFS["Isolated Virtual Filesystem"]
-        Jail --> Shims["Mounted Shims (database, stripe)"]
-    end
-    
-    subgraph Run Storage Provider
-        Provider["Scoped run record"] --> Trace["exact committed trace bytes"]
-        Provider --> Manifest["provider-owned manifest"]
-        Provider --> Pkg["derived evidence package"]
-    end
-```
-
-1. **Persistent Key Store (`.aes/`)**: Holds bootstrap keys (`.aes/keys/bootstrap.key`), signing certificates, and local trust root anchors. Never modified by agent executions.
-2. **Sandbox Jail (`/workspace` / `vfs:/`)**: Ephemeral, state-aware container created per run. Tools execute within this jail, with automated rollback and isolation.
-3. **Run Storage Provider**: Authoritative scoped records containing exact trace bytes, execution manifests, and signed Verification Certificates. `LocalFileRunStore` is one reference implementation, not an evidence-source contract.
-
----
-
-## 6. CLI Validation & Quality Linting
-
-Validate any AES scenario before deployment:
+## Validation and execution
 
 ```bash
-# Formal JSON Schema compliance check
-agentv aes validate --path industries/finance/scenarios/loan_approval.json
-
-# Industrial quality linter (score >= 90 required for production)
-agentv lint --path industries/finance/scenarios/loan_approval.json
+agentv aes validate --path industries/finance/scenarios/loan_approval_risk_check.json
+agentv lint --path industries/finance/scenarios/loan_approval_risk_check.json
 ```
+
+JSON and YAML scenario files can be loaded by the runtime. Use a file or catalog
+ID with `run` and a dataset/directory with `evaluate`. Certification remains a
+separate operation requiring eligible execution, signer and oracle evidence.

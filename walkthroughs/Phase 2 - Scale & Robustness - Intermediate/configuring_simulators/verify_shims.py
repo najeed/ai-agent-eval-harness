@@ -15,8 +15,9 @@ def verify_shims():
     with open(scenario_path) as f:
         scenario = json.load(f)
 
-    enabled_shims = scenario.get("config", {}).get("enabled_shims", [])
-    all_tools = scenario.get("tools", [])
+    enabled_shims = scenario.get("enabled_shims") or scenario.get("config", {}).get("enabled_shims", [])
+    raw_tools = scenario.get("tools", [])
+    all_tools = list(raw_tools.keys()) if isinstance(raw_tools, dict) else raw_tools
 
     print("\n      [Sim] Phase 2: Industrial Simulator Audit")
     print("-" * 50)

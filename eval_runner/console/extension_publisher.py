@@ -5,6 +5,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import logging
 import os
 import re
 import shutil
@@ -110,6 +111,21 @@ def _relative_chunks(entry: Path) -> list[Path]:
     return discovered
 
 
+def _validate_safe_identifier(name: str, value: str) -> None:
+    if (
+        not isinstance(value, str)
+        or not value
+        or value in {".", ".."}
+        or value != value.strip()
+        or value.endswith(".")
+        or "/" in value
+        or "\\" in value
+        or ".." in value
+        or ":" in value
+    ):
+        raise ValueError(f"{name} must be a single safe identifier")
+
+
 def publish_extension(
     *,
     entry: Path,
@@ -125,8 +141,8 @@ def publish_extension(
     entry = entry.resolve()
     if not entry.is_file():
         raise ValueError("entry must name a readable ESM file")
-    if not extension_id or "/" in extension_id or "\\" in extension_id or ".." in extension_id:
-        raise ValueError("extension_id must be a single safe identifier")
+    _validate_safe_identifier("extension_id", extension_id)
+    _validate_safe_identifier("version", version)
     root = (artifact_root or config.EXTENSION_ARTIFACT_DIR).resolve()
     target = root / extension_id / version
     staging = root / ".staging" / uuid.uuid4().hex
@@ -185,6 +201,19 @@ def publish_extension(
             manifest.canonical_bytes(), private_key_pem(publisher)
         )
         signed = RuntimeExtension(**{**manifest.to_dict(), "signature": signature})
+        record = _record_path(root, extension_id, version)
+        if record.exists():
+            try:
+                retained = json.loads(record.read_text(encoding="utf-8"))
+            except (OSError, ValueError) as exc:
+                raise ValueError(
+                    "Retained release record is unreadable; cannot reuse version"
+                ) from exc
+            if retained != signed.to_dict():
+                raise ValueError(
+                    "extension version already published with different bytes; "
+                    "publish a new version"
+                )
         (staging / "entry.manifest.json").write_text(
             json.dumps(signed.to_dict(), sort_keys=True), encoding="utf-8"
         )
@@ -220,9 +249,9 @@ def publish_extension(
                 "extension version already published with different bytes; publish a new version"
             )
         os.replace(staging, target)
-        record = _record_path(root, extension_id, version)
         record.parent.mkdir(parents=True, exist_ok=True)
-        record.write_text(json.dumps(signed.to_dict(), sort_keys=True), encoding="utf-8")
+        if not record.is_file():
+            record.write_text(json.dumps(signed.to_dict(), sort_keys=True), encoding="utf-8")
         desc = _descriptor(signed)
         if activate:
             active_info = activate_extension(
@@ -243,12 +272,19 @@ def unpublish_extension(
     *, extension_id: str, version: str, artifact_root: Path | None = None
 ) -> dict:
     """Atomically withdraw a release; repeated withdrawal is a safe no-op."""
+    _validate_safe_identifier("extension_id", extension_id)
+    _validate_safe_identifier("version", version)
     root = (artifact_root or config.EXTENSION_ARTIFACT_DIR).resolve()
     target = root / extension_id / version
+    if not target.resolve().is_relative_to(root):
+        raise ValueError("extension target must remain inside the artifact store")
     if not target.exists():
         return {"status": "not_found", "extension_id": extension_id, "version": version}
-    quarantine = root / ".quarantine" / f"{extension_id}-{version}-{uuid.uuid4().hex}"
-    quarantine.parent.mkdir(parents=True, exist_ok=True)
+    quarantine_root = root / ".quarantine"
+    if not quarantine_root.resolve().is_relative_to(root):
+        raise ValueError("quarantine must remain inside the artifact store")
+    quarantine_root.mkdir(parents=True, exist_ok=True)
+    quarantine = quarantine_root / f"{extension_id}-{version}-{uuid.uuid4().hex}"
     os.replace(target, quarantine)
     shutil.rmtree(quarantine)
 
@@ -435,6 +471,80 @@ def verify_extension(
         if not chunk.is_file() or _sri(chunk.read_bytes()) != expected:
             return {"valid": False, "reason": f"chunk-sri-mismatch:{rel}"}
     return {"valid": True, "descriptor": _descriptor(manifest)}
+
+
+def verified_active_extensions(
+    *,
+    artifact_root: Path | None = None,
+    public_key_pem: Callable[[str], bytes | None] | None = None,
+) -> list[RuntimeExtension]:
+    """Resolve explicit active selections and verify their publisher and bytes.
+
+    Retained manifests are never an implicit activation mechanism. Older stores
+    must select a retained release through activate_extension before discovery.
+    """
+    root = (artifact_root or config.EXTENSION_ARTIFACT_DIR).resolve()
+    if public_key_pem is None:
+        public_key_pem = _public_key_pem_bytes
+    enabled_raw = os.getenv("AGENTV_ENABLED_EXTENSION_IDS", "").strip()
+    enabled = {value.strip() for value in enabled_raw.split(",") if value.strip()}
+    manifests = []
+    seen = set()
+    for record_path in sorted((root / ".active-releases").glob("*/*.json")):
+        try:
+            record = json.loads(record_path.read_text(encoding="utf-8"))
+            if not isinstance(record, dict):
+                continue
+            extension_id, version, publisher = (
+                record.get(name) for name in ("extension_id", "version", "publisher")
+            )
+            if any(
+                not isinstance(value, str)
+                or not value
+                or "/" in value
+                or "\\" in value
+                or ".." in value
+                for value in (extension_id, version, publisher)
+            ):
+                continue
+            if (
+                extension_id != record_path.stem
+                or publisher != record_path.parent.name
+                or record.get("status") != "active"
+                or extension_id in seen
+                or (enabled_raw and extension_id not in enabled)
+            ):
+                continue
+            manifest_path = root / extension_id / version / "entry.manifest.json"
+            if not manifest_path.resolve().is_relative_to(root):
+                continue
+            manifest = RuntimeExtension.from_dict(
+                json.loads(manifest_path.read_text(encoding="utf-8"))
+            )
+            if (
+                manifest.validate()
+                or manifest.extension_id != extension_id
+                or manifest.version != version
+                or manifest.publisher != publisher
+                or manifest.remote_entry != record.get("remote_entry")
+                or manifest.sri_hash != record.get("sri_hash")
+            ):
+                continue
+            verified = verify_extension(
+                extension_id=extension_id,
+                version=version,
+                public_key_pem=public_key_pem,
+                artifact_root=root,
+            )
+            if not verified["valid"]:
+                continue
+            seen.add(extension_id)
+            manifests.append(manifest)
+        except (OSError, ValueError, TypeError, KeyError, AttributeError):
+            logging.getLogger(__name__).warning(
+                "Ignoring invalid active extension record %s", record_path, exc_info=True
+            )
+    return manifests
 
 
 def repair_extension(

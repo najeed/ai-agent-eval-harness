@@ -2755,3 +2755,52 @@ def test_valid_extended_observations_approval_and_tool_rules():
         valid_extended_observations(receipt_timeout, bound_timeout, index_timeout, 4, lambda x: "h")
         is True
     )
+
+
+def test_intercept_compensation_requires_mandatory_rollback_interceptor():
+    from unittest.mock import ANY
+
+    from eval_runner.mutations.compensation_faults import intercept_compensation
+
+    scenario = {"id": "s1", "failure_policy": {"rollback_failure": True}}
+    node = {"id": "comp_node"}
+    plugins = MagicMock()
+    plugins.trigger_interceptor.return_value = {}
+    with pytest.raises(RuntimeError, match="Selected rollback fault did not reach"):
+        intercept_compensation("run-comp", MagicMock(), plugins, scenario, node, "exec-1", "p-1")
+    plugins.trigger_interceptor.assert_any_call("on_step_end", ANY, "comp_node")
+
+
+def test_runtime_mutation_plugin_edge_guards_and_error_paths():
+    from types import SimpleNamespace
+
+    from eval_runner.mutations.mutator_plugin import RuntimeMutationPlugin
+    from eval_runner.mutations.runtime_faults import FaultDeliveryError
+
+    plugin = RuntimeMutationPlugin()
+    plugin.before_evaluation(object())
+    plugin.on_step_start(None, None)
+    plugin.on_step_end(None, None)
+    assert plugin.active_node_id is None
+    ctx = SimpleNamespace(scenario_data={"id": "scen-data"}, current_execution_instance_id="e1")
+    plugin.on_step_start(ctx, "n1", {"cancel_at_boundary": True})
+    assert plugin.scenario == {"id": "scen-data"}
+    with pytest.raises(FaultDeliveryError, match="bound runtime controller"):
+        plugin.on_tool_request(ctx, "write", {})
+
+    plugin.on_step_start(ctx, "n2", {"partial_commit_simulated": True})
+    with pytest.raises(FaultDeliveryError, match="actual sandbox boundary"):
+        plugin.on_before_commit(ctx, {"k": 1})
+
+    sandbox = SimpleNamespace(tool_faults=MagicMock())
+    plugin.on_step_start(
+        SimpleNamespace(scenario={"id": "s"}, sandbox=sandbox, current_execution_instance_id="e2"),
+        "n3",
+        {"tool_response_corrupted": True},
+    )
+    res = plugin.on_tool_result(ctx, tool="t1", result="raw-string")
+    assert res["result"]["original_type"] == "str"
+
+    plugin.on_step_start(ctx, "n4", {"approval_stale": True, "approval_mismatch": True})
+    with pytest.raises(ValueError, match="one independently observable fault"):
+        plugin._intercept_approval(ctx, {})

@@ -226,9 +226,11 @@ def load_jsonl(file_path: Path) -> list[dict]:
         return []
 
 
+@LoaderRegistry.register(".yaml")
+@LoaderRegistry.register(".yml")
 @LoaderRegistry.register(".json")
 def load_single_scenario(file_path: Path) -> list[dict]:
-    """Loads a single scenario JSON file and returns it as a list."""
+    """Loads and validates one JSON or YAML scenario."""
     return [load_scenario(str(file_path))]
 
 
@@ -294,13 +296,21 @@ def load_scenario(
         )
         raise FileNotFoundError(msg)
 
-    with open(file_path) as f:
+    with open(file_path, encoding="utf-8-sig") as f:
         try:
-            scenario_data = json.loads(f.read())
+            if file_path.suffix.lower() in {".yaml", ".yml"}:
+                import yaml
+
+                scenario_data = yaml.safe_load(f)
+            else:
+                scenario_data = json.loads(f.read())
         except json.JSONDecodeError as e:
             raise json.JSONDecodeError(  # noqa: B904
                 f"Error decoding JSON from {file_path}: {e.msg}", e.doc, e.pos
             )
+
+    if not isinstance(scenario_data, dict):
+        raise ValueError(f"Scenario must be an object: {file_path}")
 
     # 3. Resolve Relative Dataset Paths (Path Decoupling)
     if "dataset" in scenario_data and isinstance(scenario_data["dataset"], dict):
@@ -402,7 +412,9 @@ def load_dataset(file_path: str | Path, format_type: str | None = None) -> list[
     # Handle Directory
     if path_obj.is_dir():
         all_scenarios = []
-        for p in path_obj.glob("**/*.json"):
+        for p in sorted(path_obj.rglob("*")):
+            if not p.is_file() or p.suffix.lower() not in {".json", ".yaml", ".yml"}:
+                continue
             try:
                 all_scenarios.extend(load_single_scenario(p))
             except ValidationError as e:

@@ -102,7 +102,7 @@ def test_identify_root_cause_metric_failure():
     assert "Baseline Metric Failure" in rc["reason"]
 
 
-def test_fallback_diagnosis_logic():
+def test_triage_engine_fallback_diagnosis_logic():
     """Test fallback diagnosis when no evidence is found."""
     history = [{"role": "agent", "content": "thought"}, {"role": "run_end", "status": "failed"}]
     rc = TriageEngine.identify_root_cause(history)

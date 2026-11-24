@@ -36,14 +36,20 @@ def load_events(path: Path | str) -> list[dict[Any, Any]]:
         if not content:
             return []
 
-        # Try to parse as a standard JSON array first if it looks like one
-        if content.startswith("["):
+        # Try to parse as a standard JSON array or object first
+        if content.startswith(("[", "{")):
             try:
                 data = json.loads(content)
                 if isinstance(data, list):
                     return data
-                return [data]
+                elif isinstance(data, dict):
+                    if "events" in data and isinstance(data["events"], list):
+                        return data["events"]
+                    elif "history" in data and isinstance(data["history"], list):
+                        return data["history"]
+                    return [data]
             except json.JSONDecodeError:
+                pass
                 # If it's not a valid JSON array, maybe it's just a JSONL file
                 # where the first event happens to start with '[' (e.g. metadata)
                 pass

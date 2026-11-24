@@ -38,13 +38,13 @@ def import_trace_as_scenario(trace_path: Path, industry: str, output_dir: Path) 
     # Create scenario structure (Transition to AES v1.4.0 Identity)
     scenario = {
         "aes_version": 1.4,
-        "id": identifier,
         "industry": industry,
         "use_case": "production_replay",
         "metadata": {
             "id": identifier,
             "name": f"Imported Drift: {trace_path.name}",
             "compliance_level": "Standard",
+            "ground_truth_history": history,
         },
         "description": f"Automatically imported from production trace: {trace_path.name}",
         "workflow": {
@@ -57,13 +57,13 @@ def import_trace_as_scenario(trace_path: Path, industry: str, output_dir: Path) 
             ],
             "edges": [],
         },
-        "ground_truth_history": history,
+        "evaluation": {},
     }
 
     output_dir.mkdir(parents=True, exist_ok=True)
     output_file = output_dir / f"{identifier}.json"
 
-    with open(output_file, "w") as f:
+    with open(output_file, "w", encoding="utf-8") as f:
         json.dump(scenario, f, indent=2)
 
     return output_file

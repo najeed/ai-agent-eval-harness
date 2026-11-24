@@ -5,12 +5,19 @@ description: Energy production, pricing, and carbon intensity metrics for grid m
 
 The Energy sector provides essential signals for infrastructure and grid management agents, tracking production, spatial-temporal pricing, and sustainability metrics.
 
-## ⚡ Status: **HARDENED**
+## ⚡ Status: **Provider-dependent coverage**
 
 - **Architecture**: EIA & IEA Spatio-Temporal Tracking Layer.
-- **Verification**: 100% Parity with U.S. Energy Information Administration data.
+- **Verification**: Validate the selected source and output records for this run; no universal live-source parity guarantee is implied.
 
 ## 📡 Data Sources
+
+The sources below describe reference datasets and task models. Actual connectivity
+depends on the implemented provider, credentials and supplied input files.
+Simulation is disabled by default; enable `--allow-simulation` deliberately and
+retain `simulation`/`execution_mode` provenance. A listed source is not proof
+that its live API was used or that all records match it.
+
 
 | Source | Description |
 | :--- | :--- |

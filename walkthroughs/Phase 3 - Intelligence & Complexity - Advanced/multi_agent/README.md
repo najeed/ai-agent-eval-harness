@@ -18,7 +18,7 @@ Look at `multi_agent_scenario.json`. You'll notice it defines three distinct "No
 ### Step 2: Run the Team Evaluation
 This script will execute the three-node interaction and provide a "Coordination Audit" on the resulting trace.
 ```bash
-python walkthroughs/Phase 3 - Intelligence & Complexity - Advanced/multi_agent/Step_1_Evaluate_Team.py
+python "walkthroughs/Phase 3 - Intelligence & Complexity - Advanced/multi_agent/Step_1_Evaluate_Team.py"
 ```
 
 ### Step 3: Audit the Hand-off

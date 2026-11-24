@@ -15,7 +15,7 @@ Before a score is "official," it must pass the **Verification Gate**. This is an
 ### Step 2: Submit the Score
 Run the submission script to simulate the final industrial certification:
 ```bash
-python walkthroughs/Phase 4 - Production & Governance - Expert/verification_submission/submit_score.py
+python "walkthroughs/Phase 4 - Production & Governance - Expert/verification_submission/submit_score.py"
 ```
 
 ### Step 3: Certification

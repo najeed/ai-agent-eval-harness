@@ -1780,3 +1780,62 @@ def test_external_state_authority_registry_scenario_branches(monkeypatch):
         reg.get_connector(
             "auth_nourl", scenario_authorities={"auth_nourl": {"headers": {"Authorization": "x"}}}
         )
+
+
+def test_observation_signing_rejects_non_ed25519_and_missing_public_key(monkeypatch):
+    from cryptography.hazmat.primitives.asymmetric import rsa
+
+    from eval_runner.observation_signing import sign_observation
+
+    rsa_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    backend_with_key = MagicMock(requires_private_key_material=True)
+    backend_with_key.can_sign.return_value = True
+    monkeypatch.delenv("FLIGHT_RECORDER_KEY_PATH", raising=False)
+    monkeypatch.delenv("CORE_ARTIFACT_SIGNING_PEM", raising=False)
+    monkeypatch.delenv("CORE_ARTIFACT_SIGNING_PEM_OBS_ID", raising=False)
+    with patch("eval_runner.identity.IdentityService.get_private_key", return_value=rsa_key):
+        with pytest.raises(ValueError, match="existing Ed25519 key"):
+            sign_observation(b"payload", backend_with_key, "obs_id")
+
+    backend_remote = MagicMock(requires_private_key_material=False)
+    backend_remote.can_sign.return_value = True
+    with patch("eval_runner.state_authority.receipt_public_key", return_value=None):
+        with pytest.raises(ValueError, match="trusted public key"):
+            sign_observation(b"payload", backend_remote, "obs_id")
+
+
+def test_observation_signing_anchor_mismatch_and_signature_validation(monkeypatch):
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+
+    from eval_runner.observation_signing import sign_observation
+
+    key1 = ed25519.Ed25519PrivateKey.generate()
+    key2 = ed25519.Ed25519PrivateKey.generate()
+    monkeypatch.delenv("FLIGHT_RECORDER_KEY_PATH", raising=False)
+    monkeypatch.delenv("CORE_ARTIFACT_SIGNING_PEM", raising=False)
+    monkeypatch.delenv("CORE_ARTIFACT_SIGNING_PEM_OBS_ID", raising=False)
+
+    backend_key = MagicMock(requires_private_key_material=True)
+    backend_key.can_sign.return_value = True
+    with (
+        patch("eval_runner.identity.IdentityService.get_private_key", return_value=key1),
+        patch("eval_runner.state_authority.receipt_public_key", return_value=key2.public_key()),
+    ):
+        with pytest.raises(ValueError, match="does not match its public trust anchor"):
+            sign_observation(b"payload", backend_key, "obs_id")
+
+    backend_remote = MagicMock(requires_private_key_material=False)
+    backend_remote.can_sign.return_value = True
+    with patch("eval_runner.state_authority.receipt_public_key", return_value=key1.public_key()):
+        backend_remote.sign_payload.return_value = b"not-a-hex-str"
+        with pytest.raises(ValueError, match="raw Ed25519 receipt format"):
+            sign_observation(b"payload", backend_remote, "obs_id")
+
+        backend_remote.sign_payload.return_value = "abcd"
+        with pytest.raises(ValueError, match="invalid Ed25519 signature"):
+            sign_observation(b"payload", backend_remote, "obs_id")
+
+        backend_remote.sign_payload.return_value = key1.sign(b"payload").hex()
+        sig_hex, pub = sign_observation(b"payload", backend_remote, "obs_id")
+        assert len(bytes.fromhex(sig_hex)) == 64
+        assert pub == key1.public_key()

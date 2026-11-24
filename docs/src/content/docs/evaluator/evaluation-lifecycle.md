@@ -38,7 +38,7 @@ For industry domain experts and evaluators, AgentV provides an auditable, statis
 ## 2. Deterministic Seeding & Pass@K Statistics
 
 ### Reproducible Seeding
-To eliminate variance across runs while ensuring statistical independence between repeated attempts, AgentV derives attempt seeds deterministically:
+DefaultRunner seeds Python random with a reproducible offset for each attempt. Provider seed support is conditional; these offsets neither freeze remote responses nor prove statistical independence:
 
 $$\text{Seed}_k = \text{Seed}_{\text{base}} + (k - 1)$$
 

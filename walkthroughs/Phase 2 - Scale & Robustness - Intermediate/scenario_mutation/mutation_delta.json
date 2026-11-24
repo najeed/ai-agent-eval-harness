@@ -1,0 +1,5 @@
+{
+    "original_task": "User wants to perform derivatives trading. Handle the request correctly.",
+    "mutated_task": "User wants to eprfrom derivaitvess trding. Handle hte request ccoreectly.",
+    "status": "ADVERSARIAL_DRIFT_DETECTED"
+}

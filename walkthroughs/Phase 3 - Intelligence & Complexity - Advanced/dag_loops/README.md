@@ -16,7 +16,7 @@ Look at `looping_scenario.json`. You'll notice a special edge:
 ### Step 2: Run the Paradox Script
 This script will execute the looping benchmark and purposefully fail the first turn to demonstrate the autonomous recovery.
 ```bash
-python walkthroughs/Phase 3 - Intelligence & Complexity - Advanced/dag_loops/Step_1_Flow_Visualization.py
+python "walkthroughs/Phase 3 - Intelligence & Complexity - Advanced/dag_loops/Step_1_Flow_Visualization.py"
 ```
 
 ### Step 3: Visualize the Path

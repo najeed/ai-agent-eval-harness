@@ -45,18 +45,26 @@ In an **AES v1.4** scenario, the `core_function` tag is an **optional metadata f
     "id": "fraud-detection-t1",
     "industry": "Finance",
     "use_case": "Retail Banking",
-    "core_function": "Fraud & Security"
+    "core_function": "Fraud & Security",
+    "name": "Fraud detection example",
+    "compliance_level": "Standard"
   },
   "workflow": {
     "nodes": [
       {
         "id": "t1",
         "task_description": "Identify if the transaction at 03:00 UTC is suspicious.",
-        "success_criteria": [{"metric": "factual_accuracy", "threshold": 1.0}]
+        "success_criteria": [
+          {
+            "metric": "factual_accuracy",
+            "threshold": 1.0
+          }
+        ]
       }
     ],
     "edges": []
-  }
+  },
+  "evaluation": {}
 }
 ```
 

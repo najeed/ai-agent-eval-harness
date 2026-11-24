@@ -82,7 +82,10 @@ For enterprise compliance archives, AgentV bundles complete audit evidence into 
   - `verify_package_artifacts(package_data, external_trust_roots)`: Deep cryptographic audit re-hashing all internal payload byte streams and asserting exact equality with recorded digests.
 - **Offline Independent Verification**:
   ```bash
-  agentv verify-package ./run_compliance.agentv-package.json --public-key /etc/pki/agentv-root.pem
+  agentv verify-package ./run_compliance.agentv-package.json --public-key /etc/pki/agentv-root.pem \
+  --trace run.jsonl \
+  --execution-manifest execution_manifest.json \
+  --scenario scenario.json
   ```
 - **In-Archive ZIP Verification**:
   When handling `.zip` archive bundles, AgentV verifies file byte streams directly in memory without disk extraction, enforcing strict path traversal guards (`..`, absolute paths, drive prefixes) to neutralize Zip Slip attacks.
@@ -92,7 +95,6 @@ For enterprise compliance archives, AgentV bundles complete audit evidence into 
 ## 🚦 4. Automated CI/CD Gating (`agentv gate`)
 
 Enforce compliance in deployment pipelines by failing builds that do not meet verification thresholds:
-
 ```bash
 agentv gate --run-id run_fintech_2026_01 --verify-ledger --pqc
 ```

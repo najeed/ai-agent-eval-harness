@@ -18,7 +18,7 @@ The harness looks at `.env` for its current connection settings.
 ### Step 2: The Local Switch
 To evaluate a script residing directly in this repository, we use the `local` adapter. Perform this by running:
 ```bash
-python walkthroughs/Phase 1 - Foundations - Beginner/adapters/Step_1_Configure_Adapters.py
+python "walkthroughs/Phase 1 - Foundations - Beginner/adapters/Step_1_Configure_Adapters.py"
 ```
 
 ### Step 3: Run the Local Evaluation

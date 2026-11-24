@@ -30,7 +30,7 @@ def test_import_trace_as_scenario(tmp_path):
     assert scenario["industry"] == "telecom"
     assert scenario["use_case"] == "production_replay"
     assert len(scenario["workflow"]["nodes"]) == 1
-    assert scenario["ground_truth_history"] == [
+    assert scenario["metadata"]["ground_truth_history"] == [
         {"role": "user", "content": "Hello"},
         {"role": "assistant", "content": "How can I help?"},
     ]
@@ -83,4 +83,11 @@ def test_import_trace_dict_with_history(tmp_path, monkeypatch):
     scenario_path = import_trace_as_scenario(trace_file, "finance", output_dir)
     assert scenario_path.exists()
     data = json.loads(scenario_path.read_text())
-    assert data["ground_truth_history"] == trace_dict["history"]
+    assert data["metadata"]["ground_truth_history"] == trace_dict["history"]
+
+    # Imported files must satisfy the same contract as ordinary user-authored scenarios.
+    from eval_runner.loader import get_scenario_validator, load_scenario
+
+    get_scenario_validator().validate(data)
+    loaded = load_scenario(scenario_path)
+    assert loaded["metadata"]["ground_truth_history"] == trace_dict["history"]

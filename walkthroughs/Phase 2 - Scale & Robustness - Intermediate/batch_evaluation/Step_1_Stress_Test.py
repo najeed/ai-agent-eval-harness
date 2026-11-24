@@ -1,4 +1,5 @@
 import subprocess
+import sys
 from pathlib import Path
 
 
@@ -10,36 +11,27 @@ def main():
 
     # Locate project root
     root = Path(__file__).parent.parent.parent.parent
-    manifest_path = (
-        root
-        / "walkthroughs"
-        / "Phase 2 - Scale & Robustness - Intermediate"
-        / "batch_evaluation"
-        / "mixed_protocol_manifest.json"
-    )
+    scenarios_dir = root / "scenarios" / "cross_industry"
 
-    print("\nWe are now orchestrating a fleet of fifty evaluations across three sectors.")
+    print("\nWe are now orchestrating a fleet evaluation across cross-industry scenarios.")
     print("The manifest 'mixed_protocol_manifest.json' defines these connections.")
-    print("\nConcurrency settings: --concurrency 5 --attempts 3 --retry-delay 1")
+    print("\nExecuting batch suite via: agentv evaluate --path scenarios/cross_industry/")
 
     input("\n[Press ENTER] to launch the Blitz...")
 
-    # Run the evaluation with concurrency
-    print(f"\n   [CLI] Running: agentv evaluate --manifest {manifest_path} --concurrency 5")
+    # Run the evaluation
+    print(f"\n   [CLI] Running: agentv evaluate --path {scenarios_dir}")
 
-    # Using python -m eval_runner.cli instead of direct agentv for portability
+    # Using sys.executable -m eval_runner.cli instead of direct agentv for portability
     try:
-        # We limit the number of scenarios for the demo but keep the concurrency logic visible
         subprocess.run(
             [
-                "python",
+                sys.executable,
                 "-m",
                 "eval_runner.cli",
                 "evaluate",
                 "--path",
-                "industries/telecom/scenarios/",
-                "--concurrency",
-                "5",
+                str(scenarios_dir),
             ],
             check=True,
         )
@@ -48,7 +40,7 @@ def main():
 
     print("\n============================================")
     print("📊 Analysis of the 'Blitz' Performance:")
-    print("1. **Throughput**: 5 evaluations were running simultaneously.")
+    print("1. **Throughput**: Multi-scenario evaluation executed cleanly.")
     print("2. **Resilience**: The harness handles transient failures via retry logic.")
     print("3. **Visibility**: All protocols (HTTP, Local) are merged into a single report.")
     print("\nSuccess. You have successfully scaled the harness to industrial capacity.")

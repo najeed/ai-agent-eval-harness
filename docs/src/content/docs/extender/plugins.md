@@ -50,7 +50,7 @@ Plugins can be registered and discovered in two primary ways:
 Define your plugins in `pyproject.toml` for automatic discovery when your package is installed:
 
 ```toml
-[project.entry-points."eval_runner.plugins"]
+[project.entry-points."agentv_runtime.plugins"]
 my_analysis = "my_package.plugin:MyAnalysisPlugin"
 ```
 
@@ -108,19 +108,29 @@ The harness no longer supports the combined `"module": "path.Class"` string form
 | **`after_evaluation`** | `context, results, span_context=None` | Post-run teardown, artifact publishing, and metric export. |
 | **`on_step_start`** | `context=None, node_id=None, node_data=None` | Workflow DAG node activation hook. |
 | **`on_step_end`** | `context=None, node_id=None, verdict=None` | Workflow DAG node completion and verdict hook. |
-| **`on_tool_request`** | `context, tool_name, arguments=None` | **Interception Point**. Return `True` to allow, `False` to reject, or a dict to mutate. |
+| **`on_tool_request`** | `context, tool_name, arguments=None` | **Interception Point**. Return `True` to allow, `False` to reject, or `{"arguments": {...}}` to replace parameters. |
 | **`on_before_commit`** | `context, state_diff=None` | State transition gate. Return `True` to commit, `False` to abort. |
 | **`on_rollback`** | `context, compensation_action=None` | Compensating rollback execution hook. |
+| **`on_approval_preflight`** | `context, node_data=None` | Reject an approval-capable node before external agent invocation. |
 | **`on_approval_request`** | `context, approval_data=None` | Human-in-the-loop permission evaluation. Return `True`/`False`. |
 | **`on_approval_created`** | `context, request` | Durable approval request notification dispatch. |
 | **`on_approval_resolved`** | `context, request` | Approval decision resolution audit hook. |
 | **`on_artifact_created`** | `run_id, artifact_name, artifact_path, metadata=None` | Evidence artifact commit listener (SOC 2 CC6.8). |
-| **`on_register_commands`** | `registry` | Register custom CLI commands under `agentv`. |
+| **`on_register_commands`** | `registry` | Declared compatibility hook; not called by CLI initialization. Use `agentv_runtime.cli_extensions` entry points. |
 | **`on_discover_adapters`** | `registry` | Register custom agent communication adapters. |
 | **`on_register_simulators`**| `registry` | Register custom World Shims. |
 | **`on_discover_metrics`** | `registry` | Register custom evaluation metrics. |
 | **`on_diagnose_failure`**| `taxonomy` | Register custom forensic failure analyzers. |
 | **`on_register_console_routes`** | `app, nav_registry` | Register custom Flask API routes and React sidebar tabs. |
+
+Dynamic interceptor hooks also include `on_approval_resolution(context, approval_data)`
+(decision filtering), `on_tool_result(context, tool_name, result)` (result filtering
+before delivery), and `on_tool_delivered(context, tool_name, result)` (notification
+after the delivery/history boundary). These are invoked by name and are not
+declared BaseEvalPlugin methods. A result interceptor can reject with `False` or
+replace a result with `{"result": ...}`. Event-bridge callbacks can share names;
+accept the relevant positional arguments and event keyword payloads when
+implementing both paths. See [hooks](/extender/hooks/).
 
 ### Dynamic Event Bus Bridge
 Additionally, any event emitted over the session `EventEmitter` automatically dispatches to an `on_<event_name.lower()>(self, context, **event_data)` hook on loaded plugins (e.g., `on_turn_start`, `on_turn_end`, `on_tool_call`, `on_tool_result`, `on_external_tool_call`, `on_external_tool_result`, `on_hitl_pause`, `on_hitl_resume`).
@@ -129,16 +139,16 @@ Additionally, any event emitted over the session `EventEmitter` automatically di
 
 ## 🧬 Typed Context Objects
 
-To prevent prototype pollution and maintain forensic integrity, all hooks receive **Frozen Dataclasses**. You cannot modify them directly; use `plugin_data` for state sharing.
+Evaluation and turn hooks use frozen dataclasses, while discovery and some dynamic hooks receive other objects. Frozen fields prevent attribute reassignment, not recursive mutation of every nested value. Use `plugin_data` for intentional plugin state.
 
 ### 1. `EvaluationContext`
 Represents the global state of a single scenario execution.
 
 | Field | Type | Description |
 | :--- | :--- | :--- |
-| `id` | `str` | Forensic ID of the scenario. |
-| `scenario_data`| `dict` | **Immutable**. The full AES JSON definition. |
-| `metadata` | `dict` | **Immutable**. Global tags (difficulty, industry). |
+| `identifier` | `str` | Forensic ID of the scenario. |
+| `scenario_data`| `dict` | Deep-copied and wrapped in a top-level read-only mapping; nested values are not recursively frozen. |
+| `metadata` | `dict` | Deep-copied and wrapped in a top-level read-only mapping. |
 | `plugin_data` | `dict` | **Mutable**. Safe bucket for plugin state. |
 | `grounding_hits`| `dict` | Real-time map of tool and policy usage. |
 
@@ -149,60 +159,38 @@ Encapsulates the state of a single conversation turn.
 | :--- | :--- | :--- |
 | `task_id` | `str` | Identifier for the current subtask. |
 | `turn_number` | `int` | 1-based index of the current turn. |
-| `history` | `tuple` | **Immutable**. Full message history. |
+| `history` | `tuple` | A tuple; list input is deep-copied on construction. Dictionaries inside the tuple remain mutable. |
 | `agent_response` | `dict` | Parsed agent action (available in `on_turn_end`). |
-| `span_context` | `dict` | **Immutable**. Distributed tracing metadata. |
+| `span_context` | `dict` | Optional tracing dictionary; frozen dataclass fields do not recursively freeze this dictionary. |
 
 ---
 
-## 🔐 Trusted Extensions (v1.6.0)
+## Metric provenance and copying
 
-To ensure both performance and security, AgentV implements a **3-Tier Trust Hierarchy**. Plugins and Shims can be marked as `trusted` in their registration metadata.
+Metric source `CORE` bypasses hydration copies. For every non-CORE metric source,
+including trusted sources, requested mutable history/state dictionaries and lists
+are deep-copied. Trust separately controls access to `session_metadata` and
+`forensic_telemetry`; it does not grant zero-copy history access.
 
-### 1. The Trust Tiers
-*   **CORE**: Internal engine logic (Always Trusted). Full access to session metadata and hardware telemetry.
-*   **TRUSTED**: Sanctioned Enterprise extensions. **Zero-copy access** to history and state.
-*   **UNTRUSTED**: Third-party or community extensions. **Isolated via Deep-Copy** to prevent accidental or malicious state mutation.
+PluginManager records provenance and trust from the loading origin. A JSON
+`trusted: true` field alone does not establish trusted provenance. These controls
+are in-process API conventions, not an isolation boundary for arbitrary Python
+code. See [trust and copying](/spec/forensics/trust-hierarchy/).
 
-### 2. Performance Optimization
-By marking an industrial plugin as trusted, you eliminate the CPU/Memory overhead of `deepcopy` on large conversation traces. This is highly recommended for high-throughput evaluation pipelines.
+## Console extension trust
 
-```json
-{
-  "id": "enterprise-logger",
-  "module": "ent.log",
-  "class": "Logger",
-  "trusted": true
-}
-```
+Remote React extensions mount in the host application; they are not iframe
+sandboxes. Production permits backend-verified official publishers and rejects
+unsigned/community execution. Entry/chunk SRI, signed sidecars, API compatibility
+and permission declarations are checked before loading. Mounted pages receive
+ExtensionRuntimeContextApi rather than a postMessage iframe protocol.
 
-:::caution
-**Security Gate**: Only mark extensions as trusted if you have full control over the source code. Trusted extensions have the capability to modify the `EvaluationContext` and environment state in-place.
-:::
+Follow the [GUI extension workflow](/extender/gui-extensions/) to publish and
+activate a complete signed release. A navigation `remoteEntry` or self-declared
+`tier` does not establish publisher trust or supply the required sidecar.
 
----
-
-## 🔒 Security & Iframe Protocols
-
-Plugins extending the **Integrated Console** render in a secure, sandboxed environment.
-
-### 1. Security Boundaries
-- **Iframe Sandboxing**: `allow-scripts allow-forms allow-popups` are enabled. Top-level navigation is **blocked**.
-- **Origin Validation**: All `postMessage` events are validated against the expected origin.
-
-### 2. Secure PostMessage Communication
-Custom components must use `window.parent.postMessage` to communicate with the core UI:
-```javascript
-window.parent.postMessage({
-    type: 'NOTIFY',
-    payload: { message: 'Analysis complete!', type: 'success' }
-}, window.location.origin);
-```
-
-### Plugin Timeout
-All plugin hooks are subject to a **5-second timeout** (`PLUGIN_TIMEOUT`). If a hook hangs, the engine logs a `PluginTimeoutError` and proceeds, ensuring the industrial pipeline doesn't stall.
-
----
+Plugin hooks use `PLUGIN_TIMEOUT` (default five seconds). A timeout must not be
+used to bypass mandatory security/evidence rejection semantics.
 
 ## 🌐 Extending Environment Simulators
 
@@ -212,7 +200,7 @@ The `on_register_simulators` hook allows you to inject **World Shims** (Zero-Tou
 class MyCloudPlugin(BaseEvalPlugin):
     def on_register_simulators(self, registry):
         # Register the S3 Simulator
-        registry["s3_bucket"] = S3Simulator()
+        registry["s3_bucket"] = S3Simulator
 ```
 
 Once registered, any scenario referencing `s3_bucket` will automatically use this logic.
@@ -243,7 +231,7 @@ class SecurityAuditingInterceptor(ToolSandboxInterceptor):
         next_executor: Callable[[dict], Coroutine[None, None, dict]],
     ) -> dict:
         # Intercept before execution
-        arguments = call_data.get("arguments", {})
+        arguments = call_data.get("params", {})
         if "rm" in arguments.get("args", []):
             return {"status": "blocked", "message": "Destructive terminal commands are forbidden"}
 
@@ -317,46 +305,22 @@ class ScenarioAugmentPlugin(BaseEvalPlugin):
 
 ---
 
-## ⚡ Integrated Console & GUI Extension
+## Console GUI extensions
 
-Plugins can inject custom React micro-frontend views, dynamic navigation routes, and REST endpoints into the native [Visual Console](/extender/gui-extensions/) using the `on_register_console_routes` hook.
-
-```python
-class AdminAnalysisPlugin(BaseEvalPlugin):
-    def on_register_console_routes(self, app, nav_registry):
-        # 1. Register backend API endpoint
-        @app.route("/api/plugin/analysis/summary")
-        def get_summary():
-            return {"status": "ok", "insights": ["High latency"]}
-
-        # 2. Add dynamic navigation item to the Visual Console Sidebar
-        nav_registry.append(
-            {
-                "id": "analysis_tab",
-                "name": "Live Analysis",
-                "path": "/analysis",
-                "icon": "Activity",
-                "group": "Analyze",
-                "badge": "LIVE",
-                "tier": "enterprise",
-                "remoteEntry": "/static/plugins/analysis/bundle.js",
-                "required_role": ["System Admin", "MultiAgentOps Eng."],
-            }
-        )
-```
-
-👉 **For the complete tutorial on building standalone React micro-frontends with Vite, see the [GUI Extensibility Guide](/extender/gui-extensions/).**
-
----
+Python plugins can add protected backend routes through
+`on_register_console_routes`. Publish frontend contributions through the signed
+[extension workflow](/extender/gui-extensions/), including route permissions,
+publisher identity, SRI and a production React peer declaration. Server routes
+must independently enforce authentication, permissions and active scope.
 
 ## 🔌 Framework Adapters
 
 Extend agent communication protocols using the `on_discover_adapters` hook. 
 
 ### Supported Adapters (2026 Baseline)
-- **`langgraph://`**: LangGraph v2 Support.
+- **`langgraph://`**: LangGraph adapter (repository pin: 1.2.24).
 - **`crewai://`**: Agent Swarm integration.
-- **`gemini://`**: Official **google-genai v1.70.0** SDK.
+- **`gemini://`**: Official **google-genai 3.6.1** SDK.
 - **`ollama://`**, **`openai://`**, **`grok://`**: Direct LLM provider shims.
 
 ---

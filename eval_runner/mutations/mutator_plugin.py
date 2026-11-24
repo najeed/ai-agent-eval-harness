@@ -222,8 +222,6 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
         """Corrupt an actual post-execution tool response at the delivery boundary."""
         if tool_name is None:
             tool_name = str(kwargs.get("tool", ""))
-        if result is None and "result" in kwargs:
-            result = kwargs["result"]
         node = self.active_node_data
         if not node.get("tool_response_corrupted"):
             return True

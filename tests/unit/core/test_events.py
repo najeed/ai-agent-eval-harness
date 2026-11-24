@@ -378,3 +378,171 @@ async def test_async_coro_otel_detach_exception():
         # Allow loop tasks to run
         await asyncio.sleep(0.01)
         bus.flush()
+
+
+@pytest.mark.asyncio
+async def test_events_subscriber_context_and_capture_failure_branches():
+    import asyncio
+    import json
+    from unittest.mock import MagicMock, patch
+
+    from eval_runner.events import (
+        Event,
+        EventEmitter,
+        EvidenceDeliveryError,
+        _execute_subscriber_with_context,
+    )
+
+    # 1. _execute_subscriber_with_context with otel_ctx=None and failing async sub
+    async def failing_async_sub(_ev):
+        raise RuntimeError("async sub boom")
+
+    def run_in_thread():
+        _execute_subscriber_with_context(failing_async_sub, Event("e", {}), None)
+
+    await asyncio.to_thread(run_in_thread)
+
+    # 2. _execute_subscriber_with_context when attach fails
+    with patch("opentelemetry.context.attach", side_effect=RuntimeError("attach err")):
+        _execute_subscriber_with_context(lambda _e: None, Event("e", {}), object())
+
+    # 3. unsubscribe missing key & mandatory async subscriber rejection
+    bus = EventEmitter(async_mode=False, run_id="r-ev")
+    bus.unsubscribe("missing-key")
+
+    async def mandatory_async(_ev):
+        pass
+
+    bus.subscribe(lambda ev: mandatory_async(ev), required=True)
+    with pytest.raises(EvidenceDeliveryError, match="Evidence capture failed"):
+        bus.emit("ev", {}, require_acknowledgement=True)
+
+    # 4. finalize_capture failure branches (232, 238, 252, 267, 279-280)
+    bus2 = EventEmitter(async_mode=False, run_id="r-fin")
+    bus2.subscribe(lambda _e: None, required=True)
+    bus2.emit("step", {"a": 1}, require_acknowledgement=True)
+
+    store_bad_seq = MagicMock()
+    store_bad_seq.get_trace_bytes.return_value = b'{"event": "step", "_seq": 99}\n'
+    with pytest.raises(EvidenceDeliveryError):
+        bus2.finalize_capture("r-fin", store_bad_seq)
+
+    bus2._delivery_failures.clear()
+    bus2._baseline_counts["r-fin"] = 1
+    store_bad_commit = MagicMock()
+    store_bad_commit.get_trace_bytes.return_value = b'{"event": "step", "_seq": 1}\n'
+    with pytest.raises(EvidenceDeliveryError):
+        bus2.finalize_capture("r-fin", store_bad_commit)
+
+    # Non-terminal event when complete=True (252)
+    bus3 = EventEmitter(async_mode=False, run_id="r-term")
+    bus3.subscribe(lambda _e: None, required=True)
+    bus3.emit("step", {"a": 1}, require_acknowledgement=True)
+    # Build matching record bytes
+    from agentv_runtime.canonical import canonical_json_encode
+
+    bus3_keys, _ = bus3._emission_commitments["r-term"][0]
+    row = {
+        k: ("step" if k == "event" else "r-term" if k == "run_id" else 1 if k == "a" else "t")
+        for k in bus3_keys
+    }
+    # Recompute exact commitment to pass commitment check and hit terminal check
+    import hashlib
+
+    bus3._emission_commitments["r-term"][0] = (
+        tuple(row),
+        hashlib.sha3_256(canonical_json_encode(row)).hexdigest(),
+    )
+    row_with_seq = {**row, "_seq": 1}
+    store_non_term = MagicMock()
+    store_non_term.get_trace_bytes.return_value = (json.dumps(row_with_seq) + "\n").encode("utf-8")
+    with pytest.raises(EvidenceDeliveryError):
+        bus3.finalize_capture("r-term", store_non_term, complete=True)
+
+    # update_run_status returns False and capture-failure persistence also fails (267, 279-280)
+    bus3._delivery_failures.clear()
+    store_ack_fail = MagicMock()
+    store_ack_fail.get_trace_bytes.return_value = (json.dumps(row_with_seq) + "\n").encode("utf-8")
+    store_ack_fail.update_run_status.side_effect = [False, RuntimeError("persist fail")]
+    with pytest.raises(EvidenceDeliveryError):
+        bus3.finalize_capture("r-term", store_ack_fail, complete=False)
+
+    # 5. resume_capture failure branches (290, 318, 321)
+    with pytest.raises(EvidenceDeliveryError, match="active or failed"):
+        bus3.resume_capture("r-term", store_ack_fail)
+
+    bus4 = EventEmitter(async_mode=False, run_id="r-res")
+    store_res_fail = MagicMock()
+    store_res_fail.get_run.return_value = {
+        "status_details": {
+            "evidence_capture": {"complete": False, "resumable": True, "event_count": 0}
+        }
+    }
+    store_res_fail.get_trace_bytes.return_value = b""
+    store_res_fail.update_run_status.return_value = False
+    with patch("eval_runner.certification_truth.capture_receipt_failures", return_value=[]):
+        with pytest.raises(EvidenceDeliveryError, match="resumption"):
+            bus4.resume_capture("r-res", store_res_fail)
+
+    store_res_inflight = MagicMock()
+    store_res_inflight.get_run.return_value = {
+        "status_details": {
+            "evidence_capture": {"complete": False, "resumable": True, "event_count": 0}
+        }
+    }
+    store_res_inflight.get_trace_bytes.return_value = b""
+
+    def set_inflight(*_a, **_k):
+        bus4._inflight_counts["r-res"] = 1
+        return True
+
+    store_res_inflight.update_run_status.side_effect = set_inflight
+    with patch("eval_runner.certification_truth.capture_receipt_failures", return_value=[]):
+        with pytest.raises(EvidenceDeliveryError, match="active evidence stream"):
+            bus4.resume_capture("r-res", store_res_inflight)
+
+    # 6. async_mode=True inside running loop: sync subscriber + OTel branches
+    bus_async = EventEmitter(async_mode=True)
+    called = []
+    bus_async.subscribe(lambda ev: called.append(ev.name))
+
+    async def noop_async(_ev):
+        pass
+
+    bus_async.subscribe(noop_async)
+    with patch("opentelemetry.context.attach", side_effect=RuntimeError("attach err")):
+        bus_async.emit("async_ev", {}, span_context={"traceparent": "00-1-2-01"})
+        await asyncio.sleep(0.02)
+
+    with patch.dict("sys.modules", {"opentelemetry.context": None}):
+        bus_async.emit("async_ev_no_otel", {})
+        await asyncio.sleep(0.02)
+    assert "async_ev" in called
+
+    # 7. Unsubscribe unknown callable, non-coroutine awaitable, and async without otel_ctx
+    bus_async.unsubscribe(lambda _ev: None)
+
+    class _Awaitable:
+        def __await__(self):
+            return iter([])
+
+    bus_await = EventEmitter(async_mode=False, run_id="r-await")
+    bus_await.subscribe(lambda _ev: _Awaitable(), required=True)
+    with pytest.raises(EvidenceDeliveryError):
+        bus_await.emit("ev_await", {})
+
+    bus_async_no_ctx = EventEmitter(async_mode=True)
+    async_hits = []
+
+    async def hit_async(ev):
+        async_hits.append(ev.name)
+
+    bus_async_no_ctx.subscribe(hit_async)
+    with patch("opentelemetry.context.get_current", return_value=None):
+        bus_async_no_ctx.emit("ev_plain", {})
+        await asyncio.sleep(0.02)
+    assert "ev_plain" in async_hits
+
+    bus_empty = EventEmitter(async_mode=False, run_id="r-empty-fin")
+    with pytest.raises(EvidenceDeliveryError, match="IncompleteEvidenceCapture"):
+        bus_empty.finalize_capture("r-empty-fin", MagicMock())

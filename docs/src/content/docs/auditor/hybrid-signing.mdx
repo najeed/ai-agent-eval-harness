@@ -27,7 +27,13 @@ The hybrid protocol combines classical elliptic curve cryptography with modern l
 AgentV enforces strict cryptographic safety gates during evaluation:
 
 <Aside type="caution" title="Mandatory Signing Rules">
-When `EVAL_REQUIRE_SIGNING=true` or `AUDIT_LEVEL >= 2` and no valid signing key or `SigningBackend` is provided, the runtime immediately raises a `RuntimeError` (`"CryptographicSigningError: Signing is mandatory..."`). Silent unauthenticated evaluations are strictly rejected.
+FlightRecorder defaults to `AUDIT_LEVEL=2`. That level alone does not reject a
+missing signer. Its absence check rejects a missing private-key path combined
+with NullSigningBackend when `EVAL_REQUIRE_SIGNING=true`. Events are signed when
+the backend reports `can_sign()`, or audit level is at least 2 and a private-key
+path is configured. Signing errors raise by default through
+`EVAL_SIGNING_FAIL_CLOSED=true`. Certification has additional signer/authority
+checks; verbosity is not a substitute for a certification policy.
 </Aside>
 
 ---
@@ -89,14 +95,15 @@ is_valid = pqc_backend.verify_signature(
 | `PQC_PROVIDER` | `cyclecore` | The cryptographic provider (e.g., `cyclecore`). |
 | `PQC_STRICT_MODE` | `false` | If `true`, fails evaluation if PQC signing fails. |
 | `EVAL_REQUIRE_SIGNING` | `false` | If `true`, fails closed (`RuntimeError`) if signing key is absent. |
-| `AUDIT_LEVEL` | `1` | Level >= 2 enforces mandatory signing and audit ledgers. |
+| `AUDIT_LEVEL` | `2` (recorder) | Influences event signing when a key is configured; does not alone require a missing signer. |
+| `EVAL_SIGNING_FAIL_CLOSED` | `true` | Raise when attempted event signing fails. |
   </TabItem>
   <TabItem label="Provider Keys" icon="key">
 
 | Variable | Default | Description |
 | :--- | :--- | :--- |
 | `CYCLECORE_API_KEY` | *(None)* | Your ZES API key (Required for remote signing). |
-| `PQC_IDENTITY_ID` | `default` | The identity name for the PQC signature. |
+| `CYCLECORE_IDENTITY_ID` | `agentv_test_identity` | Configures the Python constant `config.PQC_IDENTITY_ID`. |
   </TabItem>
 </Tabs>
 

@@ -1,192 +1,62 @@
 ---
 title: "Verification Package Specification (.agentv-package.json)"
-description: "Authoritative specification for self-contained, deterministic immutable verification packages conforming to NIST SP 800-218 and EU AI Act standards."
+description: "Signed verification attestations, console export wrappers, their distinct hashes, and required offline verification evidence."
 ---
 
-The **AgentV Verification Package** (`.agentv-package.json`) is an immutable, self-contained single-file audit artifact that bundles all forensic evidence, execution provenance, and cryptographic proofs from an agent evaluation run.
+AgentV exposes two package layers. Their hashes, versions and authority differ.
 
-```mermaid
-graph TD
-    subgraph "Verification Package (.agentv-package.json v2.0.0)"
-        Envelope["Format & Envelope Metadata<br/>(format: agentv_verification_package, version: 2.0.0)"]
-        Chain["Five-Field Provenance Chain<br/>(run_id, scenario_hash, resolved_config_hash, agent_target_id, execution_mode)"]
-        Manifest["Resolved ExecutionManifest & Scenario"]
-        Evidence["Evidence Manifest & Artifacts<br/>(trace_hash, total_events, assertions_evaluated, artifacts)"]
-        Graph["Evidence Graph<br/>(Assertion-Event Linkages, evidence_root_hash)"]
-        Verdict["Authoritative Verdict<br/>(execution_status, verified_outcome, score)"]
-        Signatures["Cryptographic Signatures<br/>(Ed25519, ML-DSA-65 PQC)"]
-    end
-    
-    Hash["Canonical Package Hash<br/>(hashlib.sha3_256 over sorted compact JSON)"]
-    Envelope --> Hash
-    Chain --> Hash
-    Manifest --> Hash
-    Evidence --> Hash
-    Graph --> Hash
-    Verdict --> Hash
-    Signatures --> Hash
-    Hash --> Root["package_hash (sha3_256:...)"]
+## Signed verification attestation
+
+`agentv_runtime.package.VerificationPackage` is the typed signed attestation
+contract (package/schema version `1.0.0`). It commits to scenario identity/hash,
+execution manifest, execution identity, raw trace hash/seal, evidence root,
+required and executed oracles, finalization and decision, plus producer and
+parent-artifact metadata.
+
+`canonical_payload_dict()` defines its exact unsigned projection. It sorts
+`required_oracle_ids` and `parent_artifact_refs`, normalizes absent optional text
+commitments, and excludes transport signature/key attachments. Its content hash
+is the SHA3-256 hex digest of `canonical_json_encode()` applied to that projection.
+Do not hash all serialized transport fields to verify this commitment.
+
+Authoritative artifact signatures use
+[`agentv.signature.digest-envelope.v1`](/spec/digest-signature-envelope/).
+The envelope's SHA-256 payload commitment and the package's SHA3-256 content hash
+serve different purposes. External policy/key anchoring is mandatory; an embedded
+public key cannot authorize itself.
+
+## Console export wrapper
+
+`GET /api/v1/evidence/packages/<run_id>` returns a presentation/export wrapper with
+`format: "agentv_verification_package"` and version `2.0.0`. Its structural schema
+is [agentv-package.schema.json](/spec/agentv-package/agentv-package.schema.json).
+
+It contains scenario and manifest views, chain metadata, verdict, cryptographic
+verification state, evidence manifest/graph, observed assertions and signatures.
+The signed typed package is retained inside the manifest. The wrapper itself is
+not a substitute for that signed attestation or the provider's exact trace bytes.
+
+The wrapper's `package_hash` hashes compact, sorted `json.dumps` output over its
+export fields before `package_hash` and `package_created_at` are added. This
+export checksum is not the typed package's RFC 8785 commitment. Treat wrapper
+observations as preliminary until authoritative verification succeeds.
+
+## Offline verification
+
+For the console export, provide exact raw trace bytes and an external trust key:
+
+```bash
+agentv verify-package evidence.agentv-package.json --trace run.jsonl --public-key trusted-public.pem
 ```
 
----
+For a standalone typed package also provide the actual execution manifest and
+scenario:
 
-## 1. Authoritative Schema Structure (`agentv-package.schema.json` v2.0.0)
-
-The package adheres strictly to the `agentv-package.schema.json` specification:
-
-```json
-{
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://agentv.dev/spec/agentv-package/agentv-package.schema.json",
-  "title": "AgentV Verification Package (.agentv-package.json) v2.0.0",
-  "type": "object",
-  "required": [
-    "format",
-    "package_version",
-    "run_id",
-    "chain",
-    "verdict",
-    "evidence_chain_valid",
-    "cryptographic_verification",
-    "evidence_manifest",
-    "evidence_graph",
-    "package_hash"
-  ],
-  "properties": {
-    "format": {
-      "type": "string",
-      "const": "agentv_verification_package"
-    },
-    "package_version": {
-      "type": "string",
-      "const": "2.0.0"
-    },
-    "run_id": {
-      "type": "string",
-      "description": "Globally-unique run identifier (UUIDv7-suffixed)."
-    },
-    "tenant_id": { "type": "string" },
-    "workspace_id": { "type": "string" },
-    "chain": {
-      "type": "object",
-      "description": "Five-field provenance chain binding execution parameters.",
-      "required": [
-        "run_id",
-        "scenario_hash",
-        "resolved_config_hash",
-        "agent_target_id",
-        "execution_mode"
-      ],
-      "properties": {
-        "run_id": { "type": "string" },
-        "scenario_hash": { "type": ["string", "null"] },
-        "resolved_config_hash": { "type": ["string", "null"] },
-        "agent_target_id": { "type": ["string", "null"] },
-        "execution_mode": {
-          "type": "string",
-          "enum": ["simulated", "record_replay", "live", "hybrid", "unknown"]
-        },
-        "execution_mode_declared": { "type": "boolean" }
-      }
-    },
-    "manifest": { "type": "object" },
-    "scenario": { "type": "object" },
-    "verdict": {
-      "type": "object",
-      "required": ["execution_status", "verified_outcome", "duration_seconds", "score"],
-      "properties": {
-        "execution_status": { "type": "string" },
-        "verified_outcome": {
-          "type": "string",
-          "enum": ["VERIFIED", "ATTESTED_FAIL", "PRELIMINARY", "UNVERIFIED", "NOT_VERIFIED", "POLICY_BREACH", "EVIDENCE_INVALID"]
-        },
-        "duration_seconds": { "type": "number" },
-        "score": { "type": ["number", "null"], "minimum": 0, "maximum": 1 }
-      }
-    },
-    "evidence_chain_valid": {
-      "type": "boolean",
-      "description": "true ONLY when verified_outcome == VERIFIED and no corruption detected."
-    },
-    "cryptographic_verification": {
-      "type": "object",
-      "properties": {
-        "verified": { "type": "boolean" },
-        "signer_identity": { "type": ["string", "null"] },
-        "manifest_hash_match": { "type": "boolean" },
-        "scenario_hash_match": { "type": "boolean" },
-        "algorithm": { "type": ["string", "null"] },
-        "errors": { "type": "array", "items": { "type": "string" } }
-      }
-    },
-    "evidence_manifest": {
-      "type": "object",
-      "required": ["trace_hash", "total_events", "assertions_evaluated", "artifacts"],
-      "properties": {
-        "trace_hash": { "type": "string", "pattern": "^sha3_256:[a-fA-F0-9]{64}$" },
-        "total_events": { "type": "integer", "minimum": 0 },
-        "assertions_evaluated": { "type": "integer", "minimum": 0 },
-        "artifacts": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["name", "hash", "type"],
-            "properties": {
-              "name": { "type": "string" },
-              "hash": { "type": "string" },
-              "type": { "type": "string" }
-            }
-          }
-        }
-      }
-    },
-    "evidence_graph": {
-      "type": "object",
-      "description": "Assertion-to-source-event linkage graph and evidence_root_hash."
-    },
-    "integrity_corruption": {
-      "type": "object",
-      "description": "Present ONLY when corrupted trace lines exist."
-    },
-    "signatures": { "type": "array" },
-    "package_hash": {
-      "type": "string",
-      "pattern": "^sha3_256:[a-fA-F0-9]{64}$"
-    },
-    "package_created_at": {
-      "type": "string",
-      "format": "date-time"
-    }
-  }
-}
+```bash
+agentv verify-package signed-package.json --trace run.jsonl --execution-manifest execution_manifest.json --scenario scenario.json --require-scenario --public-key trusted-public.pem
 ```
 
----
-
-## 2. Deterministic Package Hash Calculation (RFC 8785 JCS)
-
-To guarantee 100% cryptographic reproducibility across heterogeneous platforms, languages, and storage media:
-
-1. **Payload Isolation**: The canonical payload dictionary is formed by extracting all package fields **excluding** `package_hash` and `package_created_at`.
-2. **Canonical Serialization (RFC 8785)**:
-   ```python
-   from agentv_runtime.canonical import canonical_json_encode
-
-   payload_bytes = canonical_json_encode(payload_dict)
-   ```
-   The engine enforces strict RFC 8785 JSON Canonicalization Scheme (JCS) invariants:
-   - Object properties sorted strictly by UTF-16 code units (byte-level lexical ordering).
-   - ECMAScript 7.1.12.1 float serialization (eliminates indeterminate float representations and trailing `.0`).
-   - No whitespace between tokens (compact representation).
-   - Strict I-JSON compliance (UTF-8 encoding without byte-order marks).
-3. **Digest Generation**:
-   $$\text{package\_hash} = \text{"sha3\_256:"} + \text{SHA3-256}(\text{payload\_bytes})\text{.hexdigest()}$$
-4. Independent verification re-computes this digest using `canonical_json_encode` and strictly rejects any package where the recalculated digest deviates from the embedded `package_hash`.
-
----
-
-## 3. In-Archive ZIP Bundle Verification & Path Traversal Guards
-
-When packages are archived or distributed within `.zip` bundles:
-- **Direct Stream Inspection**: The verification authority validates internal package and trace bytes directly from the ZIP stream without writing unverified files to disk.
-- **Path Traversal Defenses**: The extractor inspects all internal archive paths before processing. Any archive containing path traversal sequences (`..`), absolute paths (`/etc/`, `C:\`), or Windows drive letters (`D:`) is rejected with a `SecurityViolation` error before any decompression occurs.
+`--diagnostic` explicitly selects non-authoritative analysis. A signature-only
+check cannot prove execution, required oracle outcomes or lifecycle sealing.
+See [verification](/auditor/verification/) for the authoritative contract and
+REST endpoint's server-owned trust policy.

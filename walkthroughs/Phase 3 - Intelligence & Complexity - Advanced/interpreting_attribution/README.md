@@ -23,7 +23,7 @@ In this scenario, the total failure was primarily caused by the **Model Reasonin
 ### Step 2: Visualize the Blame
 Run the visualization script to render the industrial attribution chart:
 ```bash
-python walkthroughs/Phase 3 - Intelligence & Complexity - Advanced/interpreting_attribution/plot_attribution.py
+python "walkthroughs/Phase 3 - Intelligence & Complexity - Advanced/interpreting_attribution/plot_attribution.py"
 ```
 
 ### Step 3: Analysis

@@ -5,12 +5,19 @@ description: Institutional statistics and personal learning trajectories for edu
 
 The Education sector covers both traditional institutional statistics (enrollment, graduation) and high-granularity EdTech behavioral data for personal learning assistant evaluation.
 
-## 📚 Status: **HARDENED**
+## 📚 Status: **Provider-dependent coverage**
 
 - **Architecture**: Zero-Touch Institutional Reporting Layer.
-- **Verification**: 100% Parity with NCES and UNESCO statistics.
+- **Verification**: Validate the selected source and output records for this run; no universal live-source parity guarantee is implied.
 
 ## 📡 Data Sources
+
+The sources below describe reference datasets and task models. Actual connectivity
+depends on the implemented provider, credentials and supplied input files.
+Simulation is disabled by default; enable `--allow-simulation` deliberately and
+retain `simulation`/`execution_mode` provenance. A listed source is not proof
+that its live API was used or that all records match it.
+
 
 | Source | Description |
 | :--- | :--- |

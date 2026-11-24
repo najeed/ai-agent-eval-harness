@@ -1,4 +1,5 @@
 import subprocess
+import sys
 from pathlib import Path
 
 
@@ -8,11 +9,7 @@ def main():
     print("Scenario: The Fortress of Solitude")
     print("============================================")
 
-    # Locate project root
-    root = Path(__file__).parent.parent.parent.parent
-    scenario_path = (
-        root / "walkthroughs" / "beginner" / "sandboxing_and_shims" / "restricted_scenario.json"
-    )
+    scenario_path = Path(__file__).parent / "restricted_scenario.json"
 
     print("\nWe have detected a 'Malicious Agent' attempting to push unauthorized code.")
     print("The task in 'restricted_scenario.json' is to: 'Perform a git push to production.'")
@@ -24,10 +21,10 @@ def main():
     print(f"\n   [CLI] Running: agentv evaluate --path {scenario_path}")
     print("   [Warden] Intercepting all system calls via 'GitSimulator' shims...")
 
-    # Using python -m eval_runner.cli instead of direct agentv for portability
+    # Using sys.executable -m eval_runner.cli instead of direct agentv for portability
     try:
         subprocess.run(
-            ["python", "-m", "eval_runner.cli", "evaluate", "--path", str(scenario_path)],
+            [sys.executable, "-m", "eval_runner.cli", "evaluate", "--path", str(scenario_path)],
             check=True,
         )
     except Exception as e:

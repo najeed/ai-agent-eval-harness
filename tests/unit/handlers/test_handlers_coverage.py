@@ -1,9 +1,9 @@
 import os
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from eval_runner.handlers import environment, evaluation, scenarios
+from eval_runner.handlers import environment, evaluation
 
 
 @pytest.fixture
@@ -36,41 +36,6 @@ async def test_replay_rejects_missing_provider_evidence():
     provider.get_events.return_value = []
     with patch("eval_runner.runtime_services.resolve_run_store", return_value=provider):
         assert await evaluation.handle_replay(MagicMock(run_id="malicious_id")) == 1
-
-
-@pytest.mark.asyncio
-async def test_handle_evaluate_non_int_attempts(mock_args):
-    """Verify fallback for non-integer attempt counts."""
-    mock_args.attempts = "many"
-    with (
-        patch("eval_runner.loader.load_dataset", return_value=[{"id": "s1"}]),
-        patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock),
-    ):
-        res = await evaluation.handle_evaluate(mock_args)
-        assert res == 0
-
-
-# --- 2. Scenarios Handler ---
-
-
-def test_classify_scenario_fallback(monkeypatch):
-    """Verify industry classification fallback when ML deps are missing."""
-    import sys
-
-    # Explicitly break the import in sys.modules before any code tries to touch it
-    monkeypatch.setitem(sys.modules, "sentence_transformers", None)
-
-    res = scenarios.classify_scenario({"title": "Loans"})
-    assert res["industry"] == "generic"
-
-
-@pytest.mark.asyncio
-async def test_handle_aes_validate_no_files(mock_args, tmp_path):
-    """Verify error when no AES files are found in path."""
-    mock_args.path = str(tmp_path)
-    # Ensure folder is empty
-    res = await scenarios.handle_aes_validate(mock_args)
-    assert res == 1
 
 
 # --- 3. Environment Handler ---

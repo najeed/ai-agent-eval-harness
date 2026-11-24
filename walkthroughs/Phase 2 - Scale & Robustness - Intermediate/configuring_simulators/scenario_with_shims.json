@@ -1,20 +1,33 @@
 {
-  "name": "Phase 2: Digital Twin Toggle",
-  "description": "Tutorial for configuring environmental shims (CRM vs DB).",
+  "aes_version": 1.4,
+  "metadata": {
+    "name": "Phase 2: Digital Twin Toggle",
+    "description": "Tutorial for configuring environmental shims (CRM vs DB).",
+    "id": "scenario_shims_001",
+    "compliance_level": "Standard"
+  },
   "industry": "Customer Experience",
-  "config": {
-    "enabled_shims": ["crm", "cloud_metadata"]
+  "enabled_shims": ["crm", "cloud_metadata"],
+  "tools": {
+    "crm:get_customer": {},
+    "crm:update_address": {},
+    "db:query_records": {},
+    "db:insert_record": {},
+    "cloud:list_instances": {}
   },
-  "tools": [
-    "crm:get_customer",
-    "crm:update_address",
-    "db:query_records",
-    "db:insert_record",
-    "cloud:list_instances"
-  ],
-  "agent": {
-    "role": "Support Agent",
-    "capabilities": ["crm", "db", "cloud"]
+  "workflow": {
+    "nodes": [
+      {
+        "id": "node_1",
+        "task_description": "Find the loyalty status for customer 12345 in the CRM and list our cloud instances."
+      }
+    ],
+    "edges": []
   },
-  "user_prompt": "Find the loyalty status for customer 12345 in the CRM and list our cloud instances."
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1
+    }
+  }
 }

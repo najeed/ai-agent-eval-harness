@@ -23,11 +23,17 @@ An AES scenario is a JSON document that defines the environment, the tasks, and 
       {
         "id": "t1",
         "task_description": "Analyze account #1234 for recent fraudulent activity.",
-        "success_criteria": [{"metric": "accuracy", "threshold": 0.95}]
+        "success_criteria": [
+          {
+            "metric": "generic_accuracy",
+            "threshold": 0.95
+          }
+        ]
       }
     ],
     "edges": []
-  }
+  },
+  "evaluation": {}
 }
 ```
 

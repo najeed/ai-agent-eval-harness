@@ -403,7 +403,7 @@ async def test_handle_hitl_correlation_id_inheritance(tmp_path, monkeypatch):
     assert captured_override.get("correlation_id") == "meta-p0-override"
 
 
-def test_save_and_restore_from_checkpoint_contract(tmp_path):
+def test_save_and_restore_from_checkpoint_handle_contract(tmp_path):
     """Direct contract test for save_checkpoint and restore_from_checkpoint."""
     session = _session_with_local_providers(tmp_path, "save-restore-run", {"id": "scenario"})
     session.turn_number = 3

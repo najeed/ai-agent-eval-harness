@@ -60,8 +60,8 @@ These events track the lifecycle of the evaluation run.
 
 ### `TOOL_CALL` / `TOOL_RESULT`
 - **Trigger**: Emitted when an agent executes a local/containerized tool inside the AgentV sandbox environment.
-- **`TOOL_CALL` Payload**: `tool`, `arguments`, `call_id`.
-- **`TOOL_RESULT` Payload**: `tool`, `result`, `call_id`, `error`.
+- **`TOOL_CALL` Payload**: `step`, `tool`, `arguments`, `provenance` (session sandbox events do not promise `call_id`).
+- **`TOOL_RESULT` Payload**: `step`, `tool`, `result`, `provenance`. Error details are carried in the actual result payload.
 
 ### `EXTERNAL_TOOL_CALL` / `EXTERNAL_TOOL_RESULT`
 - **Trigger**: Emitted when ingesting self-reported external agent execution trajectories from autonomous remote agent services.
@@ -85,17 +85,19 @@ These events track the lifecycle of the evaluation run.
 
 ### `HITL_PAUSE` / `HITL_RESUME`
 - **Trigger**: `HITL_PAUSE` suspends execution when policy gates mandate manual human approval. `HITL_RESUME` resumes execution upon operator response.
-- **`HITL_PAUSE` Payload**: `task_id`, `prompt`, `approval_id`.
+- **Durable `HITL_PAUSE` Payload**: `task_id`, `prompt`, `approval_token`, `checkpoint_id`, `status="PAUSED_FOR_APPROVAL"`, `pause_start_ts`. Interactive HITL payloads can differ.
 - **`HITL_RESUME` Payload**: `task_id`, `response`, `approved`.
 
 ### `APPROVAL_CREATED` / `APPROVAL_RESOLVED`
 - **Trigger**: Emitted by `SessionApprovalManager` as durable approval requests are generated, persisted to the `ApprovalStore`, and resolved by human reviewers.
-- **`APPROVAL_CREATED` Payload**: `approval_id`, `run_id`, `node_id`, `task_id`, `tool_name`, `arguments`, `status="pending"`, `created_at`.
-- **`APPROVAL_RESOLVED` Payload**: `approval_id`, `run_id`, `decision` (`approved`|`denied`), `resolved_by`, `resolved_at`, `reason`.
+- **`APPROVAL_CREATED` Payload**: Serialized ApprovalRequest, including `approval_token`, `run_id`, `turn_index`, `outbound_payload_hash`, `status="PENDING"`, scope/digest, checkpoint/action metadata and timestamps. It is emitted before durable `hitl_pause` while the run remains writable.
+- **`APPROVAL_RESOLVED` Payload**: Serialized ApprovalRequest with `decision` (`APPROVED`|`REJECTED`), `decided_by`, `decision_reason`, `decided_at`, and the original scope/action bindings.
 
 ### `TRACE_SEALED`
-- **Trigger**: Emitted by `VerificationService` / `agentv certify` upon computing the authoritative SHA3-256 digest over raw `run.jsonl`, generating Ed25519 / ML-DSA-65 signatures, and writing the `.sealed` sentinel marker.
-- **Payload**: `run_id`, `trace_hash`, `signer_id`, `timestamp`.
+
+This constant is reserved; successful current certification commits certificate
+and sealed provider lifecycle state without appending it to the completed trace.
+Do not subscribe to it as a guaranteed certification-completion event.
 
 ### `CERTIFICATION_FAILED`
 - **Trigger**: Emitted when post-run trace verification fails invariant checks (e.g. terminal boundary violation, state corruption, signature mismatch).
@@ -116,14 +118,25 @@ These events track the lifecycle of the evaluation run.
 To prevent "eval-drag"—where intensive telemetry logging, compliance checking, or database updates slow down the agent's turn latency—AgentV's central `EventEmitter` supports asynchronous subscriber callbacks.
 
 ### Execution Modes
+Default dispatch is synchronous (`ASYNC_EVENTS=false`). Required evidence sinks must acknowledge delivery and can fail the run; optional asynchronous telemetry is a separate path. The modes below apply when async dispatch is enabled.
+
 1. **Asynchronous Coroutine Execution:** When an event is emitted within an active event loop, async subscriber callbacks are wrapped in task wrappers (`asyncio.create_task`) and run non-blockingly.
 2. **Threaded Execution:** Synchronous subscriber callbacks are offloaded to an internal thread pool executor (`concurrent.futures.ThreadPoolExecutor`) to avoid blocking the main execution loop.
 
 ### OpenTelemetry Trace Propagation
 The event system automatically captures and attaches the active OpenTelemetry tracing context (`otel_context`) to background execution threads and async tasks, ensuring parent-child span alignment is preserved across turn boundaries.
 
+### Required evidence acknowledgement
+
+Mandatory evidence subscribers run synchronously even with async telemetry
+enabled. `emit_required()` requires an acknowledged sink; missing or failing
+delivery raises EvidenceDeliveryError. The runner calls `finalize_capture()` to
+reconcile emitted/acknowledged event counts and obtain provider completion before
+certification. Waiting for optional subscribers does not establish that durable
+capture is complete.
+
 ### Synchronization with `flush()`
-If an evaluation session or test requires waiting for all scheduled asynchronous subscriber actions to complete (for example, to write final audit trails before terminating the runner process), invoke `events.flush()`:
+Use `flush()` to wait for scheduled optional background callbacks. It does not replace mandatory evidence acknowledgement or `finalize_capture()`:
 
 ```python
 from eval_runner.events import EventEmitter

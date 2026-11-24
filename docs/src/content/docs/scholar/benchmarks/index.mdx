@@ -5,44 +5,24 @@ description: Native support for academic and industrial AI agent benchmarks.
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-# Foundational Benchmarks
+# Load explicit benchmark datasets
 
-AgentV provides first-class support for the world's most rigorous academic and industrial benchmarks. By using native URI schemes, researchers can execute standardized evaluations without manual data munging or environment setup.
+GAIA and AssistantBench adapters project existing question/answer records into
+AES scenarios. They do not download a dataset from a version-only alias or
+substitute synthetic questions when data is absent.
 
-## Supported Benchmarks
-
-<CardGrid>
-    <Card title="GAIA" icon="earth">
-        **General AI Assistants**  
-        Benchmark for multi-hop reasoning and real-world tool use. [View Guide](/scholar/benchmarks/gaia/)
-    </Card>
-    <Card title="AssistantBench" icon="seti:db">
-        **Enterprise Intelligence**  
-        Specialized for business reasoning and industrial accuracy. [View Guide](/scholar/benchmarks/assistantbench/)
-    </Card>
-    <Card title="OpenCompass" icon="magnifier">
-        **Coming Soon**  
-        Native support for OpenCompass integration is currently in the v2.x.y roadmap.
-    </Card>
-</CardGrid>
-
----
-
-## The URI Schema Advantage
-
-AgentV abstracts benchmark loading behind the **Unified Benchmark URI Schema**. This allows researchers to target specific datasets, versions, and difficultly tiers directly from the CLI.
-
-### How it works:
 ```bash
-# General syntax
-agentv run --path <benchmark_scheme>://<version> --agent <agent_url>
-
-# Examples
-agentv run --path gaia://2025_validation --agent http://localhost:5001/execute_task
-agentv run --path assistantbench://v1_standard --agent http://localhost:5001/execute_task
+agentv run --path gaia://datasets/gaia.jsonl --protocol http --agent http://localhost:5001/execute_task
+agentv run --path assistantbench://datasets/assistantbench.jsonl --protocol http --agent http://localhost:5001/execute_task
 ```
 
-### Benefits for Researchers:
-1.  **Zero-Munge Extraction**: AgentV automatically maps benchmark-specific fields (e.g., GAIA's `Correct Answer`) to high-fidelity [AES Success Criteria](/builder/aes/).
-2.  **Version Consistency**: By pinning the URI (e.g., `gaia://2023`), researchers ensure they are always evaluating against a specific, immutable dataset snapshot.
-3.  **Cross-Bench Comparisons**: Because all benchmarks are normalized to the AgentV [Forensic Ledger](/scholar/publishing/integrity/), you can compare results from different benchmarks in a single [Comparative Leaderboard](/scholar/publishing/comparative-studies/).
+Create or acquire these dataset files before running the examples. Local JSON,
+JSONL and Parquet are supported; Parquet needs pandas and a Parquet engine.
+Hugging Face loading requires the optional `datasets` package and an explicit
+source, for example
+`gaia://hf://gaia-benchmark/GAIA?config=2023_all&split=validation&revision=COMMIT`.
+Select an actual immutable revision. Remote loading is disabled in airgap mode.
+
+Questions and reference answers are required. Missing, empty or malformed sources
+fail rather than generating a replacement benchmark. See [GAIA](/scholar/benchmarks/gaia/)
+and [AssistantBench](/scholar/benchmarks/assistantbench/) for field mappings.

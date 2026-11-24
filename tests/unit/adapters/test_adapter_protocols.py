@@ -40,7 +40,7 @@ class MockResponse:
 
 
 @pytest.mark.asyncio
-async def test_openai_adapter_success():
+async def test_openai_adapter_default_endpoint_success():
     """Test successful OpenAI query execution."""
     adapter = OpenAIAdapterPlugin()
 

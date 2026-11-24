@@ -3,7 +3,7 @@ title: Industrial Sector Taxonomy & Benchmark Catalog
 description: Comprehensive catalog of 52 industrial sectors and domain benchmark suites supported by AgentV.
 ---
 
-AgentV provides high-fidelity, sector-specific behavioral benchmarks, data extraction tools, and evaluation scenarios across **52 distinct industrial and operational domains**. Each domain includes curated datasets, sector-specific world shims, regulatory policy rules, and automated evaluation metrics.
+AgentV provides high-fidelity, sector-specific behavioral benchmarks, data extraction tools, and evaluation scenarios across **52 distinct industrial and operational domains**. Domains provide scenario/task coverage. Available data providers, shared world shims, rules and metrics vary by scenario and configuration; each domain does not imply its own live connector or dedicated shim.
 
 ---
 
@@ -105,7 +105,7 @@ To execute evaluations on any sector:
 agentv evaluate --path industries/finance/scenarios/ --attempts 3
 
 # Run healthcare HIPAA compliance audit
-agentv run --path industries/healthcare/scenarios/hipaa_audit.json
+agentv run --path industries/healthcare/scenarios/agentv-demo-um-adverse-review-v3-physician-hitl.json
 
 # Search the catalog for legal discovery scenarios
 agentv catalog-search "legal e-discovery"

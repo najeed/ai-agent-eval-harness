@@ -45,7 +45,7 @@ Evaluate Gemini frontier models directly against AgentV benchmarks using the bui
 ```bash
 # Evaluate Gemini 3.7 Flash on financial scenarios
 agentv run \
-  --path industries/finance/scenarios/ \
+  --path industries/finance/scenarios/loan_approval_risk_check.json \
   --protocol gemini \
   --agent "gemini://gemini-3.7-flash" \
   --agent-name "Gemini-3.7-Flash-Baseline" \
@@ -53,7 +53,7 @@ agentv run \
 
 # Run single scenario with Gemini 3.7 Pro
 agentv run \
-  --scenario industries/telecom/scenarios/13814_home_internet_slow_speed.json \
+  --scenario industries/telecom/scenarios/technical_support/13814_home_internet_slow_speed.json \
   --protocol gemini \
   --agent "gemini://gemini-3.1-pro"
 ```
@@ -64,7 +64,7 @@ agentv run \
 
 AgentV integrates an automated resilience harness (`eval_runner.llm_resilience`) for all Gemini requests:
 - **Typed Error Classification**: Translates upstream Google API exceptions into domain errors (`LLMQuotaExceededError`, `LLMRateLimitError`, `LLMAuthenticationError`, `LLMTransientError`).
-- **Full-Jitter Exponential Backoff**: Automatically retries 429 quota exhaustion and 503 unavailable errors with decorrelated jitter (`AGENTV_LLM_MAX_RETRIES=3`, `AGENTV_LLM_INITIAL_DELAY=1.0`).
+- **Full-Jitter Exponential Backoff**: Retries transient rate-limit/unavailable errors with full jitter (`AGENTV_LLM_MAX_RETRIES=4`, `AGENTV_LLM_INITIAL_DELAY=1.0`, max delay 30s). Hard quota exhaustion, authentication and invalid requests fail without retry.
 - **Function Calling Stability**: Automatically formats Gemini tool declarations and strips extraneous empty fields to avoid invalid argument schema errors.
 
 ---
@@ -87,7 +87,9 @@ client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 async def execute_task(request: Request):
     payload = await request.json()
     task_desc = payload["task_description"]
-    history = payload.get("conversation_history", [])
+    # Default HTTP requests contain only task_description.
+    # Populate history only if your explicit application payload contract supplies it.
+    history = []
 
     # Format prompt and call Gemini model
     contents = [msg["content"] for msg in history if "content" in msg]
@@ -116,3 +118,7 @@ llm = ChatGoogleGenerativeAI(
 )
 response = llm.invoke("Resolve the customer issue according to policy.")
 ```
+
+These HTTP wrappers receive the default `task_description` request. Full history,
+run identity and tool schemas require an explicitly configured application
+payload contract; see the [agent contract](/integrator/agent-contract/).

@@ -115,5 +115,64 @@ class TestScaffold(unittest.TestCase):
         self.assertTrue(has_ci)
 
 
+def test_scaffold_registry_and_interactive_edge_branches(tmp_path, monkeypatch):
+    import builtins
+    import importlib
+    import json
+    import sys
+
+    schema_dir = tmp_path / "spec" / "aes"
+    schema_dir.mkdir(parents=True)
+    schema_path = schema_dir / "aes.schema.json"
+    schema_dict = {"$schema": "http://json-schema.org/draft-07/schema#", "type": "object"}
+    schema_path.write_text(json.dumps(schema_dict), encoding="utf-8")
+
+    # 1. Without definitions dir -> returns registry
+    reg = scaffold._get_aes_registry(schema_path, schema_dict)
+    assert reg is not None
+
+    # 2. With corrupt JSON inside definitions/ -> logs and skips
+    defs_dir = schema_dir / "definitions"
+    defs_dir.mkdir()
+    (defs_dir / "broken.json").write_text("{invalid", encoding="utf-8")
+    reg2 = scaffold._get_aes_registry(schema_path, schema_dict)
+    assert reg2 is not None
+
+    # 3. Missing referencing module + missing reconfigure on stdout/stderr
+    with (
+        patch.object(sys, "stdout", object()),
+        patch.object(sys, "stderr", object()),
+        patch.dict(sys.modules, {"referencing": None}),
+    ):
+        reloaded = importlib.reload(scaffold)
+        assert reloaded._get_aes_registry(schema_path, schema_dict) is None
+
+    # Restore module cleanly
+    importlib.reload(scaffold)
+
+    # 4. generate_interactive when schema_path does not exist
+    monkeypatch.chdir(tmp_path)
+    inputs = iter(["fin", "audit", "1"])
+    monkeypatch.setattr(builtins, "input", lambda _p="": next(inputs))
+    with patch("pathlib.Path.exists", return_value=False):
+        scaffold.generate_interactive()
+    assert (tmp_path / "scenarios" / "fin" / "gen_fin_audit_1.json").is_file()
+
+    # 5. init_standard iterating past a non-matching category
+    fake_reg = {
+        "industries": {
+            "other": {"standards": {}},
+            "fin": {
+                "standards": {
+                    "STD1": {"name": "Std One", "industry": "finance", "description": "d"}
+                }
+            },
+        }
+    }
+    with patch("eval_runner.registry_sync.load_registry", return_value=fake_reg):
+        scaffold.init_standard("STD1")
+    assert (tmp_path / "eval_std1").is_dir()
+
+
 if __name__ == "__main__":
     unittest.main()
