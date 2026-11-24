@@ -94,13 +94,13 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **langchain-openai** | 1.8.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langgraph** | 1.2.24 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langserve** | 0.3.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langsmith** | 0.16.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langsmith** | 0.16.2 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **lxml** | 6.1.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **pypdf** | 7.1.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **python-docx** | 1.2.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **reportlab** | 5.1.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **reportlab** | 5.1.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **sentence-transformers** | 6.3.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **transformers** | 5.24.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **transformers** | 5.24.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **weasyprint** | 70.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 
 ## 3. Obligations & Compliance Steps

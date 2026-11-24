@@ -514,8 +514,11 @@ def test_verification_workflow_journey_playwright(journey_console_server):
             page.get_by_test_id("rf__node-decision").wait_for(
                 state="visible", timeout=JOURNEY_UI_TIMEOUT_MS
             )
+            page.locator("button:has-text('PARITY_STATE_DIVERGENCE')").wait_for(
+                state="visible", timeout=JOURNEY_UI_TIMEOUT_MS
+            )
 
-            # Divergence layer must expose the terminal planned-but-unexecuted node.
+            # Divergence layer must expose only the terminal planned-but-unexecuted node.
             page.get_by_role("button", name="divergence", exact=True).click()
             page.get_by_text("SKIPPED", exact=True).wait_for(
                 state="visible", timeout=JOURNEY_UI_TIMEOUT_MS
