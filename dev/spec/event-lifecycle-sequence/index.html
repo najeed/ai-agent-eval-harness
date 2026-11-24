@@ -74,403 +74,59 @@
 		})();
 	</script></sl-sidebar-state-persist><div class="md:sl-hidden"><div class="mobile-preferences sl-flex astro-p4azlveh"><div class="social-icons astro-p4azlveh"><a href="https://github.com/najeed/ai-agent-eval-harness" rel="me" class="sl-flex astro-n2mnl6yq"><span class="sr-only astro-n2mnl6yq">GitHub</span><svg aria-hidden="true" class="astro-n2mnl6yq astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"/></svg></a></div><starlight-theme-select><label style="--sl-select-width: 6.25em" class="astro-2z5xp7gb"><span class="sr-only astro-2z5xp7gb">Select theme</span><svg aria-hidden="true" class="icon label-icon astro-2z5xp7gb astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg><select autocomplete="off" class="astro-2z5xp7gb"><option value="dark" class="astro-2z5xp7gb">Dark</option><option value="light" class="astro-2z5xp7gb">Light</option><option value="auto" selected class="astro-2z5xp7gb">Auto</option></select><svg aria-hidden="true" class="icon caret astro-2z5xp7gb astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg></label></starlight-theme-select><script>
 	StarlightThemeProvider.updatePickers();
-</script></div></div></div></sl-sidebar-pane></nav><div class="main-frame astro-yntsjkba"><script type="module">var e=document.getElementById(`starlight__sidebar`),t=e?.querySelector(`sl-sidebar-state-persist`),n=`sl-sidebar-state`,r=()=>{let r=[],i=t?.dataset.hash||``;try{let e=sessionStorage.getItem(n),t=JSON.parse(e||`{}`);Array.isArray(t.open)&&t.hash===i&&(r=t.open)}catch{}return{hash:i,open:r,scroll:e?.scrollTop||0}},i=e=>{try{sessionStorage.setItem(n,JSON.stringify(e))}catch{}},a=()=>i(r()),o=(e,t)=>{let n=r();n.open[t]=e,i(n)};t?.addEventListener(`click`,e=>{if(!(e.target instanceof Element))return;let t=e.target.closest(`summary`)?.closest(`details`);if(!t)return;let n=t.querySelector(`sl-sidebar-restore`),r=parseInt(n?.dataset.index||``);isNaN(r)||o(!t.open,r)}),addEventListener(`visibilitychange`,()=>{document.visibilityState===`hidden`&&a()});</script><div class="lg:sl-flex astro-lrzkfocr"><aside class="right-sidebar-container print:hidden astro-lrzkfocr"><div class="right-sidebar astro-lrzkfocr"><div class="lg:sl-hidden astro-qok35upx"><mobile-starlight-toc data-min-h="2" data-max-h="3" class="astro-66cqc7ze"><nav aria-labelledby="starlight__on-this-page--mobile" class="astro-66cqc7ze"><details id="starlight__mobile-toc" class="astro-66cqc7ze"><summary id="starlight__on-this-page--mobile" class="sl-flex astro-66cqc7ze"><span class="toggle sl-flex astro-66cqc7ze">On this page<svg aria-hidden="true" class="caret astro-66cqc7ze astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></span><span class="display-current astro-66cqc7ze"></span></summary><div class="dropdown astro-66cqc7ze"><ul class="isMobile astro-jugkfwgx" style="--depth: 0;"><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#_top" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Overview</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#1-end-to-end-chronological-emission-sequence" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">1. End-to-End Chronological Emission Sequence</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#2-exhaustive-event-inventory--sequence" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">2. Exhaustive Event Inventory &amp; Sequence</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#3-persona-specific-reference-guides" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">3. Persona-Specific Reference Guides</span></a><ul class="isMobile astro-jugkfwgx" style="--depth: 1;"><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#a-for-security-auditors" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">A. For Security Auditors</span></a></li><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#b-for-agent-integrators" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">B. For Agent Integrators</span></a></li><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#c-for-industry-evaluators" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">C. For Industry Evaluators</span></a></li><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#d-for-platform-extenders--core-builders" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">D. For Platform Extenders &amp; Core Builders</span></a></li></ul></li></ul></div></details></nav></mobile-starlight-toc><script type="module" src="/ai-agent-eval-harness/dev/_astro/MobileTableOfContents.astro_astro_type_script_index_0_lang.BcSo_yiZ.js"></script></div><div class="right-sidebar-panel sl-hidden lg:sl-block astro-qok35upx"><div class="sl-container astro-qok35upx"><starlight-toc data-min-h="2" data-max-h="3"><nav aria-labelledby="starlight__on-this-page"><h2 id="starlight__on-this-page">On this page</h2><ul class="astro-jugkfwgx" style="--depth: 0;"><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#_top" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Overview</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#1-end-to-end-chronological-emission-sequence" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">1. End-to-End Chronological Emission Sequence</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#2-exhaustive-event-inventory--sequence" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">2. Exhaustive Event Inventory &amp; Sequence</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#3-persona-specific-reference-guides" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">3. Persona-Specific Reference Guides</span></a><ul class="astro-jugkfwgx" style="--depth: 1;"><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#a-for-security-auditors" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">A. For Security Auditors</span></a></li><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#b-for-agent-integrators" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">B. For Agent Integrators</span></a></li><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#c-for-industry-evaluators" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">C. For Industry Evaluators</span></a></li><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#d-for-platform-extenders--core-builders" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">D. For Platform Extenders &amp; Core Builders</span></a></li></ul></li></ul></nav></starlight-toc><script type="module" src="/ai-agent-eval-harness/dev/_astro/TableOfContents.astro_astro_type_script_index_0_lang.Csloo1VZ.js"></script></div></div></div></aside><div class="main-pane astro-lrzkfocr"><main data-pagefind-body class="astro-g5ptsecz" lang="en" dir="ltr"><div class="content-panel astro-a7po4psb"><div class="sl-container astro-a7po4psb"><h1 id="_top" class="astro-bebwqqxs">Event Lifecycle &amp; Chronological Emission Specification</h1></div></div><div class="content-panel astro-a7po4psb"><div class="sl-container astro-a7po4psb"><div class="sl-markdown-content"><div class="sl-heading-wrapper level-h1"><h1 id="event-lifecycle--chronological-emission-specification">Event Lifecycle &#x26; Chronological Emission Specification</h1><a class="sl-anchor-link" href="#event-lifecycle--chronological-emission-specification"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “Event Lifecycle &#x26; Chronological Emission Specification”</span></a></div>
-<p>The AgentV evaluation runtime produces an immutable, high-fidelity chronological event stream (<code dir="auto">run.jsonl</code>). Every state transition—from environment initialization to tactical DAG node execution and terminal cryptographic sealing—is recorded sequentially.</p>
-<p>This specification details the end-to-end event sequence, the forensic invariants governing the stream, and persona-specific operational guides.</p>
-<hr>
-<div class="sl-heading-wrapper level-h2"><h2 id="1-end-to-end-chronological-emission-sequence">1. End-to-End Chronological Emission Sequence</h2><a class="sl-anchor-link" href="#1-end-to-end-chronological-emission-sequence"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “1. End-to-End Chronological Emission Sequence”</span></a></div>
-<p>An evaluation session transitions through five distinct phases:</p>
-<div class="expressive-code"><link rel="stylesheet" href="/ai-agent-eval-harness/dev/_astro/ec.w36nc.css"><script type="module" src="/ai-agent-eval-harness/dev/_astro/ec.0vx5m.js"></script><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="plaintext"><code><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">[ Phase 1: Initialization ]</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">│  run_start</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">│  strategy_start (pass_at_k)</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">│  phase_start (pass_at_k_execution)</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">▼</span></div></div><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">[ Phase 2: Per-Attempt Workflow &#x26; DAG Execution (k = 1..attempts) ]</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">│  routing_resolved (optional)</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">│  execution_graph_node (status="running")</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">│  maneuver_start</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">│  subtask_start</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">│    ├── turn_start</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">│    │     step_start (protocol handshake)</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">│    │     tool_call / tool_result (sandbox-authoritative) OR</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">│    │     external_tool_call / external_tool_result (external telemetry receipt)</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">│    │     hitl_pause / approval_created / approval_resolved / hitl_resume (optional)</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">│    └── turn_end</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">│  maneuver_end</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">│  execution_graph_node (status="completed" | "failed" | "skipped")</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">│  execution_graph_edge (branch routing &#x26; predicate evidence)</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">│  parallel_state_merged (if parallel fan-in)</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">▼</span></div></div><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">[ Phase 3: Aggregation &#x26; Mission Conclusion ]</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">│  phase_end (pass_at_k_execution)</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">│  error (only on unhandled failure)</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">│  strategy_end (pass_at_k telemetry verdict)</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">▼</span></div></div><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">[ Phase 4: Authoritative Monotonic Terminal Boundary ]</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">│  run_end (strictly final; carries mandatory finalization block)</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">       </span></span><span style="--0:#d6deeb;--1:#403f53">▼</span></div></div><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">[ Phase 5: Post-Run Sealing &#x26; Attestation (Verification Pipeline) ]</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">          </span></span><span style="--0:#d6deeb;--1:#403f53">run_manifest.json (pre-cert) / execution_manifest.json</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">          </span></span><span style="--0:#d6deeb;--1:#403f53">trace_sealed / certification_failed</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">          </span></span><span style="--0:#d6deeb;--1:#403f53">&#x3C;run_id>_vc.json + .sealed</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="[ Phase 1: Initialization ]       │  run_start       │  strategy_start (pass_at_k)       │  phase_start (pass_at_k_execution)       ▼[ Phase 2: Per-Attempt Workflow &#x26; DAG Execution (k = 1..attempts) ]       │  routing_resolved (optional)       │  execution_graph_node (status=&#x22;running&#x22;)       │  maneuver_start       │  subtask_start       │    ├── turn_start       │    │     step_start (protocol handshake)       │    │     tool_call / tool_result (sandbox-authoritative) OR       │    │     external_tool_call / external_tool_result (external telemetry receipt)       │    │     hitl_pause / approval_created / approval_resolved / hitl_resume (optional)       │    └── turn_end       │  maneuver_end       │  execution_graph_node (status=&#x22;completed&#x22; | &#x22;failed&#x22; | &#x22;skipped&#x22;)       │  execution_graph_edge (branch routing &#x26; predicate evidence)       │  parallel_state_merged (if parallel fan-in)       ▼[ Phase 3: Aggregation &#x26; Mission Conclusion ]       │  phase_end (pass_at_k_execution)       │  error (only on unhandled failure)       │  strategy_end (pass_at_k telemetry verdict)       ▼[ Phase 4: Authoritative Monotonic Terminal Boundary ]       │  run_end (strictly final; carries mandatory finalization block)       ▼[ Phase 5: Post-Run Sealing &#x26; Attestation (Verification Pipeline) ]          run_manifest.json (pre-cert) / execution_manifest.json          trace_sealed / certification_failed          <run_id>_vc.json + .sealed"><div></div></button></div></figure></div>
-<hr>
-<div class="sl-heading-wrapper level-h2"><h2 id="2-exhaustive-event-inventory--sequence">2. Exhaustive Event Inventory &#x26; Sequence</h2><a class="sl-anchor-link" href="#2-exhaustive-event-inventory--sequence"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “2. Exhaustive Event Inventory &#x26; Sequence”</span></a></div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<table><thead><tr><th align="left">Step</th><th align="left">Event Name</th><th align="left">Emitting Component</th><th align="left">Scope</th><th align="left">Core Fields / Payload</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left"><strong>1</strong></td><td align="left"><code dir="auto">run_start</code></td><td align="left"><code dir="auto">eval_runner/runner.py</code></td><td align="left">Run</td><td align="left"><code dir="auto">run_id</code>, <code dir="auto">scenario_id</code>, <code dir="auto">k_attempts</code>, <code dir="auto">execution_mode</code>, <code dir="auto">execution_mode_declared</code>, <code dir="auto">reproducibility_fingerprint</code>, <code dir="auto">is_resume</code></td><td align="left">Session dispatch. Establishes execution truth level, seed contract, and resumption flag.</td></tr><tr><td align="left"><strong>2</strong></td><td align="left"><code dir="auto">strategy_start</code></td><td align="left"><code dir="auto">eval_runner/runner.py</code></td><td align="left">Strategy</td><td align="left"><code dir="auto">run_id</code>, <code dir="auto">strategy</code>, <code dir="auto">k</code></td><td align="left">Demarcates mission exploration strategy (e.g., <code dir="auto">pass_at_k</code>).</td></tr><tr><td align="left"><strong>3</strong></td><td align="left"><code dir="auto">phase_start</code></td><td align="left"><code dir="auto">eval_runner/runner.py</code></td><td align="left">Phase</td><td align="left"><code dir="auto">run_id</code>, <code dir="auto">phase</code> (<code dir="auto">"pass_at_k_execution"</code>), <code dir="auto">k</code></td><td align="left">Opens execution span for attempt iterations.</td></tr><tr><td align="left"><strong>4</strong></td><td align="left"><code dir="auto">routing_resolved</code></td><td align="left"><code dir="auto">eval_runner/session.py</code></td><td align="left">Attempt</td><td align="left"><code dir="auto">capabilities</code>, <code dir="auto">resolved_protocol</code>, <code dir="auto">resolved_endpoint</code>, <code dir="auto">source</code></td><td align="left">Dynamic adapter and endpoint discovery via capability registry.</td></tr><tr><td align="left"><strong>5</strong></td><td align="left"><code dir="auto">execution_graph_node</code></td><td align="left"><code dir="auto">eval_runner/workflow_interpreter.py</code></td><td align="left">Node</td><td align="left"><code dir="auto">scenario_node_id</code>, <code dir="auto">execution_instance_id</code>, <code dir="auto">status="running"</code>, <code dir="auto">attempt</code></td><td align="left">Deterministic pre-pass announcing node activation before task dispatch.</td></tr><tr><td align="left"><strong>6</strong></td><td align="left"><code dir="auto">maneuver_start</code></td><td align="left"><code dir="auto">eval_runner/session.py</code></td><td align="left">Node</td><td align="left"><code dir="auto">node_id</code>, <code dir="auto">task</code></td><td align="left">Demarcates multi-turn tactical node maneuver.</td></tr><tr><td align="left"><strong>7</strong></td><td align="left"><code dir="auto">subtask_start</code></td><td align="left"><code dir="auto">eval_runner/session.py</code></td><td align="left">Subtask</td><td align="left"><code dir="auto">subtask_id</code>, <code dir="auto">task_description</code></td><td align="left">Binds prompt and subtask boundaries.</td></tr><tr><td align="left"><strong>8</strong></td><td align="left"><code dir="auto">turn_start</code></td><td align="left"><code dir="auto">eval_runner/session.py</code></td><td align="left">Turn</td><td align="left"><code dir="auto">turn</code>, <code dir="auto">task_id</code></td><td align="left">Opens turn conversation cycle ($1 \dots \text{max_turns}$).</td></tr><tr><td align="left"><strong>9</strong></td><td align="left"><code dir="auto">step_start</code></td><td align="left"><code dir="auto">eval_runner/session.py</code></td><td align="left">Step</td><td align="left"><code dir="auto">step</code> (<code dir="auto">protocol</code>)</td><td align="left">Records protocol usage in forensic sequence ledger.</td></tr><tr><td align="left"><strong>10</strong></td><td align="left"><code dir="auto">tool_call</code></td><td align="left"><code dir="auto">eval_runner/session.py</code></td><td align="left">Turn</td><td align="left"><code dir="auto">tool</code>, <code dir="auto">arguments</code>, <code dir="auto">call_id</code></td><td align="left">Dispatched when sandbox executes local/containerized tool invocation.</td></tr><tr><td align="left"><strong>11</strong></td><td align="left"><code dir="auto">tool_result</code></td><td align="left"><code dir="auto">eval_runner/session.py</code></td><td align="left">Turn</td><td align="left"><code dir="auto">tool</code>, <code dir="auto">result</code>, <code dir="auto">call_id</code>, <code dir="auto">error</code></td><td align="left">Dispatched when sandbox tool execution returns payload or error.</td></tr><tr><td align="left"><strong>12</strong></td><td align="left"><code dir="auto">external_tool_call</code></td><td align="left"><code dir="auto">eval_runner/session.py</code></td><td align="left">Turn</td><td align="left"><code dir="auto">run_id</code>, <code dir="auto">node_id</code>, <code dir="auto">task_id</code>, <code dir="auto">turn</code>, <code dir="auto">order</code>, <code dir="auto">tool</code>, <code dir="auto">arguments</code>, <code dir="auto">source="external_agent_telemetry"</code>, <code dir="auto">provenance="reported"</code>, <code dir="auto">receipt_hash</code></td><td align="left">Dispatched upon ingesting self-reported external agent tool calls. Binds deterministic SHA3-256 receipt hash.</td></tr><tr><td align="left"><strong>13</strong></td><td align="left"><code dir="auto">external_tool_result</code></td><td align="left"><code dir="auto">eval_runner/session.py</code></td><td align="left">Turn</td><td align="left"><code dir="auto">run_id</code>, <code dir="auto">node_id</code>, <code dir="auto">task_id</code>, <code dir="auto">turn</code>, <code dir="auto">order</code>, <code dir="auto">tool</code>, <code dir="auto">result</code>, <code dir="auto">result_summary</code>, <code dir="auto">source="external_agent_telemetry"</code>, <code dir="auto">provenance="reported"</code>, <code dir="auto">receipt_hash</code></td><td align="left">Dispatched upon ingesting self-reported external agent tool return payloads or summaries.</td></tr><tr><td align="left"><strong>14</strong></td><td align="left"><code dir="auto">hitl_pause</code></td><td align="left"><code dir="auto">eval_runner/session.py</code></td><td align="left">Turn</td><td align="left"><code dir="auto">task_id</code>, <code dir="auto">prompt</code>, <code dir="auto">approval_id</code></td><td align="left">Suspends execution when human intervention/approval is required.</td></tr><tr><td align="left"><strong>15</strong></td><td align="left"><code dir="auto">approval_created</code></td><td align="left"><code dir="auto">eval_runner/session_components/approval_manager.py</code></td><td align="left">Turn</td><td align="left"><code dir="auto">approval_id</code>, <code dir="auto">run_id</code>, <code dir="auto">node_id</code>, <code dir="auto">task_id</code>, <code dir="auto">tool_name</code>, <code dir="auto">arguments</code>, <code dir="auto">status="pending"</code>, <code dir="auto">created_at</code></td><td align="left">Emitted when formal HITL approval request is generated and stored in pending vault.</td></tr><tr><td align="left"><strong>16</strong></td><td align="left"><code dir="auto">approval_resolved</code></td><td align="left"><code dir="auto">eval_runner/session_components/approval_manager.py</code></td><td align="left">Turn</td><td align="left"><code dir="auto">approval_id</code>, <code dir="auto">run_id</code>, <code dir="auto">decision</code> (<code dir="auto">approved</code>|<code dir="auto">denied</code>), <code dir="auto">resolved_by</code>, <code dir="auto">resolved_at</code>, <code dir="auto">reason</code></td><td align="left">Emitted when human reviewer grants or rejects pending approval request.</td></tr><tr><td align="left"><strong>17</strong></td><td align="left"><code dir="auto">hitl_resume</code></td><td align="left"><code dir="auto">eval_runner/session.py</code></td><td align="left">Turn</td><td align="left"><code dir="auto">task_id</code>, <code dir="auto">response</code>, <code dir="auto">approved</code></td><td align="left">Resumes execution with operator feedback or rejection payload.</td></tr><tr><td align="left"><strong>18</strong></td><td align="left"><code dir="auto">turn_end</code></td><td align="left"><code dir="auto">eval_runner/session.py</code></td><td align="left">Turn</td><td align="left"><code dir="auto">turn</code>, <code dir="auto">task_id</code></td><td align="left">Concludes conversational turn after agent action processing.</td></tr><tr><td align="left"><strong>19</strong></td><td align="left"><code dir="auto">maneuver_end</code></td><td align="left"><code dir="auto">eval_runner/session.py</code></td><td align="left">Node</td><td align="left"><code dir="auto">node_id</code></td><td align="left">Concludes tactical maneuver after state parity and oracle scoring.</td></tr><tr><td align="left"><strong>20</strong></td><td align="left"><code dir="auto">execution_graph_node</code></td><td align="left"><code dir="auto">eval_runner/workflow_interpreter.py</code></td><td align="left">Node</td><td align="left"><code dir="auto">scenario_node_id</code>, `status=“completed”</td><td align="left">“failed”</td></tr><tr><td align="left"><strong>21</strong></td><td align="left"><code dir="auto">execution_graph_edge</code></td><td align="left"><code dir="auto">eval_runner/workflow_interpreter.py</code></td><td align="left">Transition</td><td align="left"><code dir="auto">from_scenario_node_id</code>, <code dir="auto">to_scenario_node_id</code>, <code dir="auto">edge_type</code>, <code dir="auto">evaluated_predicate</code>, <code dir="auto">transition_reason</code></td><td align="left">Graph routing evidence showing why a branch, retry, or fallback was traversed.</td></tr><tr><td align="left"><strong>22</strong></td><td align="left"><code dir="auto">parallel_state_merged</code></td><td align="left"><code dir="auto">eval_runner/session.py</code></td><td align="left">Wave</td><td align="left"><code dir="auto">run_id</code>, <code dir="auto">merge_order</code>, <code dir="auto">keys_affected</code></td><td align="left">Deterministic post-gather state reconciliation across concurrent forks.</td></tr><tr><td align="left"><strong>23</strong></td><td align="left"><code dir="auto">phase_end</code></td><td align="left"><code dir="auto">eval_runner/runner.py</code></td><td align="left">Phase</td><td align="left"><code dir="auto">run_id</code>, <code dir="auto">phase</code> (<code dir="auto">"pass_at_k_execution"</code>)</td><td align="left">Closes execution phase span across attempts.</td></tr><tr><td align="left"><strong>24</strong></td><td align="left"><code dir="auto">error</code></td><td align="left"><code dir="auto">eval_runner/runner.py</code></td><td align="left">Run</td><td align="left"><code dir="auto">message</code>, <code dir="auto">traceback</code>, <code dir="auto">run_id</code></td><td align="left">Dispatched upon post-processing or unhandled harness exceptions.</td></tr><tr><td align="left"><strong>25</strong></td><td align="left"><code dir="auto">strategy_end</code></td><td align="left"><code dir="auto">eval_runner/runner.py</code></td><td align="left">Strategy</td><td align="left"><code dir="auto">run_id</code>, <code dir="auto">strategy</code>, <code dir="auto">status</code> (`“success”</td><td align="left">“failure”`)</td></tr><tr><td align="left"><strong>26</strong></td><td align="left"><code dir="auto">run_end</code></td><td align="left"><code dir="auto">eval_runner/runner.py</code></td><td align="left">Run</td><td align="left"><code dir="auto">run_id</code>, <code dir="auto">status</code>, <code dir="auto">passed</code>, <code dir="auto">score</code>, <code dir="auto">pass_at_k</code>, <code dir="auto">attempt_statistics</code>, <code dir="auto">finalization</code></td><td align="left"><strong>Strict monotonic terminal event.</strong> Atomically seals run outcomes and cryptographic hashes.</td></tr><tr><td align="left"><strong>27</strong></td><td align="left"><code dir="auto">trace_sealed</code></td><td align="left"><code dir="auto">eval_runner/verifier.py</code></td><td align="left">Run</td><td align="left"><code dir="auto">run_id</code>, <code dir="auto">trace_hash</code>, <code dir="auto">signer_id</code>, <code dir="auto">timestamp</code></td><td align="left">Emitted upon successful cryptographic trace signing and writing of <code dir="auto">.sealed</code> sentinel marker.</td></tr><tr><td align="left"><strong>28</strong></td><td align="left"><code dir="auto">certification_failed</code></td><td align="left"><code dir="auto">eval_runner/verifier.py</code></td><td align="left">Run</td><td align="left"><code dir="auto">run_id</code>, <code dir="auto">reason</code>, <code dir="auto">code</code></td><td align="left">Emitted when trace verification fails invariant validation or integrity checks.</td></tr></tbody></table>
-<hr>
-<div class="sl-heading-wrapper level-h2"><h2 id="3-persona-specific-reference-guides">3. Persona-Specific Reference Guides</h2><a class="sl-anchor-link" href="#3-persona-specific-reference-guides"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “3. Persona-Specific Reference Guides”</span></a></div>
-<div class="sl-heading-wrapper level-h3"><h3 id="a-for-security-auditors">A. For Security Auditors</h3><a class="sl-anchor-link" href="#a-for-security-auditors"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “A. For Security Auditors”</span></a></div>
-<p><strong>Objective</strong>: Guarantee tamper-evident audit trails, monotonic terminal boundaries, and verifiable non-repudiation.</p>
+</script></div></div></div></sl-sidebar-pane></nav><div class="main-frame astro-yntsjkba"><script type="module">var e=document.getElementById(`starlight__sidebar`),t=e?.querySelector(`sl-sidebar-state-persist`),n=`sl-sidebar-state`,r=()=>{let r=[],i=t?.dataset.hash||``;try{let e=sessionStorage.getItem(n),t=JSON.parse(e||`{}`);Array.isArray(t.open)&&t.hash===i&&(r=t.open)}catch{}return{hash:i,open:r,scroll:e?.scrollTop||0}},i=e=>{try{sessionStorage.setItem(n,JSON.stringify(e))}catch{}},a=()=>i(r()),o=(e,t)=>{let n=r();n.open[t]=e,i(n)};t?.addEventListener(`click`,e=>{if(!(e.target instanceof Element))return;let t=e.target.closest(`summary`)?.closest(`details`);if(!t)return;let n=t.querySelector(`sl-sidebar-restore`),r=parseInt(n?.dataset.index||``);isNaN(r)||o(!t.open,r)}),addEventListener(`visibilitychange`,()=>{document.visibilityState===`hidden`&&a()});</script><div class="lg:sl-flex astro-lrzkfocr"><aside class="right-sidebar-container print:hidden astro-lrzkfocr"><div class="right-sidebar astro-lrzkfocr"><div class="lg:sl-hidden astro-qok35upx"><mobile-starlight-toc data-min-h="2" data-max-h="3" class="astro-66cqc7ze"><nav aria-labelledby="starlight__on-this-page--mobile" class="astro-66cqc7ze"><details id="starlight__mobile-toc" class="astro-66cqc7ze"><summary id="starlight__on-this-page--mobile" class="sl-flex astro-66cqc7ze"><span class="toggle sl-flex astro-66cqc7ze">On this page<svg aria-hidden="true" class="caret astro-66cqc7ze astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></span><span class="display-current astro-66cqc7ze"></span></summary><div class="dropdown astro-66cqc7ze"><ul class="isMobile astro-jugkfwgx" style="--depth: 0;"><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#_top" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Overview</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#execution-order" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Execution order</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#tool-events" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Tool events</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#durable-approval-order" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Durable approval order</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#evidence-delivery-and-data-handling" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Evidence delivery and data handling</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#finalization-and-independent-verification" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Finalization and independent verification</span></a></li></ul></div></details></nav></mobile-starlight-toc><script type="module" src="/ai-agent-eval-harness/dev/_astro/MobileTableOfContents.astro_astro_type_script_index_0_lang.BcSo_yiZ.js"></script></div><div class="right-sidebar-panel sl-hidden lg:sl-block astro-qok35upx"><div class="sl-container astro-qok35upx"><starlight-toc data-min-h="2" data-max-h="3"><nav aria-labelledby="starlight__on-this-page"><h2 id="starlight__on-this-page">On this page</h2><ul class="astro-jugkfwgx" style="--depth: 0;"><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#_top" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Overview</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#execution-order" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Execution order</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#tool-events" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Tool events</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#durable-approval-order" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Durable approval order</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#evidence-delivery-and-data-handling" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Evidence delivery and data handling</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#finalization-and-independent-verification" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Finalization and independent verification</span></a></li></ul></nav></starlight-toc><script type="module" src="/ai-agent-eval-harness/dev/_astro/TableOfContents.astro_astro_type_script_index_0_lang.Csloo1VZ.js"></script></div></div></div></aside><div class="main-pane astro-lrzkfocr"><main data-pagefind-body class="astro-g5ptsecz" lang="en" dir="ltr"><div class="content-panel astro-a7po4psb"><div class="sl-container astro-a7po4psb"><h1 id="_top" class="astro-bebwqqxs">Event Lifecycle &amp; Chronological Emission Specification</h1></div></div><div class="content-panel astro-a7po4psb"><div class="sl-container astro-a7po4psb"><div class="sl-markdown-content"><p>Execution events belong to the scoped RunStorageProvider. Optional telemetry and
+certificate publication must not extend a completed execution stream.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="execution-order">Execution order</h2><a class="sl-anchor-link" href="#execution-order"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “Execution order”</span></a></div>
 <ol>
-<li>
-<p><strong>The Monotonic Terminal Boundary Invariant</strong>:</p>
-<ul>
-<li><code dir="auto">run_end</code> MUST be the final event in <code dir="auto">run.jsonl</code>.</li>
-<li>The embedded <code dir="auto">finalization</code> payload contains:
-<ul>
-<li><code dir="auto">scenario_hash</code>: SHA3-256 over canonicalized scenario definition.</li>
-<li><code dir="auto">evidence_root_hash</code>: Merkle root over all assertion and node records.</li>
-<li><code dir="auto">finalization_hash</code>: Cryptographic digest of the finalization record itself.</li>
-</ul>
-</li>
-<li><strong>Audit Guard</strong>: If any event appears after <code dir="auto">run_end</code>, the <code dir="auto">CertificationService</code> flags a <em>Monotonic Terminal Boundary Violation</em> and fails closed with outcome <code dir="auto">"inconclusive"</code>. No certificate is issued.</li>
-</ul>
-</li>
-<li>
-<p><strong>Monotonic Resumption Continuation Invariant (<code dir="auto">is_resume=True</code>)</strong>:</p>
-<ul>
-<li>When a run pauses for human operator approval (<code dir="auto">PAUSED_FOR_APPROVAL</code>) and later resumes via <code dir="auto">agentv resume</code> or the visual console:
-<ul>
-<li><code dir="auto">runner.py</code> validates that the run lifecycle is not in terminal states (<code dir="auto">FINALIZING</code>, <code dir="auto">SEALED</code>, <code dir="auto">INVALID</code>).</li>
-<li>The existing provider-owned run and event stream are preserved rather than overwritten or re-created.</li>
-<li><code dir="auto">flight_recorder.py</code> reads provider events to discover the highest existing sequence number (<code dir="auto">initial_seq = max(_seq)</code>) and initializes <code dir="auto">_sequence_numbers[run_id] = initial_seq</code>.</li>
-<li>Resumed events append monotonically with strictly increasing sequence numbers (<code dir="auto">_seq = initial_seq + 1, initial_seq + 2, ...</code>), preventing sequence collisions, duplicate IDs, or chronological gaps.</li>
-<li><strong>Contract Snapshot Lock</strong>: On resumption, <code dir="auto">runner.py</code> reloads and locks the original execution manifest and scenario snapshot through the provider. Scenario and configuration snapshots cannot be altered post-launch.</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p><strong>Cryptographic Trace Sealing</strong>:</p>
-<ul>
-<li>Post-run execution of <code dir="auto">agentv certify</code> computes a SHA3-256 digest over the provider’s exact committed trace bytes.</li>
-<li>The resulting hash is signed using Ed25519 (<code dir="auto">system_id</code> or enterprise KMS/HSM).</li>
-<li>Atomically commits the certificate and sealed lifecycle state through the provider, then emits <code dir="auto">trace_sealed</code>. Any trace-byte modification breaks hash verification during <code dir="auto">agentv verify</code> or release gate checks (<code dir="auto">agentv gate</code>).</li>
-</ul>
-</li>
-<li>
-<p><strong>Execution Truth Levels</strong>:</p>
-<ul>
-<li>Traces lacking explicit <code dir="auto">execution_mode: "live"</code> or <code dir="auto">"hybrid"</code> are stamped <code dir="auto">provisional: true</code>.</li>
-<li>Provisional runs can NEVER be certified as authoritative for enterprise compliance or safety attestations.</li>
-</ul>
-</li>
+<li><code dir="auto">run_start</code>, <code dir="auto">strategy_start</code> and <code dir="auto">phase_start</code> establish run and attempt context.</li>
+<li><code dir="auto">routing_resolved</code> records target selection. Workflow graph node events track
+activation and execution instances.</li>
+<li>Node maneuvers emit subtask/turn/protocol events, tool activity and observed
+oracle outcomes. Sibling branches may execute concurrently in isolated forks;
+deterministic merge and edge events record their control flow.</li>
+<li>Phase/strategy telemetry finishes before terminal <code dir="auto">run_end</code>, which contains
+evaluator finalization. <code dir="auto">run_end</code> is the final execution event.</li>
+<li>A separate certification transaction verifies evidence and commits the
+certificate and sealed provider lifecycle together. It does not append a
+<code dir="auto">verification_certificate_issued</code> or <code dir="auto">trace_sealed</code> event to the terminal trace.</li>
 </ol>
-<hr>
-<div class="sl-heading-wrapper level-h3"><h3 id="b-for-agent-integrators">B. For Agent Integrators</h3><a class="sl-anchor-link" href="#b-for-agent-integrators"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “B. For Agent Integrators”</span></a></div>
-<p><strong>Objective</strong>: Build compliant agent adapters, manage multi-turn communication, and integrate tool calling and HITL workflows.</p>
-<ol>
-<li>
-<p><strong>Protocol Handshake &#x26; Routing</strong>:</p>
-<ul>
-<li>Adapters declare communication protocols (<code dir="auto">http</code>, <code dir="auto">local</code>, <code dir="auto">socket</code>, <code dir="auto">stdio</code>).</li>
-<li>The harness emits <code dir="auto">routing_resolved</code> with target endpoints before task execution.</li>
-<li>At each turn, <code dir="auto">step_start</code> logs the active protocol in the sequence ledger.</li>
-</ul>
-</li>
-<li>
-<p><strong>Sandbox-Authoritative Tool Execution vs. External Telemetry Ingestion</strong>:</p>
-<ul>
-<li><strong>Sandbox Tool Calling</strong>: When the agent requests tool invocation executed by the local/containerized AgentV sandbox, the harness emits <code dir="auto">tool_call</code> and executes the tool in the sandbox, emitting <code dir="auto">tool_result</code>.</li>
-<li><strong>External Agent Telemetry</strong>: When integrating remote or autonomous agents that execute tools within their own private environment (e.g., self-hosted agent frameworks), the agent returns an execution trajectory or receipt.
-<ul>
-<li>The harness ingests these steps via <code dir="auto">session.py:ingest_external_agent_telemetry</code>.</li>
-<li>Emits <code dir="auto">external_tool_call</code> and <code dir="auto">external_tool_result</code> with explicit provenance attributes:
-<ul>
-<li><code dir="auto">source: "external_agent_telemetry"</code></li>
-<li><code dir="auto">provenance: "reported"</code></li>
-<li><code dir="auto">receipt_hash: "sha3_256:&#x3C;hex>"</code> (canonical RFC 8785 JSON digest of order, tool, arguments, result, and endpoint).</li>
-</ul>
-</li>
-<li><strong>Integrity Rule</strong>: External telemetry receipts are strictly tracked and counted in <code dir="auto">CertificationService</code> under <code dir="auto">external_tool_calls_observed</code>, and are <strong>never</strong> relabeled as AgentV-sandbox-authoritative.</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p><strong>Human-In-The-Loop (HITL) &#x26; Approval Flow</strong>:</p>
-<ul>
-<li>When an agent requests a sensitive or restricted action requiring manual review, the turn enters human-in-the-loop suspension:
-<ol>
-<li>The harness emits <code dir="auto">hitl_pause</code> containing <code dir="auto">approval_id</code>, <code dir="auto">task_id</code>, and prompt.</li>
-<li><code dir="auto">SessionApprovalManager</code> persists the request and emits <code dir="auto">approval_created</code> with tool arguments and timestamp.</li>
-<li>The run status transitions to <code dir="auto">PAUSED_FOR_APPROVAL</code>, halting engine loops without finalizing the run.</li>
-<li>A human operator evaluates the pending request via the Visual Console or CLI (<code dir="auto">agentv approve</code> / <code dir="auto">agentv reject</code>).</li>
-<li><code dir="auto">SessionApprovalManager</code> emits <code dir="auto">approval_resolved</code> with <code dir="auto">decision</code> (<code dir="auto">approved</code> or <code dir="auto">denied</code>) and operator identity.</li>
-<li>If approved, <code dir="auto">runner.py</code> resumes execution (<code dir="auto">is_resume=True</code>), emitting <code dir="auto">hitl_resume</code> with operator feedback. If rejected, execution aborts and the node fails closed with <code dir="auto">POLICY_DENIED</code>.</li>
-</ol>
-</li>
-</ul>
-</li>
-</ol>
-<hr>
-<div class="sl-heading-wrapper level-h3"><h3 id="c-for-industry-evaluators">C. For Industry Evaluators</h3><a class="sl-anchor-link" href="#c-for-industry-evaluators"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “C. For Industry Evaluators”</span></a></div>
-<p><strong>Objective</strong>: Measure domain-specific capability, analyze pass@k reliability, and verify state transitions.</p>
-<ol>
-<li>
-<p><strong>Strategy Telemetry &#x26; Pass@K</strong>:</p>
-<ul>
-<li><code dir="auto">strategy_start</code> and <code dir="auto">strategy_end</code> demarcate the mission-level evaluation.</li>
-<li>Pass@K uses unbiased estimators over executed attempts. All attempts are independently seeded ($S_k = S_{\text{base}} + k - 1$).</li>
-<li><code dir="auto">attempt_statistics</code> on <code dir="auto">run_end</code> provides:
-<ul>
-<li><code dir="auto">attempt_success_rate</code>: Proportion of successful attempts.</li>
-<li><code dir="auto">all_pass</code>: Strict conjunctive success ($k$ of $k$).</li>
-<li><code dir="auto">any_pass</code>: Disjunctive success ($\ge 1$ of $k$).</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p><strong>Transition-Based State Parity</strong>:</p>
-<ul>
-<li>Between <code dir="auto">maneuver_start</code> and <code dir="auto">maneuver_end</code>, the sandbox tracks world state changes.</li>
-<li>State before and after each node is hashed with SHA3-256 (<code dir="auto">state_before_hash</code>, <code dir="auto">state_after_hash</code>).</li>
-<li>Node verdicts combine conversational metrics (<code dir="auto">metrics_calculator</code>), state hygiene rules, and transition parity verifications.</li>
-</ul>
-</li>
-</ol>
-<hr>
-<div class="sl-heading-wrapper level-h3"><h3 id="d-for-platform-extenders--core-builders">D. For Platform Extenders &#x26; Core Builders</h3><a class="sl-anchor-link" href="#d-for-platform-extenders--core-builders"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “D. For Platform Extenders &#x26; Core Builders”</span></a></div>
-<p><strong>Objective</strong>: Extend the event bus, introduce custom DAG nodes, and implement structured concurrency.</p>
-<ol>
-<li>
-<p><strong>Decoupled Event Bus (<code dir="auto">eval_runner/events.py</code>)</strong>:</p>
-<ul>
-<li>Telemetry uses a publisher-subscriber model (<code dir="auto">EventEmitter</code>).</li>
-<li>Payloads are automatically sanitized against PII, API tokens, JWTs, and bearer headers before broadcast.</li>
-<li>Subscriptions run asynchronously or synchronously without mutating engine control flow.</li>
-</ul>
-</li>
-<li>
-<p><strong>Canonical Execution IR &#x26; Graph Scheduling</strong>:</p>
-<ul>
-<li>Workflows compile to a <code dir="auto">WorkflowPlan</code> executed by <code dir="auto">WorkflowInterpreter</code>.</li>
-<li>Nodes transition deterministically: <code dir="auto">pending</code> $\rightarrow$ <code dir="auto">running</code> $\rightarrow$ <code dir="auto">completed</code> / <code dir="auto">failed</code> / <code dir="auto">skipped</code>.</li>
-<li>Node activations emit <code dir="auto">execution_graph_node</code>.</li>
-<li>Branch selections evaluate typed predicates and emit <code dir="auto">execution_graph_edge</code> with observed values, ensuring complete graph auditability.</li>
-</ul>
-</li>
-<li>
-<p><strong>Structured Concurrency</strong>:</p>
-<ul>
-<li>Sibling DAG branches run concurrently via <code dir="auto">asyncio.gather</code>.</li>
-<li>Sandboxes are isolated forks (<code dir="auto">sandbox.fork(exec_id)</code>).</li>
-<li>Upon convergence, <code dir="auto">_on_batch_complete</code> performs a deterministic merge in canonical order and emits <code dir="auto">parallel_state_merged</code>.</li>
-</ul>
-</li>
-</ol></div><footer class="sl-flex astro-ddtxxk7k"><div class="meta sl-flex astro-ddtxxk7k"></div><div class="pagination-links print:hidden astro-b5raizh3" dir="ltr"><a href="/ai-agent-eval-harness/dev/spec/digest-signature-envelope/" rel="prev" class="astro-b5raizh3"><svg aria-hidden="true" class="astro-b5raizh3 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.5rem;"><path d="M17 11H9.41l3.3-3.29a1.004 1.004 0 1 0-1.42-1.42l-5 5a1 1 0 0 0-.21.33 1 1 0 0 0 0 .76 1 1 0 0 0 .21.33l5 5a1.002 1.002 0 0 0 1.639-.325 1 1 0 0 0-.219-1.095L9.41 13H17a1 1 0 0 0 0-2Z"/></svg><span class="astro-b5raizh3">Previous<br class="astro-b5raizh3"><span class="link-title astro-b5raizh3">Digest signature envelope v1</span></span></a><a href="/ai-agent-eval-harness/dev/spec/execution_manifest/" rel="next" class="astro-b5raizh3"><svg aria-hidden="true" class="astro-b5raizh3 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.5rem;"><path d="M17.92 11.62a1.001 1.001 0 0 0-.21-.33l-5-5a1.003 1.003 0 1 0-1.42 1.42l3.3 3.29H7a1 1 0 0 0 0 2h7.59l-3.3 3.29a1.002 1.002 0 0 0 .325 1.639 1 1 0 0 0 1.095-.219l5-5a1 1 0 0 0 .21-.33 1 1 0 0 0 0-.76Z"/></svg><span class="astro-b5raizh3">Next<br class="astro-b5raizh3"><span class="link-title astro-b5raizh3">Execution Manifest &amp; Canonical Execution Graph Specification</span></span></a></div></footer></div></div></main></div></div></div></div></body></html>
+<div class="sl-heading-wrapper level-h2"><h2 id="tool-events">Tool events</h2><a class="sl-anchor-link" href="#tool-events"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “Tool events”</span></a></div>
+<p>Single tool request:</p>
+<div class="expressive-code"><link rel="stylesheet" href="/ai-agent-eval-harness/dev/_astro/ec.w36nc.css"><script type="module" src="/ai-agent-eval-harness/dev/_astro/ec.0vx5m.js"></script><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="json"><code><div class="ec-line"><div class="code"><span style="--0:#D6DEEB;--1:#403F53">{</span><span style="--0:#7FDBCA;--1:#096E72">"action"</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#C789D6;--1:#7C5686">call_tool</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--0:#7FDBCA;--1:#096E72">"tool_name"</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#C789D6;--1:#7C5686">transfer_funds</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--0:#7FDBCA;--1:#096E72">"tool_params"</span><span style="--0:#D6DEEB;--1:#403F53">: {</span><span style="--0:#7FDBCA;--1:#096E72">"amount"</span><span style="--0:#D6DEEB;--1:#403F53">: </span><span style="--0:#F78C6C;--1:#AA0982">25</span><span style="--0:#D6DEEB;--1:#403F53">}}</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="{&#x22;action&#x22;: &#x22;call_tool&#x22;, &#x22;tool_name&#x22;: &#x22;transfer_funds&#x22;, &#x22;tool_params&#x22;: {&#x22;amount&#x22;: 25}}"><div></div></button></div></figure></div>
+<p>Session <code dir="auto">tool_call</code> carries <code dir="auto">step</code>, <code dir="auto">tool</code>, <code dir="auto">arguments</code>, <code dir="auto">provenance</code>;
+<code dir="auto">tool_result</code> carries <code dir="auto">step</code>, <code dir="auto">tool</code>, <code dir="auto">result</code>, <code dir="auto">provenance</code>. These are not a
+guarantee of <code dir="auto">call_id</code> fields. Sandbox provenance is distinct from external
+receipts, which emit <code dir="auto">external_tool_call</code>/<code dir="auto">external_tool_result</code> with reported
+source and a canonical receipt digest. Self-reporting does not authenticate
+external state changes.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="durable-approval-order">Durable approval order</h2><a class="sl-anchor-link" href="#durable-approval-order"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “Durable approval order”</span></a></div>
+<p>The approval manager persists <code dir="auto">ApprovalRequest</code> and emits <code dir="auto">approval_created</code>
+while the provider is still writable. The session then emits <code dir="auto">hitl_pause</code> and
+transitions to <code dir="auto">PAUSED_FOR_APPROVAL</code>.</p>
+<p>Approval events serialize the request: <code dir="auto">approval_token</code>, <code dir="auto">run_id</code>, <code dir="auto">turn_index</code>,
+<code dir="auto">outbound_payload_hash</code>, checkpoint/action metadata, <code dir="auto">status</code>, <code dir="auto">scope</code>,
+<code dir="auto">scope_digest</code>, <code dir="auto">manifest_id</code> and idempotency information. Resolution uses
+<code dir="auto">APPROVED</code>/<code dir="auto">REJECTED</code>, <code dir="auto">decided_by</code>, <code dir="auto">decision_reason</code> and timestamps. Durable pause
+payloads contain the approval token/checkpoint; interactive HITL payloads can
+differ. Do not treat a fixed <code dir="auto">approval_id</code>/lower-case decision sample as universal.</p>
+<div class="expressive-code"><figure class="frame is-terminal not-content"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#82AAFF;--1:#3B61B0">agentv</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">hitl-resume</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">--run-id</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">RUN_ID</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">--approval-token</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">TOKEN</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">--decision</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">APPROVED</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">--reviewer</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">operator</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">--reason</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">Reviewed bound action</span><span style="--0:#D9F5DD;--1:#111111">"</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="agentv hitl-resume --run-id RUN_ID --approval-token TOKEN --decision APPROVED --reviewer operator --reason &#x22;Reviewed bound action&#x22;"><div></div></button></div></figure></div>
+<p>Use <code dir="auto">--decision REJECTED</code> to reject. There are no built-in <code dir="auto">resume</code>, <code dir="auto">approve</code>
+or <code dir="auto">reject</code> top-level CLI commands. REST resume is
+<code dir="auto">POST /api/v1/runs/&#x3C;run_id>/resume</code> with the route’s authorization requirements.</p>
+<p>Resume verifies scope, request, checkpoint and payload bindings, preserves the
+original execution manifest/scenario snapshot and continues monotonic sequence
+numbers. It cannot reopen sealed or terminal evidence as a new writable run.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="evidence-delivery-and-data-handling">Evidence delivery and data handling</h2><a class="sl-anchor-link" href="#evidence-delivery-and-data-handling"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “Evidence delivery and data handling”</span></a></div>
+<p>Required evidence consumers must acknowledge delivery; failures can invalidate
+the run. Optional telemetry can run asynchronously; default event mode is
+synchronous. Sanitization redacts selected secret patterns on presentation paths.
+Mandatory evidence preserves exact committed objects and is not a universal
+pre-persistence PII filter. PII analyzers diagnose histories, not every data sink.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="finalization-and-independent-verification">Finalization and independent verification</h2><a class="sl-anchor-link" href="#finalization-and-independent-verification"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “Finalization and independent verification”</span></a></div>
+<p>Terminal finalization commits to scenario/manifest identity, evidence root,
+required oracle inventory, outcome, score and terminal sequence. Verify it with
+the actual scenario, actual execution manifest and raw trace bytes. Current
+artifact signatures use <a href="/ai-agent-eval-harness/dev/spec/digest-signature-envelope/">digest envelopes</a>.
+Missing/conflicting finalization, post-terminal execution events or failed
+required evidence prevent authoritative certification. See
+<a href="/ai-agent-eval-harness/dev/auditor/verification/">verification</a> and <a href="/ai-agent-eval-harness/dev/integrator/interaction-lifecycle/">interaction lifecycle</a>.</p></div><footer class="sl-flex astro-ddtxxk7k"><div class="meta sl-flex astro-ddtxxk7k"></div><div class="pagination-links print:hidden astro-b5raizh3" dir="ltr"><a href="/ai-agent-eval-harness/dev/spec/digest-signature-envelope/" rel="prev" class="astro-b5raizh3"><svg aria-hidden="true" class="astro-b5raizh3 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.5rem;"><path d="M17 11H9.41l3.3-3.29a1.004 1.004 0 1 0-1.42-1.42l-5 5a1 1 0 0 0-.21.33 1 1 0 0 0 0 .76 1 1 0 0 0 .21.33l5 5a1.002 1.002 0 0 0 1.639-.325 1 1 0 0 0-.219-1.095L9.41 13H17a1 1 0 0 0 0-2Z"/></svg><span class="astro-b5raizh3">Previous<br class="astro-b5raizh3"><span class="link-title astro-b5raizh3">Digest signature envelope v1</span></span></a><a href="/ai-agent-eval-harness/dev/spec/execution_manifest/" rel="next" class="astro-b5raizh3"><svg aria-hidden="true" class="astro-b5raizh3 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.5rem;"><path d="M17.92 11.62a1.001 1.001 0 0 0-.21-.33l-5-5a1.003 1.003 0 1 0-1.42 1.42l3.3 3.29H7a1 1 0 0 0 0 2h7.59l-3.3 3.29a1.002 1.002 0 0 0 .325 1.639 1 1 0 0 0 1.095-.219l5-5a1 1 0 0 0 .21-.33 1 1 0 0 0 0-.76Z"/></svg><span class="astro-b5raizh3">Next<br class="astro-b5raizh3"><span class="link-title astro-b5raizh3">Execution Manifest &amp; Canonical Execution Graph Specification</span></span></a></div></footer></div></div></main></div></div></div></div></body></html>

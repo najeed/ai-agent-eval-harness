@@ -90,11 +90,11 @@
 <ol>
 <li>Inside the <code dir="auto">scenarios</code> folder, you may want to create sub-folders for different use cases (e.g., <code dir="auto">crop_management</code> in the <code dir="auto">agriculture</code> industry).</li>
 <li>Create your first scenario <code dir="auto">.json</code> file. The name should be numbered and descriptive (e.g., <code dir="auto">01_mortgage_application_check.json</code>).</li>
-<li>Populate the JSON file using the structure defined in the <a href="guide.md">Evaluation Guide</a>. Use existing scenarios as a reference.</li>
+<li>Populate the JSON file using the structure defined in the <a href="/ai-agent-eval-harness/dev/evaluator/guide/">Evaluation Guide</a>. Use existing scenarios as a reference.</li>
 </ol>
 <div class="sl-heading-wrapper level-h2"><h2 id="step-3-document-core-functions">Step 3: Document Core Functions</h2><a class="sl-anchor-link" href="#step-3-document-core-functions"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “Step 3: Document Core Functions”</span></a></div>
 <ol>
-<li>Add your new industry, its use cases, and core functions to the <a href="../builder/core-functions.md">Core Functions Guide</a>. These constructs relate to the <code dir="auto">industry</code>, <code dir="auto">use_case</code>, and <code dir="auto">core_function</code> fields in your JSON files.</li>
+<li>Add your new industry, its use cases, and core functions to the <a href="/ai-agent-eval-harness/dev/builder/core-functions/">Core Functions Guide</a>. These constructs relate to the <code dir="auto">industry</code>, <code dir="auto">use_case</code>, and <code dir="auto">core_function</code> fields in your JSON files.</li>
 <li>Define the core functions to document their scope for future evaluators.</li>
 </ol>
 <div class="sl-heading-wrapper level-h2"><h2 id="step-4-include-synthetic-datasets">Step 4: Include Synthetic Datasets</h2><a class="sl-anchor-link" href="#step-4-include-synthetic-datasets"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “Step 4: Include Synthetic Datasets”</span></a></div>
@@ -104,12 +104,14 @@
 <p>All scenarios are validated at load time against the AES schema. Your scenario <strong>must</strong> include these required fields:</p>
 <p><strong>Scenario level:</strong></p>
 <ul>
-<li><code dir="auto">metadata</code>: Contains <code dir="auto">id</code>, <code dir="auto">name</code>, <code dir="auto">capabilities</code>, and <code dir="auto">aes_version</code> (set to <code dir="auto">"1.4"</code>).</li>
+<li><code dir="auto">metadata</code>: Requires <code dir="auto">id</code>, <code dir="auto">name</code>, and <code dir="auto">compliance_level</code> (<code dir="auto">Standard</code>, <code dir="auto">Gold</code>, or <code dir="auto">Regulatory_Audit</code>); <code dir="auto">capabilities</code> is optional.</li>
+<li><code dir="auto">aes_version</code>: Required at the root as numeric <code dir="auto">1.4</code>.</li>
+<li><code dir="auto">evaluation</code>: Required root object, even when empty.</li>
 <li><code dir="auto">workflow</code>: Contains <code dir="auto">nodes</code> and <code dir="auto">edges</code>.</li>
 </ul>
 <p><strong>Task Node level</strong> (each item in <code dir="auto">workflow.nodes</code>):</p>
 <ul>
-<li><code dir="auto">id</code>, <code dir="auto">task_description</code>, <code dir="auto">success_criteria</code></li>
+<li><code dir="auto">id</code> and <code dir="auto">task_description</code> are schema-required; declare meaningful <code dir="auto">success_criteria</code> and/or <code dir="auto">expected_outcome</code> assertions for evaluable coverage.</li>
 <li>(Optional) <code dir="auto">expected_outcome</code></li>
 </ul>
 <p>Run schema validation locally:</p>

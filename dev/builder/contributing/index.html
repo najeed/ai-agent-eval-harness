@@ -108,9 +108,9 @@
 <ul>
 <li><strong>Lifecycle Hooks</strong>: Subscribe to <code dir="auto">before_evaluation</code>, <code dir="auto">after_evaluation</code>, <code dir="auto">on_step_start</code>, <code dir="auto">on_step_end</code>, <code dir="auto">on_tool_request</code>, <code dir="auto">on_before_commit</code>, <code dir="auto">on_approval_created</code>, or dynamic event bus hooks (<code dir="auto">on_turn_start</code>, <code dir="auto">on_turn_end</code>).</li>
 <li><strong>Interception</strong>: Use <code dir="auto">on_tool_request</code> to enforce safety or HITL proxies. Return <code dir="auto">False</code> to block a tool call.</li>
-<li><strong>CLI Commands</strong>: Use <code dir="auto">on_register_commands</code> to register namespaced CLI subcommands (under <code dir="auto">agentv plugin &#x3C;name></code>).</li>
+<li><strong>CLI Commands</strong>: Register a callable through <code dir="auto">agentv_runtime.cli_extensions</code>; the CLI calls it with argparse subparsers. <code dir="auto">on_register_commands</code> is not invoked by this path. Authors must choose distinct command names (see the <a href="/ai-agent-eval-harness/dev/extender/cli-extensions/">CLI extension guide</a>).</li>
 <li><strong>Event Bus</strong>: Use <code dir="auto">EventEmitter.subscribe(callback)</code> for passive monitoring.</li>
-<li><strong>Entry Points</strong>: Register your plugins in your <code dir="auto">pyproject.toml</code> under <code dir="auto">eval_runner.plugins</code>.</li>
+<li><strong>Entry Points</strong>: Register your plugins in your <code dir="auto">pyproject.toml</code> under <code dir="auto">agentv_runtime.plugins</code>.</li>
 <li><strong>Timeouts</strong>: All plugin hooks are subject to a 5-second timeout to prevent hang conditions.</li>
 </ul>
 <hr>
