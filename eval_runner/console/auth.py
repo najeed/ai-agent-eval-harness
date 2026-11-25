@@ -427,16 +427,26 @@ def switch_context():
         normalized = normalize_entitlements(user)
     except ValueError:
         return jsonify({"error": "Invalid configured principal entitlements"}), 403
-    entry = next(
-        (
-            item
-            for item in normalized["authorized_contexts"]
-            if item["workspace_id"] == workspace_id and environment in item["environments"]
-        ),
-        None,
-    )
-    if entry is None:
+    matches = [
+        item
+        for item in normalized["authorized_contexts"]
+        if item["workspace_id"] == workspace_id and environment in item["environments"]
+    ]
+    if not matches:
         return jsonify({"error": "Requested context is not authorized"}), 403
+    distinct_boundaries = {(item["org_id"], item["tenant_id"]) for item in matches}
+    if len(distinct_boundaries) > 1:
+        return (
+            jsonify(
+                {
+                    "error": (
+                        "Requested context is ambiguous across multiple organizations or tenants."
+                    )
+                }
+            ),
+            409,
+        )
+    entry = matches[0]
     # No session mutation occurs until all validation succeeds.
     context = {key: entry[key] for key in CONTEXT_CLAIMS[:-1]}
     context["active_environment"] = environment

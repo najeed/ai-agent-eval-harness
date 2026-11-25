@@ -544,6 +544,41 @@ def test_context_switch_is_entitlement_authorized_and_revokes_stale_handoff(clie
     assert decoded["roles"] == ["configured-role"]
 
 
+def test_context_switch_fails_closed_on_ambiguous_workspace_environment(client):
+    with client.session_transaction() as sess:
+        sess["user"] = {
+            "id": "usr-ambig",
+            "context_version": "2",
+            "context": {
+                "org_id": "org-a",
+                "tenant_id": "tenant-a",
+                "workspace_id": "ws-shared",
+                "active_environment": "production",
+            },
+            "authorized_contexts": [
+                {
+                    "org_id": "org-a",
+                    "tenant_id": "tenant-a",
+                    "workspace_id": "ws-shared",
+                    "environments": ["production"],
+                },
+                {
+                    "org_id": "org-b",
+                    "tenant_id": "tenant-b",
+                    "workspace_id": "ws-shared",
+                    "environments": ["production"],
+                },
+            ],
+        }
+
+    resp = client.post(
+        "/api/auth/context",
+        json={"workspace_id": "ws-shared", "active_environment": "production"},
+    )
+    assert resp.status_code == 409
+    assert client.get("/api/auth/me").json["context"]["org_id"] == "org-a"
+
+
 def test_malformed_entitlements_fail_closed(client):
     with client.session_transaction() as sess:
         sess["user"] = {
